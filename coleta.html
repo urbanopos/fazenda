@@ -312,8 +312,7 @@ textarea{resize:none;height:72px;font-size:14px}
   <div class="div"></div>
   <div class="cont" id="contador">Nenhum item preenchido</div>
   <div class="preview-box" id="preview-box"><div class="preview-t">📋 Prévia da mensagem</div><div class="preview-tx" id="preview-tx"></div></div>
-  <button class="btn-wpp" onclick="enviarWhatsapp()"><span style="font-size:22px">💬</span> Enviar pelo WhatsApp</button>
-  <button class="btn-pdf" onclick="gerarPDF()"><span style="font-size:20px">📄</span> Gerar PDF / Compartilhar</button>
+  <button class="btn-wpp" onclick="enviarTudo()"><span style="font-size:22px">💬</span> Enviar — PDF + WhatsApp</button>
   <button class="btn-limpar" onclick="limparTudo()">↺ Limpar tudo</button>
 </div>
 <div class="toast" id="toast"></div>
@@ -617,27 +616,19 @@ function _getNum(){
          (WPP_DESTINO||'').replace(/\D/g,'');
 }
 
-function gerarPDF(){
+// ── GERAR HTML DO BOLETIM ──────────────────────
+function _gerarHtmlBoletim(){
   const itens=_coletarItens();
-  if(!itens.length){_toast('Conclua ao menos um item antes de gerar o PDF.');return;}
-
   const data=document.getElementById('data-global').value;
   const df=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}):'—';
   const agora=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-
-  // Agrupa por setor
   const ps={};
   itens.forEach(it=>{if(!ps[it.setor]) ps[it.setor]=[];ps[it.setor].push(it);});
-
-  // Gera linhas da tabela por setor
   let tabelaHtml='';
   Object.entries(ps).forEach(([setor,lista])=>{
     const ic=setor==='Aviário'?'🐔':setor==='Perda'?'⚠️':setor==='Estoque'?'📦':'🌴';
     const cor=setor==='Aviário'?'#1c2e22':setor==='Perda'?'#7f1d1d':setor==='Estoque'?'#1e3a5f':'#3b5e2a';
-    tabelaHtml+=`
-    <tr><td colspan="5" style="background:${cor};color:#fff;font-weight:700;font-size:13px;padding:8px 14px;letter-spacing:1px;text-transform:uppercase">
-      ${ic} ${setor}
-    </td></tr>`;
+    tabelaHtml+=`<tr><td colspan="5" style="background:${cor};color:#fff;font-weight:700;font-size:13px;padding:8px 14px;letter-spacing:1px;text-transform:uppercase">${ic} ${setor}</td></tr>`;
     lista.forEach((it,i)=>{
       tabelaHtml+=`<tr style="background:${i%2===0?'#fff':'#f8f8f6'}">
         <td style="font-size:20px;text-align:center;padding:10px 8px">${it.emoji}</td>
@@ -648,110 +639,86 @@ function gerarPDF(){
       </tr>`;
     });
   });
-
-  const totItens=itens.length;
-
-  const html=`<!DOCTYPE html><html lang="pt-BR"><head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+  return `<!DOCTYPE html><html lang="pt-BR"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Coleta — Fazenda São José — ${df}</title>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:Arial,sans-serif;font-size:14px;color:#111;background:#fff;padding:0}
-  .header{background:#1c2e22;color:#fff;padding:18px 24px;display:flex;justify-content:space-between;align-items:center}
-  .header-t{font-size:22px;font-weight:700;letter-spacing:.5px}
-  .header-s{font-size:11px;opacity:.6;margin-top:3px;letter-spacing:2px;text-transform:uppercase}
-  .header-r{text-align:right;font-size:12px;opacity:.75;font-family:monospace;line-height:1.7}
-  .faixa{background:#b8943f;color:#fff;padding:7px 24px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;display:flex;justify-content:space-between}
-  .corpo{padding:20px 24px 32px}
-  table{width:100%;border-collapse:collapse;font-size:14px}
-  th{background:#1c2e22;color:#b8943f;padding:9px 14px;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600}
-  td{border-bottom:1px solid #eee;vertical-align:middle}
-  .rodape{margin-top:24px;padding-top:14px;border-top:2px solid #1c2e22;display:flex;justify-content:space-between;align-items:flex-end}
-  .rod-t{font-family:monospace;font-size:11px;color:#aaa;letter-spacing:1px}
-  .rod-v{font-size:22px;font-weight:700;color:#1c2e22;font-family:monospace}
-  .rod-l{font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:1.5px}
-  .assinatura{margin-top:40px;display:flex;gap:60px;flex-wrap:wrap}
-  .ass-linha{border-top:1px solid #333;padding-top:6px;min-width:180px;font-size:11px;color:#555;text-align:center;letter-spacing:1px;text-transform:uppercase}
-  .acoes{background:#f5f5f5;padding:14px 24px;display:flex;gap:12px;border-top:1px solid #ddd;position:sticky;bottom:0}
-  .btn-p{padding:11px 28px;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;font-family:Arial,sans-serif;transition:opacity .15s}
-  .btn-p:active{opacity:.8}
-  @media print{
-    .acoes{display:none!important}
-    body{padding:0}
-    @page{margin:12mm;size:A4 portrait}
-    -webkit-print-color-adjust:exact;print-color-adjust:exact
-  }
-</style>
-</head><body>
-
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;font-size:14px;color:#111;background:#fff}
+.header{background:#1c2e22;color:#fff;padding:18px 24px;display:flex;justify-content:space-between;align-items:center}
+.header-t{font-size:22px;font-weight:700}
+.header-s{font-size:11px;opacity:.6;margin-top:3px;letter-spacing:2px;text-transform:uppercase}
+.header-r{text-align:right;font-size:12px;opacity:.75;font-family:monospace;line-height:1.7}
+.faixa{background:#b8943f;color:#fff;padding:7px 24px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;display:flex;justify-content:space-between}
+.corpo{padding:20px 24px 32px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{background:#1c2e22;color:#b8943f;padding:9px 14px;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600}
+td{border-bottom:1px solid #eee;vertical-align:middle}
+.rodape{margin-top:24px;padding-top:14px;border-top:2px solid #1c2e22;display:flex;justify-content:space-between;align-items:flex-end}
+.rod-l{font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:1.5px}
+.rod-v{font-size:22px;font-weight:700;color:#1c2e22;font-family:monospace}
+.assinatura{margin-top:40px;display:flex;gap:60px;flex-wrap:wrap}
+.ass-linha{border-top:1px solid #333;padding-top:6px;min-width:180px;font-size:11px;color:#555;text-align:center;letter-spacing:1px;text-transform:uppercase}
+.acoes{background:#f5f5f5;padding:14px 24px;display:flex;gap:12px;border-top:1px solid #ddd;position:sticky;bottom:0}
+.btn-p{padding:11px 28px;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .15s}
+@media print{.acoes{display:none!important}@page{margin:12mm;size:A4 portrait}-webkit-print-color-adjust:exact;print-color-adjust:exact}
+</style></head><body>
 <div class="acoes">
   <button class="btn-p" style="background:#1c2e22;color:#b8943f" onclick="window.print()">🖨 Imprimir / Salvar PDF</button>
   <button class="btn-p" style="background:#f0ede8;color:#555;border:1px solid #ccc" onclick="window.close()">✕ Fechar</button>
 </div>
-
 <div class="header">
-  <div>
-    <div class="header-t">🌿 Fazenda São José</div>
-    <div class="header-s">O melhor do campo em sua mesa</div>
-  </div>
-  <div class="header-r">
-    REGISTRO DE COLETA DE CAMPO<br>
-    Emitido em ${df} às ${agora}
-  </div>
+  <div><div class="header-t">🌿 Fazenda São José</div><div class="header-s">O melhor do campo em sua mesa</div></div>
+  <div class="header-r">REGISTRO DE COLETA DE CAMPO<br>Emitido em ${df} às ${agora}</div>
 </div>
-<div class="faixa">
-  <span>📋 Boletim de Coleta</span>
-  <span>${totItens} produto(s) registrado(s)</span>
-</div>
-
+<div class="faixa"><span>📋 Boletim de Coleta</span><span>${itens.length} produto(s) registrado(s)</span></div>
 <div class="corpo">
   <table>
-    <thead>
-      <tr>
-        <th style="width:40px"></th>
-        <th>Produto</th>
-        <th style="text-align:center;width:120px">Quantidade</th>
-        <th style="width:160px">Fornecedor</th>
-        <th>Observação</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${tabelaHtml}
-    </tbody>
+    <thead><tr><th style="width:40px"></th><th>Produto</th><th style="text-align:center;width:120px">Quantidade</th><th style="width:160px">Fornecedor</th><th>Observação</th></tr></thead>
+    <tbody>${tabelaHtml}</tbody>
   </table>
-
   <div class="rodape">
-    <div>
-      <div class="rod-l">Total de itens registrados</div>
-      <div class="rod-v">${totItens}</div>
-    </div>
-    <div style="text-align:right">
-      <div class="rod-l">Data da coleta</div>
-      <div style="font-size:15px;font-weight:700;color:#1c2e22;font-family:monospace">${df}</div>
-    </div>
+    <div><div class="rod-l">Total de itens</div><div class="rod-v">${itens.length}</div></div>
+    <div style="text-align:right"><div class="rod-l">Data da coleta</div><div style="font-size:15px;font-weight:700;color:#1c2e22;font-family:monospace">${df}</div></div>
   </div>
-
   <div class="assinatura">
     <div class="ass-linha">Responsável pela coleta</div>
     <div class="ass-linha">Conferido por</div>
     <div class="ass-linha">Data / Hora</div>
   </div>
-</div>
-
-</body></html>`;
-
-  const w=window.open('','_blank','width=800,height=700,scrollbars=yes,resizable=yes');
-  if(!w){_toast('Popups bloqueados. Permita popups para gerar o PDF.');return;}
-  w.document.open();w.document.write(html);w.document.close();w.focus();
+</div></body></html>`;
 }
 
-function enviarWhatsapp(){
+// ── ENVIAR TUDO: baixa PDF + abre WhatsApp ──────
+function enviarTudo(){
   const itens=_coletarItens();
   if(!itens.length){_toast('Conclua ao menos um item antes de enviar.');return;}
   const n=_getNum();
   if(!n){_toast('Número não configurado. Contacte o administrador.');return;}
-  window.open('https://wa.me/'+n+'?text='+encodeURIComponent(_msg()),'_blank');
+
+  // 1 — Baixa o PDF automaticamente
+  try{
+    const html   = _gerarHtmlBoletim();
+    const blob   = new Blob([html],{type:'text/html'});
+    const url    = URL.createObjectURL(blob);
+    const data   = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
+    const nome   = 'coleta-fazenda-'+data+'.html';
+    const a      = document.createElement('a');
+    a.href       = url;
+    a.download   = nome;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),3000);
+    _toast('📄 PDF salvo em Downloads!');
+  }catch(e){
+    _toast('Não foi possível baixar o PDF.');
+  }
+
+  // 2 — Abre o WhatsApp após 1,5 segundos
+  setTimeout(()=>{
+    window.open('https://wa.me/'+n+'?text='+encodeURIComponent(_msg()),'_blank');
+  },1500);
 }
 
 function limparTudo(){
