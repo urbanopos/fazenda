@@ -770,12 +770,58 @@ function _initLP(){
   const ic=document.getElementById('topo-icon');
   if(!ic) return;
   let _t=null;
-  const _s=e=>{e.preventDefault();ic.classList.add('press');_t=setTimeout(()=>{ic.classList.remove('press');abrirAdmin();},1500);};
-  const _c=()=>{clearTimeout(_t);ic.classList.remove('press');};
-  ic.addEventListener('touchstart',_s,{passive:false});
-  ic.addEventListener('touchend',_c);ic.addEventListener('touchmove',_c);
-  ic.addEventListener('mousedown',_s);ic.addEventListener('mouseup',_c);ic.addEventListener('mouseleave',_c);
-  ic.addEventListener('contextmenu',e=>e.preventDefault());
+  let _moved=false;
+
+  function _start(e){
+    _moved=false;
+    ic.classList.add('press');
+    _t=setTimeout(()=>{
+      if(!_moved){
+        ic.classList.remove('press');
+        abrirAdmin();
+      }
+    },1500);
+  }
+
+  function _cancel(){
+    clearTimeout(_t);
+    ic.classList.remove('press');
+  }
+
+  function _move(){
+    _moved=true;
+    _cancel();
+  }
+
+  // Touch events
+  ic.addEventListener('touchstart', function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    _start(e);
+  }, {passive:false});
+  ic.addEventListener('touchend',   function(e){ e.preventDefault(); _cancel(); }, {passive:false});
+  ic.addEventListener('touchmove',  function(e){ e.preventDefault(); _move();   }, {passive:false});
+  ic.addEventListener('touchcancel',function(e){ _cancel(); }, {passive:false});
+
+  // Mouse events (desktop)
+  ic.addEventListener('mousedown',  _start);
+  ic.addEventListener('mouseup',    _cancel);
+  ic.addEventListener('mouseleave', _cancel);
+  ic.addEventListener('mousemove',  _move);
+  ic.addEventListener('contextmenu',function(e){ e.preventDefault(); e.stopPropagation(); });
+
+  // Toque duplo rápido como alternativa ao toque longo
+  let _lastTap=0;
+  ic.addEventListener('touchend', function(e){
+    const now=Date.now();
+    if(now-_lastTap < 300){
+      e.preventDefault();
+      clearTimeout(_t);
+      ic.classList.remove('press');
+      abrirAdmin();
+    }
+    _lastTap=now;
+  }, {passive:false});
 }
 
 function abrirAdmin(){
