@@ -10,1223 +10,736 @@
 <meta name="theme-color" content="#1c2e22">
 <meta name="description" content="Coleta de campo — Fazenda São José">
 <title>Fazenda São José — Coleta</title>
-
-<!-- ── Ícone inline para iOS (apple-touch-icon) ── -->
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='36' fill='%231c2e22'/%3E%3Ccircle cx='96' cy='88' r='48' fill='%23b8943f'/%3E%3Ctext x='96' y='104' text-anchor='middle' font-size='52' font-family='serif'%3E🌿%3C/text%3E%3Ctext x='96' y='165' text-anchor='middle' font-size='22' font-weight='700' font-family='sans-serif' fill='%23b8943f'%3ESJ%3C/text%3E%3C/svg%3E">
-
-<!-- ── manifest.json embutido via data URI ── -->
-<script>
-(function(){
-  const manifest = {
-    name: "Fazenda São José — Coleta",
-    short_name: "Fazenda SJ",
-    description: "Coleta de campo e estoque",
-    start_url: "./",
-    display: "standalone",
-    background_color: "#1c2e22",
-    theme_color: "#1c2e22",
-    orientation: "portrait",
-    icons: [
-      {
-        src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='36' fill='%231c2e22'/%3E%3Ctext x='96' y='120' text-anchor='middle' font-size='100'%3E🌿%3C/text%3E%3C/svg%3E",
-        sizes: "192x192", type: "image/svg+xml", purpose: "any maskable"
-      },
-      {
-        src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='96' fill='%231c2e22'/%3E%3Ctext x='256' y='320' text-anchor='middle' font-size='280'%3E🌿%3C/text%3E%3C/svg%3E",
-        sizes: "512x512", type: "image/svg+xml", purpose: "any maskable"
-      }
-    ]
-  };
-  const blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
-  const url  = URL.createObjectURL(blob);
-  const link = document.createElement('link');
-  link.rel = 'manifest'; link.href = url;
-  document.head.appendChild(link);
-})();
-</script>
-
+<link rel="apple-touch-icon" href="https://urbanopos.github.io/fazenda/icon.svg">
+<link rel="icon" href="https://urbanopos.github.io/fazenda/icon.svg">
+<link rel="manifest" href="https://urbanopos.github.io/fazenda/manifest.json">
+</head>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+:root{--vd:#1c2e22;--vm:#2d4a38;--vc:#4a8c6f;--ac:#b8943f;--cr:#f5f0e8;--ce:#e8dfc8;--br:#fff;--tx:#1a1a1a;--mu:#888;--r:8px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%;background:var(--vd)}
+body{font-family:'DM Sans',sans-serif;background:var(--vd);min-height:100vh;color:var(--tx);padding-bottom:env(safe-area-inset-bottom)}
 
-  :root{
-    --verde-escuro:#1c2e22;
-    --verde-medio:#2d4a38;
-    --verde-claro:#4a8c6f;
-    --dourado:#b8943f;
-    --creme:#f5f0e8;
-    --creme-escuro:#e8dfc8;
-    --branco:#fff;
-    --tx:#1a1a1a;
-    --mu:#888;
-    --r:8px;
-  }
+/* ── BANNER INSTALAR (Android) ── */
+#banner-inst{display:none;position:fixed;bottom:0;left:0;right:0;z-index:9998;background:var(--vd);border-top:2px solid var(--ac);padding:14px 16px 20px;box-shadow:0 -4px 24px rgba(0,0,0,.5);animation:slideUp .3s ease}
+#banner-inst.vis{display:block}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.bi-titulo{font-family:'DM Serif Display',serif;font-size:16px;color:#fff;margin-bottom:3px}
+.bi-desc{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.55);margin-bottom:12px}
+.bi-btns{display:flex;gap:10px}
+.bi-ok{flex:1;padding:12px;border:none;border-radius:var(--r);background:var(--ac);color:var(--vd);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
+.bi-nao{padding:12px 16px;border:1px solid rgba(255,255,255,.2);border-radius:var(--r);background:none;color:rgba(255,255,255,.5);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer}
 
-  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html{height:100%;background:var(--verde-escuro)}
-  body{
-    font-family:'DM Sans',sans-serif;
-    background:var(--verde-escuro);
-    min-height:100vh;color:var(--tx);
-    padding-bottom:env(safe-area-inset-bottom);
-  }
+/* ── GUIA iOS ── */
+#guia-ios{display:none;position:fixed;inset:0;z-index:9997;background:rgba(0,0,0,.78);align-items:flex-end}
+#guia-ios.vis{display:flex}
+.gi-box{background:var(--vd);width:100%;border-radius:20px 20px 0 0;border-top:2px solid var(--ac);padding:24px 20px 36px}
+.gi-titulo{font-family:'DM Serif Display',serif;font-size:19px;color:#fff;text-align:center;margin-bottom:4px}
+.gi-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--ac);letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:20px}
+.gi-passo{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.gi-passo:last-of-type{border:none}
+.gi-num{width:32px;height:32px;border-radius:50%;background:var(--ac);color:var(--vd);font-family:'DM Mono',monospace;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gi-ico{font-size:22px;flex-shrink:0}
+.gi-txt{font-family:'DM Sans',sans-serif;font-size:14px;color:rgba(255,255,255,.82);line-height:1.4}
+.gi-txt strong{color:var(--ac)}
+.gi-fechar{width:100%;margin-top:18px;padding:13px;border:1px solid rgba(255,255,255,.18);border-radius:var(--r);background:none;color:rgba(255,255,255,.55);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer}
 
-  /* ── BANNER INSTALAÇÃO ── */
-  #banner-install{
-    display:none;
-    position:fixed;bottom:0;left:0;right:0;z-index:9999;
-    background:var(--verde-escuro);
-    border-top:2px solid var(--dourado);
-    padding:14px 16px 18px;
-    box-shadow:0 -4px 24px rgba(0,0,0,.4);
-    animation:slideUp .35s ease;
-  }
-  #banner-install.visivel{display:block}
-  @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-  .banner-titulo{
-    font-family:'DM Serif Display',serif;
-    font-size:16px;color:#fff;margin-bottom:4px;
-  }
-  .banner-desc{
-    font-family:'DM Mono',monospace;font-size:11px;
-    color:rgba(255,255,255,.6);letter-spacing:.5px;margin-bottom:12px;
-  }
-  .banner-btns{display:flex;gap:10px}
-  .btn-instalar{
-    flex:1;padding:12px;border:none;border-radius:var(--r);
-    background:var(--dourado);color:var(--verde-escuro);
-    font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;
-    cursor:pointer;transition:opacity .15s;
-  }
-  .btn-instalar:active{opacity:.8}
-  .btn-dispensar{
-    padding:12px 16px;border:1px solid rgba(255,255,255,.2);border-radius:var(--r);
-    background:none;color:rgba(255,255,255,.5);
-    font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;
-  }
+/* ── TELA BLOQUEIO ── */
+#tela-bloqueio{display:none;position:fixed;inset:0;z-index:99999;background:var(--vd);flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;text-align:center}
+#tela-bloqueio.vis{display:flex}
+.bl-ico{font-size:72px;margin-bottom:24px;filter:grayscale(1);opacity:.5}
+.bl-titulo{font-family:'DM Serif Display',serif;font-size:26px;color:#fff;margin-bottom:12px}
+.bl-msg{font-family:'DM Sans',sans-serif;font-size:15px;color:rgba(255,255,255,.5);line-height:1.6;max-width:280px;margin-bottom:36px}
+.bl-msg strong{color:rgba(255,255,255,.8)}
+.bl-wrap{width:100%;max-width:300px}
+.bl-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px;display:block}
+.bl-iw{position:relative}
+.bl-input{width:100%;padding:14px 48px 14px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);color:#fff;font-family:'DM Mono',monospace;font-size:16px;text-align:left;outline:none;transition:border-color .2s;letter-spacing:1px}
+.bl-input:focus{border-color:rgba(255,255,255,.35)}
+.bl-input::placeholder{color:rgba(255,255,255,.22);letter-spacing:0;font-size:14px}
+.bl-olho{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.4);font-size:20px;cursor:pointer;line-height:1;padding:4px}
+.bl-olho:active{color:rgba(255,255,255,.8)}
+.bl-btn{width:100%;margin-top:10px;padding:14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--r);color:rgba(255,255,255,.7);font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;cursor:pointer;transition:background .15s;letter-spacing:1px}
+.bl-btn:active{background:rgba(255,255,255,.2)}
+.bl-erro{font-family:'DM Mono',monospace;font-size:11px;color:#e08080;margin-top:8px;min-height:16px}
 
-  /* ── GUIA INSTALAÇÃO iOS ── */
-  #guia-ios{
-    display:none;position:fixed;inset:0;z-index:9998;
-    background:rgba(0,0,0,.75);align-items:flex-end;
-  }
-  #guia-ios.visivel{display:flex}
-  .guia-ios-box{
-    background:var(--verde-escuro);width:100%;
-    border-radius:20px 20px 0 0;border-top:2px solid var(--dourado);
-    padding:24px 20px 32px;
-  }
-  .guia-ios-titulo{
-    font-family:'DM Serif Display',serif;
-    font-size:18px;color:#fff;margin-bottom:6px;text-align:center;
-  }
-  .guia-ios-sub{
-    font-family:'DM Mono',monospace;font-size:10px;
-    color:var(--dourado);letter-spacing:2px;text-transform:uppercase;
-    text-align:center;margin-bottom:20px;
-  }
-  .guia-passo{
-    display:flex;align-items:center;gap:14px;
-    padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08);
-  }
-  .guia-passo:last-of-type{border:none}
-  .guia-num{
-    width:32px;height:32px;border-radius:50%;
-    background:var(--dourado);color:var(--verde-escuro);
-    font-family:'DM Mono',monospace;font-size:13px;font-weight:700;
-    display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  }
-  .guia-txt{
-    font-family:'DM Sans',sans-serif;font-size:14px;color:rgba(255,255,255,.85);
-    line-height:1.4;
-  }
-  .guia-txt strong{color:var(--dourado)}
-  .guia-icone{font-size:20px;flex-shrink:0}
-  .btn-fechar-guia{
-    width:100%;margin-top:20px;padding:13px;
-    border:1px solid rgba(255,255,255,.2);border-radius:var(--r);
-    background:none;color:rgba(255,255,255,.6);
-    font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;
-  }
+/* ── PAINEL ADMIN ── */
+#painel-admin{display:none;position:fixed;inset:0;z-index:9996;background:rgba(0,0,0,.82);align-items:center;justify-content:center}
+#painel-admin.vis{display:flex}
+.ad-box{background:var(--vd);width:92%;max-width:360px;border-radius:16px;border:2px solid var(--ac);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.ad-hd{background:rgba(184,148,63,.1);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(184,148,63,.2)}
+.ad-hd-t{font-family:'DM Serif Display',serif;font-size:17px;color:#fff}
+.ad-hd-s{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ac);margin-top:2px}
+.ad-x{background:none;border:none;color:rgba(255,255,255,.4);font-size:22px;cursor:pointer;line-height:1;padding:0}
+.ad-corpo{padding:20px 18px 24px;max-height:80vh;overflow-y:auto}
+.ad-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:8px;display:block}
+.ad-iw{position:relative;margin-bottom:14px}
+.ad-inp{width:100%;padding:13px 44px 13px 14px;border:2px solid rgba(255,255,255,.1);border-radius:var(--r);background:rgba(255,255,255,.07);color:#fff;font-family:'DM Mono',monospace;font-size:15px;outline:none;transition:border-color .2s;letter-spacing:1px}
+.ad-inp:focus{border-color:var(--ac)}
+.ad-inp::placeholder{color:rgba(255,255,255,.22);letter-spacing:0}
+.ad-olho{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.3);font-size:18px;cursor:pointer;line-height:1;padding:0}
+.ad-div{height:1px;background:rgba(255,255,255,.07);margin:16px 0}
+.ad-val{font-family:'DM Mono',monospace;font-size:13px;color:rgba(255,255,255,.45);background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.1);border-radius:6px;padding:10px 14px;display:flex;align-items:center}
+.ad-val span{color:var(--ac);font-weight:700}
+.ad-row{display:flex;gap:8px;margin-top:10px}
+.ad-ok{flex:1;padding:12px;border:none;border-radius:var(--r);background:var(--ac);color:var(--vd);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s}
+.ad-ok:active{opacity:.8}
+.ad-cl{padding:12px 14px;border:1px solid rgba(255,255,255,.12);border-radius:var(--r);background:none;color:rgba(255,255,255,.45);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer}
+.ad-st{font-family:'DM Mono',monospace;font-size:11px;text-align:center;margin-top:12px;min-height:16px;color:var(--ac)}
+.ad-st.er{color:#e08080}
 
-  /* ── TOPO ── */
-  .topo{
-    background:var(--verde-escuro);
-    padding:18px 20px 14px;
-    display:flex;align-items:center;gap:12px;
-    border-bottom:2px solid var(--dourado);
-    position:sticky;top:0;z-index:100;
-  }
-  .topo-icon{
-    width:42px;height:42px;border-radius:50%;
-    background:var(--dourado);
-    display:flex;align-items:center;justify-content:center;
-    font-size:20px;flex-shrink:0;
-  }
-  .topo-titulo{font-family:'DM Serif Display',serif;font-size:18px;color:#fff;line-height:1.1}
-  .topo-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--dourado);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
-  .topo-data{margin-left:auto;font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.5);text-align:right;line-height:1.5}
-  .btn-inst-topo{
-    background:rgba(184,148,63,.15);border:1px solid rgba(184,148,63,.4);
-    color:var(--dourado);border-radius:20px;padding:5px 12px;
-    font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.5px;
-    cursor:pointer;white-space:nowrap;flex-shrink:0;display:none;
-  }
-  .btn-inst-topo.visivel{display:block}
+/* ── TOPO ── */
+.topo{background:var(--vd);padding:16px 20px 12px;display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--ac);position:sticky;top:0;z-index:100}
+.topo-icon{width:44px;height:44px;border-radius:50%;background:var(--ac);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;cursor:pointer;transition:transform .15s,box-shadow .15s;user-select:none}
+.topo-icon.press{transform:scale(.88);box-shadow:0 0 0 5px rgba(184,148,63,.35)}
+.topo-t{font-family:'DM Serif Display',serif;font-size:18px;color:#fff;line-height:1.1}
+.topo-s{font-family:'DM Mono',monospace;font-size:10px;color:var(--ac);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+.topo-d{margin-left:auto;font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.45);text-align:right;line-height:1.5}
+.btn-inst{background:rgba(184,148,63,.14);border:1px solid rgba(184,148,63,.35);color:var(--ac);border-radius:20px;padding:5px 12px;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;white-space:nowrap;flex-shrink:0;display:none}
+.btn-inst.vis{display:block}
 
-  /* ── TELA DE BLOQUEIO ── */
-  #tela-bloqueio{
-    display:none;position:fixed;inset:0;z-index:99999;
-    background:var(--verde-escuro);
-    flex-direction:column;align-items:center;justify-content:center;
-    padding:40px 28px;text-align:center;
-  }
-  #tela-bloqueio.visivel{display:flex}
-  .bloqueio-icone{font-size:72px;margin-bottom:24px;filter:grayscale(1);opacity:.6}
-  .bloqueio-titulo{
-    font-family:'DM Serif Display',serif;font-size:26px;color:#fff;
-    margin-bottom:12px;line-height:1.2;
-  }
-  .bloqueio-msg{
-    font-family:'DM Sans',sans-serif;font-size:15px;
-    color:rgba(255,255,255,.55);line-height:1.6;max-width:280px;
-    margin-bottom:36px;
-  }
-  .bloqueio-msg strong{color:rgba(255,255,255,.8)}
-  .bloqueio-cod-wrap{
-    width:100%;max-width:300px;
-  }
-  .bloqueio-cod-label{
-    font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;
-    text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px;display:block;
-  }
-  .bloqueio-cod-input{
-    width:100%;padding:14px;
-    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
-    border-radius:var(--r);color:#fff;font-family:'DM Mono',monospace;
-    font-size:15px;letter-spacing:2px;text-align:center;
-    outline:none;transition:border-color .2s;
-  }
-  .bloqueio-cod-input:focus{border-color:rgba(255,255,255,.3)}
-  .bloqueio-cod-input::placeholder{color:rgba(255,255,255,.2);letter-spacing:0}
-  .bloqueio-btn{
-    width:100%;margin-top:10px;padding:13px;
-    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
-    border-radius:var(--r);color:rgba(255,255,255,.5);
-    font-family:'DM Mono',monospace;font-size:12px;
-    letter-spacing:1px;text-transform:uppercase;cursor:pointer;
-    transition:background .15s;
-  }
-  .bloqueio-btn:active{background:rgba(255,255,255,.14)}
-  .bloqueio-erro{
-    font-family:'DM Mono',monospace;font-size:11px;
-    color:#e08080;margin-top:8px;min-height:16px;
-  }
-  /* campo oculto de código no corpo principal */
-  .codigo-campo-wrap{
-    background:var(--branco);border-radius:var(--r);
-    border:2px solid var(--creme-escuro);padding:14px 16px;
-    margin-bottom:20px;
-  }
-  .codigo-campo-label{
-    font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;
-    text-transform:uppercase;color:var(--mu);margin-bottom:8px;display:block;
-  }
-  .codigo-campo-row{display:flex;gap:8px}
-  .codigo-campo-row input{flex:1;font-family:'DM Mono',monospace;font-size:14px;letter-spacing:1px}
-  .btn-codigo-ok{
-    padding:12px 16px;background:var(--verde-escuro);color:var(--dourado);
-    border:none;border-radius:var(--r);font-family:'DM Mono',monospace;
-    font-size:11px;cursor:pointer;white-space:nowrap;transition:opacity .15s;
-  }
-  .btn-codigo-ok:active{opacity:.7}
+/* ── CORPO ── */
+.corpo{background:var(--cr);min-height:calc(100vh - 74px);border-radius:20px 20px 0 0;padding:20px 16px 120px}
+.abas{display:flex;gap:8px;margin-bottom:20px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.abas::-webkit-scrollbar{display:none}
+.aba{flex-shrink:0;padding:9px 18px;border-radius:20px;font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:1px;text-transform:uppercase;border:2px solid var(--ce);background:var(--br);color:var(--mu);cursor:pointer;transition:all .2s}
+.aba.at{background:var(--vd);color:var(--ac);border-color:var(--vd)}
+.aba-p.at{background:#7f1d1d;border-color:#7f1d1d;color:#fca5a5}
+.aba-c.at{background:#3b5e2a;border-color:#3b5e2a;color:#a8d88a}
+.aba-e.at{background:#1e3a5f;border-color:#1e3a5f;color:#93c5fd}
+.secao{display:none}.secao.at{display:block}
+.sec-t{font-family:'DM Serif Display',serif;font-size:22px;color:var(--vd);margin-bottom:4px}
+.sec-d{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);margin-bottom:18px}
+.pgrid{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
 
-  /* ── PAINEL ADMIN ── */
-  #painel-admin{
-    display:none;position:fixed;inset:0;z-index:9997;
-    background:rgba(0,0,0,.82);align-items:center;justify-content:center;
-  }
-  #painel-admin.visivel{display:flex}
-  .admin-box{
-    background:var(--verde-escuro);width:92%;max-width:360px;
-    border-radius:16px;border:2px solid var(--dourado);
-    overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6);
-  }
-  .admin-hd{
-    background:rgba(184,148,63,.12);
-    padding:16px 18px;display:flex;align-items:center;
-    justify-content:space-between;border-bottom:1px solid rgba(184,148,63,.25);
-  }
-  .admin-hd-titulo{
-    font-family:'DM Serif Display',serif;font-size:17px;color:#fff;
-  }
-  .admin-hd-sub{
-    font-family:'DM Mono',monospace;font-size:9px;
-    letter-spacing:2px;text-transform:uppercase;color:var(--dourado);margin-top:2px;
-  }
-  .admin-fechar{
-    background:none;border:none;color:rgba(255,255,255,.4);
-    font-size:22px;cursor:pointer;line-height:1;padding:0;
-  }
-  .admin-fechar:hover{color:#fff}
-  .admin-corpo{padding:20px 18px 24px}
-  .admin-label{
-    font-family:'DM Mono',monospace;font-size:10px;
-    letter-spacing:1.5px;text-transform:uppercase;
-    color:rgba(255,255,255,.5);margin-bottom:8px;display:block;
-  }
-  .admin-input-wrap{position:relative;margin-bottom:14px}
-  .admin-input{
-    width:100%;padding:13px 44px 13px 14px;
-    border:2px solid rgba(255,255,255,.12);border-radius:var(--r);
-    background:rgba(255,255,255,.07);color:#fff;
-    font-family:'DM Mono',monospace;font-size:15px;
-    outline:none;transition:border-color .2s;letter-spacing:1px;
-  }
-  .admin-input:focus{border-color:var(--dourado)}
-  .admin-input::placeholder{color:rgba(255,255,255,.25);letter-spacing:0}
-  .admin-olho{
-    position:absolute;right:12px;top:50%;transform:translateY(-50%);
-    background:none;border:none;color:rgba(255,255,255,.35);
-    font-size:18px;cursor:pointer;line-height:1;padding:0;
-  }
-  .admin-div{height:1px;background:rgba(255,255,255,.08);margin:18px 0}
-  .admin-numero-wrap{position:relative}
-  .admin-numero-val{
-    font-family:'DM Mono',monospace;font-size:13px;
-    color:rgba(255,255,255,.5);letter-spacing:1px;
-    background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.12);
-    border-radius:6px;padding:10px 14px;min-height:42px;
-    display:flex;align-items:center;gap:8px;
-  }
-  .admin-numero-val span{color:var(--dourado);font-weight:700}
-  .admin-row{display:flex;gap:8px;margin-top:10px}
-  .btn-admin-salvar{
-    flex:1;padding:12px;border:none;border-radius:var(--r);
-    background:var(--dourado);color:var(--verde-escuro);
-    font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;
-    cursor:pointer;transition:opacity .15s;
-  }
-  .btn-admin-salvar:active{opacity:.8}
-  .btn-admin-cancelar{
-    padding:12px 16px;border:1px solid rgba(255,255,255,.15);border-radius:var(--r);
-    background:none;color:rgba(255,255,255,.5);
-    font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;
-  }
-  .admin-status{
-    font-family:'DM Mono',monospace;font-size:11px;
-    text-align:center;margin-top:12px;min-height:16px;
-    color:var(--dourado);letter-spacing:.5px;
-  }
-  .admin-status.erro{color:#e08080}
-  /* Toque longo no ícone — feedback visual */
-  .topo-icon{transition:transform .15s,box-shadow .15s}
-  .topo-icon.pressionando{transform:scale(.9);box-shadow:0 0 0 4px rgba(184,148,63,.4)}</style>
+/* ── CARDS ── */
+.pc{background:var(--br);border-radius:var(--r);border:2px solid var(--ce);overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.pc.at{border-color:var(--vc);box-shadow:0 2px 14px rgba(74,140,111,.15)}
+.pc.concluido{border-color:var(--vc);background:#f0faf4}
+.pc-p.at{border-color:#e08080;box-shadow:0 2px 12px rgba(160,48,48,.12)}
+.pc-p.concluido{background:#fff5f5;border-color:#e08080}
+.pc-c.at{border-color:#7ab85a;box-shadow:0 2px 12px rgba(74,140,74,.12)}
+.pc-c.concluido{background:#f0faf0;border-color:#7ab85a}
+.pc-e.at{border-color:#5a8ab8;box-shadow:0 2px 12px rgba(30,58,95,.14)}
+.pc-e.concluido{background:#f0f4fa;border-color:#5a8ab8}
 
-  /* ── CORPO ── */
-  .corpo{
-    background:var(--creme);min-height:calc(100vh - 76px);
-    border-radius:20px 20px 0 0;padding:20px 16px 120px;
-  }
-  .abas::-webkit-scrollbar{display:none}
-  .aba{
-    flex-shrink:0;padding:9px 18px;border-radius:20px;
-    font-family:'DM Mono',monospace;font-size:11px;font-weight:500;
-    letter-spacing:1px;text-transform:uppercase;
-    border:2px solid var(--creme-escuro);background:var(--branco);color:var(--mu);
-    cursor:pointer;transition:all .2s;
-  }
-  .aba.ativa{background:var(--verde-escuro);color:var(--dourado);border-color:var(--verde-escuro)}
-  .aba-perda.ativa{background:#7f1d1d;border-color:#7f1d1d;color:#fca5a5}
-  .aba-campo.ativa{background:#3b5e2a;border-color:#3b5e2a;color:#a8d88a}
-  .aba-estoque.ativa{background:#1e3a5f;border-color:#1e3a5f;color:#93c5fd}
+.ph{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none}
+.pe{font-size:26px;flex-shrink:0}
+.pn{font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;color:var(--tx);flex:1}
+.pb{font-family:'DM Mono',monospace;font-size:10px;padding:3px 9px;border-radius:10px;background:var(--cr);color:var(--mu);transition:all .2s;flex-shrink:0}
+.pc.at .pb{background:var(--vc);color:#fff}
+.pc-p.at .pb{background:#a03030;color:#fff}
+.pc-c.at .pb{background:#5a8a3a;color:#fff}
+.pc-e.at .pb{background:#1e3a5f;color:#93c5fd}
+.pc.concluido .pb{background:#27ae60;color:#fff}
+.pc-p.concluido .pb{background:#27ae60;color:#fff}
+.pc-c.concluido .pb{background:#27ae60;color:#fff}
+.pc-e.concluido .pb{background:#27ae60;color:#fff}
 
-  /* ── ABAS ── */
-  .abas{display:flex;gap:8px;margin-bottom:20px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
-  .secao.ativa{display:block}
-  .secao-titulo{font-family:'DM Serif Display',serif;font-size:22px;color:var(--verde-escuro);margin-bottom:4px}
-  .secao-desc{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);margin-bottom:18px}
+.pbd{display:none;padding:0 16px 16px;border-top:1px solid var(--ce)}
+.pc.at .pbd{display:block}
 
-  /* ── CARDS ── */
-  .produtos-grid{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
-  .prod-card{background:var(--branco);border-radius:var(--r);border:2px solid var(--creme-escuro);overflow:hidden;transition:border-color .2s,box-shadow .2s}
-  .prod-card.ativo{border-color:var(--verde-claro);box-shadow:0 2px 12px rgba(74,140,111,.15)}
-  .prod-card-perda.ativo{border-color:#e08080;box-shadow:0 2px 12px rgba(160,48,48,.12)}
-  .prod-card-campo.ativo{border-color:#7ab85a;box-shadow:0 2px 12px rgba(74,140,74,.12)}
-  .prod-card-estoque.ativo{border-color:#5a8ab8;box-shadow:0 2px 12px rgba(30,58,95,.14)}
-  .prod-header{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none}
-  .prod-emoji{font-size:26px;flex-shrink:0}
-  .prod-nome{font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;color:var(--tx);flex:1}
-  .prod-badge{font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;border-radius:10px;background:var(--creme);color:var(--mu);transition:all .2s;flex-shrink:0}
-  .prod-card.ativo .prod-badge{background:var(--verde-claro);color:#fff}
-  .prod-card-perda.ativo .prod-badge{background:#a03030;color:#fff}
-  .prod-card-campo.ativo .prod-badge{background:#5a8a3a;color:#fff}
-  .prod-card-estoque.ativo .prod-badge{background:#1e3a5f;color:#93c5fd}
-  .prod-body{display:none;padding:0 16px 16px;border-top:1px solid var(--creme-escuro)}
-  .prod-card.ativo .prod-body{display:block}
+/* ── CAMPOS ── */
+.cg{margin-top:14px}
+.cl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);margin-bottom:6px;display:block}
+input[type=number],input[type=text],input[type=date],textarea{width:100%;padding:12px 14px;border:2px solid var(--ce);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:16px;background:var(--cr);color:var(--tx);outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none}
+input:focus,textarea:focus{border-color:var(--vc);background:var(--br)}
+textarea{resize:none;height:72px;font-size:14px}
 
-  /* ── CAMPOS ── */
-  .campo-grupo{margin-top:14px}
-  .campo-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);margin-bottom:6px;display:block}
-  input[type=number],input[type=text],input[type=date],select,textarea{
-    width:100%;padding:12px 14px;border:2px solid var(--creme-escuro);border-radius:var(--r);
-    font-family:'DM Sans',sans-serif;font-size:16px;background:var(--creme);color:var(--tx);
-    outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none;
-  }
-  input:focus,select:focus,textarea:focus{border-color:var(--verde-claro);background:var(--branco)}
-  textarea{resize:none;height:72px;font-size:14px}
+/* Stepper */
+.step{display:flex;align-items:center;border:2px solid var(--ce);border-radius:var(--r);background:var(--cr);overflow:hidden}
+.sb{width:52px;height:52px;flex-shrink:0;background:none;border:none;font-size:26px;font-weight:300;color:var(--vc);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.sb:active{background:var(--ce)}
+.si{flex:1;text-align:center;border:none!important;background:transparent!important;font-size:22px!important;font-weight:700!important;padding:10px 0!important;color:var(--tx)}
 
-  /* ── STEPPER ── */
-  .stepper{display:flex;align-items:center;border:2px solid var(--creme-escuro);border-radius:var(--r);background:var(--creme);overflow:hidden}
-  .stepper-btn{width:48px;height:48px;flex-shrink:0;background:none;border:none;font-size:24px;font-weight:300;color:var(--verde-claro);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
-  .stepper-btn:active{background:var(--creme-escuro)}
-  .stepper-input{flex:1;text-align:center;border:none!important;background:transparent!important;font-size:20px!important;font-weight:600!important;padding:10px 0!important;color:var(--tx)}
-  .stepper-input:focus{background:transparent!important;border:none!important}
+/* ── BOTÕES DE AÇÃO DO CARD ── */
+.card-acoes{display:flex;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--ce)}
+.btn-concluir{flex:2;padding:12px;border:none;border-radius:var(--r);background:#27ae60;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity .15s}
+.btn-concluir:active{opacity:.8}
+.btn-alterar{flex:1;padding:12px;border:2px solid var(--ce);border-radius:var(--r);background:var(--br);color:var(--vm);font-family:'DM Mono',monospace;font-size:11px;font-weight:600;cursor:pointer;transition:border-color .15s;text-align:center}
+.btn-alterar:active{border-color:var(--vm)}
+.btn-apagar{width:48px;height:48px;padding:0;border:2px solid #fde8e8;border-radius:var(--r);background:#fde8e8;color:#a03030;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0}
+.btn-apagar:active{background:#fcc}
 
-  /* ── BOTÕES AÇÃO ── */
-  .btn-wpp{
-    width:100%;padding:16px;background:linear-gradient(135deg,#25d366,#128c7e);
-    color:#fff;border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;
-    font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;
-    cursor:pointer;transition:opacity .2s,transform .1s;box-shadow:0 4px 16px rgba(37,211,102,.35);margin-top:8px;
-  }
-  .btn-wpp:active{opacity:.85;transform:scale(.98)}
-  .btn-limpar{
-    width:100%;padding:13px;background:var(--branco);color:var(--mu);
-    border:2px solid var(--creme-escuro);border-radius:var(--r);
-    font-family:'DM Mono',monospace;font-size:12px;letter-spacing:1px;text-transform:uppercase;
-    cursor:pointer;margin-top:10px;transition:border-color .2s,color .2s;
-  }
-  .btn-limpar:active{border-color:var(--mu)}
+/* Resumo concluído (aparece no cabeçalho do card) */
+.resumo-concluido{display:none;padding:8px 16px 12px;background:rgba(39,174,96,.06);border-top:1px solid rgba(39,174,96,.15)}
+.pc.concluido .resumo-concluido{display:block}
+.rc-linha{font-family:'DM Mono',monospace;font-size:12px;color:var(--vm);margin-bottom:3px}
+.rc-linha strong{color:var(--tx)}
 
-  /* ── PREVIEW ── */
-  .preview-box{background:var(--verde-escuro);border-radius:var(--r);padding:14px 16px;margin-top:16px;display:none}
-  .preview-box.visivel{display:block}
-  .preview-titulo{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dourado);margin-bottom:10px}
-  .preview-texto{font-family:'DM Mono',monospace;font-size:12px;color:#cde8d5;white-space:pre-wrap;line-height:1.7}
-
-  /* ── TOAST ── */
-  .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--verde-escuro);color:#fff;font-family:'DM Mono',monospace;font-size:12px;padding:12px 20px;border-radius:20px;border:1px solid var(--dourado);opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999;white-space:nowrap}
-  .toast.visivel{opacity:1}
-
-  /* ── DATA / MISC ── */
-  .campo-data-hoje{display:flex;gap:8px;margin-top:6px}
-  .btn-hoje{padding:8px 14px;border-radius:6px;background:var(--verde-medio);color:var(--dourado);border:none;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;white-space:nowrap;transition:opacity .15s}
-  .btn-hoje:active{opacity:.7}
-  .contador-itens{font-family:'DM Mono',monospace;font-size:11px;color:var(--mu);text-align:center;margin-bottom:16px;letter-spacing:1px}
-  .contador-itens strong{color:var(--verde-claro)}
-  .wpp-config{background:var(--branco);border-radius:var(--r);border:2px solid var(--creme-escuro);padding:14px 16px;margin-bottom:20px}
-  .wpp-config-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);margin-bottom:8px;display:block}
-  .wpp-row{display:flex;gap:8px;align-items:center}
-  .wpp-row input{flex:1}
-  .btn-salvar-wpp{padding:12px 16px;background:var(--verde-escuro);color:var(--dourado);border:none;border-radius:var(--r);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;white-space:nowrap;transition:opacity .15s}
-  .btn-salvar-wpp:active{opacity:.7}
-  .div{height:1px;background:var(--creme-escuro);margin:20px 0}
+/* ── BOTÕES PRINCIPAIS ── */
+.btn-wpp{width:100%;padding:16px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;transition:opacity .2s,transform .1s;box-shadow:0 4px 16px rgba(37,211,102,.3);margin-top:8px}
+.btn-wpp:active{opacity:.85;transform:scale(.98)}
+.btn-limpar{width:100%;padding:13px;background:var(--br);color:var(--mu);border:2px solid var(--ce);border-radius:var(--r);font-family:'DM Mono',monospace;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-top:10px;transition:border-color .2s}
+.btn-limpar:active{border-color:var(--mu)}
+.preview-box{background:var(--vd);border-radius:var(--r);padding:14px 16px;margin-top:16px;display:none}
+.preview-box.vis{display:block}
+.preview-t{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ac);margin-bottom:10px}
+.preview-tx{font-family:'DM Mono',monospace;font-size:12px;color:#cde8d5;white-space:pre-wrap;line-height:1.7}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--vd);color:#fff;font-family:'DM Mono',monospace;font-size:12px;padding:12px 20px;border-radius:20px;border:1px solid var(--ac);opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999;white-space:nowrap}
+.toast.vis{opacity:1}
+.cdata{display:flex;gap:8px;margin-top:6px}
+.btn-hj{padding:8px 14px;border-radius:6px;background:var(--vm);color:var(--ac);border:none;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;white-space:nowrap;transition:opacity .15s}
+.btn-hj:active{opacity:.7}
+.cont{font-family:'DM Mono',monospace;font-size:11px;color:var(--mu);text-align:center;margin-bottom:16px;letter-spacing:1px}
+.cont strong{color:var(--vc)}
+.div{height:1px;background:var(--ce);margin:20px 0}
 </style>
 </head>
 <body>
 
-<!-- ══ BANNER ANDROID — aparece automaticamente ══ -->
-<div id="banner-install">
-  <div class="banner-titulo">🌿 Instalar na tela inicial</div>
-  <div class="banner-desc">Acesse o app rapidamente sem abrir o navegador</div>
-  <div class="banner-btns">
-    <button class="btn-instalar" id="btn-instalar-banner">⬇ Instalar agora</button>
-    <button class="btn-dispensar" onclick="dispensarBanner()">Agora não</button>
+<!-- BANNER ANDROID -->
+<div id="banner-inst">
+  <div class="bi-titulo">🌿 Adicionar à tela inicial</div>
+  <div class="bi-desc">Acesse como um app — sem abrir o navegador</div>
+  <div class="bi-btns">
+    <button class="bi-ok" id="btn-bi-ok">⬇ Instalar agora</button>
+    <button class="bi-nao" onclick="dispensarInst()">Agora não</button>
   </div>
 </div>
 
-<!-- ══ GUIA iOS — abre ao tocar no botão do topo ══ -->
+<!-- GUIA iOS -->
 <div id="guia-ios" onclick="fecharGuiaIos()">
-  <div class="guia-ios-box" onclick="event.stopPropagation()">
-    <div class="guia-ios-titulo">Adicionar à tela inicial</div>
-    <div class="guia-ios-sub">iPhone / iPad — 3 passos simples</div>
-    <div class="guia-passo">
-      <div class="guia-num">1</div>
-      <span class="guia-icone">⬆️</span>
-      <div class="guia-txt">Toque no botão <strong>Compartilhar</strong> na barra inferior do Safari</div>
+  <div class="gi-box" onclick="event.stopPropagation()">
+    <div class="gi-titulo">Adicionar à tela inicial</div>
+    <div class="gi-sub">iPhone / iPad — 3 passos</div>
+    <div class="gi-passo">
+      <div class="gi-num">1</div><span class="gi-ico">⬆️</span>
+      <div class="gi-txt">Toque em <strong>Compartilhar</strong> na barra inferior do Safari</div>
     </div>
-    <div class="guia-passo">
-      <div class="guia-num">2</div>
-      <span class="guia-icone">➕</span>
-      <div class="guia-txt">Role a lista e toque em <strong>Adicionar à Tela de Início</strong></div>
+    <div class="gi-passo">
+      <div class="gi-num">2</div><span class="gi-ico">➕</span>
+      <div class="gi-txt">Role e toque em <strong>Adicionar à Tela de Início</strong></div>
     </div>
-    <div class="guia-passo">
-      <div class="guia-num">3</div>
-      <span class="guia-icone">✅</span>
-      <div class="guia-txt">Confirme tocando em <strong>Adicionar</strong> — o ícone aparece na sua tela</div>
+    <div class="gi-passo">
+      <div class="gi-num">3</div><span class="gi-ico">✅</span>
+      <div class="gi-txt">Confirme tocando em <strong>Adicionar</strong></div>
     </div>
-    <button class="btn-fechar-guia" onclick="fecharGuiaIos()">Entendi</button>
+    <button class="gi-fechar" onclick="fecharGuiaIos()">Entendi</button>
   </div>
 </div>
 
-<!-- ══ TELA DE BLOQUEIO ══ -->
+<!-- TELA BLOQUEIO -->
 <div id="tela-bloqueio">
-  <div class="bloqueio-icone">🔒</div>
-  <div class="bloqueio-titulo">Aplicativo desativado</div>
-  <div class="bloqueio-msg" id="bloqueio-msg-texto">
-    Este aplicativo foi <strong>desativado</strong> pelo administrador.<br><br>
-    Entre em contato com a Fazenda São José para mais informações.
-  </div>
-  <div class="bloqueio-cod-wrap">
-    <span class="bloqueio-cod-label">Código de reativação (admin)</span>
-    <input class="bloqueio-cod-input" type="password" id="bloqueio-cod-input"
-      placeholder="Código secreto..." autocomplete="off"
-      onkeydown="if(event.key==='Enter') tentarDesbloquear()">
-    <button class="bloqueio-btn" onclick="tentarDesbloquear()">Verificar código</button>
-    <div class="bloqueio-erro" id="bloqueio-erro"></div>
+  <div class="bl-ico">🔒</div>
+  <div class="bl-titulo">Aplicativo desativado</div>
+  <div class="bl-msg" id="bl-msg">Este aplicativo foi <strong>desativado</strong> pelo administrador.<br><br>Entre em contato com a Fazenda São José.</div>
+  <div class="bl-wrap">
+    <span class="bl-label">Código de reativação</span>
+    <div class="bl-iw">
+      <input class="bl-input" type="text" id="bl-inp" placeholder="Digite o código..." autocomplete="off" onkeydown="if(event.key==='Enter') tentarDesbloquear()">
+      <button class="bl-olho" onclick="toggleBlVis()" id="bl-olho">👁</button>
+    </div>
+    <button class="bl-btn" onclick="tentarDesbloquear()">✓ Verificar código</button>
+    <div class="bl-erro" id="bl-erro"></div>
   </div>
 </div>
 
-<!-- ══ PAINEL ADMINISTRADOR (oculto — toque longo no ícone) ══ -->
+<!-- PAINEL ADMIN -->
 <div id="painel-admin">
-  <div class="admin-box">
-    <div class="admin-hd">
-      <div>
-        <div class="admin-hd-titulo">⚙️ Administrador</div>
-        <div class="admin-hd-sub">Configurações do sistema</div>
-      </div>
-      <button class="admin-fechar" onclick="fecharAdmin()">×</button>
+  <div class="ad-box">
+    <div class="ad-hd">
+      <div><div class="ad-hd-t">⚙️ Administrador</div><div class="ad-hd-s">Configurações</div></div>
+      <button class="ad-x" onclick="fecharAdmin()">×</button>
     </div>
-    <div class="admin-corpo">
-      <span class="admin-label">🔑 Senha de acesso</span>
-      <div class="admin-input-wrap">
-        <input class="admin-input" type="password" id="admin-senha"
-          placeholder="Digite a senha..." autocomplete="off"
-          onkeydown="if(event.key==='Enter') verificarSenhaAdmin()">
-        <button class="admin-olho" onclick="toggleSenhaVis()" id="admin-olho-btn">👁</button>
+    <div class="ad-corpo">
+      <span class="ad-lbl">🔑 Senha</span>
+      <div class="ad-iw">
+        <input class="ad-inp" type="password" id="ad-senha" placeholder="Digite a senha..." autocomplete="off" onkeydown="if(event.key==='Enter') verificarAdmin()">
+        <button class="ad-olho" onclick="toggleVis()" id="ad-olho">👁</button>
       </div>
-      <div class="admin-row" style="margin-top:0">
-        <button class="btn-admin-salvar" onclick="verificarSenhaAdmin()">Entrar</button>
-        <button class="btn-admin-cancelar" onclick="fecharAdmin()">Cancelar</button>
+      <div class="ad-row" style="margin-top:0">
+        <button class="ad-ok" onclick="verificarAdmin()">Entrar</button>
+        <button class="ad-cl" onclick="fecharAdmin()">Cancelar</button>
       </div>
-      <div class="admin-status" id="admin-status"></div>
-
-      <!-- Configurações — só visíveis após autenticar -->
-      <div id="admin-config" style="display:none">
-        <div class="admin-div"></div>
-        <span class="admin-label">📱 Número WhatsApp destino</span>
-        <div class="admin-numero-val" id="admin-numero-exibido">
-          <span id="admin-numero-span">Não configurado</span>
+      <div class="ad-st" id="ad-st"></div>
+      <div id="ad-cfg" style="display:none">
+        <div class="ad-div"></div>
+        <span class="ad-lbl">📱 Número WhatsApp</span>
+        <div class="ad-val"><span id="ad-num-sp">Não configurado</span></div>
+        <div style="margin-top:12px"><span class="ad-lbl">Novo número (ex: 5581999999999)</span>
+          <div class="ad-iw" style="margin-bottom:0"><input class="ad-inp" type="tel" id="ad-num-novo" placeholder="5581999999999" autocomplete="off"></div>
         </div>
-        <div style="margin-top:12px">
-          <span class="admin-label">Novo número (com DDI · ex: 5581999999999)</span>
-          <div class="admin-input-wrap" style="margin-bottom:0">
-            <input class="admin-input" type="tel" id="admin-wpp-novo"
-              placeholder="5581999999999" autocomplete="off">
-          </div>
+        <div class="ad-row">
+          <button class="ad-ok" onclick="salvarNum()">💾 Salvar número</button>
+          <button class="ad-cl" onclick="restNum()">↩ Restaurar</button>
         </div>
-        <div class="admin-row">
-          <button class="btn-admin-salvar" onclick="salvarNumeroAdmin()">💾 Salvar número</button>
-          <button class="btn-admin-cancelar" onclick="restaurarNumeroEmbutido()" title="Remover override e voltar ao número embutido no arquivo">↩ Restaurar</button>
-        </div>
-        <div class="admin-div"></div>
-        <span class="admin-label">🔑 Alterar senha de administrador</span>
-        <div class="admin-input-wrap">
-          <input class="admin-input" type="password" id="admin-senha-nova"
-            placeholder="Nova senha..." autocomplete="new-password">
-        </div>
-        <div class="admin-row">
-          <button class="btn-admin-salvar" onclick="salvarSenhaAdmin()" style="background:#2d4a38;color:#b8943f">Salvar senha</button>
-        </div>
-        <div class="admin-div"></div>
-        <span class="admin-label">🚫 Bloqueio de acesso</span>
-        <div style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.4);margin-bottom:10px;line-height:1.6">
-          Gere um código e envie ao coletor pelo WhatsApp.<br>
-          Quando ele colar o código no app, o acesso é bloqueado.<br>
-          O código de bloqueio atual é exibido abaixo.
-        </div>
-        <div class="admin-numero-val" id="admin-blk-exibido" style="margin-bottom:10px">
-          <span id="admin-blk-span" style="font-family:'DM Mono',monospace;letter-spacing:2px">—</span>
-        </div>
-        <div class="admin-row">
-          <button class="btn-admin-salvar" onclick="gerarCodigoBloqueio()" style="background:#7f1d1d;color:#fca5a5">🔒 Gerar código de bloqueio</button>
-        </div>
-        <div class="admin-row" style="margin-top:8px">
-          <button class="btn-admin-salvar" onclick="desbloquearAdmin()" style="background:#2d4a38;color:#a8d88a">🔓 Desbloquear este dispositivo</button>
-        </div>
-        <div class="admin-status" id="admin-status2"></div>
+        <div class="ad-div"></div>
+        <span class="ad-lbl">🔑 Alterar senha</span>
+        <div class="ad-iw"><input class="ad-inp" type="password" id="ad-senha-nova" placeholder="Nova senha..." autocomplete="new-password"></div>
+        <div class="ad-row"><button class="ad-ok" onclick="salvarSenha()" style="background:#2d4a38;color:var(--ac)">Salvar senha</button></div>
+        <div class="ad-div"></div>
+        <div class="ad-row"><button class="ad-ok" onclick="desbloquearAdmin()" style="background:#2d4a38;color:#a8d88a">🔓 Desbloquear dispositivo</button></div>
+        <div class="ad-st" id="ad-st2"></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══ TOPO ══ -->
+<!-- TOPO -->
 <div class="topo">
   <div class="topo-icon" id="topo-icon">🌿</div>
   <div>
-    <div class="topo-titulo">Fazenda São José</div>
-    <div class="topo-sub">Coleta de Campo</div>
+    <div class="topo-t">Fazenda São José</div>
+    <div class="topo-s">Coleta de Campo</div>
   </div>
-  <button class="btn-inst-topo" id="btn-inst-topo" onclick="abrirGuiaInstall()">⬇ Instalar</button>
-  <div class="topo-data" id="relogio"></div>
+  <button class="btn-inst" id="btn-inst" onclick="abrirInst()">⬇ Instalar</button>
+  <div class="topo-d" id="relogio"></div>
 </div>
 
-<!-- ══ CORPO ══ -->
+<!-- CORPO -->
 <div class="corpo">
-
-  <!-- Campo de código de sistema — aparência neutra, sem explicação -->
-  <div class="codigo-campo-wrap">
-    <span class="codigo-campo-label">🔄 Código de atualização do sistema</span>
-    <div class="codigo-campo-row">
-      <input type="text" id="codigo-sistema" placeholder="Cole aqui o código recebido..."
-        autocomplete="off" autocorrect="off" spellcheck="false">
-      <button class="btn-codigo-ok" onclick="processarCodigo()">Aplicar</button>
-    </div>
-  </div>
-
-  <div class="campo-grupo" style="margin-bottom:20px">
-    <span class="campo-label">📅 Data da coleta</span>
-    <div class="campo-data-hoje">
+  <div class="cg" style="margin-bottom:20px">
+    <span class="cl">📅 Data da coleta</span>
+    <div class="cdata">
       <input type="date" id="data-global" style="flex:1">
-      <button class="btn-hoje" onclick="setHoje()">Hoje</button>
+      <button class="btn-hj" onclick="setHoje()">Hoje</button>
     </div>
   </div>
-
   <div class="abas">
-    <button class="aba ativa"       onclick="trocarAba('aviario')"  id="aba-aviario">🐔 Aviário</button>
-    <button class="aba aba-perda"   onclick="trocarAba('perda')"    id="aba-perda">⚠️ Perda</button>
-    <button class="aba aba-campo"   onclick="trocarAba('campo')"    id="aba-campo">🌴 Campo</button>
-    <button class="aba aba-estoque" onclick="trocarAba('estoque')"  id="aba-estoque">📦 Estoque</button>
+    <button class="aba at"  onclick="trocarAba('aviario')" id="aba-aviario">🐔 Aviário</button>
+    <button class="aba aba-p" onclick="trocarAba('perda')"   id="aba-perda">⚠️ Perda</button>
+    <button class="aba aba-c" onclick="trocarAba('campo')"   id="aba-campo">🌴 Campo</button>
+    <button class="aba aba-e" onclick="trocarAba('estoque')" id="aba-estoque">📦 Estoque</button>
   </div>
-
-  <div class="secao ativa" id="sec-aviario">
-    <div class="secao-titulo">Aviário</div>
-    <div class="secao-desc">Produção e movimentação</div>
-    <div class="produtos-grid" id="grid-aviario"></div>
-  </div>
-
-  <div class="secao" id="sec-perda">
-    <div class="secao-titulo" style="color:#7f1d1d">Perda / Baixa</div>
-    <div class="secao-desc">Registre mortalidade ou descarte</div>
-    <div class="produtos-grid" id="grid-perda"></div>
-  </div>
-
-  <div class="secao" id="sec-campo">
-    <div class="secao-titulo" style="color:#3b5e2a">Campo</div>
-    <div class="secao-desc">Colheita e produção rural</div>
-    <div class="produtos-grid" id="grid-campo"></div>
-  </div>
-
-  <div class="secao" id="sec-estoque">
-    <div class="secao-titulo" style="color:#1e3a5f">Estoque</div>
-    <div class="secao-desc">Entrada de insumos e rações</div>
-    <div class="produtos-grid" id="grid-estoque"></div>
-  </div>
-
+  <div class="secao at" id="sec-aviario"><div class="sec-t">Aviário</div><div class="sec-d">Produção e movimentação</div><div class="pgrid" id="grid-aviario"></div></div>
+  <div class="secao" id="sec-perda"><div class="sec-t" style="color:#7f1d1d">Perda / Baixa</div><div class="sec-d">Mortalidade ou descarte</div><div class="pgrid" id="grid-perda"></div></div>
+  <div class="secao" id="sec-campo"><div class="sec-t" style="color:#3b5e2a">Campo</div><div class="sec-d">Colheita e produção rural</div><div class="pgrid" id="grid-campo"></div></div>
+  <div class="secao" id="sec-estoque"><div class="sec-t" style="color:#1e3a5f">Estoque</div><div class="sec-d">Entrada de insumos e rações</div><div class="pgrid" id="grid-estoque"></div></div>
   <div class="div"></div>
-  <div class="contador-itens" id="contador">Nenhum item preenchido</div>
-
-  <div class="preview-box" id="preview-box">
-    <div class="preview-titulo">📋 Prévia da mensagem</div>
-    <div class="preview-texto" id="preview-texto"></div>
-  </div>
-
-  <button class="btn-wpp" onclick="enviarWhatsapp()">
-    <span style="font-size:22px">💬</span>
-    Enviar pelo WhatsApp
-  </button>
+  <div class="cont" id="contador">Nenhum item preenchido</div>
+  <div class="preview-box" id="preview-box"><div class="preview-t">📋 Prévia da mensagem</div><div class="preview-tx" id="preview-tx"></div></div>
+  <button class="btn-wpp" onclick="enviarWhatsapp()"><span style="font-size:22px">💬</span> Enviar pelo WhatsApp</button>
   <button class="btn-limpar" onclick="limparTudo()">↺ Limpar tudo</button>
-
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
-// ════════════════════════════════════════════════
-//  PWA — Service Worker + Install Prompt
-// ════════════════════════════════════════════════
-const _SW_CODE = `
-self.addEventListener('install', e => self.skipWaiting());
-self.addEventListener('activate', e => clients.claim());
-self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.open('fsj-v1').then(cache =>
-      cache.match(e.request).then(cached => {
-        const fresh = fetch(e.request).then(res => {
-          if(res && res.status === 200) cache.put(e.request, res.clone());
-          return res;
-        }).catch(()=>cached);
-        return cached || fresh;
-      })
-    )
-  );
-});
-`;
+// ── CONFIG ──────────────────────────────────────
+const WPP_DESTINO   = '';   // preencha com o número antes de enviar
+const GITHUB_STATUS = 'https://urbanopos.github.io/fazenda/status.json';
+const SK            = 'fsj_admin_senha';
+const SP            = 'fazenda2024';   // senha padrão
+const BK            = 'fsj_bloqueado';
+const MK            = 'fsj_blk_msg';
+// ────────────────────────────────────────────────
 
-if('serviceWorker' in navigator){
-  const blob = new Blob([_SW_CODE], {type:'application/javascript'});
-  const swUrl = URL.createObjectURL(blob);
-  navigator.serviceWorker.register(swUrl).catch(()=>{});
-}
-
-// ── Captura o evento beforeinstallprompt (Android/Chrome) ──
-let _installPrompt = null;
-const _isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
-const _isInStandalone = window.matchMedia('(display-mode: standalone)').matches
-                     || window.navigator.standalone === true;
-
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  _installPrompt = e;
-  // Mostra o banner somente se não estiver já instalado e não dispensou antes
-  if(!_isInStandalone && !sessionStorage.getItem('banner_dispensado')){
-    document.getElementById('banner-install').classList.add('visivel');
-  }
-  document.getElementById('btn-inst-topo').classList.add('visivel');
-});
-
-document.getElementById('btn-instalar-banner').addEventListener('click', async () => {
-  if(!_installPrompt) return;
-  _installPrompt.prompt();
-  const { outcome } = await _installPrompt.userChoice;
-  _installPrompt = null;
-  document.getElementById('banner-install').classList.remove('visivel');
-  if(outcome === 'accepted') _toast('App instalado! ✓ Procure o ícone na sua tela.');
-});
-
-function dispensarBanner(){
-  document.getElementById('banner-install').classList.remove('visivel');
-  sessionStorage.setItem('banner_dispensado','1');
-}
-
-function abrirGuiaInstall(){
-  if(_installPrompt){
-    _installPrompt.prompt();
-  } else if(_isIos){
-    document.getElementById('guia-ios').classList.add('visivel');
-  } else {
-    _toast('Use o menu do navegador → "Adicionar à tela inicial"');
-  }
-}
-
-function fecharGuiaIos(){
-  document.getElementById('guia-ios').classList.remove('visivel');
-}
-
-// Mostra botão no topo para iOS (que não dispara beforeinstallprompt)
-if(_isIos && !_isInStandalone){
-  document.getElementById('btn-inst-topo').classList.add('visivel');
-}
-
-// ════════════════════════════════════════════════
-//  DADOS
-// ════════════════════════════════════════════════
-
-// ─── CONFIGURAÇÃO DO ADMINISTRADOR ────────────────────────────
-// Número WhatsApp de destino (com DDI, sem espaços ou símbolos)
-// Ex: '5581999999999'  →  55 = Brasil, 81 = DDD, 9 dígitos
-const WPP_DESTINO = '';   // ← preencha antes de enviar aos coletores
-// ──────────────────────────────────────────────────────────────
 const SETORES = {
-  aviario: {
-    label:'Aviário', cor:'ativo',
-    produtos:[
-      {id:'ovo',       nome:'Ovos de Capoeira', emoji:'🥚', unid:'unid',  passo:1},
-      {id:'esterco',   nome:'Esterco',           emoji:'🌱', unid:'sacos', passo:1},
-      {id:'galinha',   nome:'Galinha',            emoji:'🐓', unid:'unid',  passo:1},
-      {id:'frango',    nome:'Frango',             emoji:'🍗', unid:'unid',  passo:1},
-      {id:'pinto',     nome:'Pinto',              emoji:'🐣', unid:'unid',  passo:1},
-      {id:'pintainha', nome:'Pintainha',          emoji:'🐤', unid:'unid',  passo:1},
-    ]
-  },
-  perda: {
-    label:'Perda', cor:'prod-card-perda',
-    produtos:[
-      {id:'ovo',       nome:'Ovos de Capoeira', emoji:'🥚', unid:'unid',  passo:1},
-      {id:'esterco',   nome:'Esterco',           emoji:'🌱', unid:'sacos', passo:1},
-      {id:'galinha',   nome:'Galinha',            emoji:'🐓', unid:'unid',  passo:1},
-      {id:'frango',    nome:'Frango',             emoji:'🍗', unid:'unid',  passo:1},
-      {id:'pinto',     nome:'Pinto',              emoji:'🐣', unid:'unid',  passo:1},
-      {id:'pintainha', nome:'Pintainha',          emoji:'🐤', unid:'unid',  passo:1},
-    ]
-  },
-  campo: {
-    label:'Campo', cor:'prod-card-campo',
-    produtos:[
-      {id:'coco',    nome:'Côco Seco', emoji:'🥥', unid:'unid', passo:1},
-      {id:'manga',   nome:'Manga',     emoji:'🥭', unid:'unid', passo:1},
-      {id:'abacate', nome:'Abacate',   emoji:'🥑', unid:'unid', passo:1},
-      {id:'banana',  nome:'Banana',    emoji:'🍌', unid:'cac.', passo:1},
-      {id:'pitomba', nome:'Pitomba',   emoji:'🍒', unid:'kg',   passo:.5},
-    ]
-  },
-  estoque: {
-    label:'Estoque', cor:'prod-card-estoque', temFornecedor:true,
-    produtos:[
-      {id:'irca-pos', nome:'Postura',       emoji:'🔵', unid:'sc 40kg', passo:1},
-      {id:'irca-ini', nome:'Inicial',       emoji:'🟢', unid:'sc 40kg', passo:1},
-      {id:'irca-pre', nome:'Pré-Inicial',   emoji:'🟡', unid:'sc 40kg', passo:1},
-      {id:'irca-cre', nome:'Crescimento',   emoji:'🟠', unid:'sc 40kg', passo:1},
-      {id:'irca-eng', nome:'Engorda',       emoji:'🔴', unid:'sc 40kg', passo:1},
-      {id:'milho',    nome:'Milho',         emoji:'🌽', unid:'sc 40kg', passo:1},
-      {id:'farelo',   nome:'Farelo de Trigo',emoji:'🌾',unid:'sc 40kg', passo:1},
-    ]
-  }
+  aviario:{label:'Aviário',cl:'',produtos:[
+    {id:'ovo',nome:'Ovos de Capoeira',emoji:'🥚',unid:'unid',passo:1},
+    {id:'esterco',nome:'Esterco',emoji:'🌱',unid:'sacos',passo:1},
+    {id:'galinha',nome:'Galinha',emoji:'🐓',unid:'unid',passo:1},
+    {id:'frango',nome:'Frango',emoji:'🍗',unid:'unid',passo:1},
+    {id:'pinto',nome:'Pinto',emoji:'🐣',unid:'unid',passo:1},
+    {id:'pintainha',nome:'Pintainha',emoji:'🐤',unid:'unid',passo:1},
+  ]},
+  perda:{label:'Perda',cl:'pc-p',produtos:[
+    {id:'ovo',nome:'Ovos de Capoeira',emoji:'🥚',unid:'unid',passo:1},
+    {id:'esterco',nome:'Esterco',emoji:'🌱',unid:'sacos',passo:1},
+    {id:'galinha',nome:'Galinha',emoji:'🐓',unid:'unid',passo:1},
+    {id:'frango',nome:'Frango',emoji:'🍗',unid:'unid',passo:1},
+    {id:'pinto',nome:'Pinto',emoji:'🐣',unid:'unid',passo:1},
+    {id:'pintainha',nome:'Pintainha',emoji:'🐤',unid:'unid',passo:1},
+  ]},
+  campo:{label:'Campo',cl:'pc-c',produtos:[
+    {id:'coco',nome:'Côco Seco',emoji:'🥥',unid:'unid',passo:1},
+    {id:'manga',nome:'Manga',emoji:'🥭',unid:'unid',passo:1},
+    {id:'abacate',nome:'Abacate',emoji:'🥑',unid:'unid',passo:1},
+    {id:'banana',nome:'Banana',emoji:'🍌',unid:'cac.',passo:1},
+    {id:'pitomba',nome:'Pitomba',emoji:'🍒',unid:'kg',passo:.5},
+  ]},
+  estoque:{label:'Estoque',cl:'pc-e',forn:true,produtos:[
+    {id:'irca-pos',nome:'Postura',emoji:'🔵',unid:'sc 40kg',passo:1},
+    {id:'irca-ini',nome:'Inicial',emoji:'🟢',unid:'sc 40kg',passo:1},
+    {id:'irca-pre',nome:'Pré-Inicial',emoji:'🟡',unid:'sc 40kg',passo:1},
+    {id:'irca-cre',nome:'Crescimento',emoji:'🟠',unid:'sc 40kg',passo:1},
+    {id:'irca-eng',nome:'Engorda',emoji:'🔴',unid:'sc 40kg',passo:1},
+    {id:'milho',nome:'Milho',emoji:'🌽',unid:'sc 40kg',passo:1},
+    {id:'farelo',nome:'Farelo de Trigo',emoji:'🌾',unid:'sc 40kg',passo:1},
+  ]}
 };
 
-let _setor = 'aviario';
+// ── INSTALL PROMPT ──────────────────────────────
+let _ip=null;
+const _ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+const _sa=window.matchMedia('(display-mode:standalone)').matches||navigator.standalone===true;
 
-// ════════════════════════════════════════════════
-//  INIT
-// ════════════════════════════════════════════════
-
-// URL do status no GitHub Pages
-const GITHUB_STATUS_URL = 'https://urbanopos.github.io/fazenda/status.json';
-
-function _iniciarApp(){
-  setHoje();
-  _carregarNumero();
-  _renderRelogio();
-  setInterval(_renderRelogio, 30000);
-  Object.entries(SETORES).forEach(([setor, cfg])=>{
-    const grid = document.getElementById('grid-'+setor);
-    if(grid) grid.innerHTML = cfg.produtos.map(p=>_htmlCard(setor,p,cfg.temFornecedor||false)).join('');
-  });
-}
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  // 1º — verifica bloqueio local (instantâneo)
-  if(_verificarBloqueio()) return;
-
-  // 2º — consulta o GitHub para verificar status remoto
-  fetch(GITHUB_STATUS_URL + '?t=' + Date.now())
-    .then(r => r.json())
-    .then(data => {
-      if(data.bloqueado === true){
-        // Grava bloqueio local e trava
-        localStorage.setItem(BLK_KEY, '1');
-        if(data.mensagem) localStorage.setItem(BLK_MSG_KEY, data.mensagem);
-        _verificarBloqueio();
-      } else {
-        // Status ok — libera eventual bloqueio remoto anterior
-        // (só remove se não foi bloqueio manual por código)
-        if(!localStorage.getItem(BLK_COD_KEY)){
-          localStorage.removeItem(BLK_KEY);
-        }
-        _iniciarApp();
-      }
-    })
-    .catch(()=>{
-      // Sem internet — usa estado local (não bloqueia por falta de conexão)
-      _iniciarApp();
-    });
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();_ip=e;
+  if(!_sa&&!sessionStorage.getItem('inst_disp')){
+    document.getElementById('banner-inst').classList.add('vis');
+  }
+  document.getElementById('btn-inst').classList.add('vis');
 });
 
-function _renderRelogio(){
-  const d = new Date();
-  document.getElementById('relogio').innerHTML =
+document.getElementById('btn-bi-ok').addEventListener('click',async()=>{
+  if(!_ip) return;
+  _ip.prompt();
+  const{outcome}=await _ip.userChoice;
+  _ip=null;
+  document.getElementById('banner-inst').classList.remove('vis');
+  if(outcome==='accepted') _toast('App instalado! ✓ Procure o ícone na sua tela.');
+});
+
+function dispensarInst(){
+  document.getElementById('banner-inst').classList.remove('vis');
+  sessionStorage.setItem('inst_disp','1');
+}
+
+function abrirInst(){
+  if(_ip){_ip.prompt();}
+  else if(_ios){document.getElementById('guia-ios').classList.add('vis');}
+  else{_toast('Menu do navegador → "Adicionar à tela inicial"');}
+}
+
+function fecharGuiaIos(){document.getElementById('guia-ios').classList.remove('vis');}
+
+if(_ios&&!_sa) document.getElementById('btn-inst').classList.add('vis');
+
+// ── INIT ──────────────────────────────────────
+function _iniciar(){
+  setHoje();
+  _relogio();
+  setInterval(_relogio,30000);
+  Object.entries(SETORES).forEach(([s,cfg])=>{
+    const g=document.getElementById('grid-'+s);
+    if(g) g.innerHTML=cfg.produtos.map(p=>_card(s,p,cfg.cl,cfg.forn||false)).join('');
+  });
+  _initLP();
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  if(localStorage.getItem(BK)==='1'){
+    const msg=localStorage.getItem(MK)||'Este aplicativo foi desativado pelo administrador.';
+    document.getElementById('bl-msg').innerHTML=msg.replace(/\n/g,'<br>');
+    document.getElementById('tela-bloqueio').classList.add('vis');
+    return;
+  }
+  fetch(GITHUB_STATUS+'?t='+Date.now())
+    .then(r=>r.json())
+    .then(d=>{
+      if(d.bloqueado===true){
+        localStorage.setItem(BK,'1');
+        if(d.mensagem) localStorage.setItem(MK,d.mensagem);
+        document.getElementById('bl-msg').innerHTML=(d.mensagem||'Aplicativo desativado.').replace(/\n/g,'<br>');
+        document.getElementById('tela-bloqueio').classList.add('vis');
+      } else {
+        localStorage.removeItem(BK);
+        _iniciar();
+      }
+    })
+    .catch(()=>_iniciar());
+});
+
+function _relogio(){
+  const d=new Date();
+  document.getElementById('relogio').innerHTML=
     d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'})+'<br>'+
     d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
 }
 
-function _htmlCard(setor, p, temFornecedor){
-  const k = setor+'_'+p.id;
-  const fHtml = temFornecedor ? `
-    <div class="campo-grupo">
-      <span class="campo-label">🏭 Fornecedor</span>
-      <input type="text" id="for-${k}" placeholder="Nome do fornecedor..."
-        oninput="atualizarBadge('${k}','${p.unid}')">
-    </div>` : '';
+// ── CARD HTML ──────────────────────────────────
+function _card(setor,p,cl,forn){
+  const k=setor+'_'+p.id;
+  const fH=forn?`<div class="cg"><span class="cl">🏭 Fornecedor</span><input type="text" id="for-${k}" placeholder="Nome do fornecedor..." oninput=""></div>`:'';
   return `
-<div class="prod-card" id="card-${k}">
-  <div class="prod-header" onclick="toggleCard('${k}')">
-    <span class="prod-emoji">${p.emoji}</span>
-    <span class="prod-nome">${p.nome}</span>
-    <span class="prod-badge" id="badge-${k}">+ Registrar</span>
+<div class="pc${cl?' '+cl:''}" id="card-${k}">
+  <div class="ph" onclick="toggleCard('${k}','${cl}')">
+    <span class="pe">${p.emoji}</span>
+    <span class="pn">${p.nome}</span>
+    <span class="pb" id="badge-${k}">+ Registrar</span>
   </div>
-  <div class="prod-body" id="body-${k}">
-    <div class="campo-grupo">
-      <span class="campo-label">Quantidade (${p.unid})</span>
-      <div class="stepper">
-        <button class="stepper-btn" onclick="stepQtd('${k}','${p.passo}','-1')">−</button>
-        <input class="stepper-input" type="number" id="qtd-${k}"
-          inputmode="decimal" min="0" step="${p.passo}" value="0"
-          oninput="atualizarBadge('${k}','${p.unid}')">
-        <button class="stepper-btn" onclick="stepQtd('${k}','${p.passo}','1')">+</button>
+  <div class="resumo-concluido" id="res-${k}"></div>
+  <div class="pbd" id="body-${k}">
+    <div class="cg">
+      <span class="cl">Quantidade (${p.unid})</span>
+      <div class="step">
+        <button class="sb" onclick="step('${k}','${p.passo}','-1')">−</button>
+        <input class="si" type="number" id="qtd-${k}" inputmode="decimal" min="0" step="${p.passo}" value="0">
+        <button class="sb" onclick="step('${k}','${p.passo}','1')">+</button>
       </div>
     </div>
-    ${fHtml}
-    <div class="campo-grupo">
-      <span class="campo-label">Observação (opcional)</span>
-      <textarea id="obs-${k}" placeholder="Ex: lote A, qualidade boa..."
-        oninput="atualizarBadge('${k}','${p.unid}')"></textarea>
+    ${fH}
+    <div class="cg">
+      <span class="cl">Observação (opcional)</span>
+      <textarea id="obs-${k}" placeholder="Ex: lote A, qualidade boa..."></textarea>
+    </div>
+    <div class="card-acoes">
+      <button class="btn-concluir" onclick="concluirCard('${k}','${p.unid}','${p.nome}')">✓ Concluir</button>
+      <button class="btn-alterar"  onclick="alterarCard('${k}','${cl}')">✏ Alterar</button>
+      <button class="btn-apagar"   onclick="apagarCard('${k}','${cl}')">🗑</button>
     </div>
   </div>
 </div>`;
 }
 
-// ════════════════════════════════════════════════
-//  INTERAÇÃO
-// ════════════════════════════════════════════════
-function toggleCard(k){
-  const card  = document.getElementById('card-'+k);
-  const aberto = card.classList.contains('ativo');
+// ── AÇÕES DOS CARDS ──────────────────────────
+function toggleCard(k,cl){
+  const card=document.getElementById('card-'+k);
+  if(card.classList.contains('concluido')) return; // não abre se concluído
+  const aberto=card.classList.contains('at');
   if(aberto){
-    card.classList.remove('ativo','prod-card-perda','prod-card-campo','prod-card-estoque');
+    card.classList.remove('at');
   } else {
-    const setor = k.split('_')[0];
-    card.classList.add('ativo');
-    if(setor==='perda')   card.classList.add('prod-card-perda');
-    if(setor==='campo')   card.classList.add('prod-card-campo');
-    if(setor==='estoque') card.classList.add('prod-card-estoque');
-    setTimeout(()=>{ const i=document.getElementById('qtd-'+k); if(i){i.focus();i.select();} },100);
+    card.classList.add('at');
+    if(cl) card.classList.add(cl);
+    setTimeout(()=>{const i=document.getElementById('qtd-'+k);if(i){i.focus();i.select();}},100);
   }
+}
+
+function step(k,passo,dir){
+  const inp=document.getElementById('qtd-'+k);
+  const p=parseFloat(passo)||1;
+  inp.value=Math.max(0,parseFloat(((parseFloat(inp.value)||0)+p*parseInt(dir)).toFixed(2)));
+}
+
+function concluirCard(k,unid,nome){
+  const qtd=parseFloat(document.getElementById('qtd-'+k)?.value)||0;
+  if(qtd<=0){_toast('Informe a quantidade antes de concluir.');return;}
+  const card=document.getElementById('card-'+k);
+  const badge=document.getElementById('badge-'+k);
+  const res=document.getElementById('res-'+k);
+  const forn=(document.getElementById('for-'+k)?.value||'').trim();
+  const obs=(document.getElementById('obs-'+k)?.value||'').trim();
+  // Fecha o corpo e marca como concluído
+  card.classList.remove('at');
+  card.classList.add('concluido');
+  badge.textContent='✓ '+qtd+' '+unid;
+  // Mostra resumo
+  let html=`<div class="rc-linha">Qtde: <strong>${qtd} ${unid}</strong></div>`;
+  if(forn) html+=`<div class="rc-linha">Fornecedor: <strong>${forn}</strong></div>`;
+  if(obs)  html+=`<div class="rc-linha">Obs: <strong>${obs}</strong></div>`;
+  res.innerHTML=html;
   _atualizarContador();
+  _atualizarPreview();
+  _toast(nome+' registrado ✓');
 }
 
-function stepQtd(k, passo, dir){
-  const inp = document.getElementById('qtd-'+k);
-  const p = parseFloat(passo)||1;
-  inp.value = Math.max(0, parseFloat(((parseFloat(inp.value)||0) + p*parseInt(dir)).toFixed(2)));
-  const setor = k.split('_')[0];
-  atualizarBadge(k, SETORES[setor]?.produtos.find(x=>setor+'_'+x.id===k)?.unid||'unid');
+function alterarCard(k,cl){
+  const card=document.getElementById('card-'+k);
+  card.classList.remove('concluido');
+  card.classList.add('at');
+  if(cl) card.classList.add(cl);
+  document.getElementById('res-'+k).innerHTML='';
+  setTimeout(()=>{const i=document.getElementById('qtd-'+k);if(i){i.focus();i.select();}},100);
 }
 
-function atualizarBadge(k, unid){
-  const qtd = parseFloat(document.getElementById('qtd-'+k)?.value)||0;
-  const badge = document.getElementById('badge-'+k);
-  if(badge) badge.textContent = qtd>0 ? qtd+' '+unid : '+ Registrar';
+function apagarCard(k,cl){
+  const card=document.getElementById('card-'+k);
+  const qtdEl=document.getElementById('qtd-'+k);
+  const obsEl=document.getElementById('obs-'+k);
+  const forEl=document.getElementById('for-'+k);
+  const badge=document.getElementById('badge-'+k);
+  const res=document.getElementById('res-'+k);
+  if(qtdEl) qtdEl.value=0;
+  if(obsEl) obsEl.value='';
+  if(forEl) forEl.value='';
+  card.classList.remove('at','concluido');
+  if(cl) card.classList.remove(cl);
+  badge.textContent='+ Registrar';
+  res.innerHTML='';
   _atualizarContador();
   _atualizarPreview();
 }
 
-function trocarAba(setor){
-  _setor = setor;
-  document.querySelectorAll('.secao').forEach(s=>s.classList.remove('ativa'));
-  document.querySelectorAll('.aba').forEach(a=>a.classList.remove('ativa'));
-  document.getElementById('sec-'+setor)?.classList.add('ativa');
-  document.getElementById('aba-'+setor)?.classList.add('ativa');
+function trocarAba(s){
+  document.querySelectorAll('.secao').forEach(x=>x.classList.remove('at'));
+  document.querySelectorAll('.aba').forEach(x=>x.classList.remove('at'));
+  document.getElementById('sec-'+s)?.classList.add('at');
+  document.getElementById('aba-'+s)?.classList.add('at');
 }
 
 function setHoje(){
-  document.getElementById('data-global').value = new Date().toISOString().split('T')[0];
+  document.getElementById('data-global').value=new Date().toISOString().split('T')[0];
   _atualizarPreview();
 }
 
-// ════════════════════════════════════════════════
-//  COLETA / MENSAGEM
-// ════════════════════════════════════════════════
+// ── COLETA / MENSAGEM ──────────────────────────
 function _coletarItens(){
-  const itens = [];
+  const itens=[];
   Object.entries(SETORES).forEach(([setor,cfg])=>{
     cfg.produtos.forEach(p=>{
-      const k = setor+'_'+p.id;
-      const qtd = parseFloat(document.getElementById('qtd-'+k)?.value)||0;
-      if(qtd>0){
-        const obs = (document.getElementById('obs-'+k)?.value||'').trim();
-        const fornEl = document.getElementById('for-'+k);
-        const fornecedor = fornEl ? (fornEl.value||'').trim() : '';
-        itens.push({setor:cfg.label, nome:p.nome, emoji:p.emoji, unid:p.unid, qtd, obs, fornecedor});
-      }
+      const k=setor+'_'+p.id;
+      const card=document.getElementById('card-'+k);
+      if(!card||!card.classList.contains('concluido')) return;
+      const qtd=parseFloat(document.getElementById('qtd-'+k)?.value)||0;
+      if(qtd<=0) return;
+      const obs=(document.getElementById('obs-'+k)?.value||'').trim();
+      const forn=(document.getElementById('for-'+k)?.value||'').trim();
+      itens.push({setor:cfg.label,nome:p.nome,emoji:p.emoji,unid:p.unid,qtd,obs,forn});
     });
   });
   return itens;
 }
 
 function _atualizarContador(){
-  const n = _coletarItens().length;
-  document.getElementById('contador').innerHTML =
-    n===0 ? 'Nenhum item preenchido' : '<strong>'+n+'</strong> item(ns) pronto(s) para enviar';
+  const n=_coletarItens().length;
+  document.getElementById('contador').innerHTML=n===0?'Nenhum item preenchido':'<strong>'+n+'</strong> item(ns) concluído(s)';
   _atualizarPreview();
 }
 
 function _atualizarPreview(){
-  const msg = _montarMensagem();
-  const box = document.getElementById('preview-box');
-  if(!msg){ box.classList.remove('visivel'); return; }
-  box.classList.add('visivel');
-  document.getElementById('preview-texto').textContent = msg;
+  const msg=_msg();
+  const box=document.getElementById('preview-box');
+  if(!msg){box.classList.remove('vis');return;}
+  box.classList.add('vis');
+  document.getElementById('preview-tx').textContent=msg;
 }
 
-function _montarMensagem(){
-  const itens = _coletarItens();
+function _msg(){
+  const itens=_coletarItens();
   if(!itens.length) return '';
-  const data = document.getElementById('data-global').value;
-  const dataFmt = data
-    ? new Date(data+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'})
-    : '—';
-  let msg = '🌿 *FAZENDA SÃO JOSÉ*\n📅 '+dataFmt+'\n─────────────────';
-  const porSetor = {};
-  itens.forEach(it=>{ if(!porSetor[it.setor]) porSetor[it.setor]=[]; porSetor[it.setor].push(it); });
-  Object.entries(porSetor).forEach(([setor,lista])=>{
-    const ico = setor==='Aviário'?'🐔':setor==='Perda'?'⚠️':setor==='Estoque'?'📦':'🌴';
-    msg += '\n\n'+ico+' *'+setor.toUpperCase()+'*\n';
-    lista.forEach(it=>{
-      msg += it.emoji+' '+it.nome+': *'+it.qtd+' '+it.unid+'*';
-      if(it.fornecedor) msg += '\n   🏭 '+it.fornecedor;
-      if(it.obs)        msg += '\n   📝 '+it.obs;
-      msg += '\n';
+  const data=document.getElementById('data-global').value;
+  const df=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}):'—';
+  let m='🌿 *FAZENDA SÃO JOSÉ*\n📅 '+df+'\n─────────────────';
+  const ps={};
+  itens.forEach(it=>{if(!ps[it.setor]) ps[it.setor]=[];ps[it.setor].push(it);});
+  Object.entries(ps).forEach(([s,l])=>{
+    const ic=s==='Aviário'?'🐔':s==='Perda'?'⚠️':s==='Estoque'?'📦':'🌴';
+    m+='\n\n'+ic+' *'+s.toUpperCase()+'*\n';
+    l.forEach(it=>{
+      m+=it.emoji+' '+it.nome+': *'+it.qtd+' '+it.unid+'*';
+      if(it.forn) m+='\n   🏭 '+it.forn;
+      if(it.obs)  m+='\n   📝 '+it.obs;
+      m+='\n';
     });
   });
-  msg += '─────────────────\n📲 App Fazenda SJ';
-  return msg;
+  m+='─────────────────\n📲 App Fazenda SJ';
+  return m;
 }
 
-// ════════════════════════════════════════════════
-//  BLOQUEIO DE ACESSO
-// ════════════════════════════════════════════════
-const BLK_KEY       = 'fsj_bloqueado';
-const BLK_COD_KEY   = 'fsj_blk_cod';
-const BLK_MSG_KEY   = 'fsj_blk_msg';
-const BLK_MSG_PAD   = 'Este aplicativo foi desativado pelo administrador.';
-
-function _verificarBloqueio(){
-  if(localStorage.getItem(BLK_KEY) === '1'){
-    const msg = localStorage.getItem(BLK_MSG_KEY) || BLK_MSG_PAD;
-    document.getElementById('bloqueio-msg-texto').innerHTML =
-      msg.replace(/\n/g,'<br>');
-    document.getElementById('tela-bloqueio').classList.add('visivel');
-    return true;
-  }
-  return false;
-}
-
-// Coletor cola o código recebido neste campo
-function processarCodigo(){
-  const cod = (document.getElementById('codigo-sistema').value||'').trim();
-  if(!cod){ _toast('Cole o código recebido antes de aplicar.'); return; }
-
-  const codSalvo = localStorage.getItem(BLK_COD_KEY)||'';
-
-  if(codSalvo && cod === codSalvo){
-    // Código de bloqueio correto — bloqueia o app
-    localStorage.setItem(BLK_KEY, '1');
-    const msg = localStorage.getItem(BLK_MSG_KEY) || BLK_MSG_PAD;
-    document.getElementById('bloqueio-msg-texto').innerHTML = msg.replace(/\n/g,'<br>');
-    document.getElementById('tela-bloqueio').classList.add('visivel');
-    document.getElementById('codigo-sistema').value = '';
-    return;
-  }
-
-  // Código não reconhecido — mensagem neutra
-  _toast('Código inválido ou já utilizado.');
-  document.getElementById('codigo-sistema').value = '';
-}
-
-// Admin gera um código de bloqueio no painel
-function gerarCodigoBloqueio(){
-  // Gera um código aleatório de 12 caracteres alfanuméricos
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let cod = 'FSJ-';
-  for(let i=0;i<4;i++) cod += chars[Math.floor(Math.random()*chars.length)];
-  cod += '-';
-  for(let i=0;i<4;i++) cod += chars[Math.floor(Math.random()*chars.length)];
-
-  localStorage.setItem(BLK_COD_KEY, cod);
-
-  // Exibe o código no painel
-  document.getElementById('admin-blk-span').textContent = cod;
-
-  const s2 = document.getElementById('admin-status2');
-  s2.className = 'admin-status';
-  s2.innerHTML = '✓ Código gerado. Envie ao coletor pelo WhatsApp:<br>'
-    + '<strong style="font-size:16px;letter-spacing:3px;color:#b8943f">'+cod+'</strong><br>'
-    + '<span style="font-size:10px;opacity:.6">Quando colado no app, bloqueia o acesso imediatamente.</span>';
-
-  // Abre o WhatsApp com o código pronto para enviar
-  setTimeout(()=>{
-    const numero = _getNumero();
-    const msgBlk = '🔄 *Código de atualização do sistema*\n\nCole este código no app da Fazenda São José:\n\n*'+cod+'*\n\n_(Aplicar o código é obrigatório para continuar usando o app)_';
-    const url = (numero ? 'https://wa.me/'+numero : 'https://wa.me')
-              + '?text='+encodeURIComponent(msgBlk);
-    window.open(url,'_blank');
-  }, 800);
-}
-
-// Admin desbloqueia o dispositivo que está na frente dele
-function desbloquearAdmin(){
-  localStorage.removeItem(BLK_KEY);
-  localStorage.removeItem(BLK_COD_KEY);
-  document.getElementById('tela-bloqueio').classList.remove('visivel');
-  document.getElementById('admin-blk-span').textContent = '—';
-  const s2 = document.getElementById('admin-status2');
-  s2.textContent = '✓ Dispositivo desbloqueado.';
-  s2.className   = 'admin-status';
-}
-
-// Campo de código na tela de bloqueio (para o admin desbloquear com senha)
-function tentarDesbloquear(){
-  const v    = document.getElementById('bloqueio-cod-input').value;
-  const salva = localStorage.getItem(ADMIN_SENHA_KEY) || ADMIN_SENHA_PAD;
-  const erro  = document.getElementById('bloqueio-erro');
-  if(v === salva){
-    localStorage.removeItem(BLK_KEY);
-    localStorage.removeItem(BLK_COD_KEY);
-    document.getElementById('tela-bloqueio').classList.remove('visivel');
-    document.getElementById('bloqueio-cod-input').value = '';
-    erro.textContent = '';
-  } else {
-    erro.textContent = 'Código inválido.';
-    document.getElementById('bloqueio-cod-input').value = '';
-    document.getElementById('bloqueio-cod-input').focus();
-  }
-}
-
-// ════════════════════════════════════════════════
-//  WHATSAPP
-// ════════════════════════════════════════════════
-function _getNumero(){
-  // Prioridade: 1) variável embutida  2) override salvo pelo admin
-  const embutido  = (WPP_DESTINO||'').replace(/\D/g,'');
-  const override  = (localStorage.getItem('wpp_numero')||'').replace(/\D/g,'');
-  return override || embutido;
+function _getNum(){
+  return (localStorage.getItem('wpp_numero')||'').replace(/\D/g,'')||
+         (WPP_DESTINO||'').replace(/\D/g,'');
 }
 
 function enviarWhatsapp(){
-  const itens = _coletarItens();
-  if(!itens.length){ _toast('Preencha ao menos um produto.'); return; }
-  const numero = _getNumero();
-  if(!numero){ _toast('Número não configurado. Contacte o administrador.'); return; }
-  const url = 'https://wa.me/'+numero+'?text='+encodeURIComponent(_montarMensagem());
-  window.open(url,'_blank');
+  const itens=_coletarItens();
+  if(!itens.length){_toast('Conclua ao menos um item antes de enviar.');return;}
+  const n=_getNum();
+  if(!n){_toast('Número não configurado. Contacte o administrador.');return;}
+  window.open('https://wa.me/'+n+'?text='+encodeURIComponent(_msg()),'_blank');
 }
-
-// ════════════════════════════════════════════════
-//  PAINEL ADMINISTRADOR
-//  Acesso: toque longo (≥ 1,5 s) no ícone do topo
-// ════════════════════════════════════════════════
-const ADMIN_SENHA_KEY = 'fsj_admin_senha';
-const ADMIN_SENHA_PAD = 'fazenda2024'; // senha padrão de fábrica
-
-(function _initLongPress(){
-  const icon = document.getElementById('topo-icon');
-  if(!icon) return;
-  let _t = null;
-  const _start = e => {
-    e.preventDefault();
-    icon.classList.add('pressionando');
-    _t = setTimeout(()=>{ icon.classList.remove('pressionando'); abrirAdmin(); }, 1500);
-  };
-  const _cancel = ()=>{ clearTimeout(_t); icon.classList.remove('pressionando'); };
-  icon.addEventListener('touchstart', _start,  {passive:false});
-  icon.addEventListener('touchend',   _cancel);
-  icon.addEventListener('touchmove',  _cancel);
-  icon.addEventListener('mousedown',  _start);
-  icon.addEventListener('mouseup',    _cancel);
-  icon.addEventListener('mouseleave', _cancel);
-  // Impede abertura acidental do menu de contexto
-  icon.addEventListener('contextmenu', e=>e.preventDefault());
-})();
-
-function abrirAdmin(){
-  document.getElementById('painel-admin').classList.add('visivel');
-  document.getElementById('admin-config').style.display = 'none';
-  document.getElementById('admin-senha').value = '';
-  document.getElementById('admin-senha-nova').value = '';
-  if(document.getElementById('admin-wpp-novo'))
-    document.getElementById('admin-wpp-novo').value = '';
-  document.getElementById('admin-status').textContent = '';
-  setTimeout(()=>document.getElementById('admin-senha').focus(), 200);
-}
-
-function fecharAdmin(){
-  document.getElementById('painel-admin').classList.remove('visivel');
-  document.getElementById('admin-config').style.display = 'none';
-  document.getElementById('admin-senha').value = '';
-}
-
-function toggleSenhaVis(){
-  const inp = document.getElementById('admin-senha');
-  inp.type = inp.type === 'password' ? 'text' : 'password';
-  document.getElementById('admin-olho-btn').textContent = inp.type === 'password' ? '👁' : '🙈';
-}
-
-function verificarSenhaAdmin(){
-  const digitada = document.getElementById('admin-senha').value;
-  const salva    = localStorage.getItem(ADMIN_SENHA_KEY) || ADMIN_SENHA_PAD;
-  const status   = document.getElementById('admin-status');
-  if(digitada === salva){
-    status.textContent = '✓ Acesso autorizado';
-    status.className   = 'admin-status';
-    document.getElementById('admin-config').style.display = 'block';
-    // Exibe número em uso (override tem prioridade sobre embutido)
-    const embutido = (WPP_DESTINO||'').replace(/\D/g,'');
-    const override = (localStorage.getItem('wpp_numero')||'').replace(/\D/g,'');
-    const atual    = override || embutido;
-    const span     = document.getElementById('admin-numero-span');
-    if(atual){
-      const origem = override ? ' (override)' : ' (embutido)';
-      span.textContent = '••• '+atual.slice(-4)+origem;
-    } else {
-      span.textContent = 'Não configurado';
-    }
-    document.getElementById('admin-wpp-novo').value = '';
-    // Exibe código de bloqueio atual se existir
-    const codAtual = localStorage.getItem(BLK_COD_KEY)||'';
-    document.getElementById('admin-blk-span').textContent = codAtual || '—';
-    const bloqAtivo = localStorage.getItem(BLK_KEY)==='1';
-    if(bloqAtivo){
-      const s2=document.getElementById('admin-status2');
-      s2.textContent='⚠️ Este dispositivo está bloqueado';
-      s2.className='admin-status erro';
-    }
-  } else {
-    status.textContent = '✕ Senha incorreta';
-    status.className   = 'admin-status erro';
-    document.getElementById('admin-senha').value = '';
-    document.getElementById('admin-senha').focus();
-    document.getElementById('admin-config').style.display = 'none';
-  }
-}
-
-function salvarNumeroAdmin(){
-  const v  = (document.getElementById('admin-wpp-novo').value||'').replace(/\D/g,'');
-  const s2 = document.getElementById('admin-status2');
-  if(!v || v.length < 10){ s2.textContent='✕ Número inválido (mín. 10 dígitos)'; s2.className='admin-status erro'; return; }
-  localStorage.setItem('wpp_numero', v);
-  document.getElementById('admin-numero-span').textContent = '••• '+v.slice(-4)+' (override)';
-  document.getElementById('admin-wpp-novo').value = '';
-  s2.textContent = '✓ Número salvo. Mensagens redirecionadas.';
-  s2.className   = 'admin-status';
-}
-
-function restaurarNumeroEmbutido(){
-  localStorage.removeItem('wpp_numero');
-  const embutido = (WPP_DESTINO||'').replace(/\D/g,'');
-  const span = document.getElementById('admin-numero-span');
-  span.textContent = embutido ? '••• '+embutido.slice(-4)+' (embutido)' : 'Não configurado';
-  const s2 = document.getElementById('admin-status2');
-  s2.textContent = '✓ Override removido. Usando número embutido.';
-  s2.className   = 'admin-status';
-}
-
-function salvarSenhaAdmin(){
-  const nova = document.getElementById('admin-senha-nova').value;
-  const s2   = document.getElementById('admin-status2');
-  if(!nova || nova.length < 4){ s2.textContent='✕ Senha muito curta (mín. 4 caracteres)'; s2.className='admin-status erro'; return; }
-  localStorage.setItem(ADMIN_SENHA_KEY, nova);
-  document.getElementById('admin-senha-nova').value = '';
-  s2.textContent = '✓ Senha alterada com sucesso';
-  s2.className   = 'admin-status';
-}
-
-function _carregarNumero(){ /* número é privado — não exibido ao coletor */ }
 
 function limparTudo(){
-  if(!_coletarItens().length){ _toast('Nada para limpar.'); return; }
-  if(!confirm('Limpar todos os registros preenchidos?')) return;
+  const itens=_coletarItens();
+  if(!itens.length){_toast('Nada para limpar.');return;}
+  if(!confirm('Limpar todos os itens concluídos?')) return;
   Object.entries(SETORES).forEach(([setor,cfg])=>{
-    cfg.produtos.forEach(p=>{
-      const k = setor+'_'+p.id;
-      ['qtd-','obs-','for-'].forEach(pref=>{
-        const el=document.getElementById(pref+k); if(el) el.value=pref==='qtd-'?0:'';
-      });
-      const card=document.getElementById('card-'+k);
-      if(card) card.classList.remove('ativo','prod-card-perda','prod-card-campo','prod-card-estoque');
-      const badge=document.getElementById('badge-'+k);
-      if(badge) badge.textContent='+ Registrar';
-    });
+    cfg.produtos.forEach(p=>{apagarCard(setor+'_'+p.id,cfg.cl||'');});
   });
-  document.getElementById('contador').innerHTML='Nenhum item preenchido';
-  document.getElementById('preview-box').classList.remove('visivel');
   _toast('Tudo limpo.');
 }
 
 function _toast(msg){
   const el=document.getElementById('toast');
-  el.textContent=msg; el.classList.add('visivel');
+  el.textContent=msg;el.classList.add('vis');
   clearTimeout(el._t);
-  el._t=setTimeout(()=>el.classList.remove('visivel'),2800);
+  el._t=setTimeout(()=>el.classList.remove('vis'),2800);
+}
+
+// ── BLOQUEIO ──────────────────────────────────
+function toggleBlVis(){
+  const i=document.getElementById('bl-inp');
+  const btn=document.getElementById('bl-olho');
+  if(i.type==='text'){
+    i.type='password';btn.textContent='👁';
+  } else {
+    i.type='text';btn.textContent='🙈';
+  }
+}
+
+function tentarDesbloquear(){
+  const v=document.getElementById('bl-inp').value;
+  const s=localStorage.getItem(SK)||SP;
+  const er=document.getElementById('bl-erro');
+  if(v===s){
+    localStorage.removeItem(BK);
+    document.getElementById('tela-bloqueio').classList.remove('vis');
+    document.getElementById('bl-inp').value='';er.textContent='';
+    _iniciar();
+  } else {
+    er.textContent='Código inválido.';
+    document.getElementById('bl-inp').value='';
+    document.getElementById('bl-inp').focus();
+  }
+}
+
+// ── ADMIN — toque longo 1,5s no ícone ──────────
+function _initLP(){
+  const ic=document.getElementById('topo-icon');
+  if(!ic) return;
+  let _t=null;
+  const _s=e=>{e.preventDefault();ic.classList.add('press');_t=setTimeout(()=>{ic.classList.remove('press');abrirAdmin();},1500);};
+  const _c=()=>{clearTimeout(_t);ic.classList.remove('press');};
+  ic.addEventListener('touchstart',_s,{passive:false});
+  ic.addEventListener('touchend',_c);ic.addEventListener('touchmove',_c);
+  ic.addEventListener('mousedown',_s);ic.addEventListener('mouseup',_c);ic.addEventListener('mouseleave',_c);
+  ic.addEventListener('contextmenu',e=>e.preventDefault());
+}
+
+function abrirAdmin(){
+  document.getElementById('painel-admin').classList.add('vis');
+  document.getElementById('ad-cfg').style.display='none';
+  document.getElementById('ad-senha').value='';
+  document.getElementById('ad-st').textContent='';
+  setTimeout(()=>document.getElementById('ad-senha').focus(),200);
+}
+function fecharAdmin(){
+  document.getElementById('painel-admin').classList.remove('vis');
+  document.getElementById('ad-senha').value='';
+}
+function toggleVis(){
+  const i=document.getElementById('ad-senha');
+  i.type=i.type==='password'?'text':'password';
+  document.getElementById('ad-olho').textContent=i.type==='password'?'👁':'🙈';
+}
+function verificarAdmin(){
+  const d=document.getElementById('ad-senha').value;
+  const s=localStorage.getItem(SK)||SP;
+  const st=document.getElementById('ad-st');
+  if(d===s){
+    st.textContent='✓ Acesso autorizado';st.className='ad-st';
+    document.getElementById('ad-cfg').style.display='block';
+    const n=localStorage.getItem('wpp_numero')||'';
+    document.getElementById('ad-num-sp').textContent=n?'••• '+n.slice(-4):'Não configurado';
+  } else {
+    st.textContent='✕ Senha incorreta';st.className='ad-st er';
+    document.getElementById('ad-senha').value='';
+    document.getElementById('ad-senha').focus();
+  }
+}
+function salvarNum(){
+  const v=(document.getElementById('ad-num-novo').value||'').replace(/\D/g,'');
+  const s2=document.getElementById('ad-st2');
+  if(!v||v.length<10){s2.textContent='✕ Número inválido';s2.className='ad-st er';return;}
+  localStorage.setItem('wpp_numero',v);
+  document.getElementById('ad-num-sp').textContent='••• '+v.slice(-4);
+  document.getElementById('ad-num-novo').value='';
+  s2.textContent='✓ Número salvo';s2.className='ad-st';
+}
+function restNum(){
+  localStorage.removeItem('wpp_numero');
+  const e=(WPP_DESTINO||'').replace(/\D/g,'');
+  document.getElementById('ad-num-sp').textContent=e?'••• '+e.slice(-4):'Não configurado';
+  document.getElementById('ad-st2').textContent='✓ Restaurado';
+  document.getElementById('ad-st2').className='ad-st';
+}
+function salvarSenha(){
+  const n=document.getElementById('ad-senha-nova').value;
+  const s2=document.getElementById('ad-st2');
+  if(!n||n.length<4){s2.textContent='✕ Senha muito curta';s2.className='ad-st er';return;}
+  localStorage.setItem(SK,n);
+  document.getElementById('ad-senha-nova').value='';
+  s2.textContent='✓ Senha alterada';s2.className='ad-st';
+}
+function desbloquearAdmin(){
+  localStorage.removeItem(BK);
+  document.getElementById('tela-bloqueio').classList.remove('vis');
+  document.getElementById('ad-st2').textContent='✓ Dispositivo desbloqueado';
+  document.getElementById('ad-st2').className='ad-st';
+  _iniciar();
 }
 </script>
 </body>
