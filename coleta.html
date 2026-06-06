@@ -263,9 +263,14 @@ textarea{resize:none;height:72px;font-size:14px}
         <div style="margin-top:12px"><span class="ad-lbl">Novo número (ex: 5581999999999)</span>
           <div class="ad-iw" style="margin-bottom:0"><input class="ad-inp" type="tel" id="ad-num-novo" placeholder="5581999999999" autocomplete="off"></div>
         </div>
+        <div class="ad-div" style="margin-top:14px"></div>
+        <span class="ad-lbl">👤 Nome do Coletor</span>
+        <div class="ad-val"><span id="ad-nome-sp">Não configurado</span></div>
+        <div style="margin-top:12px"><span class="ad-lbl">Nome completo do portador</span>
+          <div class="ad-iw" style="margin-bottom:0"><input class="ad-inp" type="text" id="ad-nome-novo" placeholder="Ex: João da Silva..." autocomplete="off"></div>
+        </div>
         <div class="ad-row">
-          <button class="ad-ok" onclick="salvarNum()">💾 Salvar número</button>
-          <button class="ad-cl" onclick="restNum()">↩ Restaurar</button>
+          <button class="ad-ok" onclick="salvarConfigColetor()">💾 Salvar configurações</button>
         </div>
         <div class="ad-div"></div>
         <span class="ad-lbl">🔑 Alterar senha</span>
@@ -313,7 +318,6 @@ textarea{resize:none;height:72px;font-size:14px}
   <div class="cont" id="contador">Nenhum item preenchido</div>
   <div class="preview-box" id="preview-box"><div class="preview-t">📋 Prévia da mensagem</div><div class="preview-tx" id="preview-tx"></div></div>
   <button class="btn-wpp" onclick="enviarTudo()"><span style="font-size:22px">💬</span> Enviar — PDF + WhatsApp</button>
-  <button class="btn-limpar" onclick="limparTudo()">↺ Limpar tudo</button>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -594,7 +598,10 @@ function _msg(){
   if(!itens.length) return '';
   const data=document.getElementById('data-global').value;
   const df=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}):'—';
-  let m='🌿 *FAZENDA SÃO JOSÉ*\n📅 '+df+'\n─────────────────';
+  const nome=(localStorage.getItem('wpp_nome')||'').trim();
+  let m='🌿 *FAZENDA SÃO JOSÉ*\n📅 '+df;
+  if(nome) m+='\n👤 '+nome;
+  m+='\n─────────────────';
   const ps={};
   itens.forEach(it=>{if(!ps[it.setor]) ps[it.setor]=[];ps[it.setor].push(it);});
   Object.entries(ps).forEach(([s,l])=>{
@@ -621,104 +628,223 @@ function _gerarHtmlBoletim(){
   const itens=_coletarItens();
   const data=document.getElementById('data-global').value;
   const df=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}):'—';
+  const dfCurto=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}):'—';
   const agora=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const nomeColetor=(localStorage.getItem('wpp_nome')||'').trim();
+
   const ps={};
   itens.forEach(it=>{if(!ps[it.setor]) ps[it.setor]=[];ps[it.setor].push(it);});
-  let tabelaHtml='';
+
+  let setoresHtml='';
   Object.entries(ps).forEach(([setor,lista])=>{
     const ic=setor==='Aviário'?'🐔':setor==='Perda'?'⚠️':setor==='Estoque'?'📦':'🌴';
     const cor=setor==='Aviário'?'#1c2e22':setor==='Perda'?'#7f1d1d':setor==='Estoque'?'#1e3a5f':'#3b5e2a';
-    tabelaHtml+=`<tr><td colspan="5" style="background:${cor};color:#fff;font-weight:700;font-size:13px;padding:8px 14px;letter-spacing:1px;text-transform:uppercase">${ic} ${setor}</td></tr>`;
+    let linhas='';
     lista.forEach((it,i)=>{
-      tabelaHtml+=`<tr style="background:${i%2===0?'#fff':'#f8f8f6'}">
-        <td style="font-size:20px;text-align:center;padding:10px 8px">${it.emoji}</td>
-        <td style="font-weight:600;padding:10px 14px">${it.nome}</td>
-        <td style="text-align:center;font-family:monospace;font-size:15px;font-weight:700;padding:10px 14px">${it.qtd} <span style="font-size:11px;color:#888">${it.unid}</span></td>
-        <td style="padding:10px 14px;color:#555;font-size:13px">${it.forn||'—'}</td>
-        <td style="padding:10px 14px;color:#777;font-size:12px">${it.obs||''}</td>
-      </tr>`;
+      linhas+=`
+      <div class="item ${i%2===0?'par':'impar'}">
+        <div class="item-topo">
+          <span class="item-emoji">${it.emoji}</span>
+          <span class="item-nome">${it.nome}</span>
+          <span class="item-qtd">${it.qtd} <span class="item-unid">${it.unid}</span></span>
+        </div>
+        ${it.forn||it.obs?`<div class="item-det">
+          ${it.forn?`<span class="det-tag">🏭 ${it.forn}</span>`:''}
+          ${it.obs?`<span class="det-tag obs">📝 ${it.obs}</span>`:''}
+        </div>`:''}
+      </div>`;
     });
+    setoresHtml+=`
+    <div class="setor">
+      <div class="setor-hd" style="background:${cor}">${ic} ${setor.toUpperCase()}</div>
+      ${linhas}
+    </div>`;
   });
+
   return `<!DOCTYPE html><html lang="pt-BR"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Coleta — Fazenda São José — ${df}</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Coleta ${dfCurto} — Fazenda SJ</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;font-size:14px;color:#111;background:#fff}
-.header{background:#1c2e22;color:#fff;padding:18px 24px;display:flex;justify-content:space-between;align-items:center}
-.header-t{font-size:22px;font-weight:700}
-.header-s{font-size:11px;opacity:.6;margin-top:3px;letter-spacing:2px;text-transform:uppercase}
-.header-r{text-align:right;font-size:12px;opacity:.75;font-family:monospace;line-height:1.7}
-.faixa{background:#b8943f;color:#fff;padding:7px 24px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;display:flex;justify-content:space-between}
-.corpo{padding:20px 24px 32px}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th{background:#1c2e22;color:#b8943f;padding:9px 14px;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600}
-td{border-bottom:1px solid #eee;vertical-align:middle}
-.rodape{margin-top:24px;padding-top:14px;border-top:2px solid #1c2e22;display:flex;justify-content:space-between;align-items:flex-end}
-.rod-l{font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:1.5px}
-.rod-v{font-size:22px;font-weight:700;color:#1c2e22;font-family:monospace}
-.assinatura{margin-top:40px;display:flex;gap:60px;flex-wrap:wrap}
-.ass-linha{border-top:1px solid #333;padding-top:6px;min-width:180px;font-size:11px;color:#555;text-align:center;letter-spacing:1px;text-transform:uppercase}
-.acoes{background:#f5f5f5;padding:14px 24px;display:flex;gap:12px;border-top:1px solid #ddd;position:sticky;bottom:0}
-.btn-p{padding:11px 28px;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .15s}
-@media print{.acoes{display:none!important}@page{margin:12mm;size:A4 portrait}-webkit-print-color-adjust:exact;print-color-adjust:exact}
-</style></head><body>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;background:#f0ede8}
+  body{font-family:Arial,sans-serif;font-size:14px;color:#111;padding:0 0 32px}
+
+  /* CABEÇALHO */
+  .header{background:#1c2e22;color:#fff;padding:16px 18px 12px;border-bottom:4px solid #b8943f}
+  .hd-logo{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .hd-ico{width:40px;height:40px;background:#b8943f;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+  .hd-nome{font-size:18px;font-weight:700;line-height:1.1}
+  .hd-sub{font-size:10px;opacity:.55;letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+  .hd-info{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:6px}
+  .hd-label{font-size:10px;opacity:.5;letter-spacing:1.5px;text-transform:uppercase;font-family:monospace}
+  .hd-data{font-size:13px;font-weight:700;color:#b8943f;font-family:monospace;margin-top:2px}
+  .hd-emit{text-align:right}
+  .hd-emit .hd-label{font-size:9px}
+  .hd-emit .hd-hora{font-size:12px;color:rgba(255,255,255,.6);font-family:monospace;margin-top:2px}
+
+  /* FAIXA */
+  .faixa{background:#b8943f;color:#fff;padding:8px 18px;display:flex;justify-content:space-between;align-items:center;font-family:monospace;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+
+  /* CORPO */
+  .corpo{padding:14px 14px 0}
+
+  /* SETOR */
+  .setor{margin-bottom:14px;border-radius:8px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.1)}
+  .setor-hd{color:#fff;padding:9px 14px;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+
+  /* ITEM */
+  .item{padding:10px 14px}
+  .item.par{background:#fff}
+  .item.impar{background:#f8f6f1}
+  .item-topo{display:flex;align-items:center;gap:10px}
+  .item-emoji{font-size:22px;flex-shrink:0;width:32px;text-align:center}
+  .item-nome{flex:1;font-size:14px;font-weight:600;color:#1a1a1a}
+  .item-qtd{font-family:monospace;font-size:16px;font-weight:700;color:#1c2e22;white-space:nowrap}
+  .item-unid{font-size:10px;font-weight:400;color:#888}
+  .item-det{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;padding-left:42px}
+  .det-tag{font-size:11px;color:#555;background:#f0ede8;border-radius:4px;padding:2px 8px;display:inline-block}
+  .det-tag.obs{color:#777}
+
+  /* RODAPÉ */
+  .rodape{margin:16px 14px 0;background:#1c2e22;border-radius:8px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+  .rod-bloco{display:flex;flex-direction:column;gap:3px}
+  .rod-lbl{font-family:monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#7aa88a}
+  .rod-val{font-family:monospace;font-size:20px;font-weight:700;color:#b8943f}
+  .rod-data{font-family:monospace;font-size:13px;font-weight:700;color:#fff}
+
+  /* ASSINATURA */
+  .assinaturas{margin:16px 14px 0;display:flex;gap:12px}
+  .ass{flex:1;border-top:1px solid #555;padding-top:6px;text-align:center;font-size:10px;color:#888;letter-spacing:1px;text-transform:uppercase}
+
+  /* BOTÕES */
+  .acoes{position:sticky;bottom:0;background:#1c2e22;padding:12px 14px;display:flex;gap:10px;border-top:2px solid #b8943f;margin-top:16px}
+  .btn-imp{flex:1;padding:13px;border:none;border-radius:8px;background:#b8943f;color:#1c2e22;font-size:14px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif}
+  .btn-fch{padding:13px 16px;border:1px solid rgba(255,255,255,.2);border-radius:8px;background:none;color:rgba(255,255,255,.55);font-family:monospace;font-size:12px;cursor:pointer}
+
+  /* IMPRESSÃO */
+  @media print{
+    body{background:#fff;padding:0}
+    .acoes{display:none!important}
+    .setor{box-shadow:none;border:1px solid #ddd}
+    @page{size:A4 portrait;margin:8mm}
+    -webkit-print-color-adjust:exact;print-color-adjust:exact
+  }
+</style>
+</head><body>
+
 <div class="acoes">
-  <button class="btn-p" style="background:#1c2e22;color:#b8943f" onclick="window.print()">🖨 Imprimir / Salvar PDF</button>
-  <button class="btn-p" style="background:#f0ede8;color:#555;border:1px solid #ccc" onclick="window.close()">✕ Fechar</button>
+  <button class="btn-imp" onclick="window.print()">🖨 Imprimir / Salvar PDF</button>
+  <button class="btn-fch" onclick="window.close()">✕ Fechar</button>
 </div>
+
 <div class="header">
-  <div><div class="header-t">🌿 Fazenda São José</div><div class="header-s">O melhor do campo em sua mesa</div></div>
-  <div class="header-r">REGISTRO DE COLETA DE CAMPO<br>Emitido em ${df} às ${agora}</div>
+  <div class="hd-logo">
+    <div class="hd-ico">🌿</div>
+    <div>
+      <div class="hd-nome">Fazenda São José</div>
+      <div class="hd-sub">Boletim de Coleta de Campo</div>
+    </div>
+  </div>
+  <div class="hd-info">
+    <div>
+      <div class="hd-label">Data da coleta</div>
+      <div class="hd-data">${df}</div>
+    </div>
+    <div class="hd-emit">
+      <div class="hd-label">Emitido às</div>
+      <div class="hd-hora">${agora}</div>
+    </div>
+  </div>
+  ${nomeColetor?`<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.12);display:flex;align-items:center;gap:8px">
+    <span style="font-size:18px">👤</span>
+    <div>
+      <div style="font-family:monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.45)">Coletor responsável</div>
+      <div style="font-size:14px;font-weight:700;color:#b8943f;margin-top:2px">${nomeColetor}</div>
+    </div>
+  </div>`:''}
 </div>
-<div class="faixa"><span>📋 Boletim de Coleta</span><span>${itens.length} produto(s) registrado(s)</span></div>
+
+<div class="faixa">
+  <span>📋 Registro de coleta</span>
+  <span>${itens.length} item(ns)</span>
+</div>
+
 <div class="corpo">
-  <table>
-    <thead><tr><th style="width:40px"></th><th>Produto</th><th style="text-align:center;width:120px">Quantidade</th><th style="width:160px">Fornecedor</th><th>Observação</th></tr></thead>
-    <tbody>${tabelaHtml}</tbody>
-  </table>
+  ${setoresHtml}
+
   <div class="rodape">
-    <div><div class="rod-l">Total de itens</div><div class="rod-v">${itens.length}</div></div>
-    <div style="text-align:right"><div class="rod-l">Data da coleta</div><div style="font-size:15px;font-weight:700;color:#1c2e22;font-family:monospace">${df}</div></div>
+    <div class="rod-bloco">
+      <span class="rod-lbl">Total de itens</span>
+      <span class="rod-val">${itens.length}</span>
+    </div>
+    <div class="rod-bloco" style="text-align:right">
+      <span class="rod-lbl">Data</span>
+      <span class="rod-data">${dfCurto}</span>
+    </div>
   </div>
-  <div class="assinatura">
-    <div class="ass-linha">Responsável pela coleta</div>
-    <div class="ass-linha">Conferido por</div>
-    <div class="ass-linha">Data / Hora</div>
+
+  <div class="assinaturas">
+    <div class="ass">Responsável</div>
+    <div class="ass">Conferido por</div>
   </div>
-</div></body></html>`;
+</div>
+
+</body></html>`;
 }
 
-// ── ENVIAR TUDO: baixa PDF + abre WhatsApp ──────
+// ── ENVIAR TUDO: baixa PDF + abre WhatsApp fixo + limpa ──────
 function enviarTudo(){
   const itens=_coletarItens();
   if(!itens.length){_toast('Conclua ao menos um item antes de enviar.');return;}
   const n=_getNum();
   if(!n){_toast('Número não configurado. Contacte o administrador.');return;}
 
-  // 1 — Baixa o PDF automaticamente
+  // 1 — Baixa o arquivo para o destinatário via compartilhamento
   try{
-    const html   = _gerarHtmlBoletim();
-    const blob   = new Blob([html],{type:'text/html'});
-    const url    = URL.createObjectURL(blob);
-    const data   = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
-    const nome   = 'coleta-fazenda-'+data+'.html';
-    const a      = document.createElement('a');
-    a.href       = url;
-    a.download   = nome;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(()=>URL.revokeObjectURL(url),3000);
-    _toast('📄 PDF salvo em Downloads!');
-  }catch(e){
-    _toast('Não foi possível baixar o PDF.');
-  }
+    const html = _gerarHtmlBoletim();
+    const blob = new Blob([html],{type:'text/html'});
+    const data = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
+    const nome = 'coleta-fazenda-'+data+'.html';
 
-  // 2 — Abre o WhatsApp após 1,5 segundos
+    // Tenta Web Share API (compartilhamento nativo do Android)
+    if(navigator.share && navigator.canShare){
+      const file = new File([blob], nome, {type:'text/html'});
+      if(navigator.canShare({files:[file]})){
+        navigator.share({
+          title: 'Coleta Fazenda São José — '+data,
+          files: [file]
+        }).catch(()=>{});
+      }
+    } else {
+      // Fallback: baixa no dispositivo
+      const url = URL.createObjectURL(blob);
+      const a   = document.createElement('a');
+      a.href    = url;
+      a.download= nome;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(url),3000);
+    }
+  }catch(e){}
+
+  // 2 — Abre WhatsApp FIXO no número cadastrado (sem escolha de destinatário)
+  // O número está fixo — coletor não vê e não pode mudar
   setTimeout(()=>{
-    window.open('https://wa.me/'+n+'?text='+encodeURIComponent(_msg()),'_blank');
-  },1500);
+    const url='https://wa.me/'+n+'?text='+encodeURIComponent(_msg());
+    window.location.href=url; // usa location.href em vez de open() para forçar o WhatsApp sem popup
+  },800);
+
+  // 3 — Limpa TUDO automaticamente após envio (sem perguntar)
+  setTimeout(()=>{
+    Object.entries(SETORES).forEach(([setor,cfg])=>{
+      cfg.produtos.forEach(p=>{apagarCard(setor+'_'+p.id,cfg.cl||'');});
+    });
+    document.getElementById('contador').innerHTML='Nenhum item preenchido';
+    document.getElementById('preview-box').classList.remove('vis');
+    document.getElementById('data-global').value=new Date().toISOString().split('T')[0];
+  },1200);
 }
 
 function limparTudo(){
@@ -849,27 +975,30 @@ function verificarAdmin(){
     document.getElementById('ad-cfg').style.display='block';
     const n=localStorage.getItem('wpp_numero')||'';
     document.getElementById('ad-num-sp').textContent=n?'••• '+n.slice(-4):'Não configurado';
+    const nm=localStorage.getItem('wpp_nome')||'';
+    document.getElementById('ad-nome-sp').textContent=nm||'Não configurado';
   } else {
     st.textContent='✕ Senha incorreta';st.className='ad-st er';
     document.getElementById('ad-senha').value='';
     document.getElementById('ad-senha').focus();
   }
 }
-function salvarNum(){
+
+function salvarConfigColetor(){
   const v=(document.getElementById('ad-num-novo').value||'').replace(/\D/g,'');
+  const nm=(document.getElementById('ad-nome-novo').value||'').trim();
   const s2=document.getElementById('ad-st2');
-  if(!v||v.length<10){s2.textContent='✕ Número inválido';s2.className='ad-st er';return;}
-  localStorage.setItem('wpp_numero',v);
-  document.getElementById('ad-num-sp').textContent='••• '+v.slice(-4);
-  document.getElementById('ad-num-novo').value='';
-  s2.textContent='✓ Número salvo';s2.className='ad-st';
-}
-function restNum(){
-  localStorage.removeItem('wpp_numero');
-  const e=(WPP_DESTINO||'').replace(/\D/g,'');
-  document.getElementById('ad-num-sp').textContent=e?'••• '+e.slice(-4):'Não configurado';
-  document.getElementById('ad-st2').textContent='✓ Restaurado';
-  document.getElementById('ad-st2').className='ad-st';
+  let ok=true;
+  if(v){
+    if(v.length<10){s2.textContent='✕ Número inválido (mín. 10 dígitos)';s2.className='ad-st er';ok=false;}
+    else{localStorage.setItem('wpp_numero',v);document.getElementById('ad-num-sp').textContent='••• '+v.slice(-4);document.getElementById('ad-num-novo').value='';}
+  }
+  if(nm){
+    localStorage.setItem('wpp_nome',nm);
+    document.getElementById('ad-nome-sp').textContent=nm;
+    document.getElementById('ad-nome-novo').value='';
+  }
+  if(ok){s2.textContent='✓ Configurações salvas';s2.className='ad-st';}
 }
 function salvarSenha(){
   const n=document.getElementById('ad-senha-nova').value;
