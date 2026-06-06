@@ -277,6 +277,17 @@ textarea{resize:none;height:72px;font-size:14px}
         <div class="ad-iw"><input class="ad-inp" type="password" id="ad-senha-nova" placeholder="Nova senha..." autocomplete="new-password"></div>
         <div class="ad-row"><button class="ad-ok" onclick="salvarSenha()" style="background:#2d4a38;color:var(--ac)">Salvar senha</button></div>
         <div class="ad-div"></div>
+        <span class="ad-lbl">📲 Enviar app para novo coletor</span>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.4);margin-bottom:10px;line-height:1.6">
+          Envia o link de instalação pelo WhatsApp.<br>
+          O coletor instala e o link some da conversa.
+        </div>
+        <div class="ad-row">
+          <button class="ad-ok" onclick="compartilharLinkInstalacao()" style="background:linear-gradient(135deg,#25d366,#128c7e);color:#fff">
+            💬 Enviar link pelo WhatsApp
+          </button>
+        </div>
+        <div class="ad-div"></div>
         <div class="ad-row"><button class="ad-ok" onclick="desbloquearAdmin()" style="background:#2d4a38;color:#a8d88a">🔓 Desbloquear dispositivo</button></div>
         <div class="ad-st" id="ad-st2"></div>
       </div>
@@ -1165,6 +1176,34 @@ function salvarSenha(){
   document.getElementById('ad-senha-nova').value='';
   s2.textContent='✓ Senha alterada';s2.className='ad-st';
 }
+function compartilharLinkInstalacao(){
+  const APP_URL = 'https://urbanopos.github.io/fazenda/coleta.html';
+  const msg =
+    '🌿 *Fazenda São José — App de Coleta*\n\n'
+  + 'Acesse o link abaixo para instalar o aplicativo no seu celular:\n\n'
+  + APP_URL + '\n\n'
+  + '_Passos após abrir o link:_\n'
+  + '1. Aguarde carregar completamente\n'
+  + '2. Toque em *⬇ Instalar agora* no banner que aparecer\n'
+  + '3. O ícone 🌿 aparece na sua tela inicial\n\n'
+  + '_Após instalar apague esta mensagem._';
+
+  // Tenta compartilhar pelo painel nativo do Android
+  if(navigator.share){
+    navigator.share({
+      title: 'App Coleta — Fazenda São José',
+      text: msg,
+      url: APP_URL
+    }).catch(()=>{
+      // Fallback: abre WhatsApp com o texto
+      window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+    });
+  } else {
+    // Desktop ou iOS — abre WhatsApp diretamente
+    window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+  }
+}
+
 function desbloquearAdmin(){
   localStorage.removeItem(BK);
   document.getElementById('tela-bloqueio').classList.remove('vis');
