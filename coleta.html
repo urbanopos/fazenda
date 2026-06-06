@@ -399,11 +399,13 @@ textarea{resize:none;height:72px;font-size:14px}
       <button class="btn-wpp" onclick="enviarPedido()" style="background:linear-gradient(135deg,#7a3a00,#b85a00)">
         <span style="font-size:22px">🛒</span> Enviar Pedido
       </button>
+      <button class="btn-limpar" onclick="limparPedido()" style="margin-top:10px">↺ Novo pedido</button>
     </div>
   </div>
   <div class="div"></div>
   <div class="cont" id="contador">Nenhum item preenchido</div>
   <button class="btn-wpp" onclick="enviarTudo()"><span style="font-size:22px">💬</span> Enviar — PDF + WhatsApp</button>
+  <button class="btn-limpar" onclick="limparTudo()">↺ Limpar tudo</button>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -702,6 +704,18 @@ const PRODUTOS_VENDA = SETORES.aviario.produtos.map(p=>({
 
 let _vendaItens = []; // [{id, produto, emoji, unid, qtd, preco, sub, concluido}]
 let _pedidoNum  = 0;
+
+function limparPedido(){
+  if(!_vendaItens.length){_toast('Nenhum item para limpar.');return;}
+  if(!confirm('Iniciar novo pedido? Os itens atuais serão apagados.')) return;
+  _vendaItens=[];
+  _viIdx=0;
+  const cl=document.getElementById('venda-cliente');
+  if(cl) cl.value='';
+  _renderVendaItens();
+  _renderTalaoNum();
+  _toast('Pronto para novo pedido.');
+}
 
 function _initVendas(){
   // Mostra aba se ativa
@@ -1056,15 +1070,9 @@ function enviarPedido(){
     }
   },'image/jpeg',0.92);
 
-  // Limpa itens e cliente após envio
-  setTimeout(()=>{
-    _vendaItens=[];
-    _viIdx=0;
-    const cl=document.getElementById('venda-cliente');
-    if(cl) cl.value='';
-    _renderVendaItens();
-    _renderTalaoNum();
-  },2000);
+  // Itens permanecem — vendedor pode alterar e reenviar se necessário
+  setTimeout(()=>{ _renderTalaoNum(); },500);
+  _toast('✓ Pedido '+numPed+' enviado!');
 }
 
 // ── GERAR IMAGEM JPG DO BOLETIM E COMPARTILHAR ──
@@ -1264,15 +1272,8 @@ function enviarTudo(){
   // Gera e compartilha a imagem JPG
   _gerarImagemECompartilhar(n);
 
-  // Limpa automaticamente após 2s
-  setTimeout(()=>{
-    Object.entries(SETORES).forEach(([setor,cfg])=>{
-      cfg.produtos.forEach(p=>{apagarCard(setor+'_'+p.id,cfg.cl||'');});
-    });
-    document.getElementById('contador').innerHTML='Nenhum item preenchido';
-    
-    document.getElementById('data-global').value=new Date().toISOString().split('T')[0];
-  },2000);
+  // Itens permanecem na tela — usuário apaga manualmente se quiser
+  _toast('✓ Enviado! Use ↺ Limpar para novo registro.');
 }
 
 function limparTudo(){
