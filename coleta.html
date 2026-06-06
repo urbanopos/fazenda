@@ -327,7 +327,6 @@ textarea{resize:none;height:72px;font-size:14px}
   <div class="secao" id="sec-estoque"><div class="sec-t" style="color:#1e3a5f">Estoque</div><div class="sec-d">Entrada de insumos e rações</div><div class="pgrid" id="grid-estoque"></div></div>
   <div class="div"></div>
   <div class="cont" id="contador">Nenhum item preenchido</div>
-  <div class="preview-box" id="preview-box"><div class="preview-t">📋 Prévia da mensagem</div><div class="preview-tx" id="preview-tx"></div></div>
   <button class="btn-wpp" onclick="enviarTudo()"><span style="font-size:22px">💬</span> Enviar — PDF + WhatsApp</button>
 </div>
 <div class="toast" id="toast"></div>
@@ -529,7 +528,7 @@ function concluirCard(k,unid,nome){
   if(obs)  html+=`<div class="rc-linha">Obs: <strong>${obs}</strong></div>`;
   res.innerHTML=html;
   _atualizarContador();
-  _atualizarPreview();
+
   _toast(nome+' registrado ✓');
 }
 
@@ -557,7 +556,7 @@ function apagarCard(k,cl){
   badge.textContent='+ Registrar';
   res.innerHTML='';
   _atualizarContador();
-  _atualizarPreview();
+
 }
 
 function trocarAba(s){
@@ -569,7 +568,7 @@ function trocarAba(s){
 
 function setHoje(){
   document.getElementById('data-global').value=new Date().toISOString().split('T')[0];
-  _atualizarPreview();
+
 }
 
 // ── COLETA / MENSAGEM ──────────────────────────
@@ -593,15 +592,6 @@ function _coletarItens(){
 function _atualizarContador(){
   const n=_coletarItens().length;
   document.getElementById('contador').innerHTML=n===0?'Nenhum item preenchido':'<strong>'+n+'</strong> item(ns) concluído(s)';
-  _atualizarPreview();
-}
-
-function _atualizarPreview(){
-  const msg=_msg();
-  const box=document.getElementById('preview-box');
-  if(!msg){box.classList.remove('vis');return;}
-  box.classList.add('vis');
-  document.getElementById('preview-tx').textContent=msg;
 }
 
 function _msg(){
@@ -1010,7 +1000,7 @@ function enviarTudo(){
       cfg.produtos.forEach(p=>{apagarCard(setor+'_'+p.id,cfg.cl||'');});
     });
     document.getElementById('contador').innerHTML='Nenhum item preenchido';
-    document.getElementById('preview-box').classList.remove('vis');
+    
     document.getElementById('data-global').value=new Date().toISOString().split('T')[0];
   },2000);
 }
