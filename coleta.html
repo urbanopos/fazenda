@@ -96,7 +96,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--vd);min-height:100vh;colo
 #sec-vendas{display:none}
 #sec-vendas.at{display:block}
 
-/* ── TALÃO ── */
+/* ── CHIPS DE UNIDADES SALVAS ── */
+.unid-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.unid-chip{padding:4px 12px;border-radius:14px;background:rgba(184,148,63,.12);border:1px solid rgba(184,148,63,.35);color:var(--ac);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:background .15s;white-space:nowrap}
+.unid-chip:active{background:rgba(184,148,63,.3)}
+.unid-chip-del{color:#a03030;background:rgba(160,48,48,.08);border-color:rgba(160,48,48,.2);font-size:10px;padding:4px 8px}
 .talao-num{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--ac);text-align:center;margin-bottom:14px;padding:6px;background:rgba(184,148,63,.08);border-radius:6px;border:1px dashed var(--ac)}
 .talao-num strong{font-size:15px}
 
@@ -331,7 +335,14 @@ textarea{resize:none;height:72px;font-size:14px}
           </button>
         </div>
         <div class="ad-div"></div>
-        <div class="ad-row"><button class="ad-ok" onclick="desbloquearAdmin()" style="background:#2d4a38;color:#a8d88a">🔓 Desbloquear dispositivo</button></div>
+        <span class="ad-lbl">📦 Unidades salvas</span>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.4);margin-bottom:10px;line-height:1.6">
+          Unidades digitadas são salvas automaticamente.<br>
+          Toque abaixo para redefinir a lista.
+        </div>
+        <div class="ad-row">
+          <button class="ad-ok" onclick="limparUnidadesSalvas()" style="background:#3d1a1a;color:#e08080">↺ Redefinir unidades</button>
+        </div>
         <div class="ad-st" id="ad-st2"></div>
       </div>
     </div>
@@ -780,11 +791,19 @@ function _renderVendaItens(){
       </div>
       <div class="vi-row" style="margin-bottom:8px">
         <div class="vi-campo" style="grid-column:1/-1">
-          <span class="vi-lbl">Unidade (ex: bandeja, kg, dúzia...)</span>
-          <input class="vi-inp" type="text" placeholder="Digite a unidade..."
+          <span class="vi-lbl">Unidade</span>
+          <input class="vi-inp" type="text" id="unid-inp-${it.idx}"
+            list="unid-list-${it.idx}"
+            placeholder="Digite ou selecione..."
             value="${it.unidade||''}"
             oninput="_setUnidVenda(${i},this.value)"
             style="font-size:15px">
+          <datalist id="unid-list-${it.idx}">
+            ${_getUnidadesSalvas().map(u=>'<option value="'+u+'">').join('')}
+          </datalist>
+          <div class="unid-chips" id="unid-chips-${it.idx}">
+            ${_getUnidadesSalvas().map(u=>'<span class="unid-chip" onclick="_selecionarUnid('+i+','+it.idx+',this.dataset.v)" data-v="'+u+'">'+u+'</span>').join('')}
+          </div>
         </div>
       </div>
       <div class="vi-row">
@@ -827,7 +846,36 @@ function _renderVendaItens(){
 function _fmt(v){ return Number(v||0).toFixed(2).replace('.',','); }
 
 function _setProdVenda(i,v){ _vendaItens[i].prodId=v; /* não re-renderiza — mantém campos preenchidos */ }
-function _setUnidVenda(i,v){ _vendaItens[i].unidade=v; }
+// ── UNIDADES SALVAS ──────────────────────────
+const UK = 'fsj_unidades';
+const _UNID_PAD = ['unid','bandeja','dúzia','kg','saco','caixa','cac.','fardo'];
+
+function _getUnidadesSalvas(){
+  try{
+    const s = localStorage.getItem(UK);
+    return s ? JSON.parse(s) : [..._UNID_PAD];
+  }catch(){ return [..._UNID_PAD]; }
+}
+
+function _salvarUnidade(v){
+  if(!v||v.trim().length<1) return;
+  const lista = _getUnidadesSalvas();
+  const norm  = v.trim().toLowerCase();
+  if(lista.some(u=>u.toLowerCase()===norm)) return; // já existe
+  lista.unshift(v.trim()); // adiciona no início
+  if(lista.length>20) lista.pop(); // máximo 20
+  localStorage.setItem(UK, JSON.stringify(lista));
+}
+
+function _selecionarUnid(i, idx, v){
+  _vendaItens[i].unidade = v;
+  const inp = document.getElementById('unid-inp-'+idx);
+  if(inp) inp.value = v;
+}
+
+function _setUnidVenda(i,v){
+  _vendaItens[i].unidade=v;
+}
 function _setDataVenda(i,v){ _vendaItens[i].data=v; }
 function _setQtdVenda(i,v){
   _vendaItens[i].qtd=parseFloat(v)||0;
@@ -848,9 +896,15 @@ function _calcSub(i){ _vendaItens[i].sub=Math.round(_vendaItens[i].qtd*_vendaIte
 
 function _concluirItemVenda(i){
   const it = _vendaItens[i];
+  // Lê os valores actuais dos inputs antes de validar
+  const idx = it.idx;
+  it.unidade = (document.getElementById('unid-inp-'+idx)?.value||it.unidade||'').trim();
+  it.qtd     = parseFloat(document.getElementById('vi-'+idx)?.querySelector('input[type=number]')?.value)||it.qtd;
   if(!it.qtd || it.qtd<=0){ _toast('Informe a quantidade.'); return; }
   if(!it.preco || it.preco<=0){ _toast('Informe o preço unitário.'); return; }
   _calcSub(i);
+  // Salva a unidade para reutilização futura
+  if(it.unidade) _salvarUnidade(it.unidade);
   it.concluido = true;
   _renderVendaItens();
 }
@@ -933,14 +987,16 @@ function enviarPedido(){
   txt(numPed,W-PAD,y+19,11,'#ffd49a','bold','right');
   y+=28;
 
-  // LINHA DE CABEÇALHO DA TABELA
-  rect(0,y,W,16,'rgba(184,148,63,0.12)');
-  txt('DATA',PAD,y+12,8,'#888');
-  txt('PRODUTO / UNID',PAD+46,y+12,8,'#888');
-  txt('QTD',W-PAD-100,y+12,8,'#888','normal','left');
-  txt('UNIT.',W-PAD-52,y+12,8,'#888','normal','left');
-  txt('SUB',W-PAD,y+12,8,'#888','normal','right');
-  y+=16;
+  // COLUNAS: DATA(18) | PRODUTO(62) | UNID(172) | QTD(232) | UNIT.(272) | SUB(direita)
+  const C1=PAD, C2=62, C3=172, C4=234, C5=274, C6=W-PAD;
+  rect(0,y,W,18,'rgba(184,148,63,0.12)');
+  txt('DATA',   C1, y+13, 7, '#888');
+  txt('PRODUTO', C2, y+13, 7, '#888');
+  txt('UNID',   C3, y+13, 7, '#888');
+  txt('QTD',   C4, y+13, 7, '#888', 'normal', 'center');
+  txt('UNIT.',  C5, y+13, 7, '#888');
+  txt('SUB',   C6, y+13, 7, '#888', 'normal', 'right');
+  y+=18;
 
   // ITENS
   concluidos.forEach((it,i)=>{
@@ -949,18 +1005,27 @@ function enviarPedido(){
     const dtFmt  = it.data ? new Date(it.data+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}) : '—';
     const bg=i%2===0?'#ffffff':'#faf8f3';
     rect(0,y,W,52,bg);
-    // Data
-    txt(dtFmt,PAD,y+20,10,'#888');
-    txt(p.emoji,PAD,y+38,14,'#000');
-    // Produto + unidade
-    txt(p.nome,PAD+22,y+22,12,'#1a1a1a','bold');
-    txt(unExib,PAD+22,y+38,10,'#b8943f');
-    // Qtd
-    txt(String(it.qtd),W-PAD-100,y+30,13,'#1c2e22','bold');
-    // Preço unit
-    txt('R$'+_fmt(it.preco),W-PAD-52,y+30,11,'#555');
-    // Subtotal
-    txt('R$'+_fmt(it.sub),W-PAD,y+30,13,'#7a3a00','bold','right');
+
+    // DATA (C1)
+    txt(dtFmt, C1, y+22, 10, '#888');
+
+    // PRODUTO (C2) — emoji + nome truncado
+    txt(p.emoji, C2, y+22, 13, '#000');
+    const nomeExib = p.nome.length > 10 ? p.nome.slice(0,9)+'…' : p.nome;
+    txt(nomeExib, C2, y+38, 9, '#1a1a1a', 'bold');
+
+    // UNID (C3)
+    txt(unExib, C3, y+30, 11, '#b8943f', 'bold');
+
+    // QTD (C4 — centralizado)
+    txt(String(it.qtd), C4, y+30, 13, '#1c2e22', 'bold', 'center');
+
+    // UNIT. / PREÇO (C5)
+    txt('R$'+_fmt(it.preco), C5, y+30, 10, '#555');
+
+    // SUB (C6 — direita)
+    txt('R$'+_fmt(it.sub), C6, y+30, 12, '#7a3a00', 'bold', 'right');
+
     ln(0,y+51,W,y+51,'#eee');
     y+=52;
   });
@@ -1397,6 +1462,13 @@ function compartilharLinkInstalacao(){
     // Desktop ou iOS — abre WhatsApp diretamente
     window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
   }
+}
+
+function limparUnidadesSalvas(){
+  localStorage.removeItem(UK);
+  const s2=document.getElementById('ad-st2');
+  s2.textContent='✓ Unidades redefinidas para o padrão';
+  s2.className='ad-st';
 }
 
 function desbloquearAdmin(){
