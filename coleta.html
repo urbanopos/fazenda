@@ -785,7 +785,10 @@ function _gerarHtmlBoletim(){
   </div>
 
   <div class="assinaturas">
-    <div class="ass">Responsável</div>
+    <div class="ass">
+      ${nomeColetor?`<div style="font-size:12px;font-weight:700;color:#333;margin-bottom:6px;text-transform:none;letter-spacing:0">${nomeColetor}</div>`:''}
+      Responsável pela coleta
+    </div>
     <div class="ass">Conferido por</div>
   </div>
 </div>
@@ -793,50 +796,204 @@ function _gerarHtmlBoletim(){
 </body></html>`;
 }
 
-// ── ENVIAR TUDO: baixa PDF + abre WhatsApp fixo + limpa ──────
+// ── GERAR IMAGEM JPG DO BOLETIM E COMPARTILHAR ──
+function _gerarImagemECompartilhar(n){
+  const itens   = _coletarItens();
+  const data    = document.getElementById('data-global').value;
+  const dfCurto = data ? new Date(data+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}) : '—';
+  const dfLongo = data ? new Date(data+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}) : '—';
+  const agora   = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const nome    = (localStorage.getItem('wpp_nome')||'').trim();
+
+  // Agrupa por setor
+  const ps={};
+  itens.forEach(it=>{if(!ps[it.setor]) ps[it.setor]=[];ps[it.setor].push(it);});
+
+  // ── Desenha no Canvas ──
+  const W    = 420;
+  const PAD  = 18;
+  const c    = document.createElement('canvas');
+  const ctx  = c.getContext('2d');
+
+  // Calcula altura total dinamicamente
+  let estimH = 180; // cabeçalho + faixa
+  if(nome) estimH += 36;
+  Object.values(ps).forEach(lista=>{
+    estimH += 36; // cabeçalho setor
+    lista.forEach(it=>{ estimH += it.forn||it.obs ? 72 : 48; });
+  });
+  estimH += 80; // rodapé
+  estimH += 60; // assinatura
+  estimH += 20; // padding
+
+  c.width  = W;
+  c.height = estimH;
+
+  let y = 0;
+
+  // helpers
+  const rect = (x,yy,w,h,color)=>{ctx.fillStyle=color;ctx.fillRect(x,yy,w,h);};
+  const text  = (t,x,yy,size,color,weight='normal',align='left')=>{
+    ctx.font=`${weight} ${size}px Arial`;
+    ctx.fillStyle=color;
+    ctx.textAlign=align;
+    ctx.fillText(t,x,yy);
+    ctx.textAlign='left';
+  };
+  const line = (x1,y1,x2,y2,color,lw=1)=>{
+    ctx.strokeStyle=color;ctx.lineWidth=lw;
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  };
+
+  // ── CABEÇALHO ──
+  rect(0, y, W, nome?148:120, '#1c2e22');
+
+  // círculo dourado
+  ctx.fillStyle='#b8943f';
+  ctx.beginPath();ctx.arc(PAD+20, y+28, 20, 0, Math.PI*2);ctx.fill();
+  text('🌿', PAD+20, y+36, 18, '#fff', 'normal', 'center');
+
+  text('Fazenda São José',  PAD+50, y+24, 16, '#fff', 'bold');
+  text('BOLETIM DE COLETA', PAD+50, y+40, 9,  '#b8943f', 'normal');
+
+  text('DATA DA COLETA',    PAD,    y+68, 8,  'rgba(255,255,255,0.45)', 'normal');
+  text(dfLongo,             PAD,    y+82, 11, '#b8943f', 'bold');
+  text('EMITIDO ÀS '+agora, W-PAD,  y+82, 9,  'rgba(255,255,255,0.5)', 'normal', 'right');
+
+  if(nome){
+    line(PAD, y+96, W-PAD, y+96, 'rgba(255,255,255,0.12)');
+    text('👤', PAD+2, y+116, 14, '#fff');
+    text('COLETOR RESPONSÁVEL', PAD+26, y+108, 8, 'rgba(255,255,255,0.4)');
+    text(nome, PAD+26, y+122, 13, '#b8943f', 'bold');
+    y += 148;
+  } else {
+    y += 120;
+  }
+
+  // ── FAIXA DOURADA ──
+  rect(0, y, W, 28, '#b8943f');
+  text('📋 REGISTRO DE COLETA', PAD, y+19, 10, '#fff', 'bold');
+  text(itens.length+' item(ns)', W-PAD, y+19, 10, '#fff', 'bold', 'right');
+  y += 28;
+
+  // ── SETORES ──
+  const coresSetor = {'Aviário':'#1c2e22','Perda':'#7f1d1d','Estoque':'#1e3a5f','Campo':'#3b5e2a'};
+  Object.entries(ps).forEach(([setor, lista])=>{
+    const cor = coresSetor[setor]||'#1c2e22';
+
+    // cabeçalho setor
+    rect(0, y, W, 30, cor);
+    const icS = setor==='Aviário'?'🐔':setor==='Perda'?'⚠️':setor==='Estoque'?'📦':'🌴';
+    text(icS+' '+setor.toUpperCase(), PAD, y+21, 11, '#fff', 'bold');
+    y += 30;
+
+    lista.forEach((it,i)=>{
+      const bg = i%2===0 ? '#ffffff' : '#f8f6f1';
+      const lh = it.forn||it.obs ? 68 : 44;
+      rect(0, y, W, lh, bg);
+
+      // emoji
+      text(it.emoji, PAD, y+28, 20, '#000');
+
+      // nome
+      text(it.nome, PAD+36, y+22, 13, '#1a1a1a', 'bold');
+
+      // quantidade em destaque
+      text(String(it.qtd), W-PAD-30, y+22, 18, '#1c2e22', 'bold', 'right');
+      text(it.unid, W-PAD, y+30, 9, '#888', 'normal', 'right');
+
+      if(it.forn||it.obs){
+        let tx = PAD+36;
+        if(it.forn){
+          // tag fornecedor
+          ctx.fillStyle='#f0ede8';
+          ctx.beginPath();ctx.roundRect(tx, y+34, ctx.measureText('🏭 '+it.forn).width+12, 20, 4);ctx.fill();
+          text('🏭 '+it.forn, tx+6, y+48, 10, '#555');
+          tx += ctx.measureText('🏭 '+it.forn).width + 20;
+        }
+        if(it.obs){
+          ctx.fillStyle='#f0ede8';
+          ctx.beginPath();ctx.roundRect(tx, y+34, ctx.measureText('📝 '+it.obs).width+12, 20, 4);ctx.fill();
+          text('📝 '+it.obs, tx+6, y+48, 10, '#777');
+        }
+      }
+
+      // linha separadora
+      line(0, y+lh-1, W, y+lh-1, '#eee');
+      y += lh;
+    });
+  });
+
+  // ── RODAPÉ ──
+  rect(0, y, W, 56, '#1c2e22');
+  text('TOTAL DE ITENS', PAD, y+18, 8, '#7aa88a');
+  text(String(itens.length), PAD, y+42, 24, '#b8943f', 'bold');
+  text('DATA', W-PAD, y+18, 8, '#7aa88a', 'normal', 'right');
+  text(dfCurto, W-PAD, y+42, 13, '#fff', 'bold', 'right');
+  y += 56;
+
+  // ── ASSINATURA ──
+  rect(0, y, W, 54, '#f5f0e8');
+  const mW = (W - PAD*2 - 12) / 2;
+
+  // linha esq
+  line(PAD, y+20, PAD+mW, y+20, '#555');
+  if(nome){
+    text(nome, PAD+mW/2, y+16, 10, '#333', 'bold', 'center');
+  }
+  text('RESPONSÁVEL PELA COLETA', PAD+mW/2, y+32, 8, '#888', 'normal', 'center');
+
+  // linha dir
+  const x2 = PAD + mW + 12;
+  line(x2, y+20, x2+mW, y+20, '#555');
+  text('CONFERIDO POR', x2+mW/2, y+32, 8, '#888', 'normal', 'center');
+  y += 54;
+
+  // ── EXPORTA COMO JPG ──
+  c.toBlob(blob=>{
+    if(!blob){ _toast('Erro ao gerar imagem.'); return; }
+    const dataStr = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
+    const fileName = 'coleta-'+dataStr+'.jpg';
+    const file = new File([blob], fileName, {type:'image/jpeg'});
+
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({
+        title: 'Coleta Fazenda SJ — '+dataStr,
+        text: _msg(),
+        files: [file]
+      }).catch(()=>{
+        _fallbackDownload(blob, fileName);
+      });
+    } else {
+      _fallbackDownload(blob, fileName);
+      setTimeout(()=>{
+        window.location.href='https://wa.me/'+n+'?text='+encodeURIComponent(_msg());
+      },1000);
+    }
+  },'image/jpeg', 0.92);
+}
+
+function _fallbackDownload(blob, nome){
+  const url = URL.createObjectURL(blob);
+  const a   = document.createElement('a');
+  a.href=url; a.download=nome;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 3000);
+  _toast('📸 Imagem salva em Downloads!');
+}
+
+// ── ENVIAR TUDO ──────────────────────────────
 function enviarTudo(){
   const itens=_coletarItens();
   if(!itens.length){_toast('Conclua ao menos um item antes de enviar.');return;}
   const n=_getNum();
   if(!n){_toast('Número não configurado. Contacte o administrador.');return;}
 
-  // 1 — Baixa o arquivo para o destinatário via compartilhamento
-  try{
-    const html = _gerarHtmlBoletim();
-    const blob = new Blob([html],{type:'text/html'});
-    const data = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
-    const nome = 'coleta-fazenda-'+data+'.html';
+  // Gera e compartilha a imagem JPG
+  _gerarImagemECompartilhar(n);
 
-    // Tenta Web Share API (compartilhamento nativo do Android)
-    if(navigator.share && navigator.canShare){
-      const file = new File([blob], nome, {type:'text/html'});
-      if(navigator.canShare({files:[file]})){
-        navigator.share({
-          title: 'Coleta Fazenda São José — '+data,
-          files: [file]
-        }).catch(()=>{});
-      }
-    } else {
-      // Fallback: baixa no dispositivo
-      const url = URL.createObjectURL(blob);
-      const a   = document.createElement('a');
-      a.href    = url;
-      a.download= nome;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(()=>URL.revokeObjectURL(url),3000);
-    }
-  }catch(e){}
-
-  // 2 — Abre WhatsApp FIXO no número cadastrado (sem escolha de destinatário)
-  // O número está fixo — coletor não vê e não pode mudar
-  setTimeout(()=>{
-    const url='https://wa.me/'+n+'?text='+encodeURIComponent(_msg());
-    window.location.href=url; // usa location.href em vez de open() para forçar o WhatsApp sem popup
-  },800);
-
-  // 3 — Limpa TUDO automaticamente após envio (sem perguntar)
+  // Limpa automaticamente após 2s
   setTimeout(()=>{
     Object.entries(SETORES).forEach(([setor,cfg])=>{
       cfg.produtos.forEach(p=>{apagarCard(setor+'_'+p.id,cfg.cl||'');});
@@ -844,7 +1001,7 @@ function enviarTudo(){
     document.getElementById('contador').innerHTML='Nenhum item preenchido';
     document.getElementById('preview-box').classList.remove('vis');
     document.getElementById('data-global').value=new Date().toISOString().split('T')[0];
-  },1200);
+  },2000);
 }
 
 function limparTudo(){
