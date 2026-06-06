@@ -594,210 +594,13 @@ function _atualizarContador(){
   document.getElementById('contador').innerHTML=n===0?'Nenhum item preenchido':'<strong>'+n+'</strong> item(ns) concluído(s)';
 }
 
-function _msg(){
-  const itens=_coletarItens();
-  if(!itens.length) return '';
-  const data=document.getElementById('data-global').value;
-  const df=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}):'—';
-  const nome=(localStorage.getItem('wpp_nome')||'').trim();
-  let m='🌿 *FAZENDA SÃO JOSÉ*\n📅 '+df;
-  if(nome) m+='\n👤 '+nome;
-  m+='\n─────────────────';
-  const ps={};
-  itens.forEach(it=>{if(!ps[it.setor]) ps[it.setor]=[];ps[it.setor].push(it);});
-  Object.entries(ps).forEach(([s,l])=>{
-    const ic=s==='Aviário'?'🐔':s==='Perda'?'⚠️':s==='Estoque'?'📦':'🌴';
-    m+='\n\n'+ic+' *'+s.toUpperCase()+'*\n';
-    l.forEach(it=>{
-      m+=it.emoji+' '+it.nome+': *'+it.qtd+' '+it.unid+'*';
-      if(it.forn) m+='\n   🏭 '+it.forn;
-      if(it.obs)  m+='\n   📝 '+it.obs;
-      m+='\n';
-    });
-  });
-  m+='─────────────────\n📲 App Fazenda SJ';
-  return m;
-}
-
 function _getNum(){
   return (localStorage.getItem('wpp_numero')||'').replace(/\D/g,'')||
          (WPP_DESTINO||'').replace(/\D/g,'');
 }
 
-// ── GERAR HTML DO BOLETIM ──────────────────────
-function _gerarHtmlBoletim(){
-  const itens=_coletarItens();
-  const data=document.getElementById('data-global').value;
-  const df=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}):'—';
-  const dfCurto=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}):'—';
-  const agora=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  const nomeColetor=(localStorage.getItem('wpp_nome')||'').trim();
-
-  const ps={};
-  itens.forEach(it=>{if(!ps[it.setor]) ps[it.setor]=[];ps[it.setor].push(it);});
-
-  let setoresHtml='';
-  Object.entries(ps).forEach(([setor,lista])=>{
-    const ic=setor==='Aviário'?'🐔':setor==='Perda'?'⚠️':setor==='Estoque'?'📦':'🌴';
-    const cor=setor==='Aviário'?'#1c2e22':setor==='Perda'?'#7f1d1d':setor==='Estoque'?'#1e3a5f':'#3b5e2a';
-    let linhas='';
-    lista.forEach((it,i)=>{
-      linhas+=`
-      <div class="item ${i%2===0?'par':'impar'}">
-        <div class="item-topo">
-          <span class="item-emoji">${it.emoji}</span>
-          <span class="item-nome">${it.nome}</span>
-          <span class="item-qtd">${it.qtd} <span class="item-unid">${it.unid}</span></span>
-        </div>
-        ${it.forn||it.obs?`<div class="item-det">
-          ${it.forn?`<span class="det-tag">🏭 ${it.forn}</span>`:''}
-          ${it.obs?`<span class="det-tag obs">📝 ${it.obs}</span>`:''}
-        </div>`:''}
-      </div>`;
-    });
-    setoresHtml+=`
-    <div class="setor">
-      <div class="setor-hd" style="background:${cor}">${ic} ${setor.toUpperCase()}</div>
-      ${linhas}
-    </div>`;
-  });
-
-  return `<!DOCTYPE html><html lang="pt-BR"><head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Coleta ${dfCurto} — Fazenda SJ</title>
-<style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{width:100%;background:#f0ede8}
-  body{font-family:Arial,sans-serif;font-size:14px;color:#111;padding:0 0 32px}
-
-  /* CABEÇALHO */
-  .header{background:#1c2e22;color:#fff;padding:16px 18px 12px;border-bottom:4px solid #b8943f}
-  .hd-logo{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-  .hd-ico{width:40px;height:40px;background:#b8943f;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-  .hd-nome{font-size:18px;font-weight:700;line-height:1.1}
-  .hd-sub{font-size:10px;opacity:.55;letter-spacing:2px;text-transform:uppercase;margin-top:2px}
-  .hd-info{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:6px}
-  .hd-label{font-size:10px;opacity:.5;letter-spacing:1.5px;text-transform:uppercase;font-family:monospace}
-  .hd-data{font-size:13px;font-weight:700;color:#b8943f;font-family:monospace;margin-top:2px}
-  .hd-emit{text-align:right}
-  .hd-emit .hd-label{font-size:9px}
-  .hd-emit .hd-hora{font-size:12px;color:rgba(255,255,255,.6);font-family:monospace;margin-top:2px}
-
-  /* FAIXA */
-  .faixa{background:#b8943f;color:#fff;padding:8px 18px;display:flex;justify-content:space-between;align-items:center;font-family:monospace;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
-
-  /* CORPO */
-  .corpo{padding:14px 14px 0}
-
-  /* SETOR */
-  .setor{margin-bottom:14px;border-radius:8px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.1)}
-  .setor-hd{color:#fff;padding:9px 14px;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
-
-  /* ITEM */
-  .item{padding:10px 14px}
-  .item.par{background:#fff}
-  .item.impar{background:#f8f6f1}
-  .item-topo{display:flex;align-items:center;gap:10px}
-  .item-emoji{font-size:22px;flex-shrink:0;width:32px;text-align:center}
-  .item-nome{flex:1;font-size:14px;font-weight:600;color:#1a1a1a}
-  .item-qtd{font-family:monospace;font-size:16px;font-weight:700;color:#1c2e22;white-space:nowrap}
-  .item-unid{font-size:10px;font-weight:400;color:#888}
-  .item-det{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;padding-left:42px}
-  .det-tag{font-size:11px;color:#555;background:#f0ede8;border-radius:4px;padding:2px 8px;display:inline-block}
-  .det-tag.obs{color:#777}
-
-  /* RODAPÉ */
-  .rodape{margin:16px 14px 0;background:#1c2e22;border-radius:8px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
-  .rod-bloco{display:flex;flex-direction:column;gap:3px}
-  .rod-lbl{font-family:monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#7aa88a}
-  .rod-val{font-family:monospace;font-size:20px;font-weight:700;color:#b8943f}
-  .rod-data{font-family:monospace;font-size:13px;font-weight:700;color:#fff}
-
-  /* ASSINATURA */
-  .assinaturas{margin:16px 14px 0;display:flex;gap:12px}
-  .ass{flex:1;border-top:1px solid #555;padding-top:6px;text-align:center;font-size:10px;color:#888;letter-spacing:1px;text-transform:uppercase}
-
-  /* BOTÕES */
-  .acoes{position:sticky;bottom:0;background:#1c2e22;padding:12px 14px;display:flex;gap:10px;border-top:2px solid #b8943f;margin-top:16px}
-  .btn-imp{flex:1;padding:13px;border:none;border-radius:8px;background:#b8943f;color:#1c2e22;font-size:14px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif}
-  .btn-fch{padding:13px 16px;border:1px solid rgba(255,255,255,.2);border-radius:8px;background:none;color:rgba(255,255,255,.55);font-family:monospace;font-size:12px;cursor:pointer}
-
-  /* IMPRESSÃO */
-  @media print{
-    body{background:#fff;padding:0}
-    .acoes{display:none!important}
-    .setor{box-shadow:none;border:1px solid #ddd}
-    @page{size:A4 portrait;margin:8mm}
-    -webkit-print-color-adjust:exact;print-color-adjust:exact
-  }
-</style>
-</head><body>
-
-<div class="acoes">
-  <button class="btn-imp" onclick="window.print()">🖨 Imprimir / Salvar PDF</button>
-  <button class="btn-fch" onclick="window.close()">✕ Fechar</button>
-</div>
-
-<div class="header">
-  <div class="hd-logo">
-    <div class="hd-ico">🌿</div>
-    <div>
-      <div class="hd-nome">Fazenda São José</div>
-      <div class="hd-sub">Boletim de Coleta de Campo</div>
-    </div>
-  </div>
-  <div class="hd-info">
-    <div>
-      <div class="hd-label">Data da coleta</div>
-      <div class="hd-data">${df}</div>
-    </div>
-    <div class="hd-emit">
-      <div class="hd-label">Emitido às</div>
-      <div class="hd-hora">${agora}</div>
-    </div>
-  </div>
-  ${nomeColetor?`<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.12);display:flex;align-items:center;gap:8px">
-    <span style="font-size:18px">👤</span>
-    <div>
-      <div style="font-family:monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.45)">Coletor responsável</div>
-      <div style="font-size:14px;font-weight:700;color:#b8943f;margin-top:2px">${nomeColetor}</div>
-    </div>
-  </div>`:''}
-</div>
-
-<div class="faixa">
-  <span>📋 Registro de coleta</span>
-  <span>${itens.length} item(ns)</span>
-</div>
-
-<div class="corpo">
-  ${setoresHtml}
-
-  <div class="rodape">
-    <div class="rod-bloco">
-      <span class="rod-lbl">Total de itens</span>
-      <span class="rod-val">${itens.length}</span>
-    </div>
-    <div class="rod-bloco" style="text-align:right">
-      <span class="rod-lbl">Data</span>
-      <span class="rod-data">${dfCurto}</span>
-    </div>
-  </div>
-
-  <div class="assinaturas">
-    <div class="ass">
-      ${nomeColetor?`<div style="font-size:12px;font-weight:700;color:#333;margin-bottom:6px;text-transform:none;letter-spacing:0">${nomeColetor}</div>`:''}
-      Responsável pela coleta
-    </div>
-    <div class="ass">Conferido por</div>
-  </div>
-</div>
-
-</body></html>`;
-}
-
 // ── GERAR IMAGEM JPG DO BOLETIM E COMPARTILHAR ──
+
 function _gerarImagemECompartilhar(n){
   const itens   = _coletarItens();
   const data    = document.getElementById('data-global').value;
@@ -960,7 +763,6 @@ function _gerarImagemECompartilhar(n){
     if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
       navigator.share({
         title: 'Coleta Fazenda SJ — '+dataStr,
-        text: _msg(),
         files: [file]
       }).catch(()=>{
         _fallbackDownload(blob, fileName);
@@ -968,7 +770,7 @@ function _gerarImagemECompartilhar(n){
     } else {
       _fallbackDownload(blob, fileName);
       setTimeout(()=>{
-        window.location.href='https://wa.me/'+n+'?text='+encodeURIComponent(_msg());
+        window.open('https://wa.me/'+n,'_blank');
       },1000);
     }
   },'image/jpeg', 0.92);
