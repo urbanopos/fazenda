@@ -190,6 +190,7 @@ textarea{resize:none;height:72px;font-size:14px}
 
 /* ── BOTÕES DE AÇÃO DO CARD ── */
 .card-acoes{display:flex;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--ce)}
+.card-acoes-ext{display:flex;gap:8px}
 .btn-concluir{flex:2;padding:12px;border:none;border-radius:var(--r);background:#27ae60;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity .15s}
 .btn-concluir:active{opacity:.8}
 .btn-alterar{flex:1;padding:12px;border:2px solid var(--ce);border-radius:var(--r);background:var(--br);color:var(--vm);font-family:'DM Mono',monospace;font-size:11px;font-weight:600;cursor:pointer;transition:border-color .15s;text-align:center}
@@ -548,9 +549,11 @@ function _card(setor,p,cl,forn){
     </div>
     <div class="card-acoes">
       <button class="btn-concluir" onclick="concluirCard('${k}','${p.unid}','${p.nome}')">✓ Concluir</button>
-      <button class="btn-alterar"  onclick="alterarCard('${k}','${cl}')">✏ Alterar</button>
-      <button class="btn-apagar"   onclick="apagarCard('${k}','${cl}')">🗑</button>
     </div>
+  </div>
+  <div class="card-acoes-ext" id="acoes-${k}" style="display:none;padding:0 16px 12px;gap:8px">
+    <button class="btn-alterar" onclick="alterarCard('${k}','${cl}')">✏ Alterar</button>
+    <button class="btn-apagar"  onclick="apagarCard('${k}','${cl}')">🗑</button>
   </div>
 </div>`;
 }
@@ -581,19 +584,18 @@ function concluirCard(k,unid,nome){
   const card=document.getElementById('card-'+k);
   const badge=document.getElementById('badge-'+k);
   const res=document.getElementById('res-'+k);
+  const acoes=document.getElementById('acoes-'+k);
   const forn=(document.getElementById('for-'+k)?.value||'').trim();
   const obs=(document.getElementById('obs-'+k)?.value||'').trim();
-  // Fecha o corpo e marca como concluído
   card.classList.remove('at');
   card.classList.add('concluido');
   badge.textContent='✓ '+qtd+' '+unid;
-  // Mostra resumo
   let html=`<div class="rc-linha">Qtde: <strong>${qtd} ${unid}</strong></div>`;
   if(forn) html+=`<div class="rc-linha">Fornecedor: <strong>${forn}</strong></div>`;
   if(obs)  html+=`<div class="rc-linha">Obs: <strong>${obs}</strong></div>`;
   res.innerHTML=html;
+  if(acoes) acoes.style.display='flex';
   _atualizarContador();
-
   _toast(nome+' registrado ✓');
 }
 
@@ -603,6 +605,8 @@ function alterarCard(k,cl){
   card.classList.add('at');
   if(cl) card.classList.add(cl);
   document.getElementById('res-'+k).innerHTML='';
+  const acoes=document.getElementById('acoes-'+k);
+  if(acoes) acoes.style.display='none';
   setTimeout(()=>{const i=document.getElementById('qtd-'+k);if(i){i.focus();i.select();}},100);
 }
 
@@ -613,6 +617,7 @@ function apagarCard(k,cl){
   const forEl=document.getElementById('for-'+k);
   const badge=document.getElementById('badge-'+k);
   const res=document.getElementById('res-'+k);
+  const acoes=document.getElementById('acoes-'+k);
   if(qtdEl) qtdEl.value=0;
   if(obsEl) obsEl.value='';
   if(forEl) forEl.value='';
@@ -620,8 +625,8 @@ function apagarCard(k,cl){
   if(cl) card.classList.remove(cl);
   badge.textContent='+ Registrar';
   res.innerHTML='';
+  if(acoes) acoes.style.display='none';
   _atualizarContador();
-
 }
 
 function trocarAba(s){
@@ -679,19 +684,10 @@ function _getNum(){
 const VK = 'fsj_vendas_ativa';   // localStorage key
 const NK = 'fsj_pedido_num';     // contador de pedidos
 
-const PRODUTOS_VENDA = [
-  {id:'ovo',       nome:'Ovos de Capoeira', emoji:'🥚', unid:'unid'},
-  {id:'galinha',   nome:'Galinha',           emoji:'🐓', unid:'unid'},
-  {id:'frango',    nome:'Frango',            emoji:'🍗', unid:'unid'},
-  {id:'pinto',     nome:'Pinto',             emoji:'🐣', unid:'unid'},
-  {id:'pintainha', nome:'Pintainha',         emoji:'🐤', unid:'unid'},
-  {id:'esterco',   nome:'Esterco',           emoji:'🌱', unid:'saco'},
-  {id:'coco',      nome:'Côco Seco',         emoji:'🥥', unid:'unid'},
-  {id:'manga',     nome:'Manga',             emoji:'🥭', unid:'unid'},
-  {id:'abacate',   nome:'Abacate',           emoji:'🥑', unid:'unid'},
-  {id:'banana',    nome:'Banana',            emoji:'🍌', unid:'cac.'},
-  {id:'pitomba',   nome:'Pitomba',           emoji:'🍒', unid:'kg'},
-];
+// Produtos de venda = mesmos do Aviário
+const PRODUTOS_VENDA = SETORES.aviario.produtos.map(p=>({
+  id: p.id, nome: p.nome, emoji: p.emoji, unid: p.unid
+}));
 
 let _vendaItens = []; // [{id, produto, emoji, unid, qtd, preco, sub, concluido}]
 let _pedidoNum  = 0;
