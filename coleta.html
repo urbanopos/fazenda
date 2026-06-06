@@ -140,6 +140,10 @@ textarea{resize:none;height:72px;font-size:14px}
 .btn-con{flex:2;padding:12px;border:none;border-radius:var(--r);background:#27ae60;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
 .btn-alt{flex:1;padding:12px;border:2px solid var(--ce);border-radius:var(--r);background:var(--br);color:var(--vm);font-family:'DM Mono',monospace;font-size:11px;font-weight:600;cursor:pointer;text-align:center}
 .btn-apa{width:48px;height:48px;padding:0;border:2px solid #fde8e8;border-radius:var(--r);background:#fde8e8;color:#a03030;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* Botoes sempre visiveis no cabecalho */
+.ph-acoes{display:flex;gap:5px;flex-shrink:0}
+.ph-btn-alt{padding:5px 10px;border:1px solid var(--ce);border-radius:6px;background:var(--br);color:var(--vm);font-family:'DM Mono',monospace;font-size:10px;font-weight:600;cursor:pointer;line-height:1.4}
+.ph-btn-apa{width:30px;height:30px;padding:0;border:1px solid #fde8e8;border-radius:6px;background:#fde8e8;color:#a03030;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 /* BOTOES PRINCIPAIS */
 .btn-wpp{width:100%;padding:16px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 4px 16px rgba(37,211,102,.3);margin-top:8px}
 .btn-wpp:active{opacity:.85}
@@ -447,7 +451,16 @@ function _card(setor, p, cl, forn){
   var k = setor+'_'+p.id;
   var fH = forn ? '<div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-'+k+'" placeholder="Nome do fornecedor..." style="font-size:15px"></div>' : '';
   return '<div class="pc'+(cl?' '+cl:'')+'" id="card-'+k+'">'
-    +'<div class="ph" onclick="toggleCard(\''+k+'\',\''+cl+'\')"><span class="pe">'+p.nome+'</span><span class="pn"></span><span class="pb" id="badge-'+k+'">+ Registrar</span></div>'
+    +'<div class="ph">'
+    +'<div onclick="toggleCard(\''+k+'\',\''+cl+'\')" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0">'
+    +'<span class="pe">'+p.nome+'</span>'
+    +'<span class="pb" id="badge-'+k+'">+ Registrar</span>'
+    +'</div>'
+    +'<div class="ph-acoes">'
+    +'<button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(\''+k+'\',\''+cl+'\')">Edit</button>'
+    +'<button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(\''+k+'\',\''+cl+'\')">x</button>'
+    +'</div>'
+    +'</div>'
     +'<div class="res-con" id="res-'+k+'"></div>'
     +'<div class="pbd" id="body-'+k+'">'
     +'<div class="cg"><span class="cl">Quantidade ('+p.unid+')</span>'
@@ -460,13 +473,12 @@ function _card(setor, p, cl, forn){
     +'<div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-'+k+'" placeholder="Ex: lote A, qualidade boa..."></textarea></div>'
     +'<div class="card-acoes">'
     +'<button class="btn-con" onclick="concluirCard(\''+k+'\',\''+p.unid+'\',\''+p.nome+'\')">Concluir</button>'
-    +'<button class="btn-alt" onclick="alterarCard(\''+k+'\',\''+cl+'\')">Alterar</button>'
-    +'<button class="btn-apa" onclick="apagarCard(\''+k+'\',\''+cl+'\')">X</button>'
     +'</div></div></div>';
 }
 
 function toggleCard(k, cl){
   var card = document.getElementById('card-'+k);
+  // Se concluido, nao abre pelo toque no cabecalho — use Edit para alterar
   if(card.classList.contains('concluido')) return;
   var aberto = card.classList.contains('at');
   if(aberto){ card.classList.remove('at'); }
@@ -503,11 +515,20 @@ function concluirCard(k, unid, nome){
 
 function alterarCard(k, cl){
   var card = document.getElementById('card-'+k);
+  // Se estava concluido, limpa o resumo e reabre para edicao
   card.classList.remove('concluido');
   card.classList.add('at');
   if(cl) card.classList.add(cl);
-  document.getElementById('res-'+k).innerHTML = '';
+  var res = document.getElementById('res-'+k);
+  if(res) res.innerHTML = '';
+  // Badge volta ao estado editavel
+  var badge = document.getElementById('badge-'+k);
+  var qtdEl = document.getElementById('qtd-'+k);
+  var qtd = qtdEl ? parseFloat(qtdEl.value)||0 : 0;
+  // mantem valor mas indica que precisa concluir
+  if(badge) badge.textContent = qtd > 0 ? '* '+qtd+' (editar)' : '+ Registrar';
   setTimeout(function(){ var i=document.getElementById('qtd-'+k); if(i){i.focus();i.select();} }, 100);
+  _atualizarContador();
 }
 
 function apagarCard(k, cl){
