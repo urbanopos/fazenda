@@ -89,7 +89,42 @@ body{font-family:'DM Sans',sans-serif;background:var(--vd);min-height:100vh;colo
 .ad-st{font-family:'DM Mono',monospace;font-size:11px;text-align:center;margin-top:12px;min-height:16px;color:var(--ac)}
 .ad-st.er{color:#e08080}
 
-/* ── TOPO ── */
+/* ── ABA VENDAS (oculta por padrão) ── */
+.aba-v{display:none}
+.aba-v.vis{display:inline-flex}
+.aba-v.at{background:#7a3a00;border-color:#7a3a00;color:#ffd49a}
+#sec-vendas{display:none}
+#sec-vendas.at{display:block}
+
+/* ── TALÃO ── */
+.talao-num{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--ac);text-align:center;margin-bottom:14px;padding:6px;background:rgba(184,148,63,.08);border-radius:6px;border:1px dashed var(--ac)}
+.talao-num strong{font-size:15px}
+
+/* ── LINHA DE ITEM ── */
+.venda-item{background:var(--br);border-radius:var(--r);border:2px solid var(--ce);padding:14px;margin-bottom:10px;position:relative}
+.venda-item.concluido{background:#fffbf0;border-color:var(--ac)}
+.vi-nome{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--tx);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.vi-nome-sel{flex:1;padding:8px 10px;border:2px solid var(--ce);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--cr);color:var(--tx);outline:none;-webkit-appearance:none;appearance:none}
+.vi-nome-sel:focus{border-color:var(--ac)}
+.vi-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.vi-campo{display:flex;flex-direction:column;gap:4px}
+.vi-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu)}
+.vi-inp{padding:10px 12px;border:2px solid var(--ce);border-radius:6px;font-family:'DM Mono',monospace;font-size:15px;font-weight:600;background:var(--cr);color:var(--tx);outline:none;width:100%;-webkit-appearance:none}
+.vi-inp:focus{border-color:var(--ac);background:var(--br)}
+.vi-sub{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--vd);text-align:right;padding:6px 0 0;border-top:1px solid var(--ce)}
+.vi-btns{display:flex;gap:8px;margin-top:10px}
+.vi-ok{flex:1;padding:10px;border:none;border-radius:6px;background:#27ae60;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
+.vi-del{width:40px;height:40px;border:2px solid #fde8e8;border-radius:6px;background:#fde8e8;color:#a03030;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.vi-resumo{font-family:'DM Mono',monospace;font-size:12px;color:var(--vm);margin-top:4px}
+
+/* ── TOTAL DO PEDIDO ── */
+.venda-total{background:var(--vd);border-radius:var(--r);padding:14px 16px;margin-top:4px;display:flex;justify-content:space-between;align-items:center}
+.vt-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7aa88a}
+.vt-val{font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--ac)}
+
+/* ── BOTÃO NOVO ITEM ── */
+.btn-add-item{width:100%;padding:12px;border:2px dashed var(--ac);border-radius:var(--r);background:rgba(184,148,63,.06);color:var(--ac);font-family:'DM Mono',monospace;font-size:12px;letter-spacing:1px;cursor:pointer;margin-bottom:12px;transition:background .15s}
+.btn-add-item:active{background:rgba(184,148,63,.14)}
 .topo{background:var(--vd);padding:16px 20px 12px;display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--ac);position:sticky;top:0;z-index:100}
 .topo-icon{width:44px;height:44px;border-radius:50%;background:var(--ac);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;cursor:pointer;transition:transform .15s,box-shadow .15s;user-select:none}
 .topo-icon.press{transform:scale(.88);box-shadow:0 0 0 5px rgba(184,148,63,.35)}
@@ -273,7 +308,14 @@ textarea{resize:none;height:72px;font-size:14px}
           <button class="ad-ok" onclick="salvarConfigColetor()">💾 Salvar configurações</button>
         </div>
         <div class="ad-div"></div>
-        <span class="ad-lbl">🔑 Alterar senha</span>
+        <span class="ad-lbl">🛒 Módulo de Vendas</span>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.4);margin-bottom:10px;line-height:1.6">
+          Ativa ou desativa a aba Vendas para este coletor.
+        </div>
+        <div class="ad-row">
+          <button class="ad-ok" id="btn-toggle-vendas" onclick="toggleVendas()" style="background:#7a3a00;color:#ffd49a">🛒 Ativar Vendas</button>
+        </div>
+        <div class="ad-div"></div>
         <div class="ad-iw"><input class="ad-inp" type="password" id="ad-senha-nova" placeholder="Nova senha..." autocomplete="new-password"></div>
         <div class="ad-row"><button class="ad-ok" onclick="salvarSenha()" style="background:#2d4a38;color:var(--ac)">Salvar senha</button></div>
         <div class="ad-div"></div>
@@ -309,22 +351,44 @@ textarea{resize:none;height:72px;font-size:14px}
 <!-- CORPO -->
 <div class="corpo">
   <div class="cg" style="margin-bottom:20px">
-    <span class="cl">📅 Data da coleta</span>
+    <span class="cl">📅 Data da Venda</span>
     <div class="cdata">
       <input type="date" id="data-global" style="flex:1">
       <button class="btn-hj" onclick="setHoje()">Hoje</button>
     </div>
   </div>
   <div class="abas">
-    <button class="aba at"  onclick="trocarAba('aviario')" id="aba-aviario">🐔 Aviário</button>
+    <button class="aba at"    onclick="trocarAba('aviario')" id="aba-aviario">🐔 Aviário</button>
     <button class="aba aba-p" onclick="trocarAba('perda')"   id="aba-perda">⚠️ Perda</button>
     <button class="aba aba-c" onclick="trocarAba('campo')"   id="aba-campo">🌴 Campo</button>
     <button class="aba aba-e" onclick="trocarAba('estoque')" id="aba-estoque">📦 Estoque</button>
+    <button class="aba aba-v" onclick="trocarAba('vendas')"  id="aba-vendas">🛒 Vendas</button>
   </div>
   <div class="secao at" id="sec-aviario"><div class="sec-t">Aviário</div><div class="sec-d">Produção e movimentação</div><div class="pgrid" id="grid-aviario"></div></div>
   <div class="secao" id="sec-perda"><div class="sec-t" style="color:#7f1d1d">Perda / Baixa</div><div class="sec-d">Mortalidade ou descarte</div><div class="pgrid" id="grid-perda"></div></div>
   <div class="secao" id="sec-campo"><div class="sec-t" style="color:#3b5e2a">Campo</div><div class="sec-d">Colheita e produção rural</div><div class="pgrid" id="grid-campo"></div></div>
   <div class="secao" id="sec-estoque"><div class="sec-t" style="color:#1e3a5f">Estoque</div><div class="sec-d">Entrada de insumos e rações</div><div class="pgrid" id="grid-estoque"></div></div>
+  <div id="sec-vendas">
+    <div class="sec-t" style="color:#7a3a00">Vendas</div>
+    <div class="sec-d">Talão de pedido numerado</div>
+    <div class="talao-num" id="talao-num">Pedido <strong>—</strong></div>
+    <div class="cg" style="margin-bottom:12px">
+      <span class="cl">👤 Nome do Cliente</span>
+      <input type="text" id="venda-cliente" placeholder="Nome do cliente..."
+        autocomplete="off" style="font-size:15px">
+    </div>
+    <div id="vendas-itens"></div>
+    <button class="btn-add-item" onclick="adicionarItemVenda()">+ Adicionar item</button>
+    <div class="venda-total">
+      <div><div class="vt-lbl">Total do pedido</div></div>
+      <div class="vt-val" id="venda-total-val">R$ 0,00</div>
+    </div>
+    <div style="margin-top:12px">
+      <button class="btn-wpp" onclick="enviarPedido()" style="background:linear-gradient(135deg,#7a3a00,#b85a00)">
+        <span style="font-size:22px">🛒</span> Enviar Pedido
+      </button>
+    </div>
+  </div>
   <div class="div"></div>
   <div class="cont" id="contador">Nenhum item preenchido</div>
   <button class="btn-wpp" onclick="enviarTudo()"><span style="font-size:22px">💬</span> Enviar — PDF + WhatsApp</button>
@@ -423,6 +487,7 @@ function _iniciar(){
     if(g) g.innerHTML=cfg.produtos.map(p=>_card(s,p,cfg.cl,cfg.forn||false)).join('');
   });
   _initLP();
+  _initVendas();
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
@@ -562,8 +627,17 @@ function apagarCard(k,cl){
 function trocarAba(s){
   document.querySelectorAll('.secao').forEach(x=>x.classList.remove('at'));
   document.querySelectorAll('.aba').forEach(x=>x.classList.remove('at'));
-  document.getElementById('sec-'+s)?.classList.add('at');
+  const secV=document.getElementById('sec-vendas');
+  if(secV) secV.classList.remove('at');
+  if(s==='vendas'){
+    if(secV) secV.classList.add('at');
+  } else {
+    document.getElementById('sec-'+s)?.classList.add('at');
+  }
   document.getElementById('aba-'+s)?.classList.add('at');
+  // Atualiza rótulo da data conforme aba
+  const lblData = document.querySelector('.cdata')?.previousElementSibling;
+  if(lblData) lblData.textContent = s==='vendas' ? '📅 Data da Venda' : '📅 Data da Coleta';
 }
 
 function setHoje(){
@@ -597,6 +671,339 @@ function _atualizarContador(){
 function _getNum(){
   return (localStorage.getItem('wpp_numero')||'').replace(/\D/g,'')||
          (WPP_DESTINO||'').replace(/\D/g,'');
+}
+
+// ════════════════════════════════════════════════
+//  MÓDULO VENDAS
+// ════════════════════════════════════════════════
+const VK = 'fsj_vendas_ativa';   // localStorage key
+const NK = 'fsj_pedido_num';     // contador de pedidos
+
+const PRODUTOS_VENDA = [
+  {id:'ovo',       nome:'Ovos de Capoeira', emoji:'🥚', unid:'unid'},
+  {id:'galinha',   nome:'Galinha',           emoji:'🐓', unid:'unid'},
+  {id:'frango',    nome:'Frango',            emoji:'🍗', unid:'unid'},
+  {id:'pinto',     nome:'Pinto',             emoji:'🐣', unid:'unid'},
+  {id:'pintainha', nome:'Pintainha',         emoji:'🐤', unid:'unid'},
+  {id:'esterco',   nome:'Esterco',           emoji:'🌱', unid:'saco'},
+  {id:'coco',      nome:'Côco Seco',         emoji:'🥥', unid:'unid'},
+  {id:'manga',     nome:'Manga',             emoji:'🥭', unid:'unid'},
+  {id:'abacate',   nome:'Abacate',           emoji:'🥑', unid:'unid'},
+  {id:'banana',    nome:'Banana',            emoji:'🍌', unid:'cac.'},
+  {id:'pitomba',   nome:'Pitomba',           emoji:'🍒', unid:'kg'},
+];
+
+let _vendaItens = []; // [{id, produto, emoji, unid, qtd, preco, sub, concluido}]
+let _pedidoNum  = 0;
+
+function _initVendas(){
+  // Mostra aba se ativa
+  const ativa = localStorage.getItem(VK) === '1';
+  _aplicarVendas(ativa);
+  // Carrega número sequencial
+  _pedidoNum = parseInt(localStorage.getItem(NK)||'0');
+  _renderTalaoNum();
+}
+
+function _aplicarVendas(ativa){
+  const aba = document.getElementById('aba-vendas');
+  const btn = document.getElementById('btn-toggle-vendas');
+  if(ativa){
+    aba.classList.add('vis');
+    if(btn){ btn.textContent='🛒 Desativar Vendas'; btn.style.background='#5a1010'; btn.style.color='#fca5a5'; }
+  } else {
+    aba.classList.remove('vis','at');
+    if(btn){ btn.textContent='🛒 Ativar Vendas'; btn.style.background='#7a3a00'; btn.style.color='#ffd49a'; }
+    // Se estava na aba vendas, volta para aviário
+    if(document.getElementById('sec-vendas').classList.contains('at')){
+      trocarAba('aviario');
+    }
+  }
+}
+
+function toggleVendas(){
+  const atual = localStorage.getItem(VK) === '1';
+  const nova  = !atual;
+  localStorage.setItem(VK, nova ? '1' : '0');
+  _aplicarVendas(nova);
+  const s2 = document.getElementById('ad-st2');
+  s2.textContent = nova ? '✓ Vendas ativadas' : '✓ Vendas desativadas';
+  s2.className   = 'ad-st';
+}
+
+function _renderTalaoNum(){
+  const el = document.getElementById('talao-num');
+  if(el) el.innerHTML = 'Pedido <strong>PED-'+String(_pedidoNum+1).padStart(4,'0')+'</strong>';
+}
+
+function _nextPedidoNum(){
+  _pedidoNum++;
+  localStorage.setItem(NK, String(_pedidoNum));
+  _renderTalaoNum();
+  return 'PED-'+String(_pedidoNum).padStart(4,'0');
+}
+
+// ── Adiciona linha de item ──
+let _viIdx = 0;
+function adicionarItemVenda(){
+  const idx  = _viIdx++;
+  const hoje = new Date().toISOString().split('T')[0];
+  _vendaItens.push({idx, prodId:'ovo', unidade:'', data:hoje, qtd:0, preco:0, sub:0, concluido:false});
+  _renderVendaItens();
+}
+
+function _renderVendaItens(){
+  const cont = document.getElementById('vendas-itens');
+  if(!cont) return;
+  cont.innerHTML = _vendaItens.map((it,i)=>{
+    if(it.concluido){
+      const p = PRODUTOS_VENDA.find(x=>x.id===it.prodId)||{emoji:'',nome:it.prodId};
+      const dtFmt = it.data ? new Date(it.data+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}) : '—';
+      const unExib = it.unidade || p.unid || '';
+      return `<div class="venda-item concluido">
+        <div class="vi-nome" onclick="_editarItemVenda(${i})" style="cursor:pointer" title="Toque para alterar">
+          ${p.emoji} <strong>${p.nome}</strong>
+          <span style="font-family:monospace;font-size:11px;color:var(--mu);margin-left:4px">${dtFmt}</span>
+          <span style="font-size:10px;color:var(--ac);margin-left:auto">✏</span>
+        </div>
+        <div class="vi-resumo">${it.qtd} ${unExib} × R$ ${_fmt(it.preco)} = <strong>R$ ${_fmt(it.sub)}</strong></div>
+        <div class="vi-btns">
+          <button class="vi-ok" onclick="_editarItemVenda(${i})" style="background:var(--vm);font-size:12px">✏ Alterar</button>
+          <button class="vi-del" onclick="_removerItemVenda(${i})">🗑</button>
+        </div>
+      </div>`;
+    }
+    return `<div class="venda-item" id="vi-${it.idx}">
+      <div class="vi-row" style="margin-bottom:8px">
+        <div class="vi-campo" style="grid-column:1/-1">
+          <span class="vi-lbl">Produto</span>
+          <select class="vi-nome-sel" onchange="_setProdVenda(${i},this.value)">
+            ${PRODUTOS_VENDA.map(p=>`<option value="${p.id}" ${p.id===it.prodId?'selected':''}>${p.emoji} ${p.nome}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="vi-row" style="margin-bottom:8px">
+        <div class="vi-campo" style="grid-column:1/-1">
+          <span class="vi-lbl">Unidade (ex: bandeja, kg, dúzia...)</span>
+          <input class="vi-inp" type="text" placeholder="Digite a unidade..."
+            value="${it.unidade||''}"
+            oninput="_setUnidVenda(${i},this.value)"
+            style="font-size:15px">
+        </div>
+      </div>
+      <div class="vi-row">
+        <div class="vi-campo">
+          <span class="vi-lbl">Data</span>
+          <input class="vi-inp" type="date" value="${it.data||''}"
+            style="font-size:13px;padding:8px 10px"
+            oninput="_setDataVenda(${i},this.value)">
+        </div>
+        <div class="vi-campo">
+          <span class="vi-lbl">Quantidade</span>
+          <input class="vi-inp" type="number" min="0" step="0.5" inputmode="decimal"
+            placeholder="0" value="${it.qtd||''}"
+            oninput="_setQtdVenda(${i},this.value)">
+        </div>
+      </div>
+      <div class="vi-row" style="margin-top:8px">
+        <div class="vi-campo">
+          <span class="vi-lbl">Preço Unit. (R$)</span>
+          <input class="vi-inp" type="number" min="0" step="0.01" inputmode="decimal"
+            placeholder="0,00" value="${it.preco||''}"
+            oninput="_setPrecoVenda(${i},this.value)">
+        </div>
+        <div class="vi-campo">
+          <span class="vi-lbl">Subtotal</span>
+          <div class="vi-inp" style="background:var(--vd);color:var(--ac);font-weight:700;font-size:16px;display:flex;align-items:center">
+            <span class="vi-sub-val">R$ ${_fmt(it.sub)}</span>
+          </div>
+        </div>
+      </div>
+      <div class="vi-btns">
+        <button class="vi-ok" onclick="_concluirItemVenda(${i})">✓ Confirmar item</button>
+        <button class="vi-del" onclick="_removerItemVenda(${i})">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+  _atualizarTotalVenda();
+}
+
+function _fmt(v){ return Number(v||0).toFixed(2).replace('.',','); }
+
+function _setProdVenda(i,v){ _vendaItens[i].prodId=v; /* não re-renderiza — mantém campos preenchidos */ }
+function _setUnidVenda(i,v){ _vendaItens[i].unidade=v; }
+function _setDataVenda(i,v){ _vendaItens[i].data=v; }
+function _setQtdVenda(i,v){
+  _vendaItens[i].qtd=parseFloat(v)||0;
+  _calcSub(i);
+  // Atualiza só o subtotal do card sem recriar tudo
+  const card=document.getElementById('vi-'+_vendaItens[i].idx);
+  if(card){const sub=card.querySelector('.vi-sub-val');if(sub) sub.textContent='R$ '+_fmt(_vendaItens[i].sub);}
+  _atualizarTotalVenda();
+}
+function _setPrecoVenda(i,v){
+  _vendaItens[i].preco=parseFloat(v)||0;
+  _calcSub(i);
+  const card=document.getElementById('vi-'+_vendaItens[i].idx);
+  if(card){const sub=card.querySelector('.vi-sub-val');if(sub) sub.textContent='R$ '+_fmt(_vendaItens[i].sub);}
+  _atualizarTotalVenda();
+}
+function _calcSub(i){ _vendaItens[i].sub=Math.round(_vendaItens[i].qtd*_vendaItens[i].preco*100)/100; }
+
+function _concluirItemVenda(i){
+  const it = _vendaItens[i];
+  if(!it.qtd || it.qtd<=0){ _toast('Informe a quantidade.'); return; }
+  if(!it.preco || it.preco<=0){ _toast('Informe o preço unitário.'); return; }
+  _calcSub(i);
+  it.concluido = true;
+  _renderVendaItens();
+}
+
+function _editarItemVenda(i){ _vendaItens[i].concluido=false; _renderVendaItens(); }
+function _removerItemVenda(i){ _vendaItens.splice(i,1); _renderVendaItens(); }
+
+function _atualizarTotalVenda(){
+  const tot = _vendaItens.reduce((s,it)=>s+(it.concluido?it.sub:0),0);
+  const el  = document.getElementById('venda-total-val');
+  if(el) el.textContent = 'R$ '+_fmt(tot);
+}
+
+// ── Gera imagem do talão e envia ──
+function enviarPedido(){
+  const concluidos = _vendaItens.filter(it=>it.concluido);
+  if(!concluidos.length){ _toast('Confirme ao menos um item antes de enviar.'); return; }
+  const n = _getNum();
+  if(!n){ _toast('Número não configurado. Contacte o administrador.'); return; }
+
+  const numPed = _nextPedidoNum();
+  const data   = document.getElementById('data-global').value;
+  const dfCurto= data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}):'—';
+  const dfLongo= data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}):'—';
+  const agora  = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const nomeVendedor = (localStorage.getItem('wpp_nome')||'').trim();
+  const nomeCliente  = (document.getElementById('venda-cliente')?.value||'').trim();
+  const total  = concluidos.reduce((s,it)=>s+it.sub,0);
+
+  // ── Canvas do talão ──
+  const W   = 420;
+  const PAD = 18;
+  const c   = document.createElement('canvas');
+  const ctx = c.getContext('2d');
+
+  // Altura dinâmica
+  let H = nomeVendedor?158:122; // cabeçalho
+  H += 28;              // faixa
+  H += 44;              // número pedido
+  concluidos.forEach(()=>{ H+=52; }); // linhas
+  H += 2;               // separador
+  H += 48;              // total
+  H += 44;              // cliente
+  H += 8;
+
+  c.width=W; c.height=H;
+  let y=0;
+
+  const rect=(x,yy,w,h,col)=>{ctx.fillStyle=col;ctx.fillRect(x,yy,w,h);};
+  const txt=(t,x,yy,sz,col,w='normal',al='left')=>{
+    ctx.font=`${w} ${sz}px Arial`;ctx.fillStyle=col;ctx.textAlign=al;
+    ctx.fillText(t,x,yy);ctx.textAlign='left';
+  };
+  const ln=(x1,y1,x2,y2,col,lw=1)=>{
+    ctx.strokeStyle=col;ctx.lineWidth=lw;
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  };
+
+  // CABEÇALHO
+  rect(0,y,W,nomeVendedor?158:122,'#1c2e22');
+  ctx.fillStyle='#b8943f';
+  ctx.beginPath();ctx.arc(PAD+20,y+28,20,0,Math.PI*2);ctx.fill();
+  txt('🌿',PAD+20,y+36,18,'#fff','normal','center');
+  txt('Fazenda São José',PAD+50,y+24,16,'#fff','bold');
+  txt('TALÃO DE PEDIDO',PAD+50,y+40,9,'#b8943f');
+  txt('DATA',PAD,y+68,8,'rgba(255,255,255,0.45)');
+  txt(dfLongo,PAD,y+82,11,'#b8943f','bold');
+  txt('EMITIDO ÀS '+agora,W-PAD,y+82,9,'rgba(255,255,255,0.5)','normal','right');
+  if(nomeVendedor){
+    ln(PAD,y+96,W-PAD,y+96,'rgba(255,255,255,0.12)');
+    txt('👤',PAD+2,y+116,14,'#fff');
+    txt('VENDEDOR',PAD+26,y+108,8,'rgba(255,255,255,0.4)');
+    txt(nomeVendedor,PAD+26,y+122,13,'#b8943f','bold');
+    y+=158;
+  } else { y+=122; }
+
+  // FAIXA LARANJA
+  rect(0,y,W,28,'#7a3a00');
+  txt('🛒 PEDIDO DE VENDA',PAD,y+19,10,'#ffd49a','bold');
+  txt(numPed,W-PAD,y+19,11,'#ffd49a','bold','right');
+  y+=28;
+
+  // LINHA DE CABEÇALHO DA TABELA
+  rect(0,y,W,16,'rgba(184,148,63,0.12)');
+  txt('DATA',PAD,y+12,8,'#888');
+  txt('PRODUTO / UNID',PAD+46,y+12,8,'#888');
+  txt('QTD',W-PAD-100,y+12,8,'#888','normal','left');
+  txt('UNIT.',W-PAD-52,y+12,8,'#888','normal','left');
+  txt('SUB',W-PAD,y+12,8,'#888','normal','right');
+  y+=16;
+
+  // ITENS
+  concluidos.forEach((it,i)=>{
+    const p=PRODUTOS_VENDA.find(x=>x.id===it.prodId)||{emoji:'',nome:it.prodId,unid:''};
+    const unExib = it.unidade || p.unid || '';
+    const dtFmt  = it.data ? new Date(it.data+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}) : '—';
+    const bg=i%2===0?'#ffffff':'#faf8f3';
+    rect(0,y,W,52,bg);
+    // Data
+    txt(dtFmt,PAD,y+20,10,'#888');
+    txt(p.emoji,PAD,y+38,14,'#000');
+    // Produto + unidade
+    txt(p.nome,PAD+22,y+22,12,'#1a1a1a','bold');
+    txt(unExib,PAD+22,y+38,10,'#b8943f');
+    // Qtd
+    txt(String(it.qtd),W-PAD-100,y+30,13,'#1c2e22','bold');
+    // Preço unit
+    txt('R$'+_fmt(it.preco),W-PAD-52,y+30,11,'#555');
+    // Subtotal
+    txt('R$'+_fmt(it.sub),W-PAD,y+30,13,'#7a3a00','bold','right');
+    ln(0,y+51,W,y+51,'#eee');
+    y+=52;
+  });
+
+  // TOTAL
+  rect(0,y,W,48,'#1c2e22');
+  txt('TOTAL DO PEDIDO',PAD,y+18,9,'#7aa88a');
+  txt('R$ '+_fmt(total),W-PAD,y+34,20,'#b8943f','bold','right');
+  txt(String(concluidos.length)+' item(ns)',PAD,y+34,11,'rgba(255,255,255,0.5)');
+  y+=48;
+
+  // CLIENTE
+  rect(0,y,W,44,'#f5f0e8');
+  txt('CLIENTE',PAD,y+16,8,'#888');
+  txt(nomeCliente||'—',PAD,y+34,14,'#333','bold');
+  y+=44;
+
+  // Exporta
+  c.toBlob(blob=>{
+    if(!blob){ _toast('Erro ao gerar talão.'); return; }
+    const fileName='pedido-'+numPed+'.jpg';
+    const file=new File([blob],fileName,{type:'image/jpeg'});
+    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+      navigator.share({title:'Pedido '+numPed+' — Fazenda SJ',files:[file]}).catch(()=>_fallbackDownload(blob,fileName));
+    } else {
+      _fallbackDownload(blob,fileName);
+      setTimeout(()=>window.open('https://wa.me/'+n,'_blank'),1000);
+    }
+  },'image/jpeg',0.92);
+
+  // Limpa itens e cliente após envio
+  setTimeout(()=>{
+    _vendaItens=[];
+    _viIdx=0;
+    const cl=document.getElementById('venda-cliente');
+    if(cl) cl.value='';
+    _renderVendaItens();
+    _renderTalaoNum();
+  },2000);
 }
 
 // ── GERAR IMAGEM JPG DO BOLETIM E COMPARTILHAR ──
