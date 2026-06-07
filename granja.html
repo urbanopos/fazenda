@@ -575,6 +575,31 @@ th.th-sort-cmp:hover{background:rgba(184,148,63,.18)!important}
 .mfp-flags-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
 /* Embalagens de venda */
 .mfp-emb-section{margin-top:12px;padding:10px 14px;background:#f8f5ef;border:1px solid var(--b);border-left:3px solid var(--ac);border-radius:5px}
+/* Modal independente — Novo Produto */
+#modal-novo-produto{
+  display:none;position:fixed;z-index:10500;
+  top:80px;left:50%;transform:translateX(-50%);
+  width:860px;max-width:97vw;
+  background:#fff;border-radius:10px;
+  box-shadow:0 20px 60px rgba(0,0,0,.38);
+  overflow:hidden;
+}
+#modal-novo-produto.vis{display:block}
+.mnp-hd{
+  background:var(--dk);padding:11px 18px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:3px solid var(--ac);
+  cursor:grab;user-select:none;
+}
+.mnp-hd:active{cursor:grabbing}
+.mnp-hd-t{color:var(--ac);font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase}
+.mnp-hd-s{color:#7aa88a;font-size:13px;margin-top:2px}
+.mnp-hd-x{background:none;border:none;color:#aaa;cursor:pointer;font-size:20px;line-height:1;padding:0}
+.mnp-hd-x:hover{color:#fff}
+.mnp-body{padding:18px 20px 14px}
+.mfp-btn-incluir{padding:6px 14px;font-size:11px;font-family:var(--mono);font-weight:700;letter-spacing:.5px;border:none;border-radius:4px;cursor:pointer;background:#2d4a38;color:var(--ac);transition:background .15s;white-space:nowrap}
+.mfp-btn-incluir:hover{background:#3a5c45}
+.mfp-btn-incluir.ativo{background:var(--ac);color:var(--dk)}
 .mfp-emb-title{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ac);margin-bottom:8px;display:flex;align-items:center;gap:8px}
 .mfp-emb-title span{opacity:.7;font-weight:400;text-transform:none;letter-spacing:0;font-size:11px}
 .mfp-emb-lista{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;min-height:24px}
@@ -1283,7 +1308,10 @@ th.th-sort-cmp:hover{background:rgba(184,148,63,.18)!important}
 <span class="mfp-hd-title">Catálogo de Produtos</span>
 <span class="mfp-hd-forn" id="mfp-forn-nome">— Fornecedor —</span>
 </div>
+<div style="display:flex;align-items:center;gap:10px">
+<button class="mfp-btn-incluir" id="mfp-btn-incluir" onclick="mfpToggleExpand()">+ Incluir Produto</button>
 <button onclick="fecharModalProdutosFor()">×</button>
+</div>
 </div>
 <div class="mfp-body">
 <!-- Produtos já cadastrados deste fornecedor -->
@@ -1298,116 +1326,7 @@ th.th-sort-cmp:hover{background:rgba(184,148,63,.18)!important}
 <div id="mfp-existentes-lista"></div>
 <div class="mfp-sep"></div>
 </div>
-<!-- Formulário de inclusão -->
-<div class="mfp-form">
-<div class="mfp-form-title">
-<span id="mfp-form-subtitulo">Novo produto / atualizar existente</span>
-<span id="mfp-cod-preview" style="color:var(--ac);font-family:var(--mono);font-size:11px"></span>
-<div style="display:flex;gap:6px;align-items:center;margin-left:auto">
-<button class="mfp-btn-add" onclick="mfpAdicionarItem()">✓ Salvar no Catálogo</button>
-<button class="mfp-btn-clear" onclick="mfpLimparForm()" title="Limpar campos">✕ Limpar</button>
-<button id="mfp-btn-cancelar-edicao" onclick="mfpLimparForm()" title="Cancelar edição e limpar campos"
-  style="display:none;padding:5px 10px;font-size:10px;font-family:var(--mono);border:1px solid var(--red);color:var(--red);background:rgba(160,48,48,.08);border-radius:4px;cursor:pointer;letter-spacing:.5px;transition:background .15s;white-space:nowrap;font-weight:700"
-  onmouseover="this.style.background='rgba(160,48,48,.18)'" onmouseout="this.style.background='rgba(160,48,48,.08)'">
-  ✕ Cancelar edição
-</button>
-</div>
-</div>
-<div class="mfp-grid mfp-g5" style="margin-bottom:10px">
-<div class="mfp-fl">
-<label>Produto *</label>
-<input id="mfp-produto" oninput="mfpBuscarExistente()" placeholder="Nome do produto">
-</div>
-<div class="mfp-fl">
-<label>Cód. Produto <span style="font-size:10px;color:var(--ac);font-family:var(--mono);font-weight:400;letter-spacing:0;text-transform:none">↻ via compras</span></label>
-<div class="mfp-cod-wrap">
-<input id="mfp-cod" placeholder="—" readonly
-  style="background:#f0ece3;color:var(--md);font-family:var(--mono);font-weight:700;cursor:default;text-align:center"
-  title="Código gerado na tabela compras">
-<span class="mfp-cod-gerado" id="mfp-cod-auto-lbl"></span>
-</div>
-</div>
-<div class="mfp-fl">
-<label>Setor</label>
-<select id="mfp-setor">
-<option>Postura</option><option>Abate</option><option>Plantel</option>
-<option>Aviario</option><option>Campo</option><option>Comercializacao</option>
-<option>Operacao</option><option>Infraestrutura</option><option>Insumo</option>
-</select>
-</div>
-<div class="mfp-fl">
-<label>Apresentação</label>
-<select id="mfp-apresentacao">
-<option>Sc 40kg</option><option>Unid</option><option>Viagem</option><option>Kg</option><option>Sc 60kg</option><option>Saco</option><option>Caixa</option>
-</select>
-</div>
-</div>
-<div class="mfp-grid mfp-g4">
-<div class="mfp-fl">
-<label>Preço de Venda (R$)</label>
-<input id="mfp-preco-venda" min="0" placeholder="0,00" step="0.01" type="number">
-</div>
-<div class="mfp-fl">
-<label>Preço Unit. / Custo (R$) <span style="font-size:10px;color:var(--ac);font-family:var(--mono);letter-spacing:0;text-transform:none;font-weight:400">↻ auto via compras</span></label>
-<input id="mfp-preco" placeholder="—" readonly style="background:#f0ece3;color:var(--md);font-family:var(--mono);font-weight:700;cursor:not-allowed;text-align:center" title="Atualizado automaticamente ao registrar uma compra. Edite pela aba Compras.">
-</div>
-<div class="mfp-fl">
-<label>Marca / Fabricante</label>
-<input id="mfp-marca" placeholder="Ex: IRCA, Embrapa...">
-</div>
-<div class="mfp-fl">
-<label>Observações</label>
-<input id="mfp-obs" placeholder="Ref. interna, tipo...">
-</div>
-</div>
-<!-- Marcador Item Consumo -->
-<div class="mfp-flags-row">
-  <div class="mfp-consumo-wrap" onclick="document.getElementById('mfp-is-consumo').click()">
-    <input id="mfp-is-consumo" type="checkbox" onclick="event.stopPropagation()">
-    <label for="mfp-is-consumo">🌾 Consumo Animal</label>
-  </div>
-  <div class="mfp-consumo-wrap ins" onclick="document.getElementById('mfp-is-insumo').click()">
-    <input id="mfp-is-insumo" type="checkbox" onclick="event.stopPropagation()">
-    <label for="mfp-is-insumo">🧪 Insumo</label>
-  </div>
-  <div class="mfp-consumo-wrap com" onclick="document.getElementById('mfp-is-comercial').click()">
-    <input id="mfp-is-comercial" type="checkbox" onclick="event.stopPropagation()">
-    <label for="mfp-is-comercial">🛒 Comercialização</label>
-  </div>
-  <div class="mfp-consumo-wrap inf" onclick="document.getElementById('mfp-is-infra').click()">
-    <input id="mfp-is-infra" type="checkbox" onclick="event.stopPropagation()">
-    <label for="mfp-is-infra">🔧 Infraestrutura</label>
-  </div>
-</div>
-<!-- Hint produto existente -->
-<div id="mfp-existe-hint" style="display:none;margin-top:10px;padding:8px 12px;background:#fef8ec;border:1px solid #f0c870;border-radius:5px;font-size:12px;color:#7a5a00;font-family:var(--mono)"></div>
-
-<!-- Embalagens de Venda com fator de conversão -->
-<div class="mfp-emb-section">
-  <div class="mfp-emb-title">
-    📦 Embalagens de Venda
-    <span>— cada embalagem define quantas unidades do estoque ela consome</span>
-  </div>
-  <div class="mfp-emb-lista" id="mfp-emb-lista">
-    <span style="font-size:11px;color:var(--mu);font-family:var(--mono);font-style:italic">Nenhuma embalagem cadastrada</span>
-  </div>
-  <div class="mfp-emb-add">
-    <input id="mfp-emb-nome" placeholder="Nome (ex: Bandeja 30)" maxlength="40">
-    <input id="mfp-emb-fator" type="number" min="1" step="1" placeholder="Qtde" title="Quantas unidades do estoque compõem esta embalagem">
-    <button onclick="mfpAdicionarEmbalagem()">+ Embalagem</button>
-  </div>
-</div>
-</div>
-<!-- Lista de itens adicionados nesta sessão -->
-<div class="mfp-lista">
-<div class="mfp-lista-hd">
-<span>Itens desta sessão (<span id="mfp-count">0</span>)</span>
-<span id="mfp-lista-info" style="color:#7aa88a;font-size:11px"></span>
-</div>
-<div id="mfp-lista-body">
-<div class="mfp-lista-empty">Nenhum produto adicionado ainda.</div>
-</div>
-</div>
+<!-- Formulário movido para modal independente #modal-novo-produto -->
 </div><!-- /mfp-body -->
 <div class="mfp-footer">
 <span class="mfp-footer-info" id="mfp-footer-info">Preencha os campos e clique em "✓ Salvar no Catálogo" para registrar.</span>
@@ -7168,6 +7087,18 @@ function mfpCarregarExistente(estId){
   // Destaca o card selecionado
   document.querySelectorAll('.mfp-prod-existente').forEach(el=>el.classList.remove('selecionado'));
   event.currentTarget && event.currentTarget.classList.add('selecionado');
+  // Abre modal independente
+  (function(){
+    var modal=document.getElementById('modal-novo-produto');
+    var btn=document.getElementById('mfp-btn-incluir');
+    if(!modal) return;
+    if(!modal.style.left||modal.style.left===''){modal.style.left='';modal.style.top='';modal.style.transform='translateX(-50%)';}
+    modal.classList.add('vis');
+    if(btn){btn.textContent='- Incluir Produto';btn.classList.add('ativo');}
+    var forn=document.getElementById('mfp-forn-nome');
+    var lbl=document.getElementById('mnp-forn-label');
+    if(forn&&lbl) lbl.textContent=forn.textContent||'—';
+  })();
   document.getElementById('mfp-produto').scrollIntoView({behavior:'smooth',block:'nearest'});
   document.getElementById('mfp-produto').focus();
 }
@@ -7175,6 +7106,28 @@ function mfpCarregarExistente(estId){
 function fecharModalProdutosFor(){
   document.getElementById('modal-for-prod').classList.remove('show');
   _mfpForId = null; _mfpItens = []; _mfpEditIdx = null;
+  if(typeof fecharModalNovoProduto==='function') fecharModalNovoProduto();
+}
+
+function mfpToggleExpand(){
+  var modal = document.getElementById('modal-novo-produto');
+  var btn   = document.getElementById('mfp-btn-incluir');
+  if(!modal) return;
+  var vis = modal.classList.contains('vis');
+  if(vis){
+    modal.classList.remove('vis');
+    if(btn){ btn.textContent='+ Incluir Produto'; btn.classList.remove('ativo'); }
+  } else {
+    if(!modal.style.left||modal.style.left===''){
+      modal.style.left=''; modal.style.top=''; modal.style.transform='translateX(-50%)';
+    }
+    modal.classList.add('vis');
+    if(btn){ btn.textContent='- Incluir Produto'; btn.classList.add('ativo'); }
+    var forn=document.getElementById('mfp-forn-nome');
+    var lbl=document.getElementById('mnp-forn-label');
+    if(forn&&lbl) lbl.textContent=forn.textContent||'—';
+    setTimeout(function(){ var el=document.getElementById('mfp-produto'); if(el) el.focus(); },150);
+  }
 }
 
 function mfpBuscarExistente(){
@@ -7442,6 +7395,18 @@ function mfpEditarItem(idx){
   if(btnCan) btnCan.style.display='inline-flex';
 
   mfpBuscarExistente();
+  // Abre modal independente
+  (function(){
+    var modal=document.getElementById('modal-novo-produto');
+    var btn=document.getElementById('mfp-btn-incluir');
+    if(!modal) return;
+    if(!modal.style.left||modal.style.left===''){modal.style.left='';modal.style.top='';modal.style.transform='translateX(-50%)';}
+    modal.classList.add('vis');
+    if(btn){btn.textContent='- Incluir Produto';btn.classList.add('ativo');}
+    var forn=document.getElementById('mfp-forn-nome');
+    var lbl=document.getElementById('mnp-forn-label');
+    if(forn&&lbl) lbl.textContent=forn.textContent||'—';
+  })();
   document.getElementById('mfp-produto').focus();
 }
 
@@ -14528,6 +14493,162 @@ window.addEventListener('pagehide', function(){
     }
   });
 
+})();
+</script>
+
+<!-- ══ MODAL INDEPENDENTE — NOVO PRODUTO / ATUALIZAR EXISTENTE ══ -->
+<div id="modal-novo-produto">
+  <div class="mnp-hd" id="mnp-hd">
+    <div>
+      <div class="mnp-hd-t">Novo Produto / Atualizar Existente</div>
+      <div class="mnp-hd-s" id="mnp-forn-label">—</div>
+    </div>
+    <button class="mnp-hd-x" onclick="fecharModalNovoProduto()" title="Fechar">×</button>
+  </div>
+  <div class="mnp-body">
+    <div class="mfp-form-title" style="margin-bottom:12px">
+      <span id="mfp-form-subtitulo">Novo produto / atualizar existente</span>
+      <span id="mfp-cod-preview" style="color:var(--ac);font-family:var(--mono);font-size:11px"></span>
+      <div style="display:flex;gap:6px;align-items:center;margin-left:auto">
+        <button class="mfp-btn-add" onclick="mfpAdicionarItem()">✓ Salvar no Catálogo</button>
+        <button class="mfp-btn-clear" onclick="mfpLimparForm()" title="Limpar campos">✕ Limpar</button>
+        <button id="mfp-btn-cancelar-edicao" onclick="mfpLimparForm()"
+          style="display:none;padding:5px 10px;font-size:10px;font-family:var(--mono);border:1px solid var(--red);color:var(--red);background:rgba(160,48,48,.08);border-radius:4px;cursor:pointer;letter-spacing:.5px;white-space:nowrap;font-weight:700">
+          ✕ Cancelar edição
+        </button>
+      </div>
+    </div>
+    <div class="mfp-grid mfp-g5" style="margin-bottom:10px">
+      <div class="mfp-fl"><label>Produto *</label>
+        <input id="mfp-produto" oninput="mfpBuscarExistente()" placeholder="Nome do produto">
+      </div>
+      <div class="mfp-fl">
+        <label>Cód. Produto <span style="font-size:10px;color:var(--ac);font-family:var(--mono);font-weight:400;letter-spacing:0;text-transform:none">↻ via compras</span></label>
+        <div class="mfp-cod-wrap">
+          <input id="mfp-cod" placeholder="—" readonly style="background:#f0ece3;color:var(--md);font-family:var(--mono);font-weight:700;cursor:default;text-align:center">
+          <span class="mfp-cod-gerado" id="mfp-cod-auto-lbl"></span>
+        </div>
+      </div>
+      <div class="mfp-fl"><label>Setor</label>
+        <select id="mfp-setor">
+          <option>Postura</option><option>Abate</option><option>Plantel</option>
+          <option>Aviario</option><option>Campo</option><option>Comercializacao</option>
+          <option>Operacao</option><option>Infraestrutura</option><option>Insumo</option>
+        </select>
+      </div>
+      <div class="mfp-fl"><label>Apresentação</label>
+        <select id="mfp-apresentacao">
+          <option>Sc 40kg</option><option>Unid</option><option>Viagem</option><option>Kg</option><option>Sc 60kg</option><option>Saco</option><option>Caixa</option>
+        </select>
+      </div>
+    </div>
+    <div class="mfp-grid mfp-g4">
+      <div class="mfp-fl"><label>Preço de Venda (R$)</label>
+        <input id="mfp-preco-venda" min="0" placeholder="0,00" step="0.01" type="number">
+      </div>
+      <div class="mfp-fl">
+        <label>Preço Unit. / Custo (R$) <span style="font-size:10px;color:var(--ac);font-family:var(--mono);letter-spacing:0;text-transform:none;font-weight:400">↻ auto via compras</span></label>
+        <input id="mfp-preco" placeholder="—" readonly style="background:#f0ece3;color:var(--md);font-family:var(--mono);font-weight:700;cursor:not-allowed;text-align:center">
+      </div>
+      <div class="mfp-fl"><label>Marca / Fabricante</label>
+        <input id="mfp-marca" placeholder="Ex: IRCA, Embrapa...">
+      </div>
+      <div class="mfp-fl"><label>Observações</label>
+        <input id="mfp-obs" placeholder="Ref. interna, tipo...">
+      </div>
+    </div>
+    <div class="mfp-flags-row">
+      <div class="mfp-consumo-wrap" onclick="document.getElementById('mfp-is-consumo').click()">
+        <input id="mfp-is-consumo" type="checkbox" onclick="event.stopPropagation()">
+        <label for="mfp-is-consumo">🌾 Consumo Animal</label>
+      </div>
+      <div class="mfp-consumo-wrap ins" onclick="document.getElementById('mfp-is-insumo').click()">
+        <input id="mfp-is-insumo" type="checkbox" onclick="event.stopPropagation()">
+        <label for="mfp-is-insumo">🧪 Insumo</label>
+      </div>
+      <div class="mfp-consumo-wrap com" onclick="document.getElementById('mfp-is-comercial').click()">
+        <input id="mfp-is-comercial" type="checkbox" onclick="event.stopPropagation()">
+        <label for="mfp-is-comercial">🛒 Comercialização</label>
+      </div>
+      <div class="mfp-consumo-wrap inf" onclick="document.getElementById('mfp-is-infra').click()">
+        <input id="mfp-is-infra" type="checkbox" onclick="event.stopPropagation()">
+        <label for="mfp-is-infra">🔧 Infraestrutura</label>
+      </div>
+    </div>
+    <div id="mfp-existe-hint" style="display:none;margin-top:10px;padding:8px 12px;background:#fef8ec;border:1px solid #f0c870;border-radius:5px;font-size:12px;color:#7a5a00;font-family:var(--mono)"></div>
+    <div class="mfp-emb-section">
+      <div class="mfp-emb-title">📦 Embalagens de Venda <span>— cada embalagem define quantas unidades do estoque ela consome</span></div>
+      <div class="mfp-emb-lista" id="mfp-emb-lista">
+        <span style="font-size:11px;color:var(--mu);font-family:var(--mono);font-style:italic">Nenhuma embalagem cadastrada</span>
+      </div>
+      <div class="mfp-emb-add">
+        <input id="mfp-emb-nome" placeholder="Nome (ex: Bandeja 30)" maxlength="40">
+        <input id="mfp-emb-fator" type="number" min="1" step="1" placeholder="Qtde">
+        <button onclick="mfpAdicionarEmbalagem()">+ Embalagem</button>
+      </div>
+    </div>
+    <div class="mfp-lista">
+      <div class="mfp-lista-hd">
+        <span>Itens desta sessão (<span id="mfp-count">0</span>)</span>
+        <span id="mfp-lista-info" style="color:#7aa88a;font-size:11px"></span>
+      </div>
+      <div id="mfp-lista-body"><div class="mfp-lista-empty">Nenhum produto adicionado ainda.</div></div>
+    </div>
+    <div style="padding-top:10px;border-top:1px solid var(--b);margin-top:4px;display:flex;justify-content:space-between;align-items:center">
+      <span class="mfp-footer-info" id="mfp-footer-info">Preencha os campos e clique em "✓ Salvar no Catálogo" para registrar.</span>
+      <button class="mfp-btn-fechar" onclick="fecharModalNovoProduto()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var _drag=null;
+  function fecharModalNovoProduto(){
+    var modal=document.getElementById('modal-novo-produto');
+    if(modal) modal.classList.remove('vis');
+    var btn=document.getElementById('mfp-btn-incluir');
+    if(btn){btn.textContent='+ Incluir Produto';btn.classList.remove('ativo');}
+  }
+  window.fecharModalNovoProduto=fecharModalNovoProduto;
+
+  var hd=document.getElementById('mnp-hd');
+  if(hd){
+    hd.addEventListener('mousedown',function(e){
+      if(e.button!==0) return;
+      var modal=document.getElementById('modal-novo-produto');
+      var r=modal.getBoundingClientRect();
+      modal.style.left=r.left+'px'; modal.style.top=r.top+'px'; modal.style.transform='none';
+      _drag={startX:e.clientX,startY:e.clientY,origLeft:r.left,origTop:r.top};
+      document.body.style.userSelect='none'; e.preventDefault();
+    });
+    hd.addEventListener('touchstart',function(e){
+      var t=e.touches[0];
+      var modal=document.getElementById('modal-novo-produto');
+      var r=modal.getBoundingClientRect();
+      modal.style.left=r.left+'px'; modal.style.top=r.top+'px'; modal.style.transform='none';
+      _drag={startX:t.clientX,startY:t.clientY,origLeft:r.left,origTop:r.top};
+      e.preventDefault();
+    },{passive:false});
+  }
+  document.addEventListener('mousemove',function(e){
+    if(!_drag) return;
+    var modal=document.getElementById('modal-novo-produto');
+    var vw=window.innerWidth,vh=window.innerHeight,w=modal.offsetWidth,h=modal.offsetHeight;
+    modal.style.left=Math.max(0,Math.min(vw-w,_drag.origLeft+e.clientX-_drag.startX))+'px';
+    modal.style.top =Math.max(0,Math.min(vh-h,_drag.origTop +e.clientY-_drag.startY))+'px';
+  });
+  document.addEventListener('touchmove',function(e){
+    if(!_drag) return;
+    var t=e.touches[0];
+    var modal=document.getElementById('modal-novo-produto');
+    var vw=window.innerWidth,vh=window.innerHeight,w=modal.offsetWidth,h=modal.offsetHeight;
+    modal.style.left=Math.max(0,Math.min(vw-w,_drag.origLeft+t.clientX-_drag.startX))+'px';
+    modal.style.top =Math.max(0,Math.min(vh-h,_drag.origTop +t.clientY-_drag.startY))+'px';
+    e.preventDefault();
+  },{passive:false});
+  document.addEventListener('mouseup', function(){if(_drag){_drag=null;document.body.style.userSelect='';}});
+  document.addEventListener('touchend',function(){_drag=null;});
 })();
 </script>
 
