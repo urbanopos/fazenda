@@ -13889,17 +13889,14 @@ function carregarArquivoJson(){
     try{
       const text = await file.text();
       const dados = JSON.parse(text);
-      // Valida estrutura mínima
       if(!dados || typeof dados !== 'object'){
-        showToast('Arquivo inválido — não é um JSON de dados do sistema.','err');
-        return;
+        showToast('Arquivo invalido.','err'); return;
       }
       // Grava no IDB e localStorage
       await _gravarIDB(dados).catch(()=>{});
       try{ localStorage.setItem('granja_dados_v1', JSON.stringify(dados)); }catch(_){}
-      // Recarrega a página para aplicar os dados
-      showToast('Dados carregados! Recarregando...');
-      setTimeout(()=>{ window.location.reload(); }, 900);
+      // Aplica os dados diretamente
+      _aplicarDadosLocal(dados);
     }catch(e){
       showToast('Erro ao ler o arquivo: '+e.message,'err');
     }
@@ -13908,14 +13905,58 @@ function carregarArquivoJson(){
 }
 
 // ── Salva manualmente (botão na interface) ────────────────────
+function _aplicarDadosLocal(dados){
+  try{ estoque      = Array.isArray(dados.g_est)?dados.g_est:[]; }catch(_){}
+  try{ vendas       = Array.isArray(dados.g_vnd)?dados.g_vnd:[]; }catch(_){}
+  try{ compras      = Array.isArray(dados.g_cmp)?dados.g_cmp:[]; }catch(_){}
+  try{ perdas       = Array.isArray(dados.g_prd)?dados.g_prd:[]; }catch(_){}
+  try{ clientes     = Array.isArray(dados.g_cli)?dados.g_cli:[]; }catch(_){}
+  try{ fornecedores = Array.isArray(dados.g_for)?dados.g_for:[]; }catch(_){}
+  try{ if(Array.isArray(dados.g_con)) consumo=dados.g_con; }catch(_){}
+  try{ if(dados.g_cfg&&dados.g_cfg.nome) config=dados.g_cfg; }catch(_){}
+  // Recalcula nextIds a partir dos dados
+  try{
+    const NXT={est:1,vnd:1,cmp:1,prd:1,cli:1,for:1,nfc:1,nfv:1,con:1,nsc:1,nlp:1};
+    const _seqNFC=(compras||[]).map(c=>{const m=(c.nfc||'').match(/NC-(\d+)/);return m?+m[1]:0;});
+    const _seqNFV=(vendas||[]).map(v=>{const m=(v.nfv||'').match(/NV-(\d+)/);return m?+m[1]:0;});
+    const _seqNLP=(perdas||[]).map(p=>{const m=(p.codPerda||'').match(/LP-(\d+)/);return m?+m[1]:0;});
+    nextIds={
+      est:Math.max(NXT.est,...(estoque||[]).map(e=>e.id||0))+1,
+      vnd:Math.max(NXT.vnd,...(vendas||[]).map(v=>v.id||0))+1,
+      cmp:Math.max(NXT.cmp,...(compras||[]).map(c=>c.id||0))+1,
+      prd:Math.max(NXT.prd,...(perdas||[]).map(p=>p.id||0))+1,
+      cli:Math.max(NXT.cli,...(clientes||[]).map(c=>c.id||0))+1,
+      for:Math.max(NXT.for,...(fornecedores||[]).map(f=>f.id||0))+1,
+      nfc:Math.max(NXT.nfc,...(_seqNFC.length?_seqNFC:[0]))+1,
+      nfv:Math.max(NXT.nfv,...(_seqNFV.length?_seqNFV:[0]))+1,
+      con:Math.max(1,...((consumo||[]).map(x=>x.id||0)))+1,
+      nsc:1, nlp:Math.max(1,...(_seqNLP.length?_seqNLP:[0]))+1
+    };
+    if(dados.g_nxt) nextIds=Object.assign(nextIds,dados.g_nxt);
+  }catch(_){}
+  // Renderiza
+  try{renderEst();}catch(_){}
+  try{renderVnd();}catch(_){}
+  try{renderCmp();}catch(_){}
+  try{renderPrd();}catch(_){}
+  try{renderCli();}catch(_){}
+  try{renderFor();}catch(_){}
+  try{applyConfig();}catch(_){}
+  try{_esconderBannerCarregar();}catch(_){}
+  try{document.getElementById('srv-status').className='ok';}catch(_){}
+  const saved=dados.g_saved||'';
+  var label='local';
+  try{if(saved){var d=new Date(saved);label='salvo '+d.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}}catch(_){}
+  try{document.getElementById('srv-label').textContent=label;}catch(_){}
+  showToast('Carregado: '+((clientes||[]).length)+' clientes · '+((estoque||[]).length)+' produtos · '+((vendas||[]).length)+' vendas');
+}
+
 function salvarDadosJson(){
   const payload = _gerarPayloadAtual();
-  // Grava localmente
   _gravarIDB(payload).catch(()=>{});
   try{ localStorage.setItem('granja_dados_v1', JSON.stringify(payload)); }catch(_){}
-  // Baixa o arquivo
   _baixarDadosJson(payload);
-  showToast('dados.json salvo no computador ✓');
+  showToast('dados.json salvo no computador');
 }
 
 // ── BEFOREUNLOAD — salva automaticamente ao fechar/navegar ────
@@ -14298,9 +14339,9 @@ window.addEventListener('pagehide', function(){
         const dados=await r.json();
         await _gravarIDB(dados).catch(()=>{});
         try{localStorage.setItem('granja_dados_v1',JSON.stringify(dados));}catch(_){}
+        _aplicarDadosLocal(dados);
         _driveStatus('carregado','#34a853');
-        showToast('Dados carregados do Google Drive! Recarregando...');
-        setTimeout(()=>window.location.reload(),1000);
+        try{document.getElementById('srv-label').textContent='Drive carregado';}catch(_){}
       }catch(e){
         _driveStatus('Erro Drive','#e03030');
         showToast('Erro ao carregar do Drive: '+e.message,'err');
