@@ -18,16 +18,74 @@
 <style>
 :root{--bg:#f2ede4;--s:#fff;--b:#ddd5c2;--dk:#1c2e22;--md:#3a5c45;--ac:#b8943f;--ac2:#4a8c6f;--red:#a03030;--warn:#b07020;--tx:#2a2a2a;--mu:#888;--mono:'DM Mono',monospace;--serif:'DM Serif Display',serif;--sans:'Lato',sans-serif}
 *{box-sizing:border-box;margin:0;padding:0}
-/* Mobile portrait */
-@media(max-width:600px){
-  body{font-size:13px}
-  .abas-nav{overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap;scrollbar-width:none}
-  .abas-nav::-webkit-scrollbar{display:none}
-  table{font-size:12px}
-  th,td{padding:6px 8px!important}
-  .topo-bar{flex-wrap:wrap;gap:6px}
-  .card{padding:12px}
+/* ══ MOBILE RETRATO ══════════════════════════════════════════ */
+@media(max-width:768px){
+  /* Body: remove overflow:hidden fixo, permite scroll natural */
+  body{height:auto!important;overflow:auto!important;overflow-x:hidden}
+
+  /* Header compacto */
+  .hd{padding:0 14px!important}
+  .hd-top{padding:10px 0 8px!important;gap:10px!important;flex-wrap:wrap}
+  .hd-logo{width:36px!important;height:36px!important;font-size:16px!important;flex-shrink:0}
+  .hd-txt .title{font-size:18px!important}
+  .hd-txt .sub{font-size:9px!important;letter-spacing:2px!important}
+  .hd-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .btn-cfg{font-size:9px!important;padding:6px 10px!important;letter-spacing:.5px!important}
+  #btn-fullscreen{width:30px!important;height:30px!important;font-size:14px!important}
+
+  /* Barra de status compacta */
+  #srv-bar,div[style*="srv-label"]{font-size:9px!important}
+
+  /* Abas: scroll horizontal */
+  .tabs{overflow-x:auto!important;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-wrap:nowrap!important;padding-bottom:2px}
+  .tabs::-webkit-scrollbar{display:none}
+  .tb{padding:8px 14px!important;font-size:10px!important;letter-spacing:1px!important;white-space:nowrap!important}
+
+  /* Painel principal: scroll normal, sem altura fixa */
+  .main{padding:14px 12px 0!important}
+  .panel{height:auto!important;overflow-y:visible!important;overflow-x:hidden!important}
+  .panel.active{height:auto!important;overflow-y:visible!important;padding-bottom:80px}
+
+  /* KPIs: 2 colunas no mobile */
+  .kpis{grid-template-columns:repeat(2,1fr)!important;gap:8px!important;margin-bottom:12px!important}
+  .kpi{padding:10px 12px!important}
+  .kpi-val{font-size:18px!important}
+  .kpi-lbl{font-size:9px!important}
+
+  /* Cards */
+  .card{margin-bottom:14px!important}
+  .cb{padding:12px 14px!important}
+  .ch{padding:10px 14px!important;font-size:10px!important}
+
+  /* Tabelas: scroll horizontal */
+  .cw{overflow-x:auto!important;-webkit-overflow-scrolling:touch}
+  table{font-size:12px!important;min-width:500px}
+  th{padding:7px 10px!important;font-size:10px!important}
+  td{padding:7px 10px!important;font-size:12px!important}
+
+  /* Formulários: coluna única */
+  .fg{grid-template-columns:1fr!important}
+  .fg-2{grid-template-columns:1fr!important}
+  .fg-3{grid-template-columns:1fr!important}
+
+  /* Modais: largura total */
+  .modal{width:96vw!important;max-width:96vw!important;margin:10px auto!important}
+  .hist-modal{width:96vw!important;max-width:96vw!important}
+  .mpf-box{width:96vw!important}
+  .mfp-box{width:96vw!important}
+  .rst-box{width:96vw!important}
+
+  /* Painel lateral */
+  #panel-consumo{padding-left:12px!important;padding-right:12px!important;height:auto!important;overflow:visible!important}
+
+  /* Botões flutuantes */
+  #btn-salvar-json{bottom:70px!important;right:12px!important;font-size:11px!important;padding:9px 14px!important}
+
+  /* Banner carregar */
+  #banner-carregar-json{flex-direction:column!important;gap:10px!important;align-items:flex-start!important;padding:12px!important}
+  .bcj-btn{width:100%!important;text-align:center!important}
 }
+/* ══════════════════════════════════════════════════════════════ */
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 input[type=number]{-moz-appearance:textfield}
 body{font-family:var(--sans);background:var(--bg);color:var(--tx);height:100vh;overflow:hidden}
