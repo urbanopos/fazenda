@@ -177,6 +177,43 @@ textarea{resize:none;height:72px;font-size:14px}
 .vi-res{font-family:'DM Mono',monospace;font-size:12px;color:var(--vm);margin-top:6px}
 .vi-edit{padding:8px 14px;border:2px solid var(--ce);border-radius:var(--r);background:var(--br);color:var(--vm);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;margin-top:8px}
 .btn-add{width:100%;padding:12px;border:2px dashed var(--ac);border-radius:var(--r);background:rgba(184,148,63,.06);color:var(--ac);font-family:'DM Mono',monospace;font-size:12px;letter-spacing:1px;cursor:pointer;margin-bottom:12px}
+/* HISTORICO DE PEDIDOS */
+.hist-toggle{display:flex;gap:8px;margin-bottom:16px}
+.hist-btn{flex:1;padding:10px;border:2px solid var(--ce);border-radius:var(--r);background:var(--br);color:var(--mu);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;text-align:center}
+.hist-btn.ativo{background:#7a3a00;border-color:#7a3a00;color:#ffd49a}
+.hist-panel{display:none}
+.hist-panel.vis{display:block}
+.hist-item{background:var(--br);border-radius:var(--r);border:2px solid var(--ce);padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.hist-item:active{background:var(--cr)}
+.hist-num{font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:#7a3a00;flex-shrink:0;min-width:72px}
+.hist-info{flex:1;min-width:0}
+.hist-cli{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-det{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu);margin-top:2px}
+.hist-tot{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:#7a3a00;flex-shrink:0;text-align:right}
+.hist-viz{background:#7a3a00;border:none;border-radius:6px;color:#ffd49a;font-family:'DM Mono',monospace;font-size:10px;padding:6px 10px;cursor:pointer;flex-shrink:0;white-space:nowrap}
+.hist-empty{text-align:center;font-family:'DM Mono',monospace;font-size:12px;color:var(--mu);padding:24px 0}
+/* Modal visualizacao pedido */
+#modal-ped{display:none;position:fixed;inset:0;z-index:9990;background:rgba(0,0,0,.78);align-items:flex-end}
+#modal-ped.vis{display:flex}
+.mp-box{background:var(--cr);width:100%;max-height:88vh;border-radius:20px 20px 0 0;overflow-y:auto}
+.mp-hd{background:#7a3a00;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-radius:20px 20px 0 0;position:sticky;top:0;z-index:1}
+.mp-hd-t{font-family:'DM Serif Display',serif;font-size:16px;color:#ffd49a}
+.mp-hd-s{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,212,154,.6);margin-top:2px}
+.mp-x{background:none;border:none;color:rgba(255,212,154,.6);font-size:20px;cursor:pointer;line-height:1;padding:0}
+.mp-body{padding:16px}
+.mp-meta{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--ce)}
+.mp-meta-item{display:flex;flex-direction:column;gap:2px}
+.mp-meta-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu)}
+.mp-meta-val{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--tx)}
+.mp-linha{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--ce)}
+.mp-linha:last-child{border:none}
+.mp-li-prod{flex:1;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--tx)}
+.mp-li-det{font-family:'DM Mono',monospace;font-size:11px;color:var(--mu);margin-top:2px}
+.mp-li-sub{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:#7a3a00;flex-shrink:0;text-align:right}
+.mp-total{background:#7a3a00;border-radius:var(--r);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.mp-total-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,212,154,.7)}
+.mp-total-val{font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:#ffd49a}
+.mp-btn-img{width:100%;margin-top:12px;padding:13px;background:linear-gradient(135deg,#7a3a00,#b85a00);color:#fff;border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
 .vt{background:var(--vd);border-radius:var(--r);padding:14px 16px;margin-top:4px;display:flex;justify-content:space-between;align-items:center}
 .vt-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7aa88a}
 .vt-val{font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--ac)}
@@ -296,15 +333,38 @@ textarea{resize:none;height:72px;font-size:14px}
     <button class="aba aba-p" onclick="trocarAba('perda')"   id="aba-perda">Perda</button>
     <button class="aba aba-c" onclick="trocarAba('campo')"   id="aba-campo">Campo</button>
     <button class="aba aba-e" onclick="trocarAba('estoque')" id="aba-estoque">Estoque</button>
-    <button class="aba aba-v" onclick="trocarAba('vendas')"  id="aba-vendas">Vendas</button>
+    <button class="aba aba-v" onclick="trocarAba('vendas')"  id="aba-vendas">Pedidos</button>
   </div>
   <div class="secao at" id="sec-aviario"><div class="sec-t">Aviario</div><div class="sec-d">Producao e movimentacao</div><div class="pgrid" id="grid-aviario"></div></div>
   <div class="secao" id="sec-perda"><div class="sec-t" style="color:#7f1d1d">Perda / Baixa</div><div class="sec-d">Mortalidade ou descarte</div><div class="pgrid" id="grid-perda"></div></div>
   <div class="secao" id="sec-campo"><div class="sec-t" style="color:#3b5e2a">Campo</div><div class="sec-d">Colheita e producao rural</div><div class="pgrid" id="grid-campo"></div></div>
   <div class="secao" id="sec-estoque"><div class="sec-t" style="color:#1e3a5f">Estoque</div><div class="sec-d">Entrada de insumos e racoes</div><div class="pgrid" id="grid-estoque"></div></div>
-  <div id="sec-vendas">
-    <div class="sec-t" style="color:#7a3a00">Vendas</div>
-    <div class="sec-d">Talao de pedido numerado</div>
+<!-- MODAL VISUALIZACAO PEDIDO -->
+<div id="modal-ped" onclick="fecharModalPed()">
+  <div class="mp-box" onclick="event.stopPropagation()">
+    <div class="mp-hd">
+      <div><div class="mp-hd-t" id="mp-titulo">Pedido</div><div class="mp-hd-s" id="mp-sub"></div></div>
+      <button class="mp-x" onclick="fecharModalPed()">&#10005;</button>
+    </div>
+    <div class="mp-body">
+      <div class="mp-meta" id="mp-meta"></div>
+      <div id="mp-linhas"></div>
+      <div class="mp-total"><span class="mp-total-lbl">Total</span><span class="mp-total-val" id="mp-total"></span></div>
+      <button class="mp-btn-img" onclick="reemitirPedido()">&#128247; Gerar imagem novamente</button>
+    </div>
+  </div>
+</div>
+
+<div id="sec-vendas">
+  <div class="sec-t" style="color:#7a3a00">Vendas</div>
+  <div class="sec-d">Talao de pedido numerado</div>
+  <!-- Alternancia Novo / Historico -->
+  <div class="hist-toggle">
+    <button class="hist-btn ativo" id="btn-aba-novo" onclick="mostrarPainelVendas('novo')">&#43; Novo Pedido</button>
+    <button class="hist-btn" id="btn-aba-hist" onclick="mostrarPainelVendas('hist')">&#128196; Historico</button>
+  </div>
+  <!-- PAINEL NOVO PEDIDO -->
+  <div class="hist-panel vis" id="painel-novo">
     <div class="talao-num" id="talao-num">Pedido <strong>---</strong></div>
     <div class="cg" style="margin-bottom:12px">
       <span class="cl">Nome do Cliente</span>
@@ -322,6 +382,11 @@ textarea{resize:none;height:72px;font-size:14px}
       </button>
     </div>
   </div>
+  <!-- PAINEL HISTORICO -->
+  <div class="hist-panel" id="painel-hist">
+    <div id="hist-lista"></div>
+  </div>
+</div>
   <div class="div"></div>
   <div class="cont" id="contador">Nenhum item preenchido</div>
   <button class="btn-wpp" onclick="enviarTudo()">Enviar - PDF + WhatsApp</button>
@@ -639,7 +704,7 @@ function _gerarImagem(titulo, linhas, rodape, onBlob){
   } else { y+=122; }
 
   // FAIXA
-  var faixaCor = titulo==='TALAO DE PEDIDO' ? '#7a3a00' : '#b8943f';
+  var faixaCor = titulo.indexOf('TALAO DE PEDIDO')===0 ? '#7a3a00' : '#b8943f';
   rect(0,y,W,28,faixaCor);
   var faixaTxt = titulo.indexOf('TALAO DE PEDIDO')===0 ? titulo.replace('TALAO DE PEDIDO / ','PEDIDO N.\u00ba ') : titulo;
   txt(faixaTxt,PAD,y+19,10,'#fff','bold');
@@ -855,9 +920,15 @@ function enviarPedido(){
   var n = _getNum();
   if(!n){ _toast('Numero nao configurado.'); return; }
   var numPed = _nextPedNum();
+  var cliente = (document.getElementById('venda-cliente')||{value:''}).value||'';
+  var dataVenda = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
   var linhas = conc.map(function(it){
-    return {col1:it._data, col2:it._nome, col3:it.qtd+' '+it.unidade, col4:'R$ '+_fmt(it.preco), val:it.sub};
+    return {col1:it._data, col2:it._nome, col3:it.qtd+' '+it.unidade, col4:'R$ '+_fmt(it.preco), val:it.sub,
+            prodId:it.prodId, nome:it._nome, unidade:it.unidade, qtd:it.qtd, preco:it.preco, sub:it.sub, data:it._data};
   });
+  var total = conc.reduce(function(s,it){ return s+it.sub; },0);
+  // GRAVA no historico
+  _salvarPedido({num:numPed, cliente:cliente, data:dataVenda, itens:linhas, total:total, ts:Date.now()});
   _gerarImagem('TALAO DE PEDIDO / '+numPed, linhas, numPed, function(blob){
     if(!blob){ _toast('Erro ao gerar talao.'); return; }
     var file = new File([blob],'pedido-'+numPed+'.jpg',{type:'image/jpeg'});
@@ -873,6 +944,111 @@ function enviarPedido(){
     var cl=document.getElementById('venda-cliente'); if(cl) cl.value='';
     _renderVItens(); _renderTalaoNum();
   },2000);
+}
+
+/* ---- HISTORICO DE PEDIDOS ---- */
+var HK = 'fsj_hist_pedidos';
+var _pedAtual = null; // pedido aberto no modal
+
+function _salvarPedido(ped){
+  var hist = _carregarHist();
+  hist.unshift(ped); // mais recente primeiro
+  if(hist.length > 100) hist = hist.slice(0,100); // limite de 100 pedidos
+  try{ localStorage.setItem(HK, JSON.stringify(hist)); } catch(e){}
+}
+
+function _carregarHist(){
+  try{ return JSON.parse(localStorage.getItem(HK)||'[]'); } catch(e){ return []; }
+}
+
+function mostrarPainelVendas(qual){
+  var btnNovo = document.getElementById('btn-aba-novo');
+  var btnHist = document.getElementById('btn-aba-hist');
+  var pNovo   = document.getElementById('painel-novo');
+  var pHist   = document.getElementById('painel-hist');
+  if(qual==='hist'){
+    btnNovo.classList.remove('ativo'); btnHist.classList.add('ativo');
+    pNovo.classList.remove('vis');     pHist.classList.add('vis');
+    _renderHist();
+  } else {
+    btnHist.classList.remove('ativo'); btnNovo.classList.add('ativo');
+    pHist.classList.remove('vis');     pNovo.classList.add('vis');
+  }
+}
+
+function _renderHist(){
+  var lista = document.getElementById('hist-lista');
+  if(!lista) return;
+  var hist = _carregarHist();
+  if(!hist.length){
+    lista.innerHTML = '<div class="hist-empty">Nenhum pedido registrado ainda.</div>';
+    return;
+  }
+  lista.innerHTML = hist.map(function(p, i){
+    var dtFmt = p.data ? new Date(p.data+'T12:00').toLocaleDateString('pt-BR') : '';
+    var nItens = p.itens ? p.itens.length : 0;
+    return '<div class="hist-item">'
+      +'<div class="hist-num">'+p.num+'</div>'
+      +'<div class="hist-info">'
+      +'<div class="hist-cli">'+(p.cliente||'(sem cliente)')+'</div>'
+      +'<div class="hist-det">'+dtFmt+' &middot; '+nItens+' item(ns)</div>'
+      +'</div>'
+      +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'
+      +'<div class="hist-tot">R$ '+_fmt(p.total)+'</div>'
+      +'<button class="hist-viz" onclick="abrirModalPed('+i+')">Ver</button>'
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function abrirModalPed(idx){
+  var hist = _carregarHist();
+  var p = hist[idx];
+  if(!p) return;
+  _pedAtual = p;
+  document.getElementById('mp-titulo').textContent = p.num;
+  document.getElementById('mp-sub').textContent = p.cliente||'(sem cliente)';
+  var dtFmt = p.data ? new Date(p.data+'T12:00').toLocaleDateString('pt-BR') : '';
+  document.getElementById('mp-meta').innerHTML =
+    '<div class="mp-meta-item"><span class="mp-meta-lbl">Data</span><span class="mp-meta-val">'+dtFmt+'</span></div>'
+    +'<div class="mp-meta-item"><span class="mp-meta-lbl">Cliente</span><span class="mp-meta-val">'+(p.cliente||'—')+'</span></div>'
+    +'<div class="mp-meta-item"><span class="mp-meta-lbl">Itens</span><span class="mp-meta-val">'+(p.itens?p.itens.length:0)+'</span></div>';
+  document.getElementById('mp-linhas').innerHTML = (p.itens||[]).map(function(it){
+    return '<div class="mp-linha">'
+      +'<div style="flex:1">'
+      +'<div class="mp-li-prod">'+it.nome+'</div>'
+      +'<div class="mp-li-det">'+it.col1+' &middot; '+it.col3+' &times; '+it.col4+'</div>'
+      +'</div>'
+      +'<div class="mp-li-sub">R$ '+_fmt(it.sub)+'</div>'
+      +'</div>';
+  }).join('');
+  document.getElementById('mp-total').textContent = 'R$ '+_fmt(p.total);
+  document.getElementById('modal-ped').classList.add('vis');
+}
+
+function fecharModalPed(){
+  document.getElementById('modal-ped').classList.remove('vis');
+  _pedAtual = null;
+}
+
+function reemitirPedido(){
+  if(!_pedAtual) return;
+  var p = _pedAtual;
+  var n = _getNum();
+  if(!n){ _toast('Numero nao configurado.'); return; }
+  var linhas = (p.itens||[]).map(function(it){
+    return {col1:it.col1, col2:it.nome, col3:it.col3, col4:it.col4, val:it.sub};
+  });
+  _gerarImagem('TALAO DE PEDIDO / '+p.num, linhas, p.num, function(blob){
+    if(!blob){ _toast('Erro ao gerar imagem.'); return; }
+    var file = new File([blob],'pedido-'+p.num+'.jpg',{type:'image/jpeg'});
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({title:'Pedido '+p.num,files:[file]}).catch(function(){ _fallbackDownload(blob,'pedido-'+p.num+'.jpg'); });
+    } else {
+      _fallbackDownload(blob,'pedido-'+p.num+'.jpg');
+      setTimeout(function(){ window.open('https://wa.me/'+n,'_blank'); },1000);
+    }
+  });
 }
 
 /* ---- BLOQUEIO ---- */
