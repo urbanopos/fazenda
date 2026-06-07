@@ -7781,62 +7781,153 @@ const _ctxFiltros = {
 let _ctxAtual = { tabela:null, colIdx:null, colLabel:null };
 let _ctxTodosValores = [];
 
-// ── Extrai valores da coluna de cada tabela ──
+// ── Extrai valores da coluna considerando os filtros JÁ ativos nas outras colunas ──
 function _ctxGetValores(tabela, colIdx){
+
+  // Extrai o valor de uma venda para uma dada coluna
+  function _vndVal(v, col){
+    switch(col){
+      case 0: return v.nfv&&!v.nfv.startsWith('_') ? v.nfv : '(sem código)';
+      case 1: return fd(v.data)||'—';
+      case 2: return v.clienteNome||'—';
+      case 3: return v.item||'—';
+      case 4: return v.dataPagamento ? (v.pagamento||'—') : 'Em aberto';
+      default: return '—';
+    }
+  }
+
+  // Extrai o valor de uma compra para uma dada coluna
+  function _cmpVal(c, col){
+    switch(col){
+      case 0: return c.nfc&&!c.nfc.startsWith('_') ? c.nfc : '(sem código)';
+      case 1: return fd(c.data)||'—';
+      case 2: return c.produto||'—';
+      case 3: return c.fornecedorNome||'—';
+      case 4: return c.setor||'—';
+      case 5: return c.dataPagamentoCmp ? (c.pagamento||'—') : 'Em aberto';
+      default: return '—';
+    }
+  }
+
   if(tabela==='vnd'){
-    // Agrupa igual ao renderVnd
+    const f = _ctxFiltros.vnd;
+    // Agrupa por NF
     const grupos = {};
     vendas.forEach(v=>{
       const k = v.nfv||('_'+v.id);
-      if(!grupos[k]) grupos[k] = v;
+      if(!grupos[k]) grupos[k] = [];
+      grupos[k].push(v);
     });
-    return Object.values(grupos).map(v=>{
-      switch(colIdx){
-        case 0: return v.nfv&&!v.nfv.startsWith('_') ? v.nfv : '(sem código)';
-        case 1: return fd(v.data)||'—';
-        case 2: return v.clienteNome||'—';
-        case 3: return v.item||'—';
-        case 4: return v.dataPagamento ? (v.pagamento||'—') : 'Em aberto';
+    // Aplica filtros já ativos em todas as colunas EXCETO a que está sendo aberta
+    const gruposFiltrados = Object.values(grupos).filter(itens=>{
+      const first = itens[0];
+      for(let c=0; c<=4; c++){
+        if(c===colIdx) continue; // pula a coluna sendo aberta
+        if(!f[c]) continue;
+        if(c===3){
+          // Produto: verifica todos os itens da NF
+          if(!itens.some(it=>f[c].has(it.item||'—'))) return false;
+        } else {
+          if(!f[c].has(_vndVal(first, c))) return false;
+        }
+      }
+      return true;
+    });
+    // Extrai valores da coluna sendo aberta
+    const valores = [];
+    gruposFiltrados.forEach(itens=>{
+      if(colIdx===3){
+        // Produto: todos os itens
+        itens.forEach(it=>valores.push(it.item||'—'));
+      } else {
+        valores.push(_vndVal(itens[0], colIdx));
       }
     });
+    return valores;
   }
+
+  if(tabela==='cmp'){
+    const f = _ctxFiltros.cmp;
+    // Agrupa por NC
+    const grupos = {};
+    compras.forEach(c=>{
+      const k = c.nfc||('_'+c.id);
+      if(!grupos[k]) grupos[k] = [];
+      grupos[k].push(c);
+    });
+    // Aplica filtros já ativos em todas as colunas EXCETO a que está sendo aberta
+    const gruposFiltrados = Object.values(grupos).filter(itens=>{
+      const first = itens[0];
+      for(let c=0; c<=5; c++){
+        if(c===colIdx) continue;
+        if(!f[c]) continue;
+        if(c===2){
+          // Produto: verifica todos os itens da NC
+          if(!itens.some(it=>f[c].has(it.produto||'—'))) return false;
+        } else {
+          if(!f[c].has(_cmpVal(first, c))) return false;
+        }
+      }
+      return true;
+    });
+    // Extrai valores da coluna sendo aberta
+    const valores = [];
+    gruposFiltrados.forEach(itens=>{
+      if(colIdx===2){
+        itens.forEach(it=>valores.push(it.produto||'—'));
+      } else {
+        valores.push(_cmpVal(itens[0], colIdx));
+      }
+    });
+    return valores;
+  }
+
   if(tabela==='prd'){
-    return perdas.map(p=>{
+    const f = _ctxFiltros.prd;
+    const prdFiltradas = perdas.filter(p=>{
+      for(let c=0; c<=2; c++){
+        if(c===colIdx) continue;
+        if(!f[c]) continue;
+        const val = c===0 ? fd(p.data)||'—' : c===1 ? p.tipo||'—' : p.setor||'—';
+        if(!f[c].has(val)) return false;
+      }
+      return true;
+    });
+    return prdFiltradas.map(p=>{
       switch(colIdx){
         case 0: return fd(p.data)||'—';
         case 1: return p.tipo||'—';
         case 2: return p.setor||'—';
+        default: return '—';
       }
     });
   }
+
   if(tabela==='est'){
-    return estoque.map(e=>{
+    const f = _ctxFiltros.est;
+    const estFiltrado = estoque.filter(e=>{
+      const nomeLower=(e.produto||'').trim().toLowerCase();
+      const ultCmp=compras.filter(c=>(c.produto||'').trim().toLowerCase()===nomeLower&&c.fornecedorNome).sort((a,b)=>(b.data||'').localeCompare(a.data||''))[0];
+      const forn  = ultCmp ? ultCmp.fornecedorNome : '(sem fornecedor)';
+      const setor = e.setor||'—';
+      const prod  = e.produto||'—';
+      if(colIdx!==0 && f[0] && !f[0].has(forn))  return false;
+      if(colIdx!==1 && f[1] && !f[1].has(setor)) return false;
+      if(colIdx!==2 && f[2] && !f[2].has(prod))  return false;
+      return true;
+    });
+    return estFiltrado.map(e=>{
       const nomeLower=(e.produto||'').trim().toLowerCase();
       const ultCmp=compras.filter(c=>(c.produto||'').trim().toLowerCase()===nomeLower&&c.fornecedorNome).sort((a,b)=>(b.data||'').localeCompare(a.data||''))[0];
       switch(colIdx){
         case 0: return ultCmp ? ultCmp.fornecedorNome : '(sem fornecedor)';
         case 1: return e.setor||'—';
         case 2: return e.produto||'—';
+        default: return '—';
       }
     });
   }
-  if(tabela==='cmp'){
-    const grupos = {};
-    compras.forEach(c=>{
-      const k = c.nfc||('_'+c.id);
-      if(!grupos[k]) grupos[k] = c;
-    });
-    return Object.values(grupos).map(c=>{
-      switch(colIdx){
-        case 0: return c.nfc&&!c.nfc.startsWith('_') ? c.nfc : '(sem código)';
-        case 1: return fd(c.data)||'—';
-        case 2: return c.produto||'—';
-        case 3: return c.fornecedorNome||'—';
-        case 4: return c.setor||'—';
-        case 5: return c.dataPagamentoCmp ? (c.pagamento||'—') : 'Em aberto';
-      }
-    });
-  }
+
   return [];
 }
 
