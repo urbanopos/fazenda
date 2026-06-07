@@ -589,9 +589,8 @@ th.th-sort-cmp:hover{background:rgba(184,148,63,.18)!important}
   background:var(--dk);padding:11px 18px;
   display:flex;align-items:center;justify-content:space-between;
   border-bottom:3px solid var(--ac);
-  cursor:grab;user-select:none;
+  cursor:context-menu;user-select:none;
 }
-.mnp-hd:active{cursor:grabbing}
 .mnp-hd-t{color:var(--ac);font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase}
 .mnp-hd-s{color:#7aa88a;font-size:13px;margin-top:2px}
 .mnp-hd-x{background:none;border:none;color:#aaa;cursor:pointer;font-size:20px;line-height:1;padding:0}
@@ -14614,14 +14613,23 @@ window.addEventListener('pagehide', function(){
 
   var hd=document.getElementById('mnp-hd');
   if(hd){
+    // Drag pelo botão DIREITO do mouse
     hd.addEventListener('mousedown',function(e){
-      if(e.button!==0) return;
+      if(e.button!==2) return; // só botão direito
+      e.preventDefault();
+      e.stopPropagation();
       var modal=document.getElementById('modal-novo-produto');
       var r=modal.getBoundingClientRect();
       modal.style.left=r.left+'px'; modal.style.top=r.top+'px'; modal.style.transform='none';
       _drag={startX:e.clientX,startY:e.clientY,origLeft:r.left,origTop:r.top};
-      document.body.style.userSelect='none'; e.preventDefault();
-    });
+      document.body.style.userSelect='none';
+    },true);
+    // Suprime o menu de contexto do sistema somente sobre a barra
+    hd.addEventListener('contextmenu',function(e){
+      e.preventDefault();
+      e.stopPropagation();
+    },true);
+    // Touch (mobile): mantém pelo toque longo / drag normal
     hd.addEventListener('touchstart',function(e){
       var t=e.touches[0];
       var modal=document.getElementById('modal-novo-produto');
@@ -14637,7 +14645,7 @@ window.addEventListener('pagehide', function(){
     var vw=window.innerWidth,vh=window.innerHeight,w=modal.offsetWidth,h=modal.offsetHeight;
     modal.style.left=Math.max(0,Math.min(vw-w,_drag.origLeft+e.clientX-_drag.startX))+'px';
     modal.style.top =Math.max(0,Math.min(vh-h,_drag.origTop +e.clientY-_drag.startY))+'px';
-  });
+  },true);
   document.addEventListener('touchmove',function(e){
     if(!_drag) return;
     var t=e.touches[0];
@@ -14647,7 +14655,10 @@ window.addEventListener('pagehide', function(){
     modal.style.top =Math.max(0,Math.min(vh-h,_drag.origTop +t.clientY-_drag.startY))+'px';
     e.preventDefault();
   },{passive:false});
-  document.addEventListener('mouseup', function(){if(_drag){_drag=null;document.body.style.userSelect='';}});
+  // Solta ao levantar o botão direito
+  document.addEventListener('mouseup',function(e){
+    if(_drag){_drag=null;document.body.style.userSelect='';}
+  },true);
   document.addEventListener('touchend',function(){_drag=null;});
 })();
 </script>
