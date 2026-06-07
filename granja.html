@@ -4043,14 +4043,44 @@ function renderVnd(){
     const totNf=itens.reduce((s,v)=>s+v.total,0);const desc=itens.reduce((s,v)=>s+(v.desconto||0),0);const first=itens[0];
     const hasCode=nfv&&!nfv.startsWith('_');
     const badge=hasCode?`<span class="badge b-blu">${nfv}</span>`:`<span class="badge" style="background:#eee;color:#999">s/cod</span>`;
-    const expand=itens.length>1?`<span style="font-family:var(--mono);font-size:10px;color:var(--mu)"> +${itens.length-1} item(ns)</span>`:'';
     const dpag=first.dataPagamento||'';
     const dpagPago=!!dpag;
     const dpagStyle=dpagPago?'background:#1a5c3a;color:#fff;border:none':'background:#a03030;color:#fff;border:none';
     const dpagTitle=dpagPago?'Pago em '+fd(dpag)+' — clique para alterar':'Pagamento pendente — clique para registrar';
     const dpagTxt=dpagPago?(first.pagamento||'')+'  ✓':'⚪ Em aberto';
     const dpagBtn=`<button class="badge" style="${dpagStyle};cursor:pointer;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;font-family:var(--mono);white-space:nowrap" title="${dpagTitle}" onclick='abrirModalDataPag(${JSON.stringify(nfv)},${JSON.stringify(first.clienteNome||'—')},${JSON.stringify(first.pagamento||'')},${JSON.stringify(R$(totNf))},${JSON.stringify(dpag)})'>${dpagTxt}</button>`;
-    return`<tr><td>${badge}</td><td>${fd(first.data)}</td><td>${first.clienteNome||'—'}</td><td><strong>${first.item}</strong>${expand}</td><td style="font-size:12px;color:var(--mu)">${first.apresentacao||'—'}</td><td>${first.qtd}</td><td>${R$(first.preco)}</td><td style="color:${desc>0?'var(--red)':'var(--mu)'}">${desc>0?'-'+R$(desc):'—'}</td><td><strong style="color:var(--ac2)">${R$(totNf)}</strong></td><td>${dpagBtn}</td><td style="display:flex;gap:3px;flex-wrap:nowrap"><button class="btn-xs btn-v" onclick='relatorioClienteVenda(${JSON.stringify(nfv)})'>Relatório</button><button class="btn-xs btn-e" onclick='abrirEditVenda(${JSON.stringify(nfv)})'>Edit.</button><button class="btn-xs btn-d" onclick='removerVenda(${JSON.stringify(nfv)})'>Rem.</button></td></tr>`;
+    const acoes=`<td style="display:flex;gap:3px;flex-wrap:nowrap"><button class="btn-xs btn-v" onclick='relatorioClienteVenda(${JSON.stringify(nfv)})'>Relatório</button><button class="btn-xs btn-e" onclick='abrirEditVenda(${JSON.stringify(nfv)})'>Edit.</button><button class="btn-xs btn-d" onclick='removerVenda(${JSON.stringify(nfv)})'>Rem.</button></td>`;
+
+    // Determina quais itens mostrar:
+    // Se filtro de produto ativo → mostra apenas os itens que correspondem
+    // Caso contrário → mostra apenas o primeiro (com indicação de itens extras)
+    const filtProd = _ctxFiltros.vnd[3]; // Set ou null
+    let itensVisiveis;
+    if(filtProd){
+      itensVisiveis = itens.filter(it=>filtProd.has(it.item||'—'));
+    } else {
+      itensVisiveis = [first];
+    }
+
+    return itensVisiveis.map((it, idx)=>{
+      const isFirst = idx===0;
+      const expand = (!filtProd && itens.length>1)
+        ? `<span style="font-family:var(--mono);font-size:10px;color:var(--mu)"> +${itens.length-1} item(ns)</span>`
+        : '';
+      return `<tr>
+        <td>${isFirst ? badge : ''}</td>
+        <td>${isFirst ? fd(first.data) : ''}</td>
+        <td>${isFirst ? (first.clienteNome||'—') : ''}</td>
+        <td><strong>${it.item}</strong>${isFirst?expand:''}</td>
+        <td style="font-size:12px;color:var(--mu)">${it.apresentacao||'—'}</td>
+        <td>${it.qtd}</td>
+        <td>${R$(it.preco)}</td>
+        <td style="color:${desc>0?'var(--red)':'var(--mu)'}">${isFirst&&desc>0?'-'+R$(desc):'—'}</td>
+        <td>${isFirst?`<strong style="color:var(--ac2)">${R$(totNf)}</strong>`:''}</td>
+        <td>${isFirst?dpagBtn:''}</td>
+        ${isFirst?acoes:'<td></td>'}
+      </tr>`;
+    }).join('');
   }).join(''):'<tr><td colspan="11" class="empty">Nenhuma venda encontrada.</td></tr>';
   // Total sobre as linhas já filtradas (busca textual + filtros Excel)
   const totVndFiltrado = linhas.reduce((s,[,itens])=>s+itens.reduce((ss,v)=>ss+v.total,0),0);
@@ -4733,14 +4763,42 @@ function renderCmp(){
   tb.innerHTML=linhas.length?linhas.map(([nfc,itens])=>{
     const totNf=itens.reduce((s,c)=>s+c.total,0);const first=itens[0];const hasCode=nfc&&!nfc.startsWith('_');
     const badge=hasCode?`<span class="badge b-blu">${nfc}</span>`:`<span class="badge" style="background:#eee;color:#999">s/cod</span>`;
-    const expand=itens.length>1?`<span style="font-family:var(--mono);font-size:10px;color:var(--mu)"> +${itens.length-1} item(ns)</span>`:'';
     const dcpag=first.dataPagamentoCmp||'';
     const dcpagPago=!!dcpag;
     const dcpagStyle=dcpagPago?'background:#1a5c3a;color:#fff;border:none':'background:#a03030;color:#fff;border:none';
     const dcpagTitle=dcpagPago?'Pago em '+fd(dcpag)+' — clique para alterar':'Pagamento pendente — clique para registrar';
     const dcpagTxt=dcpagPago?(first.pagamento||'')+'  ✓':'⚪ Em aberto';
     const dcpagBtn=`<button class="badge" style="${dcpagStyle};cursor:pointer;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;font-family:var(--mono);white-space:nowrap" title="${dcpagTitle}" onclick='abrirModalDataPagCmp(${JSON.stringify(nfc)},${JSON.stringify(first.fornecedorNome||'—')},${JSON.stringify(first.pagamento||'')},${JSON.stringify(R$(totNf))},${JSON.stringify(dcpag)})'>${dcpagTxt}</button>`;
-    return`<tr><td>${badge}</td><td>${fd(first.data)}</td><td><strong>${first.produto}</strong>${expand}</td><td>${first.fornecedorNome||'—'}</td><td>${first.setor}</td><td>${first.qtde}</td><td style="font-size:12px;color:var(--mu)">${first.unidade||'—'}</td><td>${R$(first.preco)}</td><td><strong>${R$(totNf)}</strong></td><td>${dcpagBtn}</td><td style="display:flex;gap:3px;flex-wrap:nowrap"><button class="btn-xs btn-v" onclick='relatorioFornecedorCompra(${JSON.stringify(nfc)})'>Relatório</button><button class="btn-xs btn-e" onclick='abrirEditCompra(${JSON.stringify(nfc)})'>Edit.</button><button class="btn-xs btn-d" onclick='removerCompra(${JSON.stringify(nfc)})'>Rem.</button></td></tr>`;
+    const acoesCmp=`<td style="display:flex;gap:3px;flex-wrap:nowrap"><button class="btn-xs btn-v" onclick='relatorioFornecedorCompra(${JSON.stringify(nfc)})'>Relatório</button><button class="btn-xs btn-e" onclick='abrirEditCompra(${JSON.stringify(nfc)})'>Edit.</button><button class="btn-xs btn-d" onclick='removerCompra(${JSON.stringify(nfc)})'>Rem.</button></td>`;
+
+    // Filtro de produto ativo → mostra apenas itens correspondentes
+    const filtProdCmp = _ctxFiltros.cmp[2];
+    let itensVisiveis;
+    if(filtProdCmp){
+      itensVisiveis = itens.filter(it=>filtProdCmp.has(it.produto||'—'));
+    } else {
+      itensVisiveis = [first];
+    }
+
+    return itensVisiveis.map((it, idx)=>{
+      const isFirst = idx===0;
+      const expand = (!filtProdCmp && itens.length>1)
+        ? `<span style="font-family:var(--mono);font-size:10px;color:var(--mu)"> +${itens.length-1} item(ns)</span>`
+        : '';
+      return `<tr>
+        <td>${isFirst ? badge : ''}</td>
+        <td>${isFirst ? fd(first.data) : ''}</td>
+        <td><strong>${it.produto}</strong>${isFirst?expand:''}</td>
+        <td>${isFirst ? (first.fornecedorNome||'—') : ''}</td>
+        <td>${it.setor}</td>
+        <td>${it.qtde}</td>
+        <td style="font-size:12px;color:var(--mu)">${it.unidade||'—'}</td>
+        <td>${R$(it.preco)}</td>
+        <td>${isFirst?`<strong>${R$(totNf)}</strong>`:''}</td>
+        <td>${isFirst?dcpagBtn:''}</td>
+        ${isFirst?acoesCmp:'<td></td>'}
+      </tr>`;
+    }).join('');
   }).join(''):'<tr><td colspan="11" class="empty">Nenhuma compra encontrada.</td></tr>';
   // Total sobre as linhas já filtradas (busca textual + filtros Excel)
   const totCmpFiltrado = linhas.reduce((s,[,itens])=>s+itens.reduce((ss,c)=>ss+c.total,0),0);
@@ -7726,11 +7784,7 @@ let _ctxTodosValores = [];
 // ── Extrai valores da coluna de cada tabela ──
 function _ctxGetValores(tabela, colIdx){
   if(tabela==='vnd'){
-    // Produto (colIdx 3): coleta TODOS os itens de todas as NFs
-    if(colIdx===3){
-      return vendas.map(v=>v.item||'—');
-    }
-    // Demais colunas: uma linha por NF (primeiro item do grupo)
+    // Agrupa igual ao renderVnd
     const grupos = {};
     vendas.forEach(v=>{
       const k = v.nfv||('_'+v.id);
@@ -7741,8 +7795,8 @@ function _ctxGetValores(tabela, colIdx){
         case 0: return v.nfv&&!v.nfv.startsWith('_') ? v.nfv : '(sem código)';
         case 1: return fd(v.data)||'—';
         case 2: return v.clienteNome||'—';
+        case 3: return v.item||'—';
         case 4: return v.dataPagamento ? (v.pagamento||'—') : 'Em aberto';
-        default: return '—';
       }
     });
   }
@@ -7767,11 +7821,6 @@ function _ctxGetValores(tabela, colIdx){
     });
   }
   if(tabela==='cmp'){
-    // Produto (colIdx 2): coleta TODOS os produtos de todas as NCs
-    if(colIdx===2){
-      return compras.map(c=>c.produto||'—');
-    }
-    // Demais colunas: uma linha por NC
     const grupos = {};
     compras.forEach(c=>{
       const k = c.nfc||('_'+c.id);
@@ -7781,10 +7830,10 @@ function _ctxGetValores(tabela, colIdx){
       switch(colIdx){
         case 0: return c.nfc&&!c.nfc.startsWith('_') ? c.nfc : '(sem código)';
         case 1: return fd(c.data)||'—';
+        case 2: return c.produto||'—';
         case 3: return c.fornecedorNome||'—';
         case 4: return c.setor||'—';
         case 5: return c.dataPagamentoCmp ? (c.pagamento||'—') : 'Em aberto';
-        default: return '—';
       }
     });
   }
@@ -7969,21 +8018,17 @@ function _ctxAtualizarTH(tabela){
 
 function _ctxFiltrarVnd(grupos){
   const f = _ctxFiltros.vnd;
-  if(!f[0]&&!f[1]&&!f[2]&&!f[3]&&!f[4]) return Object.entries(grupos);
   return Object.entries(grupos).filter(([nfv, itens])=>{
     const first = itens[0];
     const cod   = first.nfv&&!first.nfv.startsWith('_') ? first.nfv : '(sem código)';
     const data  = fd(first.data)||'—';
     const cli   = first.clienteNome||'—';
+    const prod  = first.item||'—';
     const pag   = first.dataPagamento ? (first.pagamento||'—') : 'Em aberto';
     if(f[0] && !f[0].has(cod))  return false;
     if(f[1] && !f[1].has(data)) return false;
     if(f[2] && !f[2].has(cli))  return false;
-    // Produto: verifica se ALGUM item da NF corresponde ao filtro
-    if(f[3]){
-      const temProd = itens.some(it=>f[3].has(it.item||'—'));
-      if(!temProd) return false;
-    }
+    if(f[3] && !f[3].has(prod)) return false;
     if(f[4] && !f[4].has(pag))  return false;
     return true;
   });
@@ -7992,21 +8037,17 @@ function _ctxFiltrarVnd(grupos){
 // ── Aplica filtros no renderCmp ──
 function _ctxFiltrarCmp(grupos){
   const f = _ctxFiltros.cmp;
-  if(!f[0]&&!f[1]&&!f[2]&&!f[3]&&!f[4]&&!f[5]) return Object.entries(grupos);
   return Object.entries(grupos).filter(([nfc, itens])=>{
     const first = itens[0];
     const cod   = first.nfc&&!first.nfc.startsWith('_') ? first.nfc : '(sem código)';
     const data  = fd(first.data)||'—';
+    const prod  = first.produto||'—';
     const forn  = first.fornecedorNome||'—';
     const setor = first.setor||'—';
     const pag   = first.dataPagamentoCmp ? (first.pagamento||'—') : 'Em aberto';
     if(f[0] && !f[0].has(cod))  return false;
     if(f[1] && !f[1].has(data)) return false;
-    // Produto: verifica se ALGUM item da NC corresponde ao filtro
-    if(f[2]){
-      const temProd = itens.some(it=>f[2].has(it.produto||'—'));
-      if(!temProd) return false;
-    }
+    if(f[2] && !f[2].has(prod)) return false;
     if(f[3] && !f[3].has(forn)) return false;
     if(f[4] && !f[4].has(setor))return false;
     if(f[5] && !f[5].has(pag))  return false;
