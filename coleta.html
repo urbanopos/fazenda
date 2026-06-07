@@ -624,7 +624,6 @@ function _gerarImagem(titulo, linhas, rodape, onBlob){
   ctx.beginPath(); ctx.arc(PAD+20,y+28,20,0,Math.PI*2); ctx.fill();
   txt('SJ',PAD+20,y+34,13,'#1c2e22','bold','center');
   txt('Fazenda Sao Jose',PAD+50,y+24,16,'#fff','bold');
-  // Subtitulo: substitui "TALAO DE PEDIDO" por "TALAO DE PEDIDOS", mantém outros titulos
   var subtitulo = titulo.indexOf('TALAO DE PEDIDO')===0 ? 'TALAO DE PEDIDOS' : titulo;
   txt(subtitulo,PAD+50,y+40,9,'#b8943f');
   var data = document.getElementById('data-global').value;
@@ -640,11 +639,9 @@ function _gerarImagem(titulo, linhas, rodape, onBlob){
   } else { y+=122; }
 
   // FAIXA
-  var ehPedido = titulo.indexOf('TALAO DE PEDIDO')===0;
-  var faixaCor = ehPedido ? '#7a3a00' : '#b8943f';
+  var faixaCor = titulo==='TALAO DE PEDIDO' ? '#7a3a00' : '#b8943f';
   rect(0,y,W,28,faixaCor);
-  // Na faixa: "PEDIDO N.º PED-0001" em vez de "TALAO DE PEDIDO / PED-0001"
-  var faixaTxt = ehPedido ? titulo.replace('TALAO DE PEDIDO / ','PEDIDO N.\u00ba ') : titulo;
+  var faixaTxt = titulo.indexOf('TALAO DE PEDIDO')===0 ? titulo.replace('TALAO DE PEDIDO / ','PEDIDO N.\u00ba ') : titulo;
   txt(faixaTxt,PAD,y+19,10,'#fff','bold');
   y+=28;
 
