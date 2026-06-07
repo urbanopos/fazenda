@@ -2,7 +2,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR"><head>
 <meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0" name="viewport">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Granja SJ">
+<meta name="theme-color" content="#1c2e22">
+<link rel="manifest" href="https://urbanopos.github.io/fazenda/granja-manifest.json">
+<link rel="apple-touch-icon" href="https://urbanopos.github.io/fazenda/granja-icon-192.png">
+<link rel="icon" type="image/png" href="https://urbanopos.github.io/fazenda/granja-icon-192.png">
 <title>Sistema - Fazenda São José</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&amp;family=DM+Mono:wght@400;500&amp;family=Lato:wght@300;400;700&amp;display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -10,6 +18,16 @@
 <style>
 :root{--bg:#f2ede4;--s:#fff;--b:#ddd5c2;--dk:#1c2e22;--md:#3a5c45;--ac:#b8943f;--ac2:#4a8c6f;--red:#a03030;--warn:#b07020;--tx:#2a2a2a;--mu:#888;--mono:'DM Mono',monospace;--serif:'DM Serif Display',serif;--sans:'Lato',sans-serif}
 *{box-sizing:border-box;margin:0;padding:0}
+/* Mobile portrait */
+@media(max-width:600px){
+  body{font-size:13px}
+  .abas-nav{overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap;scrollbar-width:none}
+  .abas-nav::-webkit-scrollbar{display:none}
+  table{font-size:12px}
+  th,td{padding:6px 8px!important}
+  .topo-bar{flex-wrap:wrap;gap:6px}
+  .card{padding:12px}
+}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 input[type=number]{-moz-appearance:textfield}
 body{font-family:var(--sans);background:var(--bg);color:var(--tx);height:100vh;overflow:hidden}
@@ -13889,14 +13907,17 @@ function carregarArquivoJson(){
     try{
       const text = await file.text();
       const dados = JSON.parse(text);
-      if(!dados || typeof dados !== 'object'){
-        showToast('Arquivo invalido.','err'); return;
+      if(!dados || typeof dados !== 'object' || (!dados.g_est && !dados.g_vnd && !dados.g_cli)){
+        showToast('Arquivo invalido ou vazio.','err'); return;
       }
-      // Grava no IDB e localStorage
-      await _gravarIDB(dados).catch(()=>{});
-      try{ localStorage.setItem('granja_dados_v1', JSON.stringify(dados)); }catch(_){}
-      // Aplica os dados diretamente
-      _aplicarDadosLocal(dados);
+      // Grava no IDB e localStorage ANTES de qualquer outra acao
+      const jsonStr = JSON.stringify(dados);
+      try{ localStorage.setItem('granja_dados_v1', jsonStr); }catch(_){}
+      try{ localStorage.setItem('granja_ultima_sessao', dados.g_saved||new Date().toISOString()); }catch(_){}
+      try{ await _gravarIDB(dados); }catch(_){}
+      showToast('Arquivo carregado! Aplicando dados...');
+      // Recarrega a pagina — agora o IDB tem os dados corretos
+      setTimeout(()=>{ window.location.reload(); }, 600);
     }catch(e){
       showToast('Erro ao ler o arquivo: '+e.message,'err');
     }
@@ -13969,27 +13990,19 @@ const _saveOriginal = typeof save === 'function' ? save : null;
 window._marcarDirty = function(){ _dadosForamSalvos = false; };
 
 window.addEventListener('beforeunload', function(e){
-  // Salva no IDB/localStorage de forma síncrona (o que é possível)
+  // Nao salva se os dados estao vazios (evita sobrescrever dados validos)
+  if(!estoque||!estoque.length) return;
   try{
     const payload = _gerarPayloadAtual();
-    // localStorage é síncrono — garante persistência
     localStorage.setItem('granja_dados_v1', JSON.stringify(payload));
     localStorage.setItem('granja_ultima_sessao', payload.g_saved);
-    // IDB é assíncrono — tenta mas não garante
     _gravarIDB(payload).catch(()=>{});
   }catch(_){}
-
-  // Dispara download do dados.json automaticamente
-  // (não é possível forçar download no beforeunload em todos os browsers,
-  //  mas o dado já está salvo no IDB/localStorage acima)
-  // A mensagem abaixo instrui o usuário a confirmar
-  const msg = 'Os dados foram salvos localmente. Deseja também baixar o arquivo dados.json?';
-  // Não bloqueia com confirm() — apenas garante o save local
 });
 
 // Page Visibility API — salva quando usuário muda de aba
 document.addEventListener('visibilitychange', function(){
-  if(document.visibilityState === 'hidden'){
+  if(document.visibilityState === 'hidden' && estoque && estoque.length){
     try{
       const payload = _gerarPayloadAtual();
       localStorage.setItem('granja_dados_v1', JSON.stringify(payload));
