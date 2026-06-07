@@ -7726,7 +7726,11 @@ let _ctxTodosValores = [];
 // ── Extrai valores da coluna de cada tabela ──
 function _ctxGetValores(tabela, colIdx){
   if(tabela==='vnd'){
-    // Agrupa igual ao renderVnd
+    // Produto (colIdx 3): coleta TODOS os itens de todas as NFs
+    if(colIdx===3){
+      return vendas.map(v=>v.item||'—');
+    }
+    // Demais colunas: uma linha por NF (primeiro item do grupo)
     const grupos = {};
     vendas.forEach(v=>{
       const k = v.nfv||('_'+v.id);
@@ -7737,8 +7741,8 @@ function _ctxGetValores(tabela, colIdx){
         case 0: return v.nfv&&!v.nfv.startsWith('_') ? v.nfv : '(sem código)';
         case 1: return fd(v.data)||'—';
         case 2: return v.clienteNome||'—';
-        case 3: return v.item||'—';
         case 4: return v.dataPagamento ? (v.pagamento||'—') : 'Em aberto';
+        default: return '—';
       }
     });
   }
@@ -7763,6 +7767,11 @@ function _ctxGetValores(tabela, colIdx){
     });
   }
   if(tabela==='cmp'){
+    // Produto (colIdx 2): coleta TODOS os produtos de todas as NCs
+    if(colIdx===2){
+      return compras.map(c=>c.produto||'—');
+    }
+    // Demais colunas: uma linha por NC
     const grupos = {};
     compras.forEach(c=>{
       const k = c.nfc||('_'+c.id);
@@ -7772,10 +7781,10 @@ function _ctxGetValores(tabela, colIdx){
       switch(colIdx){
         case 0: return c.nfc&&!c.nfc.startsWith('_') ? c.nfc : '(sem código)';
         case 1: return fd(c.data)||'—';
-        case 2: return c.produto||'—';
         case 3: return c.fornecedorNome||'—';
         case 4: return c.setor||'—';
         case 5: return c.dataPagamentoCmp ? (c.pagamento||'—') : 'Em aberto';
+        default: return '—';
       }
     });
   }
@@ -7960,17 +7969,21 @@ function _ctxAtualizarTH(tabela){
 
 function _ctxFiltrarVnd(grupos){
   const f = _ctxFiltros.vnd;
+  if(!f[0]&&!f[1]&&!f[2]&&!f[3]&&!f[4]) return Object.entries(grupos);
   return Object.entries(grupos).filter(([nfv, itens])=>{
     const first = itens[0];
     const cod   = first.nfv&&!first.nfv.startsWith('_') ? first.nfv : '(sem código)';
     const data  = fd(first.data)||'—';
     const cli   = first.clienteNome||'—';
-    const prod  = first.item||'—';
     const pag   = first.dataPagamento ? (first.pagamento||'—') : 'Em aberto';
     if(f[0] && !f[0].has(cod))  return false;
     if(f[1] && !f[1].has(data)) return false;
     if(f[2] && !f[2].has(cli))  return false;
-    if(f[3] && !f[3].has(prod)) return false;
+    // Produto: verifica se ALGUM item da NF corresponde ao filtro
+    if(f[3]){
+      const temProd = itens.some(it=>f[3].has(it.item||'—'));
+      if(!temProd) return false;
+    }
     if(f[4] && !f[4].has(pag))  return false;
     return true;
   });
@@ -7979,17 +7992,21 @@ function _ctxFiltrarVnd(grupos){
 // ── Aplica filtros no renderCmp ──
 function _ctxFiltrarCmp(grupos){
   const f = _ctxFiltros.cmp;
+  if(!f[0]&&!f[1]&&!f[2]&&!f[3]&&!f[4]&&!f[5]) return Object.entries(grupos);
   return Object.entries(grupos).filter(([nfc, itens])=>{
     const first = itens[0];
     const cod   = first.nfc&&!first.nfc.startsWith('_') ? first.nfc : '(sem código)';
     const data  = fd(first.data)||'—';
-    const prod  = first.produto||'—';
     const forn  = first.fornecedorNome||'—';
     const setor = first.setor||'—';
     const pag   = first.dataPagamentoCmp ? (first.pagamento||'—') : 'Em aberto';
     if(f[0] && !f[0].has(cod))  return false;
     if(f[1] && !f[1].has(data)) return false;
-    if(f[2] && !f[2].has(prod)) return false;
+    // Produto: verifica se ALGUM item da NC corresponde ao filtro
+    if(f[2]){
+      const temProd = itens.some(it=>f[2].has(it.produto||'—'));
+      if(!temProd) return false;
+    }
     if(f[3] && !f[3].has(forn)) return false;
     if(f[4] && !f[4].has(setor))return false;
     if(f[5] && !f[5].has(pag))  return false;
