@@ -435,9 +435,6 @@ textarea{resize:none;height:72px;font-size:14px}
 <div id="sec-vendas">
   <div class="sec-t" style="color:#7a3a00">Vendas</div>
   <div class="sec-d">Talao de pedido numerado</div>
-  <!-- Botao Consulta — visivel apenas ao admin -->
-  <button class="btn-consulta" id="btn-consulta-coleta" onclick="abrirHistColeta()">📊 Consulta de Coletas</button>
-  <button class="btn-consulta" id="btn-consulta-pedidos" onclick="mostrarPainelVendas('hist')">📄 Historico de Pedidos</button>
   <!-- Alternancia Novo / Historico -->
   <div class="hist-toggle">
     <button class="hist-btn ativo" id="btn-aba-novo" onclick="mostrarPainelVendas(&#39;novo&#39;)">+ Novo Pedido</button>
@@ -470,6 +467,9 @@ textarea{resize:none;height:72px;font-size:14px}
   <div class="div"></div>
   <div class="cont" id="contador">Nenhum item preenchido</div>
   <button class="btn-wpp" onclick="enviarTudo()">Enviar - PDF + WhatsApp</button>
+  <!-- Botoes de consulta — aparecem apenas apos admin autenticar -->
+  <button class="btn-consulta" id="btn-consulta-coleta" onclick="abrirHistColeta()">📊 Consulta de Coletas</button>
+  <button class="btn-consulta" id="btn-consulta-pedidos" onclick="abrirHistPedidos()">📄 Historico de Pedidos</button>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -1318,6 +1318,15 @@ function _renderHistColetaDetalhe(body, registros){
     html += '</div>';
   });
   body.innerHTML = html;
+}
+
+function abrirHistPedidos(){
+  // Garante que a aba vendas está ativa e abre o painel historico
+  trocarAba('vendas');
+  mostrarPainelVendas('hist');
+  // Scroll para o painel
+  var sv = document.getElementById('sec-vendas');
+  if(sv) sv.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 // Mostra/oculta os botoes de consulta conforme status admin
