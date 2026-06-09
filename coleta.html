@@ -464,8 +464,34 @@ textarea{resize:none;height:72px;font-size:14px}
       </button>
     </div>
   </div>
-  <!-- PAINEL HISTORICO -->
+  <!-- PAINEL HISTORICO DE PEDIDOS -->
   <div class="hist-panel" id="painel-hist">
+    <!-- Filtros -->
+    <div class="hcol-filtros" style="margin:0 -16px 14px;padding:10px 16px">
+      <div>
+        <div class="hcol-lbl">Ano</div>
+        <select class="hcol-sel" id="hped-ano" onchange="_renderHist()"></select>
+      </div>
+      <div>
+        <div class="hcol-lbl">Mes</div>
+        <select class="hcol-sel" id="hped-mes" onchange="_renderHist()">
+          <option value="">Todos</option>
+          <option value="01">Janeiro</option><option value="02">Fevereiro</option>
+          <option value="03">Marco</option><option value="04">Abril</option>
+          <option value="05">Maio</option><option value="06">Junho</option>
+          <option value="07">Julho</option><option value="08">Agosto</option>
+          <option value="09">Setembro</option><option value="10">Outubro</option>
+          <option value="11">Novembro</option><option value="12">Dezembro</option>
+        </select>
+      </div>
+      <div>
+        <div class="hcol-lbl">Visao</div>
+        <select class="hcol-sel" id="hped-visao" onchange="_renderHist()">
+          <option value="total">Totalizacao por produto</option>
+          <option value="detalhe">Pedidos detalhados</option>
+        </select>
+      </div>
+    </div>
     <div id="hist-lista"></div>
   </div>
 </div>
@@ -1207,13 +1233,91 @@ function _renderHist(){
   var lista = document.getElementById('hist-lista');
   if(!lista) return;
   var hist = _carregarHist();
-  if(!hist.length){
-    lista.innerHTML = '<div class="hist-empty">Nenhum pedido registrado ainda.</div>';
+
+  // Preenche anos disponíveis
+  var selAno = document.getElementById('hped-ano');
+  if(selAno){
+    var anos = {};
+    hist.forEach(function(p){ if(p.data) anos[p.data.slice(0,4)]=1; });
+    var anoAtual = new Date().getFullYear().toString();
+    if(!anos[anoAtual]) anos[anoAtual]=1;
+    var anoSel = selAno.value || anoAtual;
+    if(!selAno.options.length || selAno.dataset.built!=='1'){
+      selAno.innerHTML = Object.keys(anos).sort().reverse().map(function(a){
+        return '<option value="'+a+'"'+(a===anoSel?' selected':'')+'>'+a+'</option>';
+      }).join('');
+      selAno.dataset.built='1';
+    }
+  }
+
+  var ano   = (document.getElementById('hped-ano')||{}).value||'';
+  var mes   = (document.getElementById('hped-mes')||{}).value||'';
+  var visao = (document.getElementById('hped-visao')||{}).value||'detalhe';
+
+  // Filtra por ano/mes
+  var filtrado = hist.filter(function(p){
+    if(!p.data) return false;
+    if(ano && p.data.slice(0,4)!==ano) return false;
+    if(mes && p.data.slice(5,7)!==mes) return false;
+    return true;
+  });
+
+  if(!filtrado.length){
+    lista.innerHTML = '<div class="hist-empty">Nenhum pedido no periodo selecionado.</div>';
     return;
   }
-  lista.innerHTML = hist.map(function(p, i){
+
+  if(visao==='total'){
+    _renderHPedTotal(lista, filtrado, ano, mes);
+  } else {
+    _renderHPedDetalhe(lista, filtrado);
+  }
+}
+
+function _renderHPedTotal(lista, pedidos, ano, mes){
+  // Totaliza por produto → soma qtd e valor
+  var totais = {}; // {nome: {qtd, unid, total}}
+  pedidos.forEach(function(p){
+    (p.itens||[]).forEach(function(it){
+      var k = it.nome||it.col2||'—';
+      if(!totais[k]) totais[k]={qtd:0,unid:it.col3?it.col3.split(' ').slice(1).join(' '):'',total:0};
+      var qtd = parseFloat((it.col3||'0').split(' ')[0])||it.qtd||0;
+      totais[k].qtd   += Number(qtd);
+      totais[k].total += Number(it.sub||it.val||0);
+    });
+  });
+
+  var MESES_N = ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var periodoLabel = mes ? MESES_N[parseInt(mes,10)-1]+' '+ano : 'Ano '+ano;
+  var totalGeral = pedidos.reduce(function(s,p){ return s+(p.total||0); },0);
+
+  var html = '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--mu);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">'
+    +periodoLabel+' · '+pedidos.length+' pedido(s)</div>';
+
+  Object.keys(totais).forEach(function(nome){
+    var it = totais[nome];
+    html += '<div class="hcol-item">'
+      +'<div><div class="hcol-item-nome">'+nome+'</div>'
+      +'<div class="hcol-item-det">R$ '+_fmt(it.total)+'</div></div>'
+      +'<div style="text-align:right">'
+      +'<div class="hcol-item-qtd">'+Number(it.qtd).toLocaleString('pt-BR',{maximumFractionDigits:2})+'</div>'
+      +'<div class="hcol-item-unid">'+it.unid+'</div>'
+      +'</div></div>';
+  });
+
+  html += '<div class="hcol-total">'
+    +'<span class="hcol-total-lbl">Total do periodo</span>'
+    +'<span class="hcol-total-val">R$ '+_fmt(totalGeral)+'</span>'
+    +'</div>';
+
+  lista.innerHTML = html;
+}
+
+function _renderHPedDetalhe(lista, pedidos){
+  lista.innerHTML = pedidos.map(function(p, i){
     var dtFmt = p.data ? new Date(p.data+'T12:00').toLocaleDateString('pt-BR') : '';
     var nItens = p.itens ? p.itens.length : 0;
+    var idxReal = _carregarHist().indexOf(p);
     return '<div class="hist-item">'
       +'<div class="hist-num">'+p.num+'</div>'
       +'<div class="hist-info">'
@@ -1222,15 +1326,24 @@ function _renderHist(){
       +'</div>'
       +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'
       +'<div class="hist-tot">R$ '+_fmt(p.total)+'</div>'
-      +'<button class="hist-viz" onclick="abrirModalPed('+i+')">Ver</button>'
+      +'<button class="hist-viz" onclick="abrirModalPedIdx('+i+',this)">Ver</button>'
       +'</div>'
       +'</div>';
   }).join('');
 }
 
-function abrirModalPed(idx){
+function abrirModalPedIdx(idxFiltrado, btn){
+  // Reconstrói a lista filtrada para pegar o índice correto
   var hist = _carregarHist();
-  var p = hist[idx];
+  var ano   = (document.getElementById('hped-ano')||{}).value||'';
+  var mes   = (document.getElementById('hped-mes')||{}).value||'';
+  var filtrado = hist.filter(function(p){
+    if(!p.data) return false;
+    if(ano && p.data.slice(0,4)!==ano) return false;
+    if(mes && p.data.slice(5,7)!==mes) return false;
+    return true;
+  });
+  var p = filtrado[idxFiltrado];
   if(!p) return;
   _pedAtual = p;
   document.getElementById('mp-titulo').textContent = p.num;
@@ -1251,6 +1364,10 @@ function abrirModalPed(idx){
   }).join('');
   document.getElementById('mp-total').textContent = 'R$ '+_fmt(p.total);
   document.getElementById('modal-ped').classList.add('vis');
+}
+
+function abrirModalPed(idx){
+  abrirModalPedIdx(idx, null);
 }
 
 function fecharModalPed(){
@@ -1392,6 +1509,13 @@ var _histPedDoAdmin = false;
 function abrirHistPedidos(){
   _histPedDoAdmin = true;
   trocarAba('vendas');
+  // Reseta filtros
+  var selAno = document.getElementById('hped-ano');
+  if(selAno) selAno.dataset.built='';
+  var selMes = document.getElementById('hped-mes');
+  if(selMes) selMes.value='';
+  var selVis = document.getElementById('hped-visao');
+  if(selVis) selVis.value='detalhe';
   mostrarPainelVendas('hist');
   var sv = document.getElementById('sec-vendas');
   if(sv) sv.scrollIntoView({behavior:'smooth', block:'start'});
