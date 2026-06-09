@@ -348,7 +348,7 @@ textarea{resize:none;height:72px;font-size:14px}
         <div class="ad-row"><button class="ad-ok" onclick="fecharAdmin();abrirHistColeta()" style="background:#1e3a5f;color:#93c5fd">📊 Ver Consulta de Coletas</button></div>
         <div class="ad-div"></div>
         <span class="ad-lbl">Historico de Pedidos</span>
-        <div class="ad-row"><button class="ad-ok" onclick="fecharAdmin();trocarAba('vendas');mostrarPainelVendas('hist')" style="background:#7a3a00;color:#ffd49a">📄 Ver Historico de Pedidos</button></div>
+        <div class="ad-row"><button class="ad-ok" onclick="fecharAdmin();abrirHistPedidos()" style="background:#7a3a00;color:#ffd49a">📄 Ver Consulta Pedidos</button></div>
         <div class="ad-div"></div>
         <div class="ad-row"><button class="ad-ok" onclick="desbloquearAdmin()" style="background:#2d4a38;color:#a8d88a">Desbloquear dispositivo</button></div>
         <div class="ad-st" id="ad-st2"></div>
@@ -958,20 +958,13 @@ function enviarTudo(){
     if(linkImport) msgTexto += '\n\n[Admin] Importar: '+linkImport;
 
     if(modo==='sms'){
-      // SMS — numero fixo, coletor nao pode mudar destinatario
-      var file = new File([blob],'coleta-'+data+'.jpg',{type:'image/jpeg'});
-      if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-        // Compartilha imagem primeiro
-        navigator.share({title:msgTexto, files:[file]}).catch(function(){
-          _fallbackDownload(blob,'coleta-'+data+'.jpg');
-        });
-      } else {
-        _fallbackDownload(blob,'coleta-'+data+'.jpg');
-      }
-      // Abre SMS com numero fixo e texto resumo
+      // SMS — abre app de mensagens com numero fixo ja preenchido
+      // Salva a imagem localmente para o coletor poder anexar se quiser
+      _fallbackDownload(blob,'coleta-'+data+'.jpg');
+      // Abre SMS com numero fixo — coletor nao pode mudar destinatario
       setTimeout(function(){
         window.location.href = 'sms:+'+n+'?body='+encodeURIComponent(msgTexto);
-      }, 1200);
+      }, 800);
     } else {
       // WhatsApp — modo original
       var file = new File([blob],'coleta-'+data+'.jpg',{type:'image/jpeg'});
@@ -1202,6 +1195,11 @@ function mostrarPainelVendas(qual){
   } else {
     btnHist.classList.remove('ativo'); btnNovo.classList.add('ativo');
     pHist.classList.remove('vis');     pNovo.classList.add('vis');
+    // Se veio do admin, reabre o painel admin
+    if(_histPedDoAdmin){
+      _histPedDoAdmin = false;
+      abrirAdmin();
+    }
   }
 }
 
@@ -1293,6 +1291,7 @@ function abrirHistColeta(){
 
 function fecharHistColeta(){
   document.getElementById('modal-hcol').classList.remove('vis');
+  if(_adminLogado) abrirAdmin();
 }
 
 function renderHistColeta(){
@@ -1388,11 +1387,12 @@ function _renderHistColetaDetalhe(body, registros){
   body.innerHTML = html;
 }
 
+var _histPedDoAdmin = false;
+
 function abrirHistPedidos(){
-  // Garante que a aba vendas está ativa e abre o painel historico
+  _histPedDoAdmin = true;
   trocarAba('vendas');
   mostrarPainelVendas('hist');
-  // Scroll para o painel
   var sv = document.getElementById('sec-vendas');
   if(sv) sv.scrollIntoView({behavior:'smooth', block:'start'});
 }
@@ -1471,10 +1471,15 @@ function _initLP(){
 
 function abrirAdmin(){
   document.getElementById('painel-admin').classList.add('vis');
-  document.getElementById('ad-cfg').style.display='none';
   document.getElementById('ad-senha').value='';
   document.getElementById('ad-st').textContent='';
-  setTimeout(function(){ document.getElementById('ad-senha').focus(); },200);
+  if(_adminLogado){
+    // Ja autenticado — abre direto na tela de configuracoes
+    document.getElementById('ad-cfg').style.display='block';
+  } else {
+    document.getElementById('ad-cfg').style.display='none';
+    setTimeout(function(){ document.getElementById('ad-senha').focus(); },200);
+  }
 }
 function fecharAdmin(){
   document.getElementById('painel-admin').classList.remove('vis');
