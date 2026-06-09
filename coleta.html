@@ -464,8 +464,8 @@ textarea{resize:none;height:72px;font-size:14px}
       </button>
     </div>
   </div>
-  <!-- Filtros de pedidos — acima do painel, igual ao historico de coletas -->
-  <div class="hcol-filtros" style="margin:0 -16px 0;padding:10px 16px;border-radius:var(--r);margin-bottom:10px">
+  <!-- Filtros de pedidos — mesmo layout do historico de coletas -->
+  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;background:#f5f0e8;border-bottom:1px solid var(--ce);margin:0 -16px 14px;padding:10px 16px">
     <div>
       <div class="hcol-lbl">Ano</div>
       <select class="hcol-sel" id="hped-ano" onchange="_renderHist()"></select>
@@ -1277,31 +1277,42 @@ function _renderHPedTotal(lista, pedidos, ano, mes){
   pedidos.forEach(function(p){
     (p.itens||[]).forEach(function(it){
       var k = it.nome||it.col2||'—';
-      if(!totais[k]) totais[k]={qtd:0,unid:it.col3?it.col3.split(' ').slice(1).join(' '):'',total:0};
-      var qtd = parseFloat((it.col3||'0').split(' ')[0])||it.qtd||0;
-      totais[k].qtd   += Number(qtd);
+      if(!totais[k]) totais[k]={qtd:0, unid:'', total:0};
+      // qtd: campo col3 tem formato "2 Unid" ou campo qtd direto
+      var partes = (it.col3||'').split(' ');
+      var qtd = parseFloat(partes[0])||Number(it.qtd)||0;
+      var unid = partes.slice(1).join(' ')||it.unidade||it.unid||'';
+      totais[k].qtd   += qtd;
+      if(!totais[k].unid && unid) totais[k].unid = unid;
       totais[k].total += Number(it.sub||it.val||0);
     });
   });
 
   var MESES_N = ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   var periodoLabel = mes ? MESES_N[parseInt(mes,10)-1]+' '+ano : 'Ano '+ano;
-  var totalGeral = pedidos.reduce(function(s,p){ return s+(p.total||0); },0);
+  var totalGeral = pedidos.reduce(function(s,p){ return s+(Number(p.total)||0); },0);
 
-  var html = '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--mu);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">'
+  var html = '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--mu);'
+    +'letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">'
     +periodoLabel+' · '+pedidos.length+' pedido(s)</div>';
 
+  // Uma linha por produto — igual ao layout de coletas
+  html += '<div class="hcol-secao"><span class="hcol-secao-titulo" style="background:#7a3a00">Pedidos</span>';
   Object.keys(totais).forEach(function(nome){
     var it = totais[nome];
+    var qtdFmt = Number(it.qtd).toLocaleString('pt-BR',{maximumFractionDigits:2});
+    var valFmt = 'R$ '+_fmt(it.total);
     html += '<div class="hcol-item">'
       +'<div><div class="hcol-item-nome">'+nome+'</div>'
-      +'<div class="hcol-item-det">R$ '+_fmt(it.total)+'</div></div>'
+      +'<div class="hcol-item-det">'+valFmt+'</div></div>'
       +'<div style="text-align:right">'
-      +'<div class="hcol-item-qtd">'+Number(it.qtd).toLocaleString('pt-BR',{maximumFractionDigits:2})+'</div>'
+      +'<div class="hcol-item-qtd">'+qtdFmt+'</div>'
       +'<div class="hcol-item-unid">'+it.unid+'</div>'
       +'</div></div>';
   });
+  html += '</div>';
 
+  // Total do período
   html += '<div class="hcol-total">'
     +'<span class="hcol-total-lbl">Total do periodo</span>'
     +'<span class="hcol-total-val">R$ '+_fmt(totalGeral)+'</span>'
