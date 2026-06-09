@@ -726,6 +726,13 @@ function apagarCard(k, cl){
 }
 
 function trocarAba(s){
+  // Se estava no historico de pedidos vindo do admin, volta ao admin
+  if(_histPedDoAdmin && s !== 'vendas'){
+    _histPedDoAdmin = false;
+    mostrarPainelVendas('novo');
+    abrirAdmin();
+    return;
+  }
   document.querySelectorAll('.secao').forEach(function(x){ x.classList.remove('at'); });
   document.querySelectorAll('.aba').forEach(function(x){ x.classList.remove('at'); });
   var secV = document.getElementById('sec-vendas');
@@ -1214,9 +1221,15 @@ function mostrarPainelVendas(qual){
   if(qual==='hist'){
     btnNovo.classList.remove('ativo'); btnHist.classList.add('ativo');
     pNovo.classList.remove('vis');     pHist.classList.add('vis');
+    // Muda o botao para "← Voltar" quando veio do admin
+    if(_histPedDoAdmin){
+      btnNovo.textContent = '← Voltar';
+      btnNovo.classList.add('ativo');
+    }
     _renderHist();
   } else {
     btnHist.classList.remove('ativo'); btnNovo.classList.add('ativo');
+    btnNovo.textContent = '+ Novo Pedido';
     pHist.classList.remove('vis');     pNovo.classList.add('vis');
     // Se veio do admin, reabre o painel admin
     if(_histPedDoAdmin){
