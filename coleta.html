@@ -256,15 +256,7 @@ textarea{resize:none;height:72px;font-size:14px}
 </head>
 <body>
 
-<!-- BANNER ANDROID -->
-<div id="banner-inst">
-  <div class="bi-titulo">Instalar na tela inicial</div>
-  <div class="bi-desc">Acesse como um app sem abrir o navegador</div>
-  <div class="bi-btns">
-    <button class="bi-ok" id="btn-bi-ok">Instalar agora</button>
-    <button class="bi-nao" onclick="dispensarInst()">Agora nao</button>
-  </div>
-</div>
+<!-- BANNER ANDROID removido — instalacao pelo botao no cabecalho -->
 
 <!-- GUIA IOS -->
 <div id="guia-ios" onclick="fecharGuiaIos()">
@@ -546,48 +538,23 @@ var PROD_VENDA = [
 /* ---- INSTALL ---- */
 var _ip = null;
 var _ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
-// Detecta se ja esta instalado como PWA (standalone)
 var _sa = window.matchMedia('(display-mode:standalone)').matches
        || window.matchMedia('(display-mode:fullscreen)').matches
        || navigator.standalone === true
        || document.referrer.includes('android-app://');
 
-// Se ja esta instalado, nao mostra nada
 if(!_sa){
-  // Android: aguarda evento beforeinstallprompt
   window.addEventListener('beforeinstallprompt', function(e){
     e.preventDefault();
     _ip = e;
-    if(!sessionStorage.getItem('inst_disp')){
-      document.getElementById('banner-inst').classList.add('vis');
-    }
     document.getElementById('btn-inst').classList.add('vis');
   });
-  // iOS: mostra botao Instalar se nao instalado
-  if(_ios){
-    document.getElementById('btn-inst').classList.add('vis');
-  }
+  if(_ios) document.getElementById('btn-inst').classList.add('vis');
 }
 
-document.getElementById('btn-bi-ok').addEventListener('click', function(){
-  if(!_ip) return;
-  _ip.prompt();
-  _ip.userChoice.then(function(r){
-    _ip = null;
-    document.getElementById('banner-inst').classList.remove('vis');
-    if(r.outcome === 'accepted'){
-      document.getElementById('btn-inst').classList.remove('vis');
-      _toast('App instalado!');
-    }
-  });
-});
-
-function dispensarInst(){
-  document.getElementById('banner-inst').classList.remove('vis');
-  sessionStorage.setItem('inst_disp','1');
-}
+function dispensarInst(){ /* sem banner */ }
 function abrirInst(){
-  if(_ip) _ip.prompt();
+  if(_ip){ _ip.prompt(); _ip.userChoice.then(function(r){ if(r.outcome==='accepted'){ _ip=null; document.getElementById('btn-inst').classList.remove('vis'); _toast('App instalado!'); } }); }
   else if(_ios) document.getElementById('guia-ios').classList.add('vis');
   else _toast('Menu do navegador - Adicionar a tela inicial');
 }
@@ -1507,17 +1474,11 @@ function abrirAdmin(){
   document.getElementById('ad-cfg').style.display='none';
   document.getElementById('ad-senha').value='';
   document.getElementById('ad-st').textContent='';
-  // Oculta banner de instalacao
-  document.getElementById('banner-inst').classList.remove('vis');
   setTimeout(function(){ document.getElementById('ad-senha').focus(); },200);
 }
 function fecharAdmin(){
   document.getElementById('painel-admin').classList.remove('vis');
   document.getElementById('ad-senha').value='';
-  // Restaura banner se estava visivel (apenas se nao foi dispensado)
-  if(_ip && !sessionStorage.getItem('inst_disp')){
-    document.getElementById('banner-inst').classList.add('vis');
-  }
 }
 function toggleAdVis(){
   var i=document.getElementById('ad-senha');
