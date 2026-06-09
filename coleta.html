@@ -464,43 +464,40 @@ textarea{resize:none;height:72px;font-size:14px}
       </button>
     </div>
   </div>
+  <!-- Filtros de pedidos — acima do painel, igual ao historico de coletas -->
+  <div class="hcol-filtros" style="margin:0 -16px 0;padding:10px 16px;border-radius:var(--r);margin-bottom:10px">
+    <div>
+      <div class="hcol-lbl">Ano</div>
+      <select class="hcol-sel" id="hped-ano" onchange="_renderHist()"></select>
+    </div>
+    <div>
+      <div class="hcol-lbl">Mes</div>
+      <select class="hcol-sel" id="hped-mes" onchange="_renderHist()">
+        <option value="">Todos</option>
+        <option value="01">Janeiro</option><option value="02">Fevereiro</option>
+        <option value="03">Marco</option><option value="04">Abril</option>
+        <option value="05">Maio</option><option value="06">Junho</option>
+        <option value="07">Julho</option><option value="08">Agosto</option>
+        <option value="09">Setembro</option><option value="10">Outubro</option>
+        <option value="11">Novembro</option><option value="12">Dezembro</option>
+      </select>
+    </div>
+    <div>
+      <div class="hcol-lbl">Visao</div>
+      <select class="hcol-sel" id="hped-visao" onchange="_renderHist()">
+        <option value="total">Totalizacao por produto</option>
+        <option value="detalhe">Pedidos detalhados</option>
+      </select>
+    </div>
+  </div>
   <!-- PAINEL HISTORICO DE PEDIDOS -->
   <div class="hist-panel" id="painel-hist">
-    <!-- Filtros -->
-    <div class="hcol-filtros" style="margin:0 -16px 14px;padding:10px 16px">
-      <div>
-        <div class="hcol-lbl">Ano</div>
-        <select class="hcol-sel" id="hped-ano" onchange="_renderHist()"></select>
-      </div>
-      <div>
-        <div class="hcol-lbl">Mes</div>
-        <select class="hcol-sel" id="hped-mes" onchange="_renderHist()">
-          <option value="">Todos</option>
-          <option value="01">Janeiro</option><option value="02">Fevereiro</option>
-          <option value="03">Marco</option><option value="04">Abril</option>
-          <option value="05">Maio</option><option value="06">Junho</option>
-          <option value="07">Julho</option><option value="08">Agosto</option>
-          <option value="09">Setembro</option><option value="10">Outubro</option>
-          <option value="11">Novembro</option><option value="12">Dezembro</option>
-        </select>
-      </div>
-      <div>
-        <div class="hcol-lbl">Visao</div>
-        <select class="hcol-sel" id="hped-visao" onchange="_renderHist()">
-          <option value="total">Totalizacao por produto</option>
-          <option value="detalhe">Pedidos detalhados</option>
-        </select>
-      </div>
-    </div>
     <div id="hist-lista"></div>
   </div>
 </div>
   <div class="div"></div>
   <div class="cont" id="contador">Nenhum item preenchido</div>
   <button class="btn-wpp" onclick="enviarTudo()">Enviar — SMS</button>
-  <!-- Botoes de consulta — aparecem apenas apos admin autenticar -->
-  <button class="btn-consulta" id="btn-consulta-coleta" onclick="abrirHistColeta()">📊 Consulta de Coletas</button>
-  <button class="btn-consulta" id="btn-consulta-pedidos" onclick="abrirHistPedidos()">📄 Historico de Pedidos</button>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -1523,11 +1520,7 @@ function abrirHistPedidos(){
 
 // Mostra/oculta os botoes de consulta conforme status admin
 function _atualizarBtnConsulta(adminLogado){
-  var btnCol = document.getElementById('btn-consulta-coleta');
-  var btnPed = document.getElementById('btn-consulta-pedidos');
   var btnHist = document.getElementById('btn-aba-hist');
-  if(btnCol) btnCol.classList.toggle('vis', !!adminLogado);
-  if(btnPed) btnPed.classList.toggle('vis', !!adminLogado);
   if(btnHist) btnHist.style.display = adminLogado ? '' : 'none';
 }
 var _adminLogado = false;
