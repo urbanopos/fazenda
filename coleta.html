@@ -553,8 +553,8 @@ var PROD_VENDA = [
   {id:'frango',nome:'Frango'},{id:'pinto',nome:'Pinto'},
   {id:'pintainha',nome:'Pintainha'},{id:'esterco',nome:'Esterco'},
   {id:'coco',nome:'Coco Seco'},{id:'manga',nome:'Manga'},
-  {id:'abacate',nome:'Abacate'},{id:'banana',nome:'Banana'},
-  {id:'pitomba',nome:'Pitomba'}
+  {id:'abacate',nome:'Abacate'},
+  {id:'_edit',nome:'Editavel'}
 ];
 
 /* ---- INSTALL ---- */
@@ -1210,9 +1210,15 @@ function _renderVItens(){
         +'<button class="vi-del" onclick="delVItem('+i+')">X</button>'
         +'</div></div>';
     } else {
+      var isEdit = it.prodId==='_edit';
+      var nomeEditField = isEdit
+        ? '<span class="vi-lbl">Nome do item</span>'
+          +'<input class="vi-inp pc-edit-nome" type="text" id="vedit-nome-'+it.idx+'" placeholder="Descreva o item..." value="'+(it._editNome||'')+'" oninput="_vItens['+i+']._editNome=this.value" style="margin-bottom:10px;border:2px solid #b8943f">'
+        : '';
       html += '<div class="vi" id="vi-'+it.idx+'">'
         +'<span class="vi-lbl">Produto</span>'
-        +'<select class="vi-sel" onchange="setProdV('+i+',this.value)">'+_optsVenda(it.prodId)+'</select>'
+        +'<select class="vi-sel" onchange="setProdV('+i+',this.value);_renderVItens()">'+_optsVenda(it.prodId)+'</select>'
+        +nomeEditField
         +'<span class="vi-lbl">Unidade (ex: bandeja, kg, duzia...)</span>'
         +'<input class="vi-inp" type="text" placeholder="Digite a unidade..." value="'+it.unidade+'" oninput="setUnidV('+i+',this.value)" style="margin-bottom:12px">'
         +'<div class="vi-row2">'
@@ -1250,12 +1256,23 @@ function _calcSubV(i){ _vItens[i].sub=Math.round(_vItens[i].qtd*_vItens[i].preco
 
 function conclVItem(i){
   var it=_vItens[i];
+  if(it.prodId==='_edit'){
+    var nomeEl = document.getElementById('vedit-nome-'+it.idx);
+    var nomeVal = (nomeEl ? nomeEl.value : it._editNome||'').trim();
+    if(!nomeVal){ _toast('Informe o nome do item.'); nomeEl&&nomeEl.focus(); return; }
+    it._editNome = nomeVal;
+  }
   if(it.qtd<=0){ _toast('Informe a quantidade.'); return; }
   if(it.preco<=0){ _toast('Informe o preco unitario.'); return; }
   _calcSubV(i);
-  var p = PROD_VENDA.filter(function(x){ return x.id===it.prodId; })[0]||{nome:it.prodId};
   var dtFmt = it.data ? new Date(it.data+'T12:00').toLocaleDateString('pt-BR') : '';
-  it._nome = p.nome; it._data = dtFmt; it.concluido=true;
+  if(it.prodId==='_edit'){
+    it._nome = it._editNome;
+  } else {
+    var p = PROD_VENDA.filter(function(x){ return x.id===it.prodId; })[0]||{nome:it.prodId};
+    it._nome = p.nome;
+  }
+  it._data = dtFmt; it.concluido=true;
   _renderVItens();
 }
 function editVItem(i){ _vItens[i].concluido=false; _renderVItens(); }
