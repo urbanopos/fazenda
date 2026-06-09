@@ -583,13 +583,107 @@ function abrirInst(){
 }
 function fecharGuiaIos(){ document.getElementById('guia-ios').classList.remove('vis'); }
 
+/* ---- CARD EDITAVEL ---- */
+// CSS injetado para o card editavel
+(function(){
+  var s = document.createElement('style');
+  s.textContent =
+    '.pc-edit{border-left-color:#b8943f!important}'
+    +'.pc-edit .ph{background:#2d2010}'
+    +'.pc-edit-nome{width:100%;padding:9px 12px;border:2px solid #b8943f;border-radius:8px;font-size:16px;background:#fff;color:#222;font-family:inherit;margin-bottom:2px}'
+    +'.pc-edit-nome::placeholder{color:#bbb}';
+  document.head.appendChild(s);
+})();
+
+function _cardEditavel(setor, cl, forn){
+  var k = setor+'_edit';
+  var fH = forn ? '<div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-'+k+'" placeholder="Nome do fornecedor..." style="font-size:15px"></div>' : '';
+  return '<div class="pc pc-edit'+(cl?' '+cl:'')+'" id="card-'+k+'">'
+    +'<div class="ph">'
+    +'<div onclick="toggleCard(\''+k+'\',\''+cl+'\')" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0">'
+    +'<span class="pe" style="color:#b8943f">Editavel</span>'
+    +'<span class="pb" id="badge-'+k+'">+ Registrar</span>'
+    +'</div>'
+    +'<div class="ph-acoes">'
+    +'<button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(\''+k+'\',\''+cl+'\')">Edit</button>'
+    +'<button class="ph-btn-apa" onclick="event.stopPropagation();apagarCardEdit(\''+k+'\',\''+cl+'\')">x</button>'
+    +'</div>'
+    +'</div>'
+    +'<div class="res-con" id="res-'+k+'"></div>'
+    +'<div class="pbd" id="body-'+k+'">'
+    +'<div class="cg"><span class="cl">Nome do item</span>'
+    +'<input class="pc-edit-nome" type="text" id="enome-'+k+'" placeholder="Descreva o item..." autocomplete="off"></div>'
+    +'<div class="cg"><span class="cl">Quantidade</span>'
+    +'<div class="step" style="display:flex;align-items:center;gap:6px">'
+    +'<button class="sb" onclick="stepQ(\''+k+'\',1,-1)">-</button>'
+    +'<input class="si" type="number" id="qtd-'+k+'" inputmode="decimal" min="0" step="1" value="0">'
+    +'<button class="sb" onclick="stepQ(\''+k+'\',1,1)">+</button>'
+    +'<input type="text" id="eunid-'+k+'" placeholder="unid" style="width:70px;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:14px;text-align:center">'
+    +'</div></div>'
+    +fH
+    +'<div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-'+k+'" placeholder="Ex: lote A, qualidade boa..."></textarea></div>'
+    +'<div class="card-acoes">'
+    +'<button class="btn-con" onclick="concluirCardEdit(\''+k+'\',\''+setor+'\')">Concluir</button>'
+    +'</div></div></div>';
+}
+
+function concluirCardEdit(k, setor){
+  var nomeEl = document.getElementById('enome-'+k);
+  var qtdEl  = document.getElementById('qtd-'+k);
+  var unidEl = document.getElementById('eunid-'+k);
+  var nome = (nomeEl ? nomeEl.value : '').trim();
+  var qtd  = parseFloat(qtdEl ? qtdEl.value : 0)||0;
+  var unid = (unidEl ? unidEl.value : '').trim()||'unid';
+  if(!nome){ _toast('Informe o nome do item.'); nomeEl&&nomeEl.focus(); return; }
+  if(qtd<=0){ _toast('Informe a quantidade antes de concluir.'); return; }
+  var cfg  = SETORES[setor];
+  var cl   = cfg ? cfg.cl : '';
+  var card = document.getElementById('card-'+k);
+  var badge= document.getElementById('badge-'+k);
+  var res  = document.getElementById('res-'+k);
+  var forn = (document.getElementById('for-'+k)||{value:''}).value||'';
+  var obs  = (document.getElementById('obs-'+k)||{value:''}).value||'';
+  card.classList.remove('at'); card.classList.add('concluido');
+  badge.textContent = qtd+' '+unid;
+  var html = '<div class="rc-l"><strong>'+nome+'</strong></div>'
+    +'<div class="rc-l">Qtde: <strong>'+qtd+' '+unid+'</strong></div>';
+  if(forn) html += '<div class="rc-l">Fornecedor: <strong>'+forn+'</strong></div>';
+  if(obs)  html += '<div class="rc-l">Obs: <strong>'+obs+'</strong></div>';
+  res.innerHTML = html;
+  _atualizarContador();
+  _toast(nome+' registrado');
+}
+
+function apagarCardEdit(k, cl){
+  var card  = document.getElementById('card-'+k);
+  var qtdEl = document.getElementById('qtd-'+k);
+  var obsEl = document.getElementById('obs-'+k);
+  var forEl = document.getElementById('for-'+k);
+  var nomEl = document.getElementById('enome-'+k);
+  var undEl = document.getElementById('eunid-'+k);
+  if(qtdEl) qtdEl.value=0;
+  if(obsEl) obsEl.value='';
+  if(forEl) forEl.value='';
+  if(nomEl) nomEl.value='';
+  if(undEl) undEl.value='';
+  card.classList.remove('concluido','at');
+  var badge = document.getElementById('badge-'+k);
+  var res   = document.getElementById('res-'+k);
+  if(badge) badge.textContent='+ Registrar';
+  if(res)   res.innerHTML='';
+  _atualizarContador();
+}
+
 /* ---- INIT ---- */
 function _iniciar(){
   setHoje(); _relogio(); setInterval(_relogio, 30000);
   Object.keys(SETORES).forEach(function(s){
     var cfg = SETORES[s];
     var g = document.getElementById('grid-'+s);
-    if(g) g.innerHTML = cfg.produtos.map(function(p){ return _card(s,p,cfg.cl,cfg.forn); }).join('');
+    if(g){
+      g.innerHTML = cfg.produtos.map(function(p){ return _card(s,p,cfg.cl,cfg.forn); }).join('')
+                  + _cardEditavel(s, cfg.cl, cfg.forn);
+    }
   });
   _initLP();
   _initVendas();
@@ -753,16 +847,28 @@ function _coletarItens(){
   var itens = [];
   Object.keys(SETORES).forEach(function(setor){
     var cfg = SETORES[setor];
+    // Cards fixos
     cfg.produtos.forEach(function(p){
       var k = setor+'_'+p.id;
       var card = document.getElementById('card-'+k);
       if(!card || !card.classList.contains('concluido')) return;
       var qtd = parseFloat(document.getElementById('qtd-'+k).value)||0;
       if(qtd<=0) return;
-      var obs = (document.getElementById('obs-'+k)||{value:''}).value||'';
+      var obs  = (document.getElementById('obs-'+k)||{value:''}).value||'';
       var forn = (document.getElementById('for-'+k)||{value:''}).value||'';
       itens.push({setor:cfg.label, nome:p.nome, unid:p.unid, qtd:qtd, obs:obs.trim(), forn:forn.trim()});
     });
+    // Card editavel
+    var ke = setor+'_edit';
+    var cardE = document.getElementById('card-'+ke);
+    if(cardE && cardE.classList.contains('concluido')){
+      var qtd  = parseFloat((document.getElementById('qtd-'+ke)||{value:0}).value)||0;
+      var nome = ((document.getElementById('enome-'+ke)||{value:''}).value||'').trim();
+      var unid = ((document.getElementById('eunid-'+ke)||{value:''}).value||'').trim()||'unid';
+      var obs  = ((document.getElementById('obs-'+ke)||{value:''}).value||'').trim();
+      var forn = ((document.getElementById('for-'+ke)||{value:''}).value||'').trim();
+      if(qtd>0 && nome) itens.push({setor:cfg.label, nome:nome, unid:unid, qtd:qtd, obs:obs, forn:forn});
+    }
   });
   return itens;
 }
@@ -1012,6 +1118,8 @@ function enviarTudo(){
     Object.keys(SETORES).forEach(function(setor){
       var cfg = SETORES[setor];
       cfg.produtos.forEach(function(p){ apagarCard(setor+'_'+p.id, cfg.cl||''); });
+      // Limpa card editavel
+      apagarCardEdit(setor+'_edit', cfg.cl||'');
     });
     document.getElementById('contador').innerHTML = 'Nenhum item preenchido';
   }, 2000);
