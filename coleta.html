@@ -83,7 +83,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--vd);min-height:100vh;colo
 .topo-t{font-family:'DM Serif Display',serif;font-size:18px;color:#fff;line-height:1.1}
 .topo-s{font-family:'DM Mono',monospace;font-size:10px;color:var(--ac);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
 .topo-d{margin-left:auto;font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.45);text-align:right;line-height:1.5}
-.btn-inst{background:rgba(184,148,63,.14);border:1px solid rgba(184,148,63,.35);color:var(--ac);border-radius:20px;padding:5px 12px;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;white-space:nowrap;flex-shrink:0;display:none}
+.btn-inst{background:rgba(184,148,63,.14);border:1px solid rgba(184,148,63,.35);color:var(--ac);border-radius:20px;padding:8px 18px;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;display:none;letter-spacing:.5px}
 .btn-inst.vis{display:block}
 /* CORPO */
 .corpo{background:var(--cr);min-height:calc(100vh - 74px);border-radius:20px 20px 0 0;padding:20px 16px 120px}
@@ -257,7 +257,7 @@ textarea{resize:none;height:72px;font-size:14px}
 <body>
 
 <!-- BANNER ANDROID -->
-<div id="banner-inst" class="vis">
+<div id="banner-inst">
   <div class="bi-titulo">Instalar na tela inicial</div>
   <div class="bi-desc">Acesse como um app sem abrir o navegador</div>
   <div class="bi-btns">
@@ -369,7 +369,7 @@ textarea{resize:none;height:72px;font-size:14px}
 <div class="topo">
   <div class="topo-icon" id="topo-icon">🌿</div>
   <div><div class="topo-t">Fazenda Sao Jose</div><div class="topo-s">Coleta de Campo</div></div>
-  <button class="btn-inst vis" id="btn-inst" onclick="abrirInst()">Instalar</button>
+  <button class="btn-inst" id="btn-inst" onclick="abrirInst()">Instalar</button>
   <div class="topo-d" id="relogio">seg., 08 de jun.<br>05:34</div>
 </div>
 
@@ -543,26 +543,55 @@ var PROD_VENDA = [
 ];
 
 /* ---- INSTALL ---- */
+/* ---- INSTALL ---- */
 var _ip = null;
 var _ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
-var _sa = window.matchMedia('(display-mode:standalone)').matches || navigator.standalone === true;
+// Detecta se ja esta instalado como PWA (standalone)
+var _sa = window.matchMedia('(display-mode:standalone)').matches
+       || window.matchMedia('(display-mode:fullscreen)').matches
+       || navigator.standalone === true
+       || document.referrer.includes('android-app://');
 
-window.addEventListener('beforeinstallprompt', function(e){
-  e.preventDefault(); _ip = e;
-  if(!_sa && !sessionStorage.getItem('inst_disp')) document.getElementById('banner-inst').classList.add('vis');
-  document.getElementById('btn-inst').classList.add('vis');
-});
+// Se ja esta instalado, nao mostra nada
+if(!_sa){
+  // Android: aguarda evento beforeinstallprompt
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    _ip = e;
+    if(!sessionStorage.getItem('inst_disp')){
+      document.getElementById('banner-inst').classList.add('vis');
+    }
+    document.getElementById('btn-inst').classList.add('vis');
+  });
+  // iOS: mostra botao Instalar se nao instalado
+  if(_ios){
+    document.getElementById('btn-inst').classList.add('vis');
+  }
+}
 
 document.getElementById('btn-bi-ok').addEventListener('click', function(){
   if(!_ip) return;
   _ip.prompt();
-  _ip.userChoice.then(function(r){ _ip=null; document.getElementById('banner-inst').classList.remove('vis'); if(r.outcome==='accepted') _toast('App instalado!'); });
+  _ip.userChoice.then(function(r){
+    _ip = null;
+    document.getElementById('banner-inst').classList.remove('vis');
+    if(r.outcome === 'accepted'){
+      document.getElementById('btn-inst').classList.remove('vis');
+      _toast('App instalado!');
+    }
+  });
 });
 
-function dispensarInst(){ document.getElementById('banner-inst').classList.remove('vis'); sessionStorage.setItem('inst_disp','1'); }
-function abrirInst(){ if(_ip) _ip.prompt(); else if(_ios) document.getElementById('guia-ios').classList.add('vis'); else _toast('Menu do navegador - Adicionar a tela inicial'); }
+function dispensarInst(){
+  document.getElementById('banner-inst').classList.remove('vis');
+  sessionStorage.setItem('inst_disp','1');
+}
+function abrirInst(){
+  if(_ip) _ip.prompt();
+  else if(_ios) document.getElementById('guia-ios').classList.add('vis');
+  else _toast('Menu do navegador - Adicionar a tela inicial');
+}
 function fecharGuiaIos(){ document.getElementById('guia-ios').classList.remove('vis'); }
-if(_ios && !_sa) document.getElementById('btn-inst').classList.add('vis');
 
 /* ---- INIT ---- */
 function _iniciar(){
