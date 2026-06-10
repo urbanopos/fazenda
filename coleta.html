@@ -1067,18 +1067,31 @@ function enviarTudo(){
     ord.forEach(function(s){
       blocos.push('['+s.toUpperCase()+']\n'+setores[s].map(function(l){return '  '+l;}).join('\n'));
     });
-    var msg='COLETA FAZENDA SJ\n'
+    // Texto da mensagem — SEM o link de importacao (vai so no wa.me para o admin)
+    var msgColetor='COLETA FAZENDA SJ\n'
       +(nome?'Coletor: '+nome+'\n':'')
       +'Data: '+dfL+'\n\n'
       +blocos.join('\n\n')
-      +'\n\n'+itens.length+' item(ns)'
-      +(linkImport?'\n\n[Admin] Importar:\n'+linkImport:'');
+      +'\n\n'+itens.length+' item(ns)';
+    // Texto para o admin inclui o link de importacao
+    var msgAdmin=msgColetor+(linkImport?'\n\n[Admin] Importar:\n'+linkImport:'');
+    // URL direto para o numero configurado — direciona sem passar pelo seletor
+    var url='https://wa.me/'+n+'?text='+encodeURIComponent(msgAdmin);
     var file=new File([blob],'coleta-'+data+'.jpg',{type:'image/jpeg'});
-    var url='https://wa.me/'+n+'?text='+encodeURIComponent(msg);
+    // Tenta compartilhar a imagem; abre o WhatsApp direto em seguida
     if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-      navigator.share({text:msg,files:[file]})
-        .then(function(){ _toast('\u2705 Coleta enviada!'); })
-        .catch(function(e){ if(e&&e.name!=='AbortError'){ window.open(url,'_blank'); _toast('\u2705 Coleta enviada!'); } });
+      navigator.share({files:[file]})
+        .then(function(){
+          // Apos compartilhar a imagem, abre o WPP direto para o numero com o texto
+          window.open(url,'_blank');
+          _toast('\u2705 Coleta enviada!');
+        })
+        .catch(function(e){
+          if(e&&e.name!=='AbortError'){
+            window.open(url,'_blank');
+            _toast('\u2705 Coleta enviada!');
+          }
+        });
     } else {
       window.open(url,'_blank');
       _toast('\u2705 Coleta enviada! Verifique o WhatsApp.');
