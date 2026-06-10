@@ -696,6 +696,27 @@ function _iniciar(){
    Remove apenas residuos de versoes antigas — nunca apaga dados do usuario.
    Tambem reseta o BK (bloqueio) se houver chave de versao obsoleta,
    garantindo que dispositivos travados por conflito de estado se recuperem. */
+/* ── AUTO-UPDATE: detecta nova versao no servidor e recarrega ───────────
+   Busca o proprio HTML no servidor e compara um fingerprint embutido.
+   Se divergir, forca reload bypassando o cache do browser/PWA.        */
+(function _verificarAtualizacao(){
+  var FINGERPRINT_ATUAL = '906c7b6b020d';
+  var url = location.href.split('?')[0];
+  // So verifica se estiver servindo do GitHub Pages (nao em teste local)
+  if(url.indexOf('github.io') === -1 && url.indexOf('localhost') === -1) return;
+  fetch(url + '?_v=' + Date.now(), {cache:'no-store'})
+    .then(function(r){ return r.text(); })
+    .then(function(html){
+      // Extrai o fingerprint da versao no servidor
+      var m = html.match(/FINGERPRINT_ATUAL = '([a-f0-9]+)'/);
+      if(m && m[1] !== FINGERPRINT_ATUAL){
+        // Ha versao nova — recarrega forcando bypass de cache
+        location.replace(url + '?_reload=' + Date.now());
+      }
+    })
+    .catch(function(){}); // sem internet — ignora silenciosamente
+})();
+
 (function _migrarStorage(){
   var chaves_obsoletas = [
     'fsj_versao_remota',   // VRK — substituida por APP_VER local
