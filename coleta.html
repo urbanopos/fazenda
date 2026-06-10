@@ -513,7 +513,7 @@ var BK = 'fsj_bloqueado';
 var MK = 'fsj_blk_msg';
 var VK = 'fsj_vendas_ativa';
 var NK = 'fsj_pedido_num';
-var APP_VER = '3'; // incremente a cada nova publicacao
+var APP_VER = '4'; // incremente a cada nova publicacao
 var VLK = 'fsj_versao_local';
 
 var SETORES = {
@@ -691,6 +691,37 @@ function _iniciar(){
   _initLP();
   _initVendas();
 }
+
+/* ── MIGRACAO: limpa chaves obsoletas de versoes anteriores ──────────────
+   Remove apenas residuos de versoes antigas — nunca apaga dados do usuario.
+   Tambem reseta o BK (bloqueio) se houver chave de versao obsoleta,
+   garantindo que dispositivos travados por conflito de estado se recuperem. */
+(function _migrarStorage(){
+  var chaves_obsoletas = [
+    'fsj_versao_remota',   // VRK — substituida por APP_VER local
+    'fsj_modo_envio',      // MK_ENVIO — modo SMS/WPP removido
+    'fsj_last_import'      // link temporario nao persistente
+  ];
+  var tinha_lixo = false;
+  chaves_obsoletas.forEach(function(k){
+    if(localStorage.getItem(k) !== null){
+      localStorage.removeItem(k);
+      tinha_lixo = true;
+    }
+  });
+  // Se VLK nao existe ainda (dispositivo nunca recebeu APP_VER), inicializa
+  // com string vazia para forcar exibicao do botao Desbloquear na 1a abertura
+  // (Admin precisa confirmar que esta rodando a versao atual)
+  if(localStorage.getItem('fsj_versao_local') === null){
+    localStorage.setItem('fsj_versao_local', '');
+  }
+  // Se o dispositivo estava travado por estado inconsistente, desbloqueia
+  if(tinha_lixo && localStorage.getItem('fsj_bloqueado') === '1'){
+    // Nao remove o BK aqui — deixa o fetch do status.json decidir.
+    // Mas garante que VLK esta limpo para o admin ver o botao Desbloquear.
+    localStorage.setItem('fsj_versao_local', '');
+  }
+})();
 
 document.addEventListener('DOMContentLoaded', function(){
   if(localStorage.getItem(BK)==='1'){
