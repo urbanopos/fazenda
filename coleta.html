@@ -1086,44 +1086,38 @@ function enviarTudo(){
     if(!blob){ _toast('Erro ao gerar imagem.'); return; }
     var data = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
     var nome = (localStorage.getItem('wpp_nome')||'').trim();
-    var dfL  = data ? new Date(data+'T12:00').toLocaleDateString('pt-BR') : data;
-
-    // Monta boletim estruturado por setor
-    var setores = {};
-    var ordemSetores = [];
-    itens.forEach(function(it){
-      if(!setores[it.setor]){ setores[it.setor]=[]; ordemSetores.push(it.setor); }
-      var linha = it.nome+': '+it.qtd+' '+it.unid;
-      if(it.forn) linha += ' ('+it.forn+')';
-      if(it.obs)  linha += ' - '+it.obs;
-      setores[it.setor].push(linha);
-    });
-
-    var blocos = [];
-    ordemSetores.forEach(function(s){
-      blocos.push('['+s.toUpperCase()+']\n'+setores[s].map(function(l){ return '  '+l; }).join('\n'));
-    });
-
-    // Mensagem limpa sem link — usada no SMS
-    var msgSMS = '--- COLETA FAZENDA SJ ---\n'
-      + (nome ? 'Coletor: '+nome+'\n' : '')
-      + 'Data: '+dfL+'\n'
-      + '-------------------------\n'
-      + blocos.join('\n\n')
-      + '\n-------------------------\n'
-      + itens.length+' item(ns)';
-
-    // Mensagem WhatsApp = boletim + link de importacao para o admin
-    var msgWPP = msgSMS + (linkImport ? '\n\n[Admin] Importar:\n'+linkImport : '');
 
     if(modo==='sms'){
-      // SMS: baixa a imagem e abre o app de SMS com o boletim pre-preenchido (sem link)
+      // SMS: baixa a imagem e abre o app de SMS apenas com o numero — sem texto no corpo
       _fallbackDownload(blob,'coleta-'+data+'.jpg');
       setTimeout(function(){
-        window.location.href = 'sms:+'+n+'?body='+encodeURIComponent(msgSMS);
+        window.location.href = 'sms:+'+n;
       }, 800);
     } else {
-      // WhatsApp: compartilha imagem + texto completo com link
+      // WhatsApp: texto estruturado + link de importacao para o admin
+      var dfL = data ? new Date(data+'T12:00').toLocaleDateString('pt-BR') : data;
+      var setores = {};
+      var ordemSetores = [];
+      itens.forEach(function(it){
+        if(!setores[it.setor]){ setores[it.setor]=[]; ordemSetores.push(it.setor); }
+        var linha = it.nome+': '+it.qtd+' '+it.unid;
+        if(it.forn) linha += ' ('+it.forn+')';
+        if(it.obs)  linha += ' - '+it.obs;
+        setores[it.setor].push(linha);
+      });
+      var blocos = [];
+      ordemSetores.forEach(function(s){
+        blocos.push('['+s.toUpperCase()+']\n'+setores[s].map(function(l){ return '  '+l; }).join('\n'));
+      });
+      var msgWPP = '--- COLETA FAZENDA SJ ---\n'
+        + (nome ? 'Coletor: '+nome+'\n' : '')
+        + 'Data: '+dfL+'\n'
+        + '-------------------------\n'
+        + blocos.join('\n\n')
+        + '\n-------------------------\n'
+        + itens.length+' item(ns)'
+        + (linkImport ? '\n\n[Admin] Importar:\n'+linkImport : '');
+
       var file = new File([blob],'coleta-'+data+'.jpg',{type:'image/jpeg'});
       if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
         navigator.share({title:msgWPP, text:msgWPP, files:[file]}).catch(function(){
