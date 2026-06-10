@@ -1088,11 +1088,19 @@ function enviarTudo(){
     var nome = (localStorage.getItem('wpp_nome')||'').trim();
 
     if(modo==='sms'){
-      // SMS: baixa a imagem e abre o app de SMS apenas com o numero — sem texto no corpo
-      _fallbackDownload(blob,'coleta-'+data+'.jpg');
-      setTimeout(function(){
-        window.location.href = 'sms:+'+n;
-      }, 800);
+      // SMS/MMS: compartilha apenas a imagem via seletor do sistema (sem texto, sem link)
+      var fileSms = new File([blob],'coleta-'+data+'.jpg',{type:'image/jpeg'});
+      if(navigator.share && navigator.canShare && navigator.canShare({files:[fileSms]})){
+        navigator.share({files:[fileSms]}).catch(function(){
+          // fallback: baixa a imagem e abre SMS so com o numero
+          _fallbackDownload(blob,'coleta-'+data+'.jpg');
+          setTimeout(function(){ window.location.href = 'sms:+'+n; }, 800);
+        });
+      } else {
+        // dispositivo sem Web Share API: baixa imagem e abre SMS
+        _fallbackDownload(blob,'coleta-'+data+'.jpg');
+        setTimeout(function(){ window.location.href = 'sms:+'+n; }, 800);
+      }
     } else {
       // WhatsApp: texto estruturado + link de importacao para o admin
       var dfL = data ? new Date(data+'T12:00').toLocaleDateString('pt-BR') : data;
