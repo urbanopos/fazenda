@@ -350,7 +350,7 @@ textarea{resize:none;height:72px;font-size:14px}
         <span class="ad-lbl">Historico de Pedidos</span>
         <div class="ad-row"><button class="ad-ok" onclick="fecharAdmin();abrirHistPedidos()" style="background:#7a3a00;color:#ffd49a">📄 Ver Consulta Pedidos</button></div>
         <div class="ad-div"></div>
-        <div class="ad-row"><button class="ad-ok" onclick="desbloquearAdmin()" style="background:#2d4a38;color:#a8d88a">Desbloquear dispositivo</button></div>
+        <div class="ad-row"><button id="btn-desbloquear" class="ad-ok" onclick="desbloquearAdmin()" style="background:#2d4a38;color:#a8d88a;display:none">Desbloquear dispositivo</button></div>
         <div class="ad-st" id="ad-st2"></div>
       </div>
     </div>
@@ -512,6 +512,8 @@ var BK = 'fsj_bloqueado';
 var MK = 'fsj_blk_msg';
 var VK = 'fsj_vendas_ativa';
 var NK = 'fsj_pedido_num';
+var VRK = 'fsj_versao_remota';   // ultima versao recebida do status.json
+var VLK = 'fsj_versao_local';    // versao confirmada pelo admin neste dispositivo
 
 var SETORES = {
   aviario:{label:'Aviario',cl:'',forn:false,produtos:[
@@ -699,6 +701,10 @@ document.addEventListener('DOMContentLoaded', function(){
   fetch(GITHUB_STATUS+'?t='+Date.now())
     .then(function(r){ return r.json(); })
     .then(function(d){
+      // Salva versao remota sempre que receber do servidor
+      if(d.versao !== undefined && d.versao !== null){
+        localStorage.setItem(VRK, String(d.versao));
+      }
       if(d.bloqueado===true){
         localStorage.setItem(BK,'1');
         if(d.mensagem) localStorage.setItem(MK,d.mensagem);
@@ -1742,6 +1748,7 @@ function abrirAdmin(){
   if(_adminLogado){
     // Ja autenticado — abre direto na tela de configuracoes
     document.getElementById('ad-cfg').style.display='block';
+    _atualizarBtnDesbloquear();
   } else {
     document.getElementById('ad-cfg').style.display='none';
     setTimeout(function(){ document.getElementById('ad-senha').focus(); },200);
@@ -1774,6 +1781,7 @@ function verificarAdmin(){
     // Mostra botao Consulta na aba Pedidos
     _adminLogado = true;
     _atualizarBtnConsulta(true);
+    _atualizarBtnDesbloquear();
   } else {
     st.textContent='Senha incorreta'; st.className='ad-st er';
     document.getElementById('ad-senha').value='';
@@ -1801,7 +1809,26 @@ function desbloquearAdmin(){
   document.getElementById('tela-bloqueio').classList.remove('vis');
   document.getElementById('ad-st2').textContent='Dispositivo desbloqueado';
   document.getElementById('ad-st2').className='ad-st';
+  // Marca que este dispositivo ja esta na versao remota atual
+  var vr = localStorage.getItem(VRK);
+  if(vr) localStorage.setItem(VLK, vr);
   _iniciar();
+}
+
+/* Exibe o botao Desbloquear Dispositivo apenas quando ha uma nova versao
+   do app ativa no servidor e este dispositivo ainda nao a confirmou */
+function _atualizarBtnDesbloquear(){
+  var btn = document.getElementById('btn-desbloquear');
+  if(!btn) return;
+  var vRemota = localStorage.getItem(VRK);
+  var vLocal  = localStorage.getItem(VLK);
+  // Mostra se: existe versao remota E ela difere da versao local confirmada
+  if(vRemota && vRemota !== vLocal){
+    btn.style.display = 'block';
+    btn.title = 'Nova versao disponivel: v' + vRemota;
+  } else {
+    btn.style.display = 'none';
+  }
 }
 function compartilharLink(){
   var url='https://urbanopos.github.io/fazenda/coleta.html';
