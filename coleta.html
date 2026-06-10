@@ -249,6 +249,19 @@ textarea{resize:none;height:72px;font-size:14px}
 .hcol-entrada-item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f0ece3;font-family:'DM Mono',monospace;font-size:12px}
 .hcol-entrada-item:last-child{border:none}
 .hcol-vazia{text-align:center;font-family:'DM Mono',monospace;font-size:12px;color:var(--mu);padding:30px 0}
+.hcol-entrada{position:relative}
+.hcol-edit-btn{position:absolute;top:8px;right:8px;background:rgba(184,148,63,.15);border:1px solid rgba(184,148,63,.4);color:var(--ac);border-radius:6px;font-family:'DM Mono',monospace;font-size:10px;padding:4px 10px;cursor:pointer;letter-spacing:.5px}
+.hcol-edit-btn:active{opacity:.7}
+.hcol-edit-form{padding:10px 12px;background:#fff;border-top:1px solid var(--ce)}
+.hcol-edit-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.hcol-edit-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);flex-shrink:0;width:54px}
+.hcol-edit-inp{flex:1;padding:6px 8px;border:1.5px solid var(--ce);border-radius:6px;font-family:'DM Mono',monospace;font-size:12px;color:var(--tx);background:var(--cr);outline:none}
+.hcol-edit-inp:focus{border-color:var(--vc)}
+.hcol-item-edit-row{display:flex;gap:6px;padding:6px 0;border-bottom:1px solid var(--ce);align-items:center}
+.hcol-item-edit-row:last-child{border:none}
+.hcol-edit-save{width:100%;margin-top:10px;padding:9px;background:var(--vc);border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
+.hcol-edit-cancel{width:100%;margin-top:6px;padding:8px;background:none;border:1px solid var(--ce);border-radius:6px;color:var(--mu);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer}
+.hcol-del-item{width:28px;height:28px;flex-shrink:0;background:#fde8e8;border:none;border-radius:5px;color:#a03030;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .hcol-tab-toggle{display:flex;gap:6px;margin-bottom:14px}
 .hcol-tab-btn{flex:1;padding:9px;border:2px solid var(--ce);border-radius:var(--r);background:#fff;color:var(--mu);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
 .hcol-tab-btn.ativo{background:var(--vd);border-color:var(--vd);color:var(--ac)}
@@ -1582,19 +1595,23 @@ function renderHistColeta(){
 }
 
 function _renderHistColetaTotal(body, registros, ano, mes){
-  // Agrupa por setor → produto → soma qtd
   var CORES = {
     'Aviario':'#1c2e22','Campo':'#3b5e2a',
     'Perda':'#7f1d1d','Estoque':'#1e3a5f'
   };
-  var totais = {};  // {setor: {nome: {qtd, unid}}}
+  // Agrupa por setor → produto → {qtd total, lista de registros individuais}
+  var totais = {};
+  var MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   registros.forEach(function(r){
+    var dt = r.data ? new Date(r.data+'T12:00') : null;
+    var dtFmt = dt ? dt.getDate().toString().padStart(2,'0')+' '+MESES[dt.getMonth()]+' '+dt.getFullYear() : '—';
     (r.itens||[]).forEach(function(it){
       var s = it.setor||'Outros';
       if(!totais[s]) totais[s] = {};
       var k = it.nome;
-      if(!totais[s][k]) totais[s][k] = {qtd:0, unid:it.unid||''};
+      if(!totais[s][k]) totais[s][k] = {qtd:0, unid:it.unid||'', registros:[]};
       totais[s][k].qtd += Number(it.qtd)||0;
+      totais[s][k].registros.push({data:dtFmt, coletor:r.coletor||'', qtd:it.qtd, unid:it.unid||''});
     });
   });
 
@@ -1603,7 +1620,10 @@ function _renderHistColetaTotal(body, registros, ano, mes){
     : 'Ano '+ano;
 
   var html = '<div style="font-family:DM Mono,monospace;font-size:10px;color:var(--mu);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">'
-    +periodoLabel+' · '+registros.length+' registro(s)</div>';
+    +periodoLabel+' &middot; '+registros.length+' registro(s)</div>';
+
+  // Guarda os detalhes indexados para acesso pelo onclick
+  var _detalheIdx = [];
 
   Object.keys(totais).forEach(function(setor){
     var cor = CORES[setor]||'#555';
@@ -1611,40 +1631,211 @@ function _renderHistColetaTotal(body, registros, ano, mes){
     Object.keys(totais[setor]).forEach(function(nome){
       var it = totais[setor][nome];
       var qtdFmt = Number(it.qtd).toLocaleString('pt-BR',{maximumFractionDigits:2});
-      html += '<div class="hcol-item">'
+      var idx = _detalheIdx.length;
+      _detalheIdx.push(it.registros);
+      // Linha totalizadora vira botao que expande os registros
+      html += '<div class="hcol-item" style="flex-direction:column;align-items:stretch;padding:0;overflow:hidden">'
+        +'<button onclick="_toggleDetalheItem(this,'+idx+')" style="'
+        +'display:flex;align-items:center;justify-content:space-between;width:100%;'
+        +'background:none;border:none;padding:10px 12px;cursor:pointer;text-align:left">'
         +'<div><div class="hcol-item-nome">'+nome+'</div></div>'
+        +'<div style="display:flex;align-items:center;gap:10px">'
         +'<div style="text-align:right"><div class="hcol-item-qtd">'+qtdFmt+'</div>'
         +'<div class="hcol-item-unid">'+it.unid+'</div></div>'
+        +'<span style="font-size:16px;color:var(--mu);transition:transform .2s" class="hcol-chevron">▸</span>'
+        +'</div></button>'
+        +'<div class="hcol-detalhe-lista" style="display:none;border-top:1px solid var(--ce);background:#f8f6f1"></div>'
         +'</div>';
     });
     html += '</div>';
   });
 
   body.innerHTML = html;
+  // Salva os dados de detalhe no proprio body para acesso posterior
+  body._detalheIdx = _detalheIdx;
+}
+
+function _toggleDetalheItem(btn, idx){
+  var body = document.getElementById('hcol-body');
+  var regs = body._detalheIdx && body._detalheIdx[idx];
+  if(!regs) return;
+  var lista = btn.parentElement.querySelector('.hcol-detalhe-lista');
+  var chevron = btn.querySelector('.hcol-chevron');
+  var aberto = lista.style.display !== 'none';
+  if(aberto){
+    lista.style.display = 'none';
+    chevron.style.transform = '';
+    chevron.textContent = '▸';
+  } else {
+    if(!lista.innerHTML){
+      var h = '';
+      regs.forEach(function(r){
+        h += '<div style="display:flex;justify-content:space-between;align-items:center;'
+          +'padding:8px 14px;border-bottom:1px solid var(--ce);font-family:DM Mono,monospace;font-size:11px">'
+          +'<div>'
+          +'<div style="font-weight:700;color:var(--vd)">'+r.data+'</div>'
+          +(r.coletor?'<div style="color:var(--mu);margin-top:2px">'+r.coletor+'</div>':'')
+          +'</div>'
+          +'<div style="font-weight:700;color:var(--vc)">'+r.qtd+' '+r.unid+'</div>'
+          +'</div>';
+      });
+      lista.innerHTML = h;
+    }
+    lista.style.display = 'block';
+    chevron.style.transform = 'rotate(90deg)';
+    chevron.textContent = '▾';
+  }
 }
 
 function _renderHistColetaDetalhe(body, registros){
   var MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   var html = '';
-  registros.forEach(function(r){
+  // Armazena referencias ao historico real para edição
+  body._regRefs = registros;
+  registros.forEach(function(r, ri){
     var dt = r.data ? new Date(r.data+'T12:00') : null;
     var dtFmt = dt
       ? dt.getDate().toString().padStart(2,'0')+' '+MESES[dt.getMonth()]+' '+dt.getFullYear()
       : '—';
-    html += '<div class="hcol-entrada">'
-      +'<div class="hcol-entrada-hd">'
+    html += '<div class="hcol-entrada" id="hcol-reg-'+ri+'">';
+    // Botao editar (apenas para admin logado)
+    if(_adminLogado){
+      html += '<button class="hcol-edit-btn" onclick="_abrirEditColeta('+ri+')">✎ Editar</button>';
+    }
+    html += '<div class="hcol-entrada-hd">'
       +'<span class="hcol-entrada-data">'+dtFmt+'</span>'
       +'<span class="hcol-entrada-col">'+(r.coletor||'')+'</span>'
       +'</div>';
     (r.itens||[]).forEach(function(it){
       html += '<div class="hcol-entrada-item">'
-        +'<span>'+it.setor+' · '+it.nome+'</span>'
+        +'<span>'+it.setor+' \u00b7 '+it.nome+'</span>'
         +'<span style="font-weight:700;color:var(--vd)">'+it.qtd+' '+it.unid+'</span>'
         +'</div>';
     });
     html += '</div>';
   });
   body.innerHTML = html;
+}
+
+function _abrirEditColeta(ri){
+  var body = document.getElementById('hcol-body');
+  var regs = body._regRefs;
+  if(!regs || !regs[ri]) return;
+  var r = regs[ri];
+  var div = document.getElementById('hcol-reg-'+ri);
+  if(!div) return;
+  // Fecha qualquer outro em edicao
+  var outros = body.querySelectorAll('.hcol-edit-form');
+  outros.forEach(function(o){ o.parentElement.querySelector('.hcol-edit-form') && _fecharEditColeta(o); });
+
+  var itensHtml = '';
+  (r.itens||[]).forEach(function(it, ii){
+    itensHtml += '<div class="hcol-item-edit-row">'
+      +'<input class="hcol-edit-inp" style="width:70px;flex:none" placeholder="Setor" value="'+_esc(it.setor||'')+'" id="hcol-ei-setor-'+ri+'-'+ii+'">'
+      +'<input class="hcol-edit-inp" style="flex:2" placeholder="Nome" value="'+_esc(it.nome||'')+'" id="hcol-ei-nome-'+ri+'-'+ii+'">'
+      +'<input class="hcol-edit-inp" style="width:52px;flex:none" type="number" min="0" step="0.5" placeholder="Qtd" value="'+(it.qtd||0)+'" id="hcol-ei-qtd-'+ri+'-'+ii+'">'
+      +'<input class="hcol-edit-inp" style="width:52px;flex:none" placeholder="Unid" value="'+_esc(it.unid||'')+'" id="hcol-ei-unid-'+ri+'-'+ii+'">'
+      +'<button class="hcol-del-item" onclick="_delItemEditColeta('+ri+','+ii+')" title="Remover item">\u00d7</button>'
+      +'</div>';
+  });
+
+  var form = document.createElement('div');
+  form.className = 'hcol-edit-form';
+  form.id = 'hcol-form-'+ri;
+  form.dataset.ri = ri;
+  form.dataset.nitens = (r.itens||[]).length;
+  form.innerHTML =
+    '<div class="hcol-edit-row"><span class="hcol-edit-lbl">Data</span>'
+    +'<input class="hcol-edit-inp" type="date" id="hcol-ei-data-'+ri+'" value="'+(r.data||'')+'"></div>'
+    +'<div class="hcol-edit-row"><span class="hcol-edit-lbl">Coletor</span>'
+    +'<input class="hcol-edit-inp" id="hcol-ei-coletor-'+ri+'" value="'+_esc(r.coletor||'')+'"></div>'
+    +'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin:8px 0 4px">Itens</div>'
+    +'<div id="hcol-ei-itens-'+ri+'">'+ itensHtml +'</div>'
+    +'<button style="width:100%;margin-top:8px;padding:7px;background:rgba(184,148,63,.1);border:1px dashed var(--ac);border-radius:6px;color:var(--ac);font-family:DM Mono,monospace;font-size:11px;cursor:pointer" onclick="_addItemEditColeta('+ri+')">'
+    +'+ Adicionar item</button>'
+    +'<button class="hcol-edit-save" onclick="_salvarEditColeta('+ri+')">Salvar alteracoes</button>'
+    +'<button class="hcol-edit-cancel" onclick="_fecharEditColeta(document.getElementById(\'hcol-form-'+ri+'\'))">Cancelar</button>';
+  div.appendChild(form);
+}
+
+function _esc(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+function _fecharEditColeta(form){
+  if(form && form.parentElement) form.parentElement.removeChild(form);
+}
+
+function _delItemEditColeta(ri, ii){
+  var wrap = document.getElementById('hcol-ei-itens-'+ri);
+  if(!wrap) return;
+  var rows = wrap.querySelectorAll('.hcol-item-edit-row');
+  if(rows[ii]) rows[ii].parentElement.removeChild(rows[ii]);
+  // Renumera ids
+  wrap.querySelectorAll('.hcol-item-edit-row').forEach(function(row, newii){
+    row.querySelectorAll('input,button').forEach(function(el){
+      if(el.id) el.id = el.id.replace(/-\d+$/, '-'+newii);
+      if(el.getAttribute && el.getAttribute('onclick'))
+        el.setAttribute('onclick', el.getAttribute('onclick').replace(/,\d+\)/, ','+newii+')'));
+    });
+  });
+}
+
+function _addItemEditColeta(ri){
+  var wrap = document.getElementById('hcol-ei-itens-'+ri);
+  if(!wrap) return;
+  var ii = wrap.querySelectorAll('.hcol-item-edit-row').length;
+  var row = document.createElement('div');
+  row.className = 'hcol-item-edit-row';
+  row.innerHTML =
+    '<input class="hcol-edit-inp" style="width:70px;flex:none" placeholder="Setor" id="hcol-ei-setor-'+ri+'-'+ii+'">'
+    +'<input class="hcol-edit-inp" style="flex:2" placeholder="Nome" id="hcol-ei-nome-'+ri+'-'+ii+'">'
+    +'<input class="hcol-edit-inp" style="width:52px;flex:none" type="number" min="0" step="0.5" placeholder="Qtd" id="hcol-ei-qtd-'+ri+'-'+ii+'">'
+    +'<input class="hcol-edit-inp" style="width:52px;flex:none" placeholder="Unid" id="hcol-ei-unid-'+ri+'-'+ii+'">'
+    +'<button class="hcol-del-item" onclick="_delItemEditColeta('+ri+','+ii+')" title="Remover">\u00d7</button>';
+  wrap.appendChild(row);
+}
+
+function _salvarEditColeta(ri){
+  var body = document.getElementById('hcol-body');
+  var regs = body._regRefs;
+  if(!regs || !regs[ri]) return;
+
+  // Le campos do formulario
+  var novaData    = (document.getElementById('hcol-ei-data-'+ri)||{value:''}).value;
+  var novoColetor = (document.getElementById('hcol-ei-coletor-'+ri)||{value:''}).value.trim();
+  var wrap = document.getElementById('hcol-ei-itens-'+ri);
+  var novosItens = [];
+  if(wrap){
+    var rows = wrap.querySelectorAll('.hcol-item-edit-row');
+    rows.forEach(function(row, ii){
+      var setor = (document.getElementById('hcol-ei-setor-'+ri+'-'+ii)||{value:''}).value.trim();
+      var nome  = (document.getElementById('hcol-ei-nome-'+ri+'-'+ii)||{value:''}).value.trim();
+      var qtd   = parseFloat((document.getElementById('hcol-ei-qtd-'+ri+'-'+ii)||{value:0}).value)||0;
+      var unid  = (document.getElementById('hcol-ei-unid-'+ri+'-'+ii)||{value:''}).value.trim();
+      if(nome) novosItens.push({setor:setor, nome:nome, qtd:qtd, unid:unid});
+    });
+  }
+
+  // Atualiza o registro na memoria
+  regs[ri].data    = novaData;
+  regs[ri].coletor = novoColetor;
+  regs[ri].itens   = novosItens;
+  regs[ri].ts      = regs[ri].ts || Date.now();
+
+  // Persiste: recarrega todo o historico, encontra pelo ts e substitui
+  var hist = _carregarHistColeta();
+  var ts = regs[ri].ts;
+  var found = false;
+  for(var i=0; i<hist.length; i++){
+    if(hist[i].ts === ts){ hist[i] = regs[ri]; found = true; break; }
+  }
+  if(!found){ hist.unshift(regs[ri]); } // segurança
+  try{ localStorage.setItem(CK, JSON.stringify(hist)); }catch(e){}
+
+  _toast('\u2705 Registro atualizado!');
+  // Fecha form e re-renderiza
+  var form = document.getElementById('hcol-form-'+ri);
+  _fecharEditColeta(form);
+  renderHistColeta();
 }
 
 var _histPedDoAdmin = false;
