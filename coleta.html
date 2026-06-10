@@ -938,13 +938,20 @@ function _gerarImagem(titulo, linhas, rodape, onBlob){
   y+=28;
 
   // LINHAS
+  var isTalao = titulo.indexOf('TALAO DE PEDIDO')===0;
   linhas.forEach(function(it,i){
     var bg = i%2===0 ? '#fff' : '#f8f6f1';
     rect(0,y,W,52,bg);
     txt(it.col1||'',PAD,y+22,11,'#888');
     txt(it.col2||'',PAD,y+38,12,'#1a1a1a','bold');
     txt(it.col3||'',PAD+180,y+30,12,'#1c2e22','bold');
-    txt(it.col4||'',W-PAD,y+30,13,'#7a3a00','bold','right');
+    if(isTalao && it.col5){
+      // Talao de pedido: preco unitario (menor, acima) + subtotal (maior, abaixo)
+      txt(it.col4||'',W-PAD,y+20,10,'#888','normal','right');
+      txt(it.col5||'',W-PAD,y+38,13,'#7a3a00','bold','right');
+    } else {
+      txt(it.col4||'',W-PAD,y+30,13,'#7a3a00','bold','right');
+    }
     ln(0,y+51,W,y+51,'#eee');
     y+=52;
   });
@@ -1040,15 +1047,23 @@ function enviarTudo(){
   var _nomeColeta = (localStorage.getItem('wpp_nome')||'').trim();
   _salvarColeta({data:_dataColeta, coletor:_nomeColeta, itens:itens, ts:Date.now()});
 
-  // Gera link de importacao para o granja
+  // Link de importacao guardado localmente — NAO vai na mensagem enviada
   var payload = _gerarPayloadColeta();
   var linkImport = payload ? _gerarLinkImportacao(payload) : null;
+  if(linkImport) try{ localStorage.setItem('fsj_last_import', linkImport); }catch(e){}
 
   var linhas = [];
   itens.forEach(function(it){
     linhas.push({col1:it.setor, col2:it.nome, col3:it.qtd+' '+it.unid, col4:'', val:0});
     if(it.forn) linhas[linhas.length-1].col4 = it.forn;
   });
+
+  // Bloqueia envio se numero nao estiver configurado
+  var numSalvo = (localStorage.getItem('wpp_numero')||'').replace(/\D/g,'');
+  if(!numSalvo || numSalvo !== n){
+    _toast('\u26a0\ufe0f Numero nao configurado. Envio bloqueado.');
+    return;
+  }
 
   _gerarImagem('BOLETIM DE COLETA', linhas, null, function(blob){
     if(!blob){ _toast('Erro ao gerar imagem.'); return; }
@@ -1065,29 +1080,33 @@ function enviarTudo(){
     });
     var blocos=[];
     ord.forEach(function(s){
-      blocos.push('['+s.toUpperCase()+']\n'+setores[s].map(function(l){return '  '+l;}).join('\n'));
+      blocos.push('['+s.toUpperCase()+']'+'\n'+setores[s].map(function(l){return '  '+l;}).join('\n'));
     });
-    // Monta mensagem estruturada (sem link — vai so no wa.me)
-    var msgTexto='COLETA FAZENDA SJ\n'
-      +(nome?'Coletor: '+nome+'\n':'')
+    // Mensagem LIMPA - sem nenhum link
+    var msgTexto='COLETA FAZENDA SJ'
+      +'\n'+(nome?'Coletor: '+nome+'\n':'')
       +'Data: '+dfL+'\n\n'
       +blocos.join('\n\n')
-      +'\n\n'+itens.length+' item(ns)'
-      +(linkImport?'\n\n[Admin] Importar:\n'+linkImport:'');
-    // 1. Baixa a imagem automaticamente
-    _fallbackDownload(blob,'coleta-'+data+'.jpg');
-    // 2. Confirma o destinatario antes de abrir o WhatsApp
-    var numSalvo = (localStorage.getItem('wpp_numero')||'').replace(/\D/g,'');
-    if(!numSalvo || numSalvo !== n){
-      _toast('\u26a0\ufe0f Numero nao configurado. Envio bloqueado.');
-      return;
-    }
-    setTimeout(function(){
-      var fone = _fmtFone(numSalvo);
-      if(!confirm('Enviar coleta para:\n' + fone + '\n\nConfirmar?')){ return; }
+      +'\n\n'+itens.length+' item(ns)';
+    // Confirmacao com numero formatado antes de enviar
+    var fone = _fmtFone(numSalvo);
+    if(!confirm('Enviar coleta para:\n' + fone + '\n\nConfirmar?')){ return; }
+    // navigator.share envia imagem + texto direto no WhatsApp (aparece na conversa)
+    var file = new File([blob], 'coleta-'+data+'.jpg', {type:'image/jpeg'});
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({files:[file], text:msgTexto})
+        .then(function(){ _toast('\u2705 Coleta enviada!'); })
+        .catch(function(err){
+          if(err && err.name === 'AbortError') return;
+          _fallbackDownload(blob,'coleta-'+data+'.jpg');
+          window.open('https://wa.me/'+n+'?text='+encodeURIComponent(msgTexto),'_blank');
+          _toast('\u2705 Imagem salva! Confirme no WhatsApp.');
+        });
+    } else {
+      _fallbackDownload(blob,'coleta-'+data+'.jpg');
       window.open('https://wa.me/'+n+'?text='+encodeURIComponent(msgTexto),'_blank');
-      _toast('\u2705 Imagem salva! Confirme o envio no WhatsApp.');
-    }, 600);
+      _toast('\u2705 Imagem salva! Confirme no WhatsApp.');
+    }
   });
 
   // Limpa apos envio
@@ -1270,7 +1289,8 @@ function enviarPedido(){
   var cliente = (document.getElementById('venda-cliente')||{value:''}).value||'';
   var dataVenda = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
   var linhas = conc.map(function(it){
-    return {col1:it._data, col2:it._nome, col3:it.qtd+' '+it.unidade, col4:'R$ '+_fmt(it.preco), val:it.sub,
+    return {col1:it._data, col2:it._nome, col3:it.qtd+' '+it.unidade,
+            col4:'R$ '+_fmt(it.preco), col5:'R$ '+_fmt(it.sub), val:it.sub,
             prodId:it.prodId, nome:it._nome, unidade:it.unidade, qtd:it.qtd, preco:it.preco, sub:it.sub, data:it._data};
   });
   var total = conc.reduce(function(s,it){ return s+it.sub; },0);
