@@ -262,6 +262,19 @@ textarea{resize:none;height:72px;font-size:14px}
 .hcol-edit-save{width:100%;margin-top:10px;padding:9px;background:var(--vc);border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
 .hcol-edit-cancel{width:100%;margin-top:6px;padding:8px;background:none;border:1px solid var(--ce);border-radius:6px;color:var(--mu);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer}
 .hcol-del-item{width:28px;height:28px;flex-shrink:0;background:#fde8e8;border:none;border-radius:5px;color:#a03030;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.hcol-del-reg{margin-top:6px;width:100%;padding:8px;background:#fde8e8;border:1px solid #f5c6c6;border-radius:6px;color:#a03030;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:.5px}
+.mp-admin-bar{display:flex;gap:8px;padding:12px 16px;border-top:1px solid rgba(255,255,255,.08)}
+.mp-btn-edit{flex:1;padding:10px;border:none;border-radius:var(--r);background:rgba(184,148,63,.2);color:var(--ac);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;font-weight:700}
+.mp-btn-del{padding:10px 14px;border:none;border-radius:var(--r);background:#fde8e8;color:#a03030;font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;font-weight:700}
+.mp-edit-form{padding:14px 16px;background:#f5f0e8;border-top:1px solid var(--ce)}
+.mp-edit-row{display:flex;gap:8px;margin-bottom:10px;align-items:center}
+.mp-edit-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);width:56px;flex-shrink:0}
+.mp-edit-inp{flex:1;padding:7px 10px;border:1.5px solid var(--ce);border-radius:6px;font-family:'DM Mono',monospace;font-size:13px;color:var(--tx);background:#fff;outline:none}
+.mp-edit-inp:focus{border-color:#7a3a00}
+.mp-item-edit-row{display:flex;gap:6px;padding:7px 0;border-bottom:1px solid var(--ce);align-items:center}
+.mp-item-edit-row:last-child{border:none}
+.mp-edit-save{width:100%;margin-top:10px;padding:10px;background:#27ae60;border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
+.mp-edit-cancel{width:100%;margin-top:6px;padding:8px;background:none;border:1px solid var(--ce);border-radius:6px;color:var(--mu);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer}
 .hcol-tab-toggle{display:flex;gap:6px;margin-bottom:14px}
 .hcol-tab-btn{flex:1;padding:9px;border:2px solid var(--ce);border-radius:var(--r);background:#fff;color:var(--mu);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
 .hcol-tab-btn.ativo{background:var(--vd);border-color:var(--vd);color:var(--ac)}
@@ -434,6 +447,11 @@ textarea{resize:none;height:72px;font-size:14px}
       <div id="mp-linhas"></div>
       <div class="mp-total"><span class="mp-total-lbl">Total</span><span class="mp-total-val" id="mp-total"></span></div>
       <button class="mp-btn-img" onclick="reemitirPedido()">📷 Gerar imagem novamente</button>
+      <div class="mp-admin-bar" id="mp-admin-bar" style="display:none">
+        <button class="mp-btn-edit" onclick="_abrirEditPedido()">✎ Editar pedido</button>
+        <button class="mp-btn-del" onclick="_excluirPedido()">🗑 Excluir</button>
+      </div>
+      <div id="mp-edit-form" style="display:none"></div>
     </div>
   </div>
 </div>
@@ -1004,21 +1022,25 @@ function _gerarImagem(titulo, linhas, rodape, onBlob){
 
   // LINHAS
   var isTalao = titulo.indexOf('TALAO DE PEDIDO')===0;
+  var rowH = (isTalao) ? 58 : 52;
+  // Recalcula altura total considerando linha maior no talao
+  if(isTalao){ c.height += linhas.length * 6; }
   linhas.forEach(function(it,i){
     var bg = i%2===0 ? '#fff' : '#f8f6f1';
-    rect(0,y,W,52,bg);
-    txt(it.col1||'',PAD,y+22,11,'#888');
-    txt(it.col2||'',PAD,y+38,12,'#1a1a1a','bold');
-    txt(it.col3||'',PAD+180,y+30,12,'#1c2e22','bold');
+    rect(0,y,W,rowH,bg);
+    txt(it.col1||'',PAD,y+18,10,'#888');
+    txt(it.col2||'',PAD,y+36,12,'#1a1a1a','bold');
+    txt(it.col3||'',PAD+180,y+28,12,'#1c2e22','bold');
     if(isTalao && it.col5){
-      // Talao de pedido: preco unitario (menor, acima) + subtotal (maior, abaixo)
-      txt(it.col4||'',W-PAD,y+20,10,'#888','normal','right');
-      txt(it.col5||'',W-PAD,y+38,13,'#7a3a00','bold','right');
+      // Linha superior: preco unitario em cinza
+      txt(it.col4||'',W-PAD,y+20,9,'#999','normal','right');
+      // Linha inferior: subtotal em destaque
+      txt(it.col5||'',W-PAD,y+40,14,'#7a3a00','bold','right');
     } else {
-      txt(it.col4||'',W-PAD,y+30,13,'#7a3a00','bold','right');
+      txt(it.col4||'',W-PAD,y+28,13,'#7a3a00','bold','right');
     }
-    ln(0,y+51,W,y+51,'#eee');
-    y+=52;
+    ln(0,y+rowH-1,W,y+rowH-1,'#eee');
+    y+=rowH;
   });
 
   // RODAPE
@@ -1353,9 +1375,13 @@ function enviarPedido(){
   var numPed = _nextPedNum();
   var cliente = (document.getElementById('venda-cliente')||{value:''}).value||'';
   var dataVenda = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
+  // Recalcula subtotais antes de montar as linhas (garante valores atualizados)
+  conc.forEach(function(it){ it.sub = Math.round(it.qtd * it.preco * 100) / 100; });
   var linhas = conc.map(function(it){
+    var subFmt = 'R$ '+_fmt(it.sub);
+    var precoFmt = 'R$ '+_fmt(it.preco)+' x '+it.qtd;
     return {col1:it._data, col2:it._nome, col3:it.qtd+' '+it.unidade,
-            col4:'R$ '+_fmt(it.preco), col5:'R$ '+_fmt(it.sub), val:it.sub,
+            col4:precoFmt, col5:subFmt, val:it.sub,
             prodId:it.prodId, nome:it._nome, unidade:it.unidade, qtd:it.qtd, preco:it.preco, sub:it.sub, data:it._data};
   });
   var total = conc.reduce(function(s,it){ return s+it.sub; },0);
@@ -1571,6 +1597,11 @@ function abrirModalPedIdx(idxFiltrado, btn){
       +'</div>';
   }).join('');
   document.getElementById('mp-total').textContent = 'R$ '+_fmt(p.total);
+  // Barra admin — visivel apenas para admin logado
+  var bar = document.getElementById('mp-admin-bar');
+  if(bar) bar.style.display = _adminLogado ? 'flex' : 'none';
+  var ef = document.getElementById('mp-edit-form');
+  if(ef){ ef.style.display='none'; ef.innerHTML=''; }
   document.getElementById('modal-ped').classList.add('vis');
 }
 
@@ -1753,6 +1784,7 @@ function _renderHistColetaDetalhe(body, registros){
     // Botao editar (apenas para admin logado)
     if(_adminLogado){
       html += '<button class="hcol-edit-btn" onclick="_abrirEditColeta('+ri+')">✎ Editar</button>';
+      html += '<button class="hcol-edit-btn" style="right:76px;background:rgba(160,48,48,.12);border-color:rgba(160,48,48,.4);color:#a03030" onclick="_excluirColeta('+ri+')">🗑</button>';
     }
     html += '<div class="hcol-entrada-hd">'
       +'<span class="hcol-entrada-data">'+dtFmt+'</span>'
@@ -1890,6 +1922,145 @@ function _salvarEditColeta(ri){
   renderHistColeta();
 }
 
+/* ── ADMIN: EDITAR / EXCLUIR PEDIDO ──────────────────────────────────── */
+function _excluirPedido(){
+  if(!_pedAtual) return;
+  if(!confirm('Excluir o pedido '+_pedAtual.num+'?\n\nEsta acao nao pode ser desfeita.')) return;
+  var hist = _carregarHist();
+  var idx = hist.findIndex(function(p){ return p.ts === _pedAtual.ts; });
+  if(idx >= 0) hist.splice(idx,1);
+  try{ localStorage.setItem(HK, JSON.stringify(hist)); }catch(e){}
+  fecharModalPed();
+  _renderHist();
+  _toast('\u2705 Pedido excluido.');
+}
+
+function _abrirEditPedido(){
+  if(!_pedAtual) return;
+  var p = _pedAtual;
+  var ef = document.getElementById('mp-edit-form');
+  if(!ef) return;
+  // Alterna
+  if(ef.style.display !== 'none'){ ef.style.display='none'; ef.innerHTML=''; return; }
+
+  var itensHtml = (p.itens||[]).map(function(it,ii){
+    var qtd = it.qtd || (parseFloat((it.col3||'').split(' ')[0])||0);
+    var unid = it.unidade || ((it.col3||'').split(' ').slice(1).join(' '))||'';
+    var preco = it.preco || 0;
+    var nome = it.nome||it.col2||'';
+    return '<div class="mp-item-edit-row">'
+      +'<input class="mp-edit-inp" style="flex:2;min-width:0" placeholder="Produto" value="'+_esc(nome)+'" id="mpe-nome-'+ii+'">'
+      +'<input class="mp-edit-inp" style="width:50px;flex:none" type="number" min="0" step="0.5" placeholder="Qtd" value="'+qtd+'" id="mpe-qtd-'+ii+'">'
+      +'<input class="mp-edit-inp" style="width:52px;flex:none" placeholder="Unid" value="'+_esc(unid)+'" id="mpe-unid-'+ii+'">'
+      +'<input class="mp-edit-inp" style="width:64px;flex:none" type="number" min="0" step="0.01" placeholder="R$" value="'+preco+'" id="mpe-preco-'+ii+'">'
+      +'<button class="hcol-del-item" onclick="_delItemEditPed('+ii+')" title="Remover">\u00d7</button>'
+      +'</div>';
+  }).join('');
+
+  ef.innerHTML =
+    '<div class="mp-edit-row"><span class="mp-edit-lbl">Data</span>'
+    +'<input class="mp-edit-inp" type="date" id="mpe-data" value="'+(p.data||'')+'"></div>'
+    +'<div class="mp-edit-row"><span class="mp-edit-lbl">Cliente</span>'
+    +'<input class="mp-edit-inp" id="mpe-cliente" value="'+_esc(p.cliente||'')+'"></div>'
+    +'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;'
+    +'color:var(--mu);margin:8px 0 4px">Itens</div>'
+    +'<div id="mpe-itens">'+itensHtml+'</div>'
+    +'<button style="width:100%;margin-top:8px;padding:7px;background:rgba(122,58,0,.1);border:1px dashed #7a3a00;'
+    +'border-radius:6px;color:#7a3a00;font-family:DM Mono,monospace;font-size:11px;cursor:pointer" '
+    +'onclick="_addItemEditPed()">+ Adicionar item</button>'
+    +'<button class="mp-edit-save" onclick="_salvarEditPedido()">Salvar alteracoes</button>'
+    +'<button class="mp-edit-cancel" onclick="document.getElementById(\'mp-edit-form\').style.display=\'none\'">Cancelar</button>';
+  ef.style.display = 'block';
+  ef.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function _delItemEditPed(ii){
+  var wrap = document.getElementById('mpe-itens');
+  if(!wrap) return;
+  var rows = wrap.querySelectorAll('.mp-item-edit-row');
+  if(rows[ii]) rows[ii].remove();
+  // Renumera ids
+  wrap.querySelectorAll('.mp-item-edit-row').forEach(function(row, ni){
+    row.querySelectorAll('input,button').forEach(function(el){
+      if(el.id) el.id = el.id.replace(/-\d+$/, '-'+ni);
+      var oc = el.getAttribute('onclick');
+      if(oc) el.setAttribute('onclick', oc.replace(/\d+\)$/, ni+')'));
+    });
+  });
+}
+
+function _addItemEditPed(){
+  var wrap = document.getElementById('mpe-itens');
+  if(!wrap) return;
+  var ii = wrap.querySelectorAll('.mp-item-edit-row').length;
+  var row = document.createElement('div');
+  row.className = 'mp-item-edit-row';
+  row.innerHTML =
+    '<input class="mp-edit-inp" style="flex:2;min-width:0" placeholder="Produto" id="mpe-nome-'+ii+'">'
+    +'<input class="mp-edit-inp" style="width:50px;flex:none" type="number" min="0" step="0.5" placeholder="Qtd" id="mpe-qtd-'+ii+'">'
+    +'<input class="mp-edit-inp" style="width:52px;flex:none" placeholder="Unid" id="mpe-unid-'+ii+'">'
+    +'<input class="mp-edit-inp" style="width:64px;flex:none" type="number" min="0" step="0.01" placeholder="R$" id="mpe-preco-'+ii+'">'
+    +'<button class="hcol-del-item" onclick="_delItemEditPed('+ii+')" title="Remover">\u00d7</button>';
+  wrap.appendChild(row);
+}
+
+function _salvarEditPedido(){
+  if(!_pedAtual) return;
+  var novaData    = (document.getElementById('mpe-data')||{value:''}).value;
+  var novoCliente = (document.getElementById('mpe-cliente')||{value:''}).value.trim();
+  var wrap = document.getElementById('mpe-itens');
+  var novosItens = [];
+  if(wrap){
+    wrap.querySelectorAll('.mp-item-edit-row').forEach(function(row,ii){
+      var nome  = (document.getElementById('mpe-nome-'+ii)||{value:''}).value.trim();
+      var qtd   = parseFloat((document.getElementById('mpe-qtd-'+ii)||{value:0}).value)||0;
+      var unid  = (document.getElementById('mpe-unid-'+ii)||{value:''}).value.trim();
+      var preco = parseFloat((document.getElementById('mpe-preco-'+ii)||{value:0}).value)||0;
+      var sub   = Math.round(qtd*preco*100)/100;
+      if(nome) novosItens.push({
+        nome:nome, col2:nome,
+        col1: novaData ? new Date(novaData+'T12:00').toLocaleDateString('pt-BR') : '',
+        col3:qtd+' '+unid, col4:'R$ '+_fmt(preco)+' x '+qtd,
+        col5:'R$ '+_fmt(sub),
+        qtd:qtd, unidade:unid, preco:preco, sub:sub,
+        data: novaData ? new Date(novaData+'T12:00').toLocaleDateString('pt-BR') : ''
+      });
+    });
+  }
+  var novoTotal = novosItens.reduce(function(s,it){ return s+it.sub; },0);
+
+  // Atualiza no localStorage
+  var hist = _carregarHist();
+  var idx = hist.findIndex(function(p){ return p.ts === _pedAtual.ts; });
+  if(idx >= 0){
+    hist[idx].data    = novaData;
+    hist[idx].cliente = novoCliente;
+    hist[idx].itens   = novosItens;
+    hist[idx].total   = novoTotal;
+    _pedAtual = hist[idx];
+    try{ localStorage.setItem(HK, JSON.stringify(hist)); }catch(e){}
+  }
+  _toast('\u2705 Pedido atualizado!');
+  fecharModalPed();
+  _renderHist();
+}
+
+/* ── ADMIN: EXCLUIR COLETA ────────────────────────────────────────────── */
+function _excluirColeta(ri){
+  var body = document.getElementById('hcol-body');
+  var regs = body && body._regRefs;
+  if(!regs || !regs[ri]) return;
+  var r = regs[ri];
+  var dtLabel = r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : 'este registro';
+  if(!confirm('Excluir a coleta de '+dtLabel+(r.coletor?' ('+r.coletor+')':'')+'?\n\nEsta acao nao pode ser desfeita.')) return;
+  var hist = _carregarHistColeta();
+  var idx = hist.findIndex(function(x){ return x.ts === r.ts; });
+  if(idx >= 0) hist.splice(idx,1);
+  try{ localStorage.setItem(CK, JSON.stringify(hist)); }catch(e){}
+  _toast('\u2705 Coleta excluida.');
+  renderHistColeta();
+}
+
 var _histPedDoAdmin = false;
 
 function abrirHistPedidos(){
@@ -1920,7 +2091,11 @@ function reemitirPedido(){
   var n = _getNum();
   if(!n){ _toast('Numero nao configurado.'); return; }
   var linhas = (p.itens||[]).map(function(it){
-    return {col1:it.col1, col2:it.nome, col3:it.col3, col4:it.col4, val:it.sub};
+    // col5 = subtotal; reconstroi se nao existir no registro antigo
+    var sub = it.sub || (it.qtd * it.preco) || 0;
+    var col5 = it.col5 || ('R$ '+_fmt(sub));
+    return {col1:it.col1||it.data, col2:it.nome||it.col2, col3:it.col3||(it.qtd+' '+it.unidade),
+            col4:it.col4, col5:col5, val:sub};
   });
   _gerarImagem('TALAO DE PEDIDO / '+p.num, linhas, p.num, function(blob){
     if(!blob){ _toast('Erro ao gerar imagem.'); return; }
