@@ -888,6 +888,24 @@ function _getNum(){
   return (localStorage.getItem('wpp_numero')||'').replace(/\D/g,'') || (WPP_DESTINO||'').replace(/\D/g,'');
 }
 
+function _fmtFone(n){
+  // n = string so com digitos, ex: "5581999999999" ou "81999999999" ou "81999998888"
+  if(!n) return 'Nao configurado';
+  // Remove prefixo do pais 55 se presente e sobrar 11 digitos (DDD + 9 digitos)
+  var d = n.replace(/\D/g,'');
+  if(d.length === 13 && d.slice(0,2)==='55') d = d.slice(2);
+  if(d.length === 12 && d.slice(0,2)==='55') d = d.slice(2);
+  // Agora d deve ter 10 ou 11 digitos
+  if(d.length === 11){
+    // celular: DDD(2) + 9 digitos
+    return '('+d.slice(0,2)+') '+d.slice(2,7)+'.'+d.slice(7);
+  } else if(d.length === 10){
+    // fixo: DDD(2) + 8 digitos
+    return '('+d.slice(0,2)+') '+d.slice(2,6)+'.'+d.slice(6);
+  }
+  return n; // formato desconhecido, retorna como veio
+}
+
 function _fmt(v){ return Number(v||0).toFixed(2).replace('.',','); }
 
 /* ---- IMAGEM / ENVIO ---- */
@@ -1790,7 +1808,7 @@ function verificarAdmin(){
     st.textContent='Acesso autorizado'; st.className='ad-st';
     document.getElementById('ad-cfg').style.display='block';
     var n=localStorage.getItem('wpp_numero')||'';
-    document.getElementById('ad-num-sp').textContent=n?'***'+n.slice(-4):'Nao configurado';
+    document.getElementById('ad-num-sp').textContent=_fmtFone(n);
     var nm=localStorage.getItem('wpp_nome')||'';
     document.getElementById('ad-nome-sp').textContent=nm||'Nao configurado';
     // Mostra modo de envio atual
@@ -1812,7 +1830,7 @@ function salvarConfigColetor(){
   var v=(document.getElementById('ad-num-novo').value||'').replace(/\D/g,'');
   var nm=(document.getElementById('ad-nome-novo').value||'').trim();
   var s2=document.getElementById('ad-st2');
-  if(v){ if(v.length<10){ s2.textContent='Numero invalido'; s2.className='ad-st er'; return; } localStorage.setItem('wpp_numero',v); document.getElementById('ad-num-sp').textContent='***'+v.slice(-4); document.getElementById('ad-num-novo').value=''; }
+  if(v){ if(v.length<10){ s2.textContent='Numero invalido'; s2.className='ad-st er'; return; } localStorage.setItem('wpp_numero',v); document.getElementById('ad-num-sp').textContent=_fmtFone(v); document.getElementById('ad-num-novo').value=''; }
   if(nm){ localStorage.setItem('wpp_nome',nm); document.getElementById('ad-nome-sp').textContent=nm; document.getElementById('ad-nome-novo').value=''; }
   s2.textContent='Configuracoes salvas'; s2.className='ad-st';
 }
