@@ -312,19 +312,6 @@ textarea{resize:none;height:72px;font-size:14px}
           <div class="ad-iw" style="margin-bottom:0"><input class="ad-inp" type="tel" id="ad-num-novo" placeholder="5581999999999" autocomplete="off"></div>
         </div>
         <div class="ad-div"></div>
-        <span class="ad-lbl">Modo de envio da Coleta</span>
-        <div style="display:flex;gap:8px;margin-top:8px;margin-bottom:4px">
-          <button id="btn-modo-wpp" onclick="setModoEnvio('wpp')"
-            style="flex:1;padding:10px;border-radius:var(--r);font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;border:2px solid rgba(37,211,102,.5);background:rgba(37,211,102,.12);color:#25d366">
-            💬 WhatsApp
-          </button>
-          <button id="btn-modo-sms" onclick="setModoEnvio('sms')"
-            style="flex:1;padding:10px;border-radius:var(--r);font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;border:2px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:rgba(255,255,255,.5)">
-            📱 SMS
-          </button>
-        </div>
-        <div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.3);margin-bottom:4px" id="ad-modo-label">Modo atual: WhatsApp</div>
-        <div class="ad-div"></div>
         <span class="ad-lbl">Nome do Coletor</span>
         <div class="ad-val"><span id="ad-nome-sp">Nao configurado</span></div>
         <div style="margin-top:10px"><span class="ad-lbl">Nome completo do portador</span>
@@ -497,7 +484,7 @@ textarea{resize:none;height:72px;font-size:14px}
 </div>
   <div class="div"></div>
   <div class="cont" id="contador">Nenhum item preenchido</div>
-  <button class="btn-wpp" onclick="enviarTudo()">Enviar — SMS</button>
+  <button class="btn-wpp" onclick="enviarTudo()">💬 Enviar coleta</button>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -512,6 +499,8 @@ var BK = 'fsj_bloqueado';
 var MK = 'fsj_blk_msg';
 var VK = 'fsj_vendas_ativa';
 var NK = 'fsj_pedido_num';
+var APP_VER = '2';               // incremente aqui a cada nova versao publicada
+var VLK = 'fsj_versao_local';    // versao ja confirmada pelo admin neste dispositivo
 var VRK = 'fsj_versao_remota';   // ultima versao recebida do status.json
 var VLK = 'fsj_versao_local';    // versao confirmada pelo admin neste dispositivo
 
@@ -889,21 +878,13 @@ function _getNum(){
 }
 
 function _fmtFone(n){
-  // n = string so com digitos, ex: "5581999999999" ou "81999999999" ou "81999998888"
   if(!n) return 'Nao configurado';
-  // Remove prefixo do pais 55 se presente e sobrar 11 digitos (DDD + 9 digitos)
   var d = n.replace(/\D/g,'');
-  if(d.length === 13 && d.slice(0,2)==='55') d = d.slice(2);
-  if(d.length === 12 && d.slice(0,2)==='55') d = d.slice(2);
-  // Agora d deve ter 10 ou 11 digitos
-  if(d.length === 11){
-    // celular: DDD(2) + 9 digitos
-    return '('+d.slice(0,2)+') '+d.slice(2,7)+'.'+d.slice(7);
-  } else if(d.length === 10){
-    // fixo: DDD(2) + 8 digitos
-    return '('+d.slice(0,2)+') '+d.slice(2,6)+'.'+d.slice(6);
-  }
-  return n; // formato desconhecido, retorna como veio
+  if(d.length===13 && d.slice(0,2)==='55') d=d.slice(2);
+  if(d.length===12 && d.slice(0,2)==='55') d=d.slice(2);
+  if(d.length===11) return '('+d.slice(0,2)+') '+d.slice(2,7)+'.'+d.slice(7);
+  if(d.length===10) return '('+d.slice(0,2)+') '+d.slice(2,6)+'.'+d.slice(6);
+  return n;
 }
 
 function _fmt(v){ return Number(v||0).toFixed(2).replace('.',','); }
@@ -1051,31 +1032,6 @@ function _gerarLinkImportacao(payload){
   }catch(e){ return null; }
 }
 
-var MK_ENVIO = 'fsj_modo_envio'; // 'wpp' ou 'sms' — padrao 'sms'
-
-function setModoEnvio(modo){
-  localStorage.setItem(MK_ENVIO, modo);
-  _atualizarBtsModo();
-  _toast(modo==='sms' ? 'Modo SMS ativado' : 'Modo WhatsApp ativado');
-}
-
-function _atualizarBtsModo(){
-  var modo = localStorage.getItem(MK_ENVIO)||'sms';
-  var bWpp = document.getElementById('btn-modo-wpp');
-  var bSms = document.getElementById('btn-modo-sms');
-  var lbl  = document.getElementById('ad-modo-label');
-  if(bWpp){
-    bWpp.style.borderColor  = modo==='wpp' ? 'rgba(37,211,102,.8)' : 'rgba(255,255,255,.15)';
-    bWpp.style.background   = modo==='wpp' ? 'rgba(37,211,102,.22)' : 'rgba(255,255,255,.05)';
-    bWpp.style.color        = modo==='wpp' ? '#25d366' : 'rgba(255,255,255,.4)';
-  }
-  if(bSms){
-    bSms.style.borderColor  = modo==='sms' ? 'rgba(147,197,253,.8)' : 'rgba(255,255,255,.15)';
-    bSms.style.background   = modo==='sms' ? 'rgba(147,197,253,.15)' : 'rgba(255,255,255,.05)';
-    bSms.style.color        = modo==='sms' ? '#93c5fd' : 'rgba(255,255,255,.4)';
-  }
-  if(lbl) lbl.textContent = 'Modo atual: '+(modo==='sms'?'SMS (numero fixo)':'WhatsApp');
-}
 
 function enviarTudo(){
   var itens = _coletarItens();
@@ -1083,77 +1039,76 @@ function enviarTudo(){
   var n = _getNum();
   if(!n){ _toast('Numero nao configurado. Contacte o administrador.'); return; }
 
-  // GRAVA coleta no historico (antes de limpar)
+  // Grava coleta no historico
   var _dataColeta = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
   var _nomeColeta = (localStorage.getItem('wpp_nome')||'').trim();
   _salvarColeta({data:_dataColeta, coletor:_nomeColeta, itens:itens, ts:Date.now()});
 
-  // Gera link de importacao para o granja
+  // Gera link de importacao para o admin
   var payload = _gerarPayloadColeta();
   var linkImport = payload ? _gerarLinkImportacao(payload) : null;
 
+  // Monta linhas para a imagem
   var linhas = [];
   itens.forEach(function(it){
-    linhas.push({col1:it.setor, col2:it.nome, col3:it.qtd+' '+it.unid, col4:'', val:0});
-    if(it.forn) linhas[linhas.length-1].col4 = it.forn;
+    linhas.push({col1:it.setor, col2:it.nome, col3:it.qtd+' '+it.unid, col4:it.forn||'', val:0});
   });
-
-  var modo = localStorage.getItem(MK_ENVIO)||'sms';
 
   _gerarImagem('BOLETIM DE COLETA', linhas, null, function(blob){
     if(!blob){ _toast('Erro ao gerar imagem.'); return; }
     var data = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
     var nome = (localStorage.getItem('wpp_nome')||'').trim();
+    var dfL  = data ? new Date(data+'T12:00').toLocaleDateString('pt-BR') : data;
 
-    if(modo==='sms'){
-      // SMS/MMS: compartilha apenas a imagem via seletor do sistema (sem texto, sem link)
-      var fileSms = new File([blob],'coleta-'+data+'.jpg',{type:'image/jpeg'});
-      if(navigator.share && navigator.canShare && navigator.canShare({files:[fileSms]})){
-        navigator.share({files:[fileSms]}).catch(function(){
-          // fallback: baixa a imagem e abre SMS so com o numero
-          _fallbackDownload(blob,'coleta-'+data+'.jpg');
-          setTimeout(function(){ window.location.href = 'sms:+'+n; }, 800);
+    // Monta texto estruturado por setor
+    var setores = {}, ordemSetores = [];
+    itens.forEach(function(it){
+      if(!setores[it.setor]){ setores[it.setor]=[]; ordemSetores.push(it.setor); }
+      var linha = it.nome+': '+it.qtd+' '+it.unid;
+      if(it.forn) linha += ' ('+it.forn+')';
+      if(it.obs)  linha += ' - '+it.obs;
+      setores[it.setor].push(linha);
+    });
+    var blocos = [];
+    ordemSetores.forEach(function(s){
+      blocos.push('['+s.toUpperCase()+']
+'+setores[s].map(function(l){ return '  '+l; }).join('
+'));
+    });
+    var msgTexto = 'COLETA FAZENDA SJ
+'
+      + (nome ? 'Coletor: '+nome+'
+' : '')
+      + 'Data: '+dfL+'
+
+'
+      + blocos.join('
+
+')
+      + '
+
+'+itens.length+' item(ns)'
+      + (linkImport ? '
+
+[Admin] Importar:
+'+linkImport : '');
+
+    // Abre WhatsApp direto para o numero configurado com imagem + texto
+    var file = new File([blob],'coleta-'+data+'.jpg',{type:'image/jpeg'});
+    var wppUrl = 'https://wa.me/'+n+'?text='+encodeURIComponent(msgTexto);
+
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({text:msgTexto, files:[file]})
+        .then(function(){ _toast('✅ Coleta enviada! Verifique seu WhatsApp.'); })
+        .catch(function(err){
+          if(err && err.name !== 'AbortError'){
+            window.open(wppUrl,'_blank');
+            _toast('✅ Coleta enviada via WhatsApp!');
+          }
         });
-      } else {
-        // dispositivo sem Web Share API: baixa imagem e abre SMS
-        _fallbackDownload(blob,'coleta-'+data+'.jpg');
-        setTimeout(function(){ window.location.href = 'sms:+'+n; }, 800);
-      }
     } else {
-      // WhatsApp: texto estruturado + link de importacao para o admin
-      var dfL = data ? new Date(data+'T12:00').toLocaleDateString('pt-BR') : data;
-      var setores = {};
-      var ordemSetores = [];
-      itens.forEach(function(it){
-        if(!setores[it.setor]){ setores[it.setor]=[]; ordemSetores.push(it.setor); }
-        var linha = it.nome+': '+it.qtd+' '+it.unid;
-        if(it.forn) linha += ' ('+it.forn+')';
-        if(it.obs)  linha += ' - '+it.obs;
-        setores[it.setor].push(linha);
-      });
-      var blocos = [];
-      ordemSetores.forEach(function(s){
-        blocos.push('['+s.toUpperCase()+']\n'+setores[s].map(function(l){ return '  '+l; }).join('\n'));
-      });
-      var msgWPP = '--- COLETA FAZENDA SJ ---\n'
-        + (nome ? 'Coletor: '+nome+'\n' : '')
-        + 'Data: '+dfL+'\n'
-        + '-------------------------\n'
-        + blocos.join('\n\n')
-        + '\n-------------------------\n'
-        + itens.length+' item(ns)'
-        + (linkImport ? '\n\n[Admin] Importar:\n'+linkImport : '');
-
-      var file = new File([blob],'coleta-'+data+'.jpg',{type:'image/jpeg'});
-      if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-        navigator.share({title:msgWPP, text:msgWPP, files:[file]}).catch(function(){
-          _fallbackDownload(blob,'coleta-'+data+'.jpg');
-          setTimeout(function(){ window.open('https://wa.me/'+n+'?text='+encodeURIComponent(msgWPP),'_blank'); },1000);
-        });
-      } else {
-        _fallbackDownload(blob,'coleta-'+data+'.jpg');
-        setTimeout(function(){ window.open('https://wa.me/'+n+'?text='+encodeURIComponent(msgWPP),'_blank'); },1000);
-      }
+      window.open(wppUrl,'_blank');
+      _toast('✅ Coleta enviada! Verifique seu WhatsApp.');
     }
   });
 
@@ -1811,8 +1766,6 @@ function verificarAdmin(){
     document.getElementById('ad-num-sp').textContent=_fmtFone(n);
     var nm=localStorage.getItem('wpp_nome')||'';
     document.getElementById('ad-nome-sp').textContent=nm||'Nao configurado';
-    // Mostra modo de envio atual
-    _atualizarBtsModo();
     var vAtiva=localStorage.getItem(VK)==='1';
     var btn=document.getElementById('btn-toggle-vendas');
     if(btn){ btn.textContent=vAtiva?'Desativar Vendas':'Ativar Vendas'; btn.style.background=vAtiva?'#5a1010':'#7a3a00'; btn.style.color=vAtiva?'#fca5a5':'#ffd49a'; }
