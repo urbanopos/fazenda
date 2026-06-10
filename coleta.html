@@ -1067,35 +1067,27 @@ function enviarTudo(){
     ord.forEach(function(s){
       blocos.push('['+s.toUpperCase()+']\n'+setores[s].map(function(l){return '  '+l;}).join('\n'));
     });
-    // Texto da mensagem — SEM o link de importacao (vai so no wa.me para o admin)
-    var msgColetor='COLETA FAZENDA SJ\n'
+    // Monta mensagem estruturada (sem link — vai so no wa.me)
+    var msgTexto='COLETA FAZENDA SJ\n'
       +(nome?'Coletor: '+nome+'\n':'')
       +'Data: '+dfL+'\n\n'
       +blocos.join('\n\n')
-      +'\n\n'+itens.length+' item(ns)';
-    // Texto para o admin inclui o link de importacao
-    var msgAdmin=msgColetor+(linkImport?'\n\n[Admin] Importar:\n'+linkImport:'');
-    // URL direto para o numero configurado — direciona sem passar pelo seletor
-    var url='https://wa.me/'+n+'?text='+encodeURIComponent(msgAdmin);
-    var file=new File([blob],'coleta-'+data+'.jpg',{type:'image/jpeg'});
-    // Tenta compartilhar a imagem; abre o WhatsApp direto em seguida
-    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-      navigator.share({files:[file]})
-        .then(function(){
-          // Apos compartilhar a imagem, abre o WPP direto para o numero com o texto
-          window.open(url,'_blank');
-          _toast('\u2705 Coleta enviada!');
-        })
-        .catch(function(e){
-          if(e&&e.name!=='AbortError'){
-            window.open(url,'_blank');
-            _toast('\u2705 Coleta enviada!');
-          }
-        });
-    } else {
-      window.open(url,'_blank');
-      _toast('\u2705 Coleta enviada! Verifique o WhatsApp.');
+      +'\n\n'+itens.length+' item(ns)'
+      +(linkImport?'\n\n[Admin] Importar:\n'+linkImport:'');
+    // 1. Baixa a imagem automaticamente
+    _fallbackDownload(blob,'coleta-'+data+'.jpg');
+    // 2. Confirma o destinatario antes de abrir o WhatsApp
+    var numSalvo = (localStorage.getItem('wpp_numero')||'').replace(/\D/g,'');
+    if(!numSalvo || numSalvo !== n){
+      _toast('\u26a0\ufe0f Numero nao configurado. Envio bloqueado.');
+      return;
     }
+    setTimeout(function(){
+      var fone = _fmtFone(numSalvo);
+      if(!confirm('Enviar coleta para:\n' + fone + '\n\nConfirmar?')){ return; }
+      window.open('https://wa.me/'+n+'?text='+encodeURIComponent(msgTexto),'_blank');
+      _toast('\u2705 Imagem salva! Confirme o envio no WhatsApp.');
+    }, 600);
   });
 
   // Limpa apos envio
