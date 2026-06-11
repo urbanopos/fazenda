@@ -11186,10 +11186,11 @@ function _caInjetarMenuBtn(){
    Se o fingerprint divergir, recarrega automaticamente.
    Não bloqueia o app — roda em paralelo com o splash.              */
 
-/* Registra Service Worker para instalação PWA e cache offline */
+/* Registra Service Worker apenas quando hospedado no GitHub Pages */
 (function(){
   if(!('serviceWorker' in navigator)) return;
-  navigator.serviceWorker.register('https://urbanopos.github.io/fazenda/ca-sw.js', {scope:'/fazenda/'})
+  if(location.hostname !== 'urbanopos.github.io') return; // ignora fora do domínio correto
+  navigator.serviceWorker.register('/fazenda/ca-sw.js', {scope:'/fazenda/'})
     .then(function(){ console.log('ColetaAut SW registrado'); })
     .catch(function(e){ console.log('SW:', e.message); });
 })();
