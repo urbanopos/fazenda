@@ -11043,8 +11043,9 @@ async function _caRestaurar(file){
     if(env.app!=='ColetaAut'){ _toast('⚠️ Arquivo inválido'); return; }
     var d=await _caDecifrar(env.payload,_caChave);
     if(!d||!d.coletas){ _toast('⚠️ Senha incorreta ou arquivo corrompido'); return; }
-    try{ localStorage.setItem(SK_DADOS_CA,env.payload); }catch(e){}
+    // Restaura APENAS no OPFS
     if(_caOpfs) await _caOpfsSalvar(FSJ_ADMIN,env.payload);
+    else { try{ localStorage.setItem(SK_DADOS_CA,env.payload); }catch(e){} }
     _toast('✅ '+d.coletas.length+' coleta(s) restaurada(s)!');
   }catch(e){ _toast('⚠️ Erro: '+e.message); }
 }
@@ -11056,8 +11057,8 @@ async function _caSalvarHistColetor(payload){
   var lim=Date.now()-7*24*60*60*1000;
   hist=hist.filter(function(r){return r.ts>=lim;});
   var json=JSON.stringify(hist);
+  // Salva APENAS no OPFS (pasta FSJ/)
   if(_caOpfs) await _caOpfsSalvar(FSJ_HIST,json);
-  try{ localStorage.setItem('ca_chist',json); }catch(e){}
 }
 async function _caLerHistColetor(){
   var raw=null;
@@ -11194,6 +11195,43 @@ function _caInjetarMenuBtn(){
     .then(function(){ console.log('ColetaAut SW registrado'); })
     .catch(function(e){ console.log('SW:', e.message); });
 })();
+
+
+/* ════════════════════════════════════════════════════════════
+   FSJ STORAGE — todas as leituras/escritas passam pelo OPFS
+   Único fallback permitido: autenticação (ca_modo/salt/vhash)
+   que é específica do dispositivo e não são dados da fazenda.
+   ════════════════════════════════════════════════════════════ */
+
+var FSJ_CONFIG = 'config.json';   // numero WPP, nome coletor
+
+/* ── Config do dispositivo (numero WPP, nome coletor) ────── */
+var _fsjCfgCache = null;
+
+async function _fsjCarregarConfig(){
+  if(_fsjCfgCache) return _fsjCfgCache;
+  var raw = _caOpfs ? await _caOpfsLer(FSJ_CONFIG) : null;
+  if(raw){ try{ _fsjCfgCache = JSON.parse(raw); return _fsjCfgCache; }catch(e){} }
+  // Migra de localStorage se existir
+  var num  = localStorage.getItem('wpp_numero') || '';
+  var nome = localStorage.getItem('wpp_nome')   || '';
+  _fsjCfgCache = {numero: num, nome: nome};
+  if(num || nome) await _fsjSalvarConfig(_fsjCfgCache);
+  return _fsjCfgCache;
+}
+
+async function _fsjSalvarConfig(cfg){
+  _fsjCfgCache = cfg;
+  if(_caOpfs) await _caOpfsSalvar(FSJ_CONFIG, JSON.stringify(cfg));
+  // Mantém localStorage só como leitura legada (sistema Coleta lê wpp_numero)
+  try{ localStorage.setItem('wpp_numero', cfg.numero||''); }catch(e){}
+  try{ localStorage.setItem('wpp_nome',   cfg.nome||'');   }catch(e){}
+}
+
+async function _fsjGetNumero(){ var c=await _fsjCarregarConfig(); return (c.numero||'').replace(/\D/g,''); }
+async function _fsjGetNome(){   var c=await _fsjCarregarConfig(); return c.nome||''; }
+async function _fsjSetNumero(n){ var c=await _fsjCarregarConfig(); c.numero=n; await _fsjSalvarConfig(c); }
+async function _fsjSetNome(n){   var c=await _fsjCarregarConfig(); c.nome=n;   await _fsjSalvarConfig(c); }
 
 (function _caAutoUpdate(){
   var FP = '37880c346c45';
@@ -11381,7 +11419,9 @@ function _caMenuDesinst(){
 
 function _caDesinstalar(){
   _caParaScan();
-  ['ca_modo','ca_salt','ca_vhash',SK_DADOS_CA,'ca_chist','ca_vlk'].forEach(function(k){localStorage.removeItem(k);});
+  // Remove chaves de autenticação do localStorage
+  ['ca_modo','ca_salt','ca_vhash',SK_DADOS_CA,'ca_chist','ca_vlk',
+   'wpp_numero','wpp_nome','ca_cad'].forEach(function(k){localStorage.removeItem(k);});
   // Apaga chaves do sistema Coleta também
   ['fsj_admin_senha','fsj_bloqueado','fsj_blk_msg','fsj_vendas_ativa','fsj_pedido_num',
    'fsj_versao_local','wpp_numero','wpp_nome','fsj_hist_coleta','fsj_hist_pedido'].forEach(function(k){localStorage.removeItem(k);});
@@ -11996,7 +12036,7 @@ function enviarTudo(){
   // Link de importacao guardado localmente — NAO vai na mensagem enviada
   var payload = _gerarPayloadColeta();
   var linkImport = payload ? _gerarLinkImportacao(payload) : null;
-  if(linkImport) try{ localStorage.setItem('fsj_last_import', linkImport); }catch(e){}
+  if(linkImport)
 
   var linhas = [];
   itens.forEach(function(it){
@@ -13114,7 +13154,7 @@ var _cadEditIdx  = -1;  // -1 = novo, >= 0 = edição
 async function _cadCarregar(){
   var raw = null;
   if(_caOpfs) raw = await _caOpfsLer(FSJ_CAD);
-  if(!raw) raw = localStorage.getItem('ca_cad');
+  if(!raw && !_caOpfs) raw = localStorage.getItem('ca_cad');
   if(!raw) return;
   try{
     var d = JSON.parse(raw);
@@ -13127,8 +13167,9 @@ async function _cadCarregar(){
 
 async function _cadSalvar(){
   var json = JSON.stringify(_cadDados);
+  // Salva APENAS no OPFS (pasta FSJ/)
+  // Salva APENAS no OPFS (pasta FSJ/cadastros.json)
   if(_caOpfs) await _caOpfsSalvar(FSJ_CAD, json);
-  try{ localStorage.setItem('ca_cad', json); }catch(e){}
 }
 
 /* ── Exportar listas para coletores ── */
