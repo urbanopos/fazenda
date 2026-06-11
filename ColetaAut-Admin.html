@@ -11191,7 +11191,7 @@ function _caInjetarMenuBtn(){
 (function(){
   if(!('serviceWorker' in navigator)) return;
   if(location.hostname !== 'urbanopos.github.io') return; // ignora fora do domínio correto
-  navigator.serviceWorker.register('/fazenda/ca-sw.js', {scope:'/fazenda/'})
+  navigator.serviceWorker.register('https://urbanopos.github.io/fazenda/ca-sw.js', {scope:'/fazenda/'})
     .then(function(){ console.log('ColetaAut SW registrado'); })
     .catch(function(e){ console.log('SW:', e.message); });
 })();
