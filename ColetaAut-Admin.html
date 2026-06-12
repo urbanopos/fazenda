@@ -614,19 +614,12 @@ textarea{resize:none;height:72px;font-size:14px}
 <div id="painel-admin">
   <div class="ad-box">
     <div class="ad-hd">
-      <div><div class="ad-hd-t">Administrador</div><div class="ad-hd-s">Configuracoes</div></div>
+      <div><div class="ad-hd-t">⚙️ Configurações</div><div class="ad-hd-s">Fazenda São José</div></div>
       <button class="ad-x" onclick="fecharAdmin()">x</button>
     </div>
     <div class="ad-corpo">
-      <span class="ad-lbl">Senha</span>
-      <div class="ad-iw">
-        <input class="ad-inp" type="password" id="ad-senha" placeholder="Digite a senha..." autocomplete="off">
-        <button class="ad-olho" onclick="toggleAdVis()" id="ad-olho">👁</button>
-      </div>
-      <div class="ad-row" style="margin-top:0">
-        <button class="ad-ok" onclick="verificarAdmin()">Entrar</button>
-        <button class="ad-cl" onclick="fecharAdmin()">Cancelar</button>
-      </div>
+      <!-- Senha de entrada removida: acesso direto às configurações -->
+      <input type="hidden" id="ad-senha" value="">
       <div class="ad-st" id="ad-st"></div>
       <div id="ad-cfg" style="display:none">
         <div class="ad-div"></div>
@@ -653,18 +646,7 @@ textarea{resize:none;height:72px;font-size:14px}
         <div class="ad-iw"><input class="ad-inp" type="password" id="ad-senha-nova" placeholder="Nova senha..." autocomplete="new-password"></div>
         <div class="ad-row"><button class="ad-ok" onclick="salvarSenha()" style="background:#2d4a38;color:var(--ac)">Salvar senha</button></div>
         <div class="ad-div"></div>
-        <span class="ad-lbl">Enviar app para novo coletor</span>
-        <div class="ad-row"><button class="ad-ok" onclick="compartilharLink()" style="background:linear-gradient(135deg,#25d366,#128c7e);color:#fff">Enviar link pelo WhatsApp</button></div>
-        <div class="ad-div"></div>
-        <span class="ad-lbl">Historico de Coletas</span>
-        <div class="ad-row"><button class="ad-ok" onclick="fecharAdmin();abrirHistColeta()" style="background:#1e3a5f;color:#93c5fd">📊 Ver Consulta de Coletas</button></div>
-        <div class="ad-div"></div>
-        <span class="ad-lbl">Historico de Pedidos</span>
-        <div class="ad-row"><button class="ad-ok" onclick="fecharAdmin();abrirHistPedidos()" style="background:#7a3a00;color:#ffd49a">📄 Ver Consulta Pedidos</button></div>
-        <div class="ad-div"></div>
-        <div class="ad-row"><button id="btn-desbloquear" class="ad-ok" onclick="desbloquearAdmin()" style="background:#2d4a38;color:#a8d88a;display:none">Desbloquear dispositivo</button></div>
-        <div class="ad-st" id="ad-st2"></div>
-      </div>
+        <div class="ad-row"><button class="ad-ok" onclick="salvarConfigColetor()" style="background:var(--vl);color:#fff">Salvar configurações</button></div></div>
     </div>
   </div>
 </div>
@@ -11169,6 +11151,12 @@ function _caIniciarApp(){
   // Verifica versão (sem senha)
   setTimeout(_caVerBtn, 500);
   // Inicia o sistema Coleta original
+  // No modo admin: já marca logado para habilitar consultas e edições
+  if(localStorage.getItem(CA_MODO)==='admin'){
+    _adminLogado = true;
+    if(typeof _atualizarBtnConsulta==='function') _atualizarBtnConsulta(true);
+    if(typeof _atualizarBtnDesbloquear==='function') _atualizarBtnDesbloquear();
+  }
   if(typeof _iniciar === 'function') _iniciar();
 }
 
@@ -11261,10 +11249,9 @@ window.addEventListener('load',function(){
     document.getElementById('ca-splash').classList.remove('vis');
     if(!modo){
       document.getElementById('ca-setup').classList.add('vis');
-    } else if(modo==='admin'){
-      document.getElementById('ca-lock').classList.add('vis');
-      setTimeout(function(){document.getElementById('ca-lock-pw').focus();},300);
     } else {
+      // Admin e Coletor: abre direto no app — sem pedir senha
+      // Senha só é pedida ao entrar na seção de Configurações
       _caIniciarApp();
     }
   },1900);
@@ -13051,16 +13038,11 @@ function _initLP(){
 
 function abrirAdmin(){
   document.getElementById('painel-admin').classList.add('vis');
-  document.getElementById('ad-senha').value='';
   document.getElementById('ad-st').textContent='';
-  if(_adminLogado){
-    // Ja autenticado — abre direto na tela de configuracoes
-    document.getElementById('ad-cfg').style.display='block';
-    _atualizarBtnDesbloquear();
-  } else {
-    document.getElementById('ad-cfg').style.display='none';
-    setTimeout(function(){ document.getElementById('ad-senha').focus(); },200);
-  }
+  // Configurações sempre visíveis — sem senha de entrada
+  document.getElementById('ad-cfg').style.display='block';
+  _caFsjCarregarConfigParaAdmin();
+  _atualizarBtnDesbloquear();
 }
 function fecharAdmin(){
   document.getElementById('painel-admin').classList.remove('vis');
@@ -13118,6 +13100,26 @@ function compartilharLink(){
   var msg='Fazenda Sao Jose - App de Coleta\n\nInstale o aplicativo:\n'+url+'\n\nApos abrir: toque em Instalar agora.\nApague esta mensagem apos instalar.';
   if(navigator.share){ navigator.share({title:'App Coleta',text:msg,url:url}).catch(function(){ window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank'); }); }
   else { window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank'); }
+}
+
+function _caFsjCarregarConfigParaAdmin(){
+  // Preenche os campos com valores actuais
+  var n = _getNum();
+  var nm = localStorage.getItem('wpp_nome')||'';
+  var el = document.getElementById('ad-num-sp');
+  if(el) el.textContent = _fmtFone(n);
+  var en = document.getElementById('ad-nome-sp');
+  if(en) en.textContent = nm||'Nao configurado';
+  var vAtiva = localStorage.getItem(VK)==='1';
+  var btn = document.getElementById('btn-toggle-vendas');
+  if(btn){
+    btn.textContent = vAtiva?'Desativar Vendas':'Ativar Vendas';
+    btn.style.background = vAtiva?'#5a1010':'#7a3a00';
+    btn.style.color = vAtiva?'#fca5a5':'#ffd49a';
+  }
+  _adminLogado = true;
+  if(typeof _atualizarBtnConsulta==='function') _atualizarBtnConsulta(true);
+  if(typeof _atualizarBtnDesbloquear==='function') _atualizarBtnDesbloquear();
 }
 
 /* ---- TOAST ---- */
