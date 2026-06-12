@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#1c2e22"/>
-  <circle cx="256" cy="230" r="140" fill="#b8943f"/>
-  <text x="256" y="290" text-anchor="middle" font-size="160" font-family="serif">🌿</text>
-  <text x="256" y="430" text-anchor="middle" font-size="72" font-weight="700" font-family="Arial,sans-serif" fill="#b8943f">SJ</text>
-</svg>
