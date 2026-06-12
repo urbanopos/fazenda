@@ -413,29 +413,6 @@ textarea{resize:none;height:72px;font-size:14px}
 .ac-item:active,.ac-item:hover{background:rgba(29,94,71,.07)}
 .ac-item b{color:var(--vl)}
 
-
-/* ── Histórico Coletor ── */
-.cahist-tela{display:none;position:fixed;inset:0;z-index:9600;background:var(--bg);flex-direction:column}
-.cahist-tela.vis{display:flex}
-.cahist-topo{background:var(--vd);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:2px solid var(--ac)}
-.cahist-t{font-family:'DM Mono',monospace;font-size:15px;font-weight:700;color:var(--ac)}
-.cahist-x{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:18px;cursor:pointer}
-.cahist-body{flex:1;overflow-y:auto;padding:14px}
-.cahist-vazia{text-align:center;padding:48px 24px;font-family:'DM Mono',monospace;font-size:13px;color:var(--mu);line-height:1.8}
-.cahist-card{background:#fff;border-radius:14px;border:1px solid var(--ce);margin-bottom:12px;overflow:hidden}
-.cahist-hd{background:var(--vd);padding:11px 14px;display:flex;align-items:center;justify-content:space-between}
-.cahist-data{font-family:'DM Mono',monospace;font-size:12px;color:var(--ac);font-weight:700}
-.cahist-col{font-size:11px;color:rgba(255,255,255,.55)}
-.cahist-itens{padding:10px 14px}
-.cahist-item-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--ce);font-size:13px}
-.cahist-item-row:last-child{border:none}
-.cahist-item-nm{color:var(--tx);font-weight:600}
-.cahist-item-st{font-size:10px;color:var(--mu);margin-top:1px}
-.cahist-item-qtd{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--vl)}
-.cahist-acoes{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--ce);background:#fafaf7}
-.cahist-btn-rev{flex:1;padding:10px;background:var(--vd);border:none;border-radius:var(--r);color:var(--ac);font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer}
-.cahist-dia-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);padding:8px 0 4px;margin-top:4px}
-
 </style>
 </head>
 <body>
@@ -11066,9 +11043,8 @@ async function _caRestaurar(file){
     if(env.app!=='ColetaAut'){ _toast('⚠️ Arquivo inválido'); return; }
     var d=await _caDecifrar(env.payload,_caChave);
     if(!d||!d.coletas){ _toast('⚠️ Senha incorreta ou arquivo corrompido'); return; }
-    // Restaura APENAS no OPFS
+    try{ localStorage.setItem(SK_DADOS_CA,env.payload); }catch(e){}
     if(_caOpfs) await _caOpfsSalvar(FSJ_ADMIN,env.payload);
-    else { try{ localStorage.setItem(SK_DADOS_CA,env.payload); }catch(e){} }
     _toast('✅ '+d.coletas.length+' coleta(s) restaurada(s)!');
   }catch(e){ _toast('⚠️ Erro: '+e.message); }
 }
@@ -11080,8 +11056,8 @@ async function _caSalvarHistColetor(payload){
   var lim=Date.now()-7*24*60*60*1000;
   hist=hist.filter(function(r){return r.ts>=lim;});
   var json=JSON.stringify(hist);
-  // Salva APENAS no OPFS (pasta FSJ/)
   if(_caOpfs) await _caOpfsSalvar(FSJ_HIST,json);
+  try{ localStorage.setItem('ca_chist',json); }catch(e){}
 }
 async function _caLerHistColetor(){
   var raw=null;
@@ -11199,12 +11175,6 @@ function _caInjetarMenuBtn(){
   if(document.getElementById('ca-topo-menu')) return;
   var topoR=document.querySelector('.topo-r');
   if(!topoR) return;
-  if(localStorage.getItem(CA_MODO)==='coletor'){
-    var bH=document.createElement('button');
-    bH.id='ca-topo-hist'; bH.className='topo-btn'; bH.title='Histórico 7 dias';
-    bH.textContent='📋'; bH.onclick=_caHistAbrir;
-    topoR.appendChild(bH);
-  }
   var btn=document.createElement('button');
   btn.id='ca-topo-menu'; btn.className='topo-btn'; btn.title='Menu ColetaAut';
   btn.textContent='⋮'; btn.onclick=_caAbrirMenu;
@@ -11216,41 +11186,14 @@ function _caInjetarMenuBtn(){
    Se o fingerprint divergir, recarrega automaticamente.
    Não bloqueia o app — roda em paralelo com o splash.              */
 
-/* ════════════════════════════════════════════════════════════
-   FSJ STORAGE — todas as leituras/escritas passam pelo OPFS
-   Único fallback permitido: autenticação (ca_modo/salt/vhash)
-   que é específica do dispositivo e não são dados da fazenda.
-   ════════════════════════════════════════════════════════════ */
-
-var FSJ_CONFIG = 'config.json';   // numero WPP, nome coletor
-
-/* ── Config do dispositivo (numero WPP, nome coletor) ────── */
-var _fsjCfgCache = null;
-
-async function _fsjCarregarConfig(){
-  if(_fsjCfgCache) return _fsjCfgCache;
-  var raw = _caOpfs ? await _caOpfsLer(FSJ_CONFIG) : null;
-  if(raw){ try{ _fsjCfgCache = JSON.parse(raw); return _fsjCfgCache; }catch(e){} }
-  // Migra de localStorage se existir
-  var num  = localStorage.getItem('wpp_numero') || '';
-  var nome = localStorage.getItem('wpp_nome')   || '';
-  _fsjCfgCache = {numero: num, nome: nome};
-  if(num || nome) await _fsjSalvarConfig(_fsjCfgCache);
-  return _fsjCfgCache;
-}
-
-async function _fsjSalvarConfig(cfg){
-  _fsjCfgCache = cfg;
-  if(_caOpfs) await _caOpfsSalvar(FSJ_CONFIG, JSON.stringify(cfg));
-  // Mantém localStorage só como leitura legada (sistema Coleta lê wpp_numero)
-  try{ localStorage.setItem('wpp_numero', cfg.numero||''); }catch(e){}
-  try{ localStorage.setItem('wpp_nome',   cfg.nome||'');   }catch(e){}
-}
-
-async function _fsjGetNumero(){ var c=await _fsjCarregarConfig(); return (c.numero||'').replace(/\D/g,''); }
-async function _fsjGetNome(){   var c=await _fsjCarregarConfig(); return c.nome||''; }
-async function _fsjSetNumero(n){ var c=await _fsjCarregarConfig(); c.numero=n; await _fsjSalvarConfig(c); }
-async function _fsjSetNome(n){   var c=await _fsjCarregarConfig(); c.nome=n;   await _fsjSalvarConfig(c); }
+/* Registra Service Worker apenas quando hospedado no GitHub Pages */
+(function(){
+  if(!('serviceWorker' in navigator)) return;
+  if(location.hostname !== 'urbanopos.github.io') return; // ignora fora do domínio correto
+  navigator.serviceWorker.register('/fazenda/ca-sw.js', {scope:'/fazenda/'})
+    .then(function(){ console.log('ColetaAut SW registrado'); })
+    .catch(function(e){ console.log('SW:', e.message); });
+})();
 
 (function _caAutoUpdate(){
   var FP = '37880c346c45';
@@ -11438,9 +11381,7 @@ function _caMenuDesinst(){
 
 function _caDesinstalar(){
   _caParaScan();
-  // Remove chaves de autenticação do localStorage
-  ['ca_modo','ca_salt','ca_vhash',SK_DADOS_CA,'ca_chist','ca_vlk',
-   'wpp_numero','wpp_nome','ca_cad'].forEach(function(k){localStorage.removeItem(k);});
+  ['ca_modo','ca_salt','ca_vhash',SK_DADOS_CA,'ca_chist','ca_vlk'].forEach(function(k){localStorage.removeItem(k);});
   // Apaga chaves do sistema Coleta também
   ['fsj_admin_senha','fsj_bloqueado','fsj_blk_msg','fsj_vendas_ativa','fsj_pedido_num',
    'fsj_versao_local','wpp_numero','wpp_nome','fsj_hist_coleta','fsj_hist_pedido'].forEach(function(k){localStorage.removeItem(k);});
@@ -11977,6 +11918,78 @@ function _gerarImagem(titulo, linhas, rodape, onBlob){
     y+=44;
   }
 
+  // QR CODE — gera payload e renderiza no canvas antes de exportar
+  var _linkQR = null;
+  try{
+    var _p = _gerarPayloadColeta ? _gerarPayloadColeta() : null;
+    if(_p){ _linkQR = _gerarLinkImportacao(_p); }
+  }catch(e){}
+
+  if(_linkQR && typeof QRCode !== 'undefined'){
+    // Aumenta o canvas para acomodar a faixa do QR
+    var QR_H = 120;
+    var QR_SIZE = 90;
+    var oldH = c.height;
+    // Cria canvas temporario com altura extra
+    var c2 = document.createElement('canvas');
+    c2.width = W; c2.height = oldH + QR_H;
+    var ctx2 = c2.getContext('2d');
+    ctx2.drawImage(c, 0, 0); // copia conteúdo anterior
+
+    // Faixa fundo escuro para o QR
+    ctx2.fillStyle = '#1c2e22';
+    ctx2.fillRect(0, oldH, W, QR_H);
+    ctx2.fillStyle = '#b8943f';
+    ctx2.font = 'bold 8px Arial';
+    ctx2.textAlign = 'left';
+    ctx2.fillText('ESCANEAR PARA IMPORTAR NO ADMIN', PAD, oldH + 14);
+    ctx2.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx2.font = '7px Arial';
+    ctx2.fillText('Aponte o scanner do administrador para este código', PAD, oldH + 26);
+
+    // Renderiza QR num canvas auxiliar e copia
+    var qrDiv = document.createElement('div');
+    qrDiv.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:'+QR_SIZE+'px;height:'+QR_SIZE+'px';
+    document.body.appendChild(qrDiv);
+    try{
+      var qrObj = new QRCode(qrDiv, {
+        text: _linkQR,
+        width: QR_SIZE,
+        height: QR_SIZE,
+        colorDark: '#1c2e22',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel ? QRCode.CorrectLevel.M : 0
+      });
+      // Aguarda renderização (pode ser síncrona ou assíncrona)
+      setTimeout(function(){
+        var qrCanvas = qrDiv.querySelector('canvas');
+        var qrImg = qrDiv.querySelector('img');
+        var qrX = W - QR_SIZE - PAD;
+        var qrY = oldH + (QR_H - QR_SIZE) / 2;
+        if(qrCanvas){
+          ctx2.drawImage(qrCanvas, qrX, qrY, QR_SIZE, QR_SIZE);
+        } else if(qrImg && qrImg.src){
+          var imgEl = new Image();
+          imgEl.onload = function(){
+            ctx2.drawImage(imgEl, qrX, qrY, QR_SIZE, QR_SIZE);
+            document.body.removeChild(qrDiv);
+            c2.toBlob(onBlob,'image/jpeg',0.92);
+          };
+          imgEl.src = qrImg.src;
+          return;
+        }
+        document.body.removeChild(qrDiv);
+        c2.toBlob(onBlob,'image/jpeg',0.92);
+      }, 80);
+      return; // sai — toBlob será chamado no setTimeout
+    }catch(e){
+      document.body.removeChild(qrDiv);
+    }
+    // fallback: exporta com a faixa mas sem QR renderizado
+    c2.toBlob(onBlob,'image/jpeg',0.92);
+    return;
+  }
+
   c.toBlob(onBlob,'image/jpeg',0.92);
 }
 
@@ -12055,7 +12068,7 @@ function enviarTudo(){
   // Link de importacao guardado localmente — NAO vai na mensagem enviada
   var payload = _gerarPayloadColeta();
   var linkImport = payload ? _gerarLinkImportacao(payload) : null;
-  if(linkImport)
+  if(linkImport) try{ localStorage.setItem('fsj_last_import', linkImport); }catch(e){}
 
   var linhas = [];
   itens.forEach(function(it){
@@ -13173,7 +13186,7 @@ var _cadEditIdx  = -1;  // -1 = novo, >= 0 = edição
 async function _cadCarregar(){
   var raw = null;
   if(_caOpfs) raw = await _caOpfsLer(FSJ_CAD);
-  if(!raw && !_caOpfs) raw = localStorage.getItem('ca_cad');
+  if(!raw) raw = localStorage.getItem('ca_cad');
   if(!raw) return;
   try{
     var d = JSON.parse(raw);
@@ -13186,9 +13199,8 @@ async function _cadCarregar(){
 
 async function _cadSalvar(){
   var json = JSON.stringify(_cadDados);
-  // Salva APENAS no OPFS (pasta FSJ/)
-  // Salva APENAS no OPFS (pasta FSJ/cadastros.json)
   if(_caOpfs) await _caOpfsSalvar(FSJ_CAD, json);
+  try{ localStorage.setItem('ca_cad', json); }catch(e){}
 }
 
 /* ── Exportar listas para coletores ── */
@@ -13534,90 +13546,6 @@ async function _cadInit(){
   });
 })();
 
-
-async function _caHistAbrir(){
-  document.getElementById('cahist-tela').classList.add('vis');
-  await _caHistRender();
-}
-function _caHistFechar(){
-  document.getElementById('cahist-tela').classList.remove('vis');
-}
-async function _caHistRender(){
-  var body=document.getElementById('cahist-body');
-  body.innerHTML='<div class="cahist-vazia">Carregando...</div>';
-  var hist=await _caLerHistColetor();
-  if(!hist.length){
-    body.innerHTML='<div class="cahist-vazia">Nenhuma coleta nos \u00faltimos 7 dias.<br><br>Registre e envie uma coleta para que ela apare\u00e7a aqui.</div>';
-    return;
-  }
-  hist.sort(function(a,b){return (b.ts||0)-(a.ts||0);});
-  var MESES=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  var porDia={},ordemDia=[];
-  hist.forEach(function(r,idx){
-    var dt=r.data?new Date(r.data+'T12:00'):new Date(r.ts);
-    var key=r.data||dt.toISOString().split('T')[0];
-    var fmt=dt.getDate().toString().padStart(2,'0')+' '+MESES[dt.getMonth()]+' '+dt.getFullYear();
-    if(!porDia[key]){porDia[key]={fmt:fmt,regs:[]};ordemDia.push(key);}
-    porDia[key].regs.push({r:r,idx:idx});
-  });
-  var html='';
-  ordemDia.forEach(function(key){
-    var g=porDia[key];
-    html+='<div class="cahist-dia-label">'+g.fmt+'</div>';
-    g.regs.forEach(function(entry){
-      var r=entry.r,idx=entry.idx;
-      var hr=r.ts?new Date(r.ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
-      var itHtml=(r.itens||[]).map(function(it){
-        return '<div class="cahist-item-row">'
-          +'<div><div class="cahist-item-nm">'+_escH(it.nome||'')+'</div>'
-          +'<div class="cahist-item-st">'+_escH(it.setor||'')+'</div></div>'
-          +'<div class="cahist-item-qtd">'+it.qtd+' '+_escH(it.unid||'')+'</div>'
-          +'</div>';
-      }).join('');
-      html+='<div class="cahist-card">'
-        +'<div class="cahist-hd">'
-        +'<span class="cahist-data">'+hr+'</span>'
-        +'<span class="cahist-col">'+_escH(r.coletor||'')+'&nbsp;&middot;&nbsp;'+(r.itens?r.itens.length:0)+' item(ns)</span>'
-        +'</div>'
-        +'<div class="cahist-itens">'+itHtml+'</div>'
-        +'<div class="cahist-acoes">'
-        +'<button class="cahist-btn-rev" onclick="_caHistReenviar('+idx+')">\u2191 Reenviar esta coleta</button>'
-        +'</div></div>';
-    });
-  });
-  body.innerHTML=html;
-}
-async function _caHistReenviar(idx){
-  var hist=await _caLerHistColetor();
-  var r=hist[idx]; if(!r){_toast('\u26a0\ufe0f Registro n\u00e3o encontrado');return;}
-  var n=_getNum(); if(!n){_toast('\u26a0\ufe0f N\u00famero n\u00e3o configurado');return;}
-  var dt=r.data?new Date(r.data+'T12:00').toLocaleDateString('pt-BR'):'\u2014';
-  if(!confirm('Reenviar coleta de '+dt+'?\n'+(r.itens?r.itens.length:0)+' item(ns)')) return;
-  _toast('Gerando imagem...');
-  var payload={v:1,data:r.data,coletor:r.coletor,ts:r.ts,itens:r.itens};
-  var blob=await _gerarImagemColeta(payload);
-  if(!blob){_toast('\u26a0\ufe0f Erro ao gerar imagem');return;}
-  var setores={},ord=[];
-  (r.itens||[]).forEach(function(it){
-    if(!setores[it.setor]){setores[it.setor]=[];ord.push(it.setor);}
-    setores[it.setor].push('  '+it.nome+': '+it.qtd+' '+it.unid);
-  });
-  var blocos=ord.map(function(s){return '['+s.toUpperCase()+']\n'+setores[s].join('\n');});
-  var msg='COLETA FAZENDA SJ\nColetor: '+(r.coletor||'')+'\nData: '+dt+'\n\n'
-    +blocos.join('\n\n')+'\n\n'+(r.itens?r.itens.length:0)+' item(ns) [REENVIO]';
-  var file=new File([blob],'coleta-reenvio-'+r.data+'.jpg',{type:'image/jpeg'});
-  var wppUrl='https://wa.me/'+n+'?text='+encodeURIComponent(msg);
-  var fone=typeof _fmtFone==='function'?_fmtFone(n):n;
-  if(!confirm('Enviar para:\n'+fone+'\n\nConfirmar?')) return;
-  if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-    navigator.share({files:[file],text:msg})
-      .then(function(){_toast('\u2705 Coleta reenviada!');})
-      .catch(function(e){if(e&&e.name==='AbortError')return;window.open(wppUrl,'_blank');_toast('\u2705 Reenviado!');});
-  } else {
-    window.open(wppUrl,'_blank');
-    _toast('\u2705 Coleta reenviada!');
-  }
-}
 </script>
 
 <!-- TELA CADASTROS -->
@@ -13669,17 +13597,6 @@ async function _caHistReenviar(idx){
   </div>
 </div>
 <input type="file" id="cad-imp-inp" accept=".listas" style="display:none" onchange="_cadImportarListas(this.files[0])">
-
-
-<div class="cahist-tela" id="cahist-tela">
-  <div class="cahist-topo">
-    <span class="cahist-t">📋 Histórico de Coletas</span>
-    <button class="cahist-x" onclick="_caHistFechar()">✕</button>
-  </div>
-  <div class="cahist-body" id="cahist-body">
-    <div class="cahist-vazia">Carregando...</div>
-  </div>
-</div>
 
 </body>
 </html>
