@@ -740,7 +740,7 @@ textarea{resize:none;height:72px;font-size:14px}
       <div class="mp-meta" id="mp-meta"></div>
       <div id="mp-linhas"></div>
       <div class="mp-total"><span class="mp-total-lbl">Total</span><span class="mp-total-val" id="mp-total"></span></div>
-      <button class="mp-btn-img" onclick="reemitirPedido()">📷 Gerar imagem novamente</button>
+      <button class="mp-btn-img" onclick="reemitirPedido()" style="background:rgba(28,78,34,.1);color:var(--vc);border:1.5px solid var(--vc)">📤 Reenviar imagem</button>
       <div class="mp-admin-bar" id="mp-admin-bar" style="display:none">
         <button class="mp-btn-edit" onclick="_abrirEditPedido()">✎ Editar pedido</button>
         <button class="mp-btn-del" onclick="_excluirPedido()">🗑 Excluir</button>
@@ -12094,24 +12094,7 @@ function enviarTudo(){
     var data = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
     var nome = (localStorage.getItem('wpp_nome')||'').trim();
     var dfL  = data ? new Date(data+'T12:00').toLocaleDateString('pt-BR') : data;
-    var setores={}, ord=[];
-    itens.forEach(function(it){
-      if(!setores[it.setor]){ setores[it.setor]=[]; ord.push(it.setor); }
-      var l=it.nome+': '+it.qtd+' '+it.unid;
-      if(it.forn) l+=' ('+it.forn+')';
-      if(it.obs)  l+=' - '+it.obs;
-      setores[it.setor].push(l);
-    });
-    var blocos=[];
-    ord.forEach(function(s){
-      blocos.push('['+s.toUpperCase()+']'+'\n'+setores[s].map(function(l){return '  '+l;}).join('\n'));
-    });
-    // Mensagem LIMPA - sem nenhum link
-    var msgTexto='COLETA FAZENDA SJ'
-      +'\n'+(nome?'Coletor: '+nome+'\n':'')
-      +'Data: '+dfL+'\n\n'
-      +blocos.join('\n\n')
-      +'\n\n'+itens.length+' item(ns)';
+    // Texto removido — informação já consta na imagem gerada
     // Confirmacao com numero formatado antes de enviar
     var fone = _fmtFone(numSalvo);
     if(!confirm('Enviar coleta para:\n' + fone + '\n\nConfirmar?')){ return; }
@@ -12338,10 +12321,9 @@ function enviarPedido(){
     var msgTitulo = 'Pedido '+numPed+(cliente?' - '+cliente:'')+' - '+dataVenda;
     if(linkImport) msgTitulo += '\n\n[Admin] Importar: '+linkImport;
     if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-      navigator.share({title:msgTitulo, files:[file]}).catch(function(){ _fallbackDownload(blob,'pedido-'+numPed+'.jpg'); });
+      navigator.share({files:[file]}).catch(function(){ _fallbackDownload(blob,'pedido-'+numPed+'.jpg'); });
     } else {
       _fallbackDownload(blob,'pedido-'+numPed+'.jpg');
-      setTimeout(function(){ window.open('https://wa.me/'+n+'?text='+encodeURIComponent(msgTitulo),'_blank'); },1000);
     }
   });
   setTimeout(function(){
@@ -12722,6 +12704,7 @@ function _renderHistColetaDetalhe(body, registros){
       : '—';
     html += '<div class="hcol-entrada" id="hcol-reg-'+ri+'">';
     // Botao editar (apenas para admin logado)
+    html += '<button class="hcol-edit-btn" style="right:'+((_adminLogado)?'152px':'8px')+';background:rgba(28,78,34,.1);border-color:var(--vc);color:var(--vc)" onclick="_reenviarColeta('+ri+')">📤</button>';
     if(_adminLogado){
       html += '<button class="hcol-edit-btn" onclick="_abrirEditColeta('+ri+')">✎ Editar</button>';
       html += '<button class="hcol-edit-btn" style="right:76px;background:rgba(160,48,48,.12);border-color:rgba(160,48,48,.4);color:#a03030" onclick="_excluirColeta('+ri+')">🗑</button>';
@@ -12741,6 +12724,31 @@ function _renderHistColetaDetalhe(body, registros){
   body.innerHTML = html;
 }
 
+
+function _reenviarColeta(ri){
+  var body = document.getElementById('hcol-body');
+  var regs = body._regRefs;
+  if(!regs || !regs[ri]) return;
+  var r = regs[ri];
+  var n = _getNum();
+  if(!n){ _toast('Numero nao configurado.'); return; }
+  var linhas = (r.itens||[]).map(function(it){
+    return {col1:it.setor, col2:it.nome, col3:it.qtd+' '+it.unid, col4:it.forn||'', val:0};
+  });
+  _qrPayloadAtual = {origem:'coleta', coletor:r.coletor, data:r.data, ts:r.ts, itens:r.itens};
+  _gerarImagem('BOLETIM DE COLETA', linhas, null, function(blob){
+    if(!blob){ _toast('Erro ao gerar imagem.'); return; }
+    var nomearq = 'coleta-'+(r.data||'reenvio')+'.jpg';
+    var file = new File([blob], nomearq, {type:'image/jpeg'});
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({files:[file]})
+        .then(function(){ _toast('\u2705 Coleta reenviada!'); })
+        .catch(function(err){ if(err && err.name !== 'AbortError') _fallbackDownload(blob, nomearq); });
+    } else {
+      _fallbackDownload(blob, nomearq);
+    }
+  });
+}
 function _abrirEditColeta(ri){
   var body = document.getElementById('hcol-body');
   var regs = body._regRefs;
@@ -13041,7 +13049,7 @@ function reemitirPedido(){
     if(!blob){ _toast('Erro ao gerar imagem.'); return; }
     var file = new File([blob],'pedido-'+p.num+'.jpg',{type:'image/jpeg'});
     if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-      navigator.share({title:'Pedido '+p.num,files:[file]}).catch(function(){ _fallbackDownload(blob,'pedido-'+p.num+'.jpg'); });
+      navigator.share({files:[file]}).catch(function(){ _fallbackDownload(blob,'pedido-'+p.num+'.jpg'); });
     } else {
       _fallbackDownload(blob,'pedido-'+p.num+'.jpg');
       setTimeout(function(){ window.open('https://wa.me/'+n,'_blank'); },1000);
