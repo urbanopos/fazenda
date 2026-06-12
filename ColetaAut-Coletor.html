@@ -655,12 +655,8 @@ textarea{resize:none;height:72px;font-size:14px}
         <div class="ad-div"></div>
         <span class="ad-lbl">Enviar app para novo coletor</span>
         <div class="ad-row"><button class="ad-ok" onclick="compartilharLink()" style="background:linear-gradient(135deg,#25d366,#128c7e);color:#fff">Enviar link pelo WhatsApp</button></div>
-        <div class="ad-div"></div>
-        <span class="ad-lbl">Historico de Coletas</span>
-        <div class="ad-row"><button class="ad-ok" onclick="fecharAdmin();abrirHistColeta()" style="background:#1e3a5f;color:#93c5fd">📊 Ver Consulta de Coletas</button></div>
-        <div class="ad-div"></div>
-        <span class="ad-lbl">Historico de Pedidos</span>
-        <div class="ad-row"><button class="ad-ok" onclick="fecharAdmin();abrirHistPedidos()" style="background:#7a3a00;color:#ffd49a">📄 Ver Consulta Pedidos</button></div>
+
+
         <div class="ad-div"></div>
         <div class="ad-row"><button id="btn-desbloquear" class="ad-ok" onclick="desbloquearAdmin()" style="background:#2d4a38;color:#a8d88a;display:none">Desbloquear dispositivo</button></div>
         <div class="ad-st" id="ad-st2"></div>
@@ -813,6 +809,10 @@ textarea{resize:none;height:72px;font-size:14px}
   </div>
 </div>
   <div class="div"></div>
+  <div style="display:flex;gap:8px;margin-bottom:8px">
+    <button onclick="abrirHistColeta()" style="flex:1;padding:11px 0;border:1.5px solid var(--ce);border-radius:var(--r);background:#fff;color:#1e3a5f;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer">📊 Coletas</button>
+    <button id="btn-consulta-pedidos" onclick="abrirHistPedidos()" style="flex:1;padding:11px 0;border:1.5px solid var(--ce);border-radius:var(--r);background:#fff;color:#7a3a00;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;display:none">📄 Pedidos</button>
+  </div>
   <div class="cont" id="contador">Nenhum item preenchido</div>
   <button class="btn-wpp" onclick="enviarTudo()">💬 Enviar coleta</button>
 </div>
@@ -12081,24 +12081,16 @@ function enviarTudo(){
       +'Data: '+dfL+'\n\n'
       +blocos.join('\n\n')
       +'\n\n'+itens.length+' item(ns)';
-    // Confirmacao com numero formatado antes de enviar
-    var fone = _fmtFone(numSalvo);
-    if(!confirm('Enviar coleta para:\n' + fone + '\n\nConfirmar?')){ return; }
-    // navigator.share envia imagem + texto direto no WhatsApp (aparece na conversa)
+    // Envia diretamente para o número do Admin via Web Share API
+    // Se o dispositivo suportar compartilhamento de arquivo, abre o seletor de app
+    // (o usuário escolhe WhatsApp — a conversa já estará aberta com o contato do Admin)
     var file = new File([blob], 'coleta-'+data+'.jpg', {type:'image/jpeg'});
     if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
       navigator.share({files:[file], text:msgTexto})
         .then(function(){ _toast('\u2705 Coleta enviada!'); })
-        .catch(function(err){
-          if(err && err.name === 'AbortError') return;
-          _fallbackDownload(blob,'coleta-'+data+'.jpg');
-          window.open('https://wa.me/'+n+'?text='+encodeURIComponent(msgTexto),'_blank');
-          _toast('\u2705 Imagem salva! Confirme no WhatsApp.');
-        });
+        .catch(function(err){ if(err && err.name !== 'AbortError'){ _enviarFallbackColeta(blob,n,msgTexto,data); } });
     } else {
-      _fallbackDownload(blob,'coleta-'+data+'.jpg');
-      window.open('https://wa.me/'+n+'?text='+encodeURIComponent(msgTexto),'_blank');
-      _toast('\u2705 Imagem salva! Confirme no WhatsApp.');
+      _enviarFallbackColeta(blob, n, msgTexto, data);
     }
   });
 
@@ -12112,6 +12104,15 @@ function enviarTudo(){
     });
     document.getElementById('contador').innerHTML = 'Nenhum item preenchido';
   }, 2000);
+}
+
+function _enviarFallbackColeta(blob, numero, texto, data){
+  // Abre WhatsApp direto no número do Admin com o texto, e faz download da imagem
+  _fallbackDownload(blob, 'coleta-'+data+'.jpg');
+  setTimeout(function(){
+    window.open('https://wa.me/'+numero+'?text='+encodeURIComponent(texto), '_blank');
+  }, 600);
+  _toast('\u2705 Imagem salva! Abra o WhatsApp e envie.');
 }
 
 function _fallbackDownload(blob, nome){
@@ -12141,9 +12142,11 @@ function _aplicarVendas(ativa){
   var btn = document.getElementById('btn-toggle-vendas');
   if(ativa){
     aba.classList.add('vis');
+    var _bcp=document.getElementById('btn-consulta-pedidos'); if(_bcp) _bcp.style.display='flex';
     if(btn){ btn.textContent='Desativar Vendas'; btn.style.background='#5a1010'; btn.style.color='#fca5a5'; }
   } else {
     aba.classList.remove('vis','at');
+    var _bcp=document.getElementById('btn-consulta-pedidos'); if(_bcp) _bcp.style.display='none';
     if(btn){ btn.textContent='Ativar Vendas'; btn.style.background='#7a3a00'; btn.style.color='#ffd49a'; }
     var sv = document.getElementById('sec-vendas');
     if(sv && sv.classList.contains('at')) trocarAba('aviario');
