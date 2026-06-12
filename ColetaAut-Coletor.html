@@ -11838,7 +11838,7 @@ function _gerarImagem(titulo, linhas, rodape, onBlob){
   H += 48; // rodape
   H += rodape ? 44 : 0;
   H += 8;
-  H += 112; // faixa QR Code
+  H += 144; // faixa QR Code
   c.width=W; c.height=H;
   var y=0;
 
@@ -11922,24 +11922,22 @@ function _gerarImagem(titulo, linhas, rodape, onBlob){
   // ── QR CODE embutido na imagem ─────────────────────────────────────
   // Conteúdo: JSON do payload → Admin escaneia com câmera e importa direto
   (function _embedQR(){
-    var _pl = (typeof _qrPayloadAtual !== 'undefined' && _qrPayloadAtual)
-              ? _qrPayloadAtual
-              : null;
-    if(!_pl){ try{ _pl = _gerarPayloadColeta(); }catch(e){} }
+    // QR só gerado quando _qrPayloadAtual foi definido explicitamente (enviarTudo / _reenviarColeta)
+    var _pl = (typeof _qrPayloadAtual !== 'undefined' && _qrPayloadAtual) ? _qrPayloadAtual : null;
     var _qrText = _pl ? _gerarLinkImportacao(_pl) : null;
     if(!_qrText || typeof QRCode === 'undefined'){
       c.toBlob(onBlob,'image/jpeg',0.92); return;
     }
-    var QR_SZ = 88, QR_PAD = 12;
+    var QR_SZ = 120, QR_PAD = 12;
     // Fundo da faixa QR
-    rect(0, y, W, 112, '#f5f0e8');
+    rect(0, y, W, 144, '#f5f0e8');
     ctx.strokeStyle='#e0d8c0'; ctx.lineWidth=1;
     ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
     // Label
     ctx.font='bold 7px Arial'; ctx.fillStyle='#999'; ctx.textAlign='left';
-    ctx.fillText('ADMIN: ESCANEIE PARA IMPORTAR', QR_PAD, y + 18);
+    ctx.fillText('ADMIN: ESCANEIE PARA IMPORTAR', QR_PAD, y + 16);
     ctx.textAlign='left';
-    // Gera QR em div fora da tela
+    // Gera QR em div fora da tela — nivel L (menor densidade, mais facil de ler em JPEG)
     var _qDiv = document.createElement('div');
     _qDiv.style.cssText = 'position:fixed;left:-9999px;top:-9999px';
     document.body.appendChild(_qDiv);
@@ -11947,21 +11945,24 @@ function _gerarImagem(titulo, linhas, rodape, onBlob){
       new QRCode(_qDiv, {
         text: _qrText,
         width: QR_SZ, height: QR_SZ,
-        colorDark: '#1c2e22', colorLight: '#f5f0e8',
-        correctLevel: QRCode.CorrectLevel.M
+        colorDark: '#000000', colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.L
       });
     }catch(e){ document.body.removeChild(_qDiv); c.toBlob(onBlob,'image/jpeg',0.92); return; }
     setTimeout(function(){
       try{
         var _qEl = _qDiv.querySelector('img') || _qDiv.querySelector('canvas');
         if(_qEl){
+          // Fundo branco garantido atrás do QR (JPEG não tem transparência)
           var qx = W - QR_PAD - QR_SZ;
-          var qy = y + QR_PAD + 14;
+          var qy = y + QR_PAD + 18;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(qx - 4, qy - 4, QR_SZ + 8, QR_SZ + 8);
           ctx.drawImage(_qEl, qx, qy, QR_SZ, QR_SZ);
         }
       }catch(e){}
       try{ document.body.removeChild(_qDiv); }catch(e){}
-      c.toBlob(onBlob,'image/jpeg',0.92);
+      c.toBlob(onBlob,'image/jpeg',0.95);
     }, 280);
   })();
 }
@@ -12021,9 +12022,25 @@ function _gerarPayloadPedido(conc, numPed, cliente, dataVenda){
 }
 
 function _gerarLinkImportacao(payload){
-  // Retorna JSON puro em string — usado como conteúdo do QR Code
-  // O Admin escaneia a imagem com a câmera e processa o JSON diretamente
-  try{ return JSON.stringify(payload); }catch(e){ return null; }
+  // Retorna JSON compacto — campos vazios removidos para minimizar o QR Code
+  try{
+    var p = {
+      origem:  payload.origem,
+      coletor: payload.coletor,
+      data:    payload.data,
+      ts:      payload.ts,
+      itens:   (payload.itens||[]).map(function(it){
+        var o = {setor:it.setor, nome:it.nome, unid:it.unid, qtd:it.qtd};
+        if(it.forn && it.forn.trim()) o.forn = it.forn.trim();
+        if(it.obs  && it.obs.trim())  o.obs  = it.obs.trim();
+        return o;
+      })
+    };
+    if(payload.numPed)  p.numPed  = payload.numPed;
+    if(payload.cliente) p.cliente = payload.cliente;
+    if(payload.total)   p.total   = payload.total;
+    return JSON.stringify(p);
+  }catch(e){ return null; }
 }
 
 
@@ -12273,7 +12290,7 @@ function enviarPedido(){
   var payload = _gerarPayloadPedido(conc, numPed, cliente, dataVenda);
   var linkImport = payload ? _gerarLinkImportacao(payload) : null;
 
-  _qrPayloadAtual = payload; // QR na imagem usa este payload
+  _qrPayloadAtual = null; // talao de pedido nao leva QR Code
   _gerarImagem('TALAO DE PEDIDO / '+numPed, linhas, numPed, function(blob){
     if(!blob){ _toast('Erro ao gerar talao.'); return; }
     var file = new File([blob],'pedido-'+numPed+'.jpg',{type:'image/jpeg'});
