@@ -659,6 +659,18 @@ textarea{resize:none;height:72px;font-size:14px}
 
         <div class="ad-div"></div>
         <div class="ad-row"><button id="btn-desbloquear" class="ad-ok" onclick="desbloquearAdmin()" style="background:#2d4a38;color:#a8d88a;display:none">Desbloquear dispositivo</button></div>
+        <div class="ad-div"></div>
+        <span class="ad-lbl">Reset de registros</span>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.4);margin-bottom:10px;line-height:1.6">Apaga coletas, pedidos e cadastros da pasta FSJ/. O aplicativo reinicia sem histórico. Configurações e senha são mantidas.</div>
+        <div id="ad-reset-confirm" style="display:none;margin-bottom:10px">
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:#e08080;margin-bottom:8px">⚠️ Confirme a senha para apagar todos os registros:</div>
+          <div class="ad-iw" style="margin-bottom:8px"><input class="ad-inp" type="password" id="ad-reset-pw" placeholder="Senha do administrador..." autocomplete="off"></div>
+          <div class="ad-row">
+            <button class="ad-ok" onclick="executarReset()" style="background:#7f1d1d;color:#fca5a5">Apagar todos os registros</button>
+            <button class="ad-cl" onclick="cancelarReset()">Cancelar</button>
+          </div>
+        </div>
+        <div class="ad-row" id="ad-reset-btn-row"><button class="ad-ok" onclick="pedirReset()" style="background:rgba(127,29,29,.3);border:1px solid rgba(224,128,128,.4);color:#e08080">🗑 Apagar todos os registros</button></div>
         <div class="ad-st" id="ad-st2"></div>
       </div>
     </div>
@@ -11416,7 +11428,8 @@ function _caDesinstalar(){
   ['ca_modo','ca_salt','ca_vhash',SK_DADOS_CA,'ca_chist','ca_vlk'].forEach(function(k){localStorage.removeItem(k);});
   // Apaga chaves do sistema Coleta também
   ['fsj_admin_senha','fsj_bloqueado','fsj_blk_msg','fsj_vendas_ativa','fsj_pedido_num',
-   'fsj_versao_local','wpp_numero','wpp_nome','fsj_hist_coleta','fsj_hist_pedido'].forEach(function(k){localStorage.removeItem(k);});
+   'fsj_versao_local','wpp_numero','wpp_nome','fsj_hist_coleta','fsj_hist_pedido',
+   'fsj_hist_coletas','fsj_hist_pedidos'].forEach(function(k){localStorage.removeItem(k);});
   _caOpfsApagar();
   _caChave=null;
   document.getElementById('ca-conf').classList.remove('vis');
@@ -11635,6 +11648,11 @@ function apagarCardEdit(k, cl){
 /* ---- INIT ---- */
 function _iniciar(){
   setHoje(); _relogio(); setInterval(_relogio, 30000);
+  // Sincroniza OPFS → localStorage na inicialização
+  if(_caOpfs){
+    _caOpfsLer(FSJ_COLETAS).then(function(r){ if(r) try{ localStorage.setItem(CK,r); }catch(e){} });
+    _caOpfsLer(FSJ_PEDIDOS).then(function(r){ if(r) try{ localStorage.setItem(HK,r); }catch(e){} });
+  }
   Object.keys(SETORES).forEach(function(s){
     var cfg = SETORES[s];
     var g = document.getElementById('grid-'+s);
@@ -12356,13 +12374,27 @@ var _pedAtual = null; // pedido aberto no modal
 
 function _salvarPedido(ped){
   var hist = _carregarHist();
-  hist.unshift(ped); // mais recente primeiro
-  if(hist.length > 100) hist = hist.slice(0,100); // limite de 100 pedidos
-  try{ localStorage.setItem(HK, JSON.stringify(hist)); } catch(e){}
+  hist.unshift(ped);
+  if(hist.length > 100) hist = hist.slice(0,100);
+  var json = JSON.stringify(hist);
+  try{ localStorage.setItem(HK, json); }catch(e){}
+  if(_caOpfs) _caOpfsSalvar(FSJ_PEDIDOS, json);
 }
 
 function _carregarHist(){
-  try{ return JSON.parse(localStorage.getItem(HK)||'[]'); } catch(e){ return []; }
+  try{ return JSON.parse(localStorage.getItem(HK)||'[]'); }catch(e){ return []; }
+}
+async function _carregarHistOPFS(){
+  if(_caOpfs){
+    try{
+      var raw = await _caOpfsLer(FSJ_PEDIDOS);
+      if(raw){
+        try{ localStorage.setItem(HK, raw); }catch(e){}
+        return JSON.parse(raw);
+      }
+    }catch(e){}
+  }
+  return _carregarHist();
 }
 
 function mostrarPainelVendas(qual){
@@ -12593,11 +12625,28 @@ function _salvarColeta(reg){
   var hist = _carregarHistColeta();
   hist.unshift(reg);
   if(hist.length > 500) hist = hist.slice(0,500);
-  try{ localStorage.setItem(CK, JSON.stringify(hist)); }catch(e){}
+  var json = JSON.stringify(hist);
+  try{ localStorage.setItem(CK, json); }catch(e){}
+  if(_caOpfs) _caOpfsSalvar(FSJ_COLETAS, json);
 }
 
 function _carregarHistColeta(){
+  // Tenta ler do OPFS; fallback para localStorage
   try{ return JSON.parse(localStorage.getItem(CK)||'[]'); }catch(e){ return []; }
+}
+async function _carregarHistColetaOPFS(){
+  if(_caOpfs){
+    try{
+      var raw = await _caOpfsLer(FSJ_COLETAS);
+      if(raw){
+        var d = JSON.parse(raw);
+        // Sincroniza localStorage com OPFS
+        try{ localStorage.setItem(CK, raw); }catch(e){}
+        return d;
+      }
+    }catch(e){}
+  }
+  return _carregarHistColeta();
 }
 
 function abrirHistColeta(){
@@ -13147,6 +13196,58 @@ function _initLP(){
   },{passive:false});
 }
 
+
+/* ── RESET DE REGISTROS ─────────────────────────────────────────────────
+   Apaga coletas, pedidos e cadastros da pasta FSJ/ e localStorage.
+   Mantém: senha, número WhatsApp, nome do coletor, modo instalado.    */
+function pedirReset(){
+  document.getElementById('ad-reset-confirm').style.display = 'block';
+  document.getElementById('ad-reset-btn-row').style.display = 'none';
+  setTimeout(function(){ var el=document.getElementById('ad-reset-pw'); if(el) el.focus(); }, 150);
+}
+function cancelarReset(){
+  document.getElementById('ad-reset-confirm').style.display = 'none';
+  document.getElementById('ad-reset-btn-row').style.display = '';
+  document.getElementById('ad-reset-pw').value = '';
+}
+async function executarReset(){
+  var pw   = (document.getElementById('ad-reset-pw')||{value:''}).value;
+  var s2   = document.getElementById('ad-st2');
+  var senha = localStorage.getItem(SK)||SP;
+  if(pw !== senha){
+    s2.textContent = 'Senha incorreta.'; s2.className = 'ad-st er';
+    document.getElementById('ad-reset-pw').value = '';
+    document.getElementById('ad-reset-pw').focus();
+    return;
+  }
+  // Apagar OPFS
+  if(_caOpfs){
+    try{ await _caOpfsSalvar(FSJ_COLETAS, '[]'); }catch(e){}
+    try{ await _caOpfsSalvar(FSJ_PEDIDOS, '[]'); }catch(e){}
+    try{ await _caOpfsSalvar(FSJ_CAD,     JSON.stringify({produtos:[],clientes:[],fornecedores:[],precos:[]})); }catch(e){}
+    try{ await _caOpfsSalvar(FSJ_HIST,    '[]'); }catch(e){}
+    // Apaga também admin.caut se existir (coletas importadas pelo Admin)
+    try{ await _caOpfsSalvar(FSJ_ADMIN,   ''); }catch(e){}
+  }
+  // Apagar localStorage
+  [CK, HK, 'ca_cad', 'ca_chist', 'fsj_hist_coleta', 'fsj_hist_pedido',
+   'fsj_hist_coletas', 'fsj_hist_pedidos', 'fsj_pedido_num', NK].forEach(function(k){
+    try{ localStorage.removeItem(k); }catch(e){}
+  });
+  // Reinicia contadores em memória
+  _pedNum = 0;
+  try{ _renderTalaoNum(); }catch(e){}
+  // Reset cadastros em memória
+  try{
+    _cadDados = {produtos:[],clientes:[],fornecedores:[],precos:[]};
+    _cadRenderLista(_cadAbaAtual);
+  }catch(e){}
+  cancelarReset();
+  s2.textContent = '✅ Registros apagados. App reiniciado.';
+  s2.className = 'ad-st';
+  // Recarrega a tela de operação
+  setTimeout(function(){ fecharAdmin(); if(typeof _iniciar==='function') _iniciar(); }, 1200);
+}
 function abrirAdmin(){
   document.getElementById('painel-admin').classList.add('vis');
   document.getElementById('ad-senha').value='';
@@ -13235,7 +13336,9 @@ function _toast(msg){
      cadastros.json  — produtos, clientes, fornecedores, preços
    ════════════════════════════════════════════════════════════ */
 
-var FSJ_CAD = 'cadastros.json';
+var FSJ_CAD    = 'cadastros.json';
+var FSJ_COLETAS = 'coletas.json';
+var FSJ_PEDIDOS = 'pedidos.json';
 
 // Estrutura padrão dos cadastros
 var _cadDados = {
