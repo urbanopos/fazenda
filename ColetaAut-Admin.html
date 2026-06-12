@@ -655,12 +655,8 @@ textarea{resize:none;height:72px;font-size:14px}
         <div class="ad-div"></div>
         <span class="ad-lbl">Enviar app para novo coletor</span>
         <div class="ad-row"><button class="ad-ok" onclick="compartilharLink()" style="background:linear-gradient(135deg,#25d366,#128c7e);color:#fff">Enviar link pelo WhatsApp</button></div>
-        <div class="ad-div"></div>
-        <span class="ad-lbl">Historico de Coletas</span>
-        <div class="ad-row"><button class="ad-ok" onclick="fecharAdmin();abrirHistColeta()" style="background:#1e3a5f;color:#93c5fd">📊 Ver Consulta de Coletas</button></div>
-        <div class="ad-div"></div>
-        <span class="ad-lbl">Historico de Pedidos</span>
-        <div class="ad-row"><button class="ad-ok" onclick="fecharAdmin();abrirHistPedidos()" style="background:#7a3a00;color:#ffd49a">📄 Ver Consulta Pedidos</button></div>
+
+
         <div class="ad-div"></div>
         <div class="ad-row"><button id="btn-desbloquear" class="ad-ok" onclick="desbloquearAdmin()" style="background:#2d4a38;color:#a8d88a;display:none">Desbloquear dispositivo</button></div>
         <div class="ad-st" id="ad-st2"></div>
@@ -813,6 +809,10 @@ textarea{resize:none;height:72px;font-size:14px}
   </div>
 </div>
   <div class="div"></div>
+  <div style="display:flex;gap:8px;margin-bottom:8px">
+    <button onclick="abrirHistColeta()" style="flex:1;padding:11px 0;border:1.5px solid var(--ce);border-radius:var(--r);background:#fff;color:#1e3a5f;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer">📊 Coletas</button>
+    <button id="btn-consulta-pedidos" onclick="abrirHistPedidos()" style="flex:1;padding:11px 0;border:1.5px solid var(--ce);border-radius:var(--r);background:#fff;color:#7a3a00;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;display:none">📄 Pedidos</button>
+  </div>
   <div class="cont" id="contador">Nenhum item preenchido</div>
   <button class="btn-wpp" onclick="enviarTudo()">💬 Enviar coleta</button>
 </div>
@@ -11223,10 +11223,8 @@ window.addEventListener('load',function(){
     document.getElementById('ca-splash').classList.remove('vis');
     if(!modo){
       document.getElementById('ca-setup').classList.add('vis');
-    } else if(modo==='admin'){
-      document.getElementById('ca-lock').classList.add('vis');
-      setTimeout(function(){document.getElementById('ca-lock-pw').focus();},300);
     } else {
+      // Admin e Coletor: inicia direto — senha exigida apenas ao abrir seção Administrador
       _caIniciarApp();
     }
   },1900);
@@ -11234,9 +11232,32 @@ window.addEventListener('load',function(){
 
 /* ── Scanner QR ── */
 function _caAbrirScanner(){
+  // Se ainda não autenticou (chave em memória), pede senha antes do scanner
+  if(!_caChave){
+    _caAutenticarParaScanner();
+    return;
+  }
   _caEscTodas();
   document.getElementById('ca-scanner').classList.add('vis');
   _caIniciarScan();
+}
+
+function _caAutenticarParaScanner(){
+  // Mostra tela de lock com callback para abrir scanner após auth
+  var lock = document.getElementById('ca-lock');
+  var lockS = lock.querySelector('.ca-lock-s');
+  if(lockS) lockS.textContent = 'Digite a senha para importar coleta';
+  _caEscTodas();
+  lock.classList.add('vis');
+  // Sobrescreve _caIniciarApp temporariamente para redirecionar para o scanner
+  var _origIniciar = _caIniciarApp;
+  _caIniciarApp = function(){
+    _caIniciarApp = _origIniciar; // restaura
+    _caEscTodas();
+    document.getElementById('ca-scanner').classList.add('vis');
+    _caIniciarScan();
+  };
+  setTimeout(function(){ document.getElementById('ca-lock-pw').focus(); }, 300);
 }
 function _caFecharScanner(){
   _caParaScan();
@@ -12151,9 +12172,11 @@ function _aplicarVendas(ativa){
   var btn = document.getElementById('btn-toggle-vendas');
   if(ativa){
     aba.classList.add('vis');
+    var _bcp=document.getElementById('btn-consulta-pedidos'); if(_bcp) _bcp.style.display='flex';
     if(btn){ btn.textContent='Desativar Vendas'; btn.style.background='#5a1010'; btn.style.color='#fca5a5'; }
   } else {
     aba.classList.remove('vis','at');
+    var _bcp=document.getElementById('btn-consulta-pedidos'); if(_bcp) _bcp.style.display='none';
     if(btn){ btn.textContent='Ativar Vendas'; btn.style.background='#7a3a00'; btn.style.color='#ffd49a'; }
     var sv = document.getElementById('sec-vendas');
     if(sv && sv.classList.contains('at')) trocarAba('aviario');
