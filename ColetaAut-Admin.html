@@ -672,10 +672,6 @@ textarea{resize:none;height:72px;font-size:14px}
         </div>
         <div class="ad-row" id="ad-reset-btn-row"><button class="ad-ok" onclick="pedirReset()" style="background:rgba(127,29,29,.3);border:1px solid rgba(224,128,128,.4);color:#e08080">🗑 Apagar todos os registros</button></div>
         <div class="ad-st" id="ad-st2"></div>
-        <div class="ad-div"></div>
-        <span class="ad-lbl">Desinstalar aplicativo</span>
-        <div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.4);margin-bottom:10px;line-height:1.6">Remove todos os dados deste dispositivo. O app precisará ser configurado novamente.</div>
-        <div class="ad-row"><button class="ad-ok" onclick="fecharAdmin();_caMenuDesinst()" style="background:rgba(127,29,29,.5);border:1px solid rgba(224,128,128,.5);color:#fca5a5">🗑 Desinstalar ColetaAut</button></div>
       </div>
     </div>
   </div>
@@ -11886,9 +11882,11 @@ function _gerarImagem(titulo, linhas, rodape, onBlob){
   var c = document.createElement('canvas');
   var ctx = c.getContext('2d');
   var nome = (localStorage.getItem('wpp_nome')||'').trim();
+  var isTalaoH = titulo.indexOf('TALAO DE PEDIDO')===0;
   var H = nome?158:122;
+  if(isTalaoH) H += 42; // linha extra número pedido
   H += 28; // faixa
-  linhas.forEach(function(){ H+=52; });
+  linhas.forEach(function(){ H+=isTalaoH?58:52; });
   H += 48; // rodape
   H += rodape ? 44 : 0;
   H += 8;
@@ -11907,29 +11905,49 @@ function _gerarImagem(titulo, linhas, rodape, onBlob){
   }
 
   // CABECALHO
-  rect(0,y,W,nome?158:122,'#1c2e22');
+  var isTalaoHd = titulo.indexOf('TALAO DE PEDIDO')===0;
+  var numPedHd  = isTalaoHd ? titulo.replace('TALAO DE PEDIDO / ','') : '';
+  // Altura do cabeçalho: talão tem linha extra para número do pedido
+  var hdH = nome ? 158 : 122;
+  if(isTalaoHd) hdH += 42; // linha extra número pedido
+  rect(0,y,W,hdH,'#1c2e22');
   ctx.fillStyle='#b8943f';
   ctx.beginPath(); ctx.arc(PAD+20,y+28,20,0,Math.PI*2); ctx.fill();
   txt('SJ',PAD+20,y+34,13,'#1c2e22','bold','center');
   txt('Fazenda Sao Jose',PAD+50,y+24,16,'#fff','bold');
-  var subtitulo = titulo.indexOf('TALAO DE PEDIDO')===0 ? 'TALAO DE PEDIDOS' : titulo;
+  var subtitulo = isTalaoHd ? 'TALAO DE PEDIDOS' : titulo;
   txt(subtitulo,PAD+50,y+40,9,'#b8943f');
   var data = document.getElementById('data-global').value;
   var dfL = data ? new Date(data+'T12:00').toLocaleDateString('pt-BR') : '';
-  txt(dfL,PAD,y+82,11,'#b8943f','bold');
+  txt(dfL,PAD,y+62,11,'#b8943f','bold');
   var hr = new Date().toLocaleTimeString('pt-BR').slice(0,5);
-  txt(hr,W-PAD,y+82,9,'rgba(255,255,255,0.5)','normal','right');
+  txt(hr,W-PAD,y+62,9,'rgba(255,255,255,0.5)','normal','right');
   if(nome){
-    ln(PAD,y+96,W-PAD,y+96,'rgba(255,255,255,0.12)');
-    txt('RESPONSAVEL',PAD+26,y+108,8,'rgba(255,255,255,0.4)');
-    txt(nome,PAD+26,y+122,13,'#b8943f','bold');
-    y+=158;
-  } else { y+=122; }
+    ln(PAD,y+76,W-PAD,y+76,'rgba(255,255,255,0.12)');
+    txt('RESPONSAVEL',PAD+26,y+88,8,'rgba(255,255,255,0.4)');
+    txt(nome,PAD+26,y+102,13,'#b8943f','bold');
+    if(isTalaoHd){
+      ln(PAD,y+120,W-PAD,y+120,'rgba(255,255,255,0.12)');
+      txt('PEDIDO N.\u00ba',PAD+26,y+134,8,'rgba(255,255,255,0.45)');
+      txt(numPedHd,PAD+26,y+152,20,'#ffd49a','bold');
+      y+=158+42;
+    } else { y+=158; }
+  } else {
+    if(isTalaoHd){
+      ln(PAD,y+80,W-PAD,y+80,'rgba(255,255,255,0.12)');
+      txt('PEDIDO N.\u00ba',PAD+26,y+94,8,'rgba(255,255,255,0.45)');
+      txt(numPedHd,PAD+26,y+112,20,'#ffd49a','bold');
+      y+=122+42;
+    } else { y+=122; }
+  }
+
+  // Recalcula altura do canvas para talão
+  if(isTalaoHd) c.height += 42;
 
   // FAIXA
-  var faixaCor = titulo.indexOf('TALAO DE PEDIDO')===0 ? '#7a3a00' : '#b8943f';
+  var faixaCor = isTalaoHd ? '#7a3a00' : '#b8943f';
   rect(0,y,W,28,faixaCor);
-  var faixaTxt = titulo.indexOf('TALAO DE PEDIDO')===0 ? titulo.replace('TALAO DE PEDIDO / ','PEDIDO N.\u00ba ') : titulo;
+  var faixaTxt = isTalaoHd ? 'ITENS DO PEDIDO' : titulo;
   txt(faixaTxt,PAD,y+19,10,'#fff','bold');
   y+=28;
 
