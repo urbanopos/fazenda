@@ -13085,6 +13085,7 @@ function _gerarImagemPago(titulo, linhas, rodape, cliente, onBlob){
   linhas.forEach(function(){ H+=58; });
   H += 48;
   H += rodape ? 44 : 0;
+  H += 22; // faixa de data de quitação
   H += 8;
   c.width=W; c.height=H;
   var y=0;
@@ -13122,6 +13123,8 @@ function _gerarImagemPago(titulo, linhas, rodape, cliente, onBlob){
   // FAIXA
   rect(0,y,W,28,'#7a3a00');
   txt(titulo.replace('TALAO DE PEDIDO / ','PEDIDO N.º '),PAD,y+19,10,'#fff','bold');
+  // 'PAGO' alinhado à direita na mesma faixa marrom
+  txt('PAGO',W-PAD,y+19,10,'#fff','bold','right');
   y+=28;
 
   // LINHAS
@@ -13152,23 +13155,11 @@ function _gerarImagemPago(titulo, linhas, rodape, cliente, onBlob){
     y+=44;
   }
 
-  // ── CARIMBO PAGO ─────────────────────────────────────────────────────────
-  // Faixa verde de destaque no final
-  rect(0,y,W,52,'#1a6b2a');
-  // Texto PAGO centralizado grande
-  ctx.font='bold 28px Arial';
-  ctx.fillStyle='#ffffff';
-  ctx.textAlign='center';
-  ctx.fillText('✔  PAGO', W/2, y+35);
-  ctx.textAlign='left';
-  // Data/hora do pagamento
+  // Data/hora da quitação no rodapé do cliente
   var agora = new Date().toLocaleString('pt-BR');
-  ctx.font='normal 9px Arial';
-  ctx.fillStyle='rgba(255,255,255,0.65)';
-  ctx.textAlign='center';
-  ctx.fillText('Quitado em '+agora, W/2, y+48);
-  ctx.textAlign='left';
-  y+=52;
+  rect(0,y,W,22,'#e8f5e9');
+  txt('Quitado em '+agora,W/2,y+15,8,'#1a6b2a','bold','center');
+  y+=22;
 
   c.toBlob(onBlob,'image/jpeg',0.95);
 }
