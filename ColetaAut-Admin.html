@@ -769,7 +769,6 @@ textarea{resize:none;height:72px;font-size:14px}
       <div id="mp-linhas"></div>
       <div class="mp-total"><span class="mp-total-lbl">Total</span><span class="mp-total-val" id="mp-total"></span></div>
       <button class="mp-btn-img" onclick="reemitirPedido()" style="background:rgba(28,78,34,.1);color:var(--vc);border:1.5px solid var(--vc)">📤 Reenviar imagem</button>
-      <button class="mp-btn-pago" id="mp-btn-pago" onclick="_marcarPago()">QUITAÇÃO</button>
       <div class="mp-admin-bar" id="mp-admin-bar" style="display:none">
         <button class="mp-btn-edit" onclick="_abrirEditPedido()">✎ Editar pedido</button>
         <button class="mp-btn-del" onclick="_excluirPedido()">🗑 Excluir</button>
@@ -11923,7 +11922,7 @@ function _gerarImagem(titulo, linhas, rodape, onBlob){
   rect(0,y,W,nome?158:122,'#1c2e22');
   ctx.fillStyle='#b8943f';
   ctx.beginPath(); ctx.arc(PAD+20,y+28,20,0,Math.PI*2); ctx.fill();
-  txt('SJ',PAD+20,y+34,13,'#1c2e22','bold','center');
+  txt('FSJ',PAD+20,y+34,10,'#1c2e22','bold','center');
   txt('Fazenda Sao Jose',PAD+50,y+24,16,'#fff','bold');
   var subtitulo = titulo.indexOf('TALAO DE PEDIDO')===0 ? 'TALAO DE PEDIDOS' : titulo;
   txt(subtitulo,PAD+50,y+40,9,'#b8943f');
@@ -13105,7 +13104,7 @@ function _gerarImagemPago(titulo, linhas, rodape, cliente, onBlob){
   rect(0,y,W,nome?158:122,'#1c2e22');
   ctx.fillStyle='#b8943f';
   ctx.beginPath(); ctx.arc(PAD+20,y+28,20,0,Math.PI*2); ctx.fill();
-  txt('SJ',PAD+20,y+34,13,'#1c2e22','bold','center');
+  txt('FSJ',PAD+20,y+34,10,'#1c2e22','bold','center');
   txt('Fazenda Sao Jose',PAD+50,y+24,16,'#fff','bold');
   txt('TALAO DE PEDIDOS',PAD+50,y+40,9,'#b8943f');
   var data = document.getElementById('data-global').value;
