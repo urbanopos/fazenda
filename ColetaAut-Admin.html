@@ -247,7 +247,7 @@ textarea{resize:none;height:72px;font-size:14px}
 .hcol-entrada-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .hcol-entrada-data{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:var(--vd)}
 .hcol-entrada-col{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu)}
-.hcol-entrada-item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f0ece3;font-family:'DM Mono',monospace;font-size:12px}
+.hcol-entrada-btns{display:flex;gap:6px;align-items:center;margin-top:8px;padding-top:6px;border-top:1px solid #f0ece3}.hcol-btn-edit{background:rgba(28,78,34,.1);border:1.5px solid var(--vc);color:var(--vc);border-radius:6px;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;padding:5px 12px;cursor:pointer}.hcol-btn-dl{background:rgba(184,148,63,.15);border:1px solid rgba(184,148,63,.4);color:var(--ac);border-radius:6px;font-size:14px;padding:4px 10px;cursor:pointer;line-height:1}.hcol-btn-del{background:rgba(160,48,48,.12);border:1px solid rgba(160,48,48,.4);color:#a03030;border-radius:6px;font-size:14px;padding:4px 10px;cursor:pointer;line-height:1}.hcol-entrada-item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f0ece3;font-family:'DM Mono',monospace;font-size:12px}
 .hcol-entrada-item:last-child{border:none}
 .hcol-vazia{text-align:center;font-family:'DM Mono',monospace;font-size:12px;color:var(--mu);padding:30px 0}
 .hcol-entrada{position:relative}
@@ -12819,7 +12819,6 @@ function _toggleDetalheItem(btn, idx){
 function _renderHistColetaDetalhe(body, registros){
   var MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   var html = '';
-  // Armazena referencias ao historico real para edição
   body._regRefs = registros;
   registros.forEach(function(r, ri){
     var dt = r.data ? new Date(r.data+'T12:00') : null;
@@ -12827,22 +12826,24 @@ function _renderHistColetaDetalhe(body, registros){
       ? dt.getDate().toString().padStart(2,'0')+' '+MESES[dt.getMonth()]+' '+dt.getFullYear()
       : '—';
     html += '<div class="hcol-entrada" id="hcol-reg-'+ri+'">';
-    // Botao editar (apenas para admin logado)
-    html += '<div class="hcol-entrada-hd">';
+    // Cabeçalho: data + coletor (layout original)
+    html += '<div class="hcol-entrada-hd">'
       +'<span class="hcol-entrada-data">'+dtFmt+'</span>'
       +'<span class="hcol-entrada-col">'+(r.coletor||'')+'</span>'
       +'</div>';
+    // Itens (layout original)
     (r.itens||[]).forEach(function(it){
       html += '<div class="hcol-entrada-item">'
-        +'<span>'+it.setor+' \u00b7 '+it.nome+'</span>'
+        +'<span>'+it.setor+' · '+it.nome+'</span>'
         +'<span style="font-weight:700;color:var(--vd)">'+it.qtd+' '+it.unid+'</span>'
         +'</div>';
     });
+    // Linha de botões abaixo dos itens
     html += '<div class="hcol-entrada-btns">';
     if(_adminLogado){
       html += '<button class="hcol-btn-edit" onclick="_abrirEditColeta('+ri+')">✎ Editar</button>';
     }
-    html += '<button class="hcol-btn-dl" onclick="_reenviarColeta('+ri+')" title="Download / Reenviar">📤</button>';
+    html += '<button class="hcol-btn-dl" onclick="_reenviarColeta('+ri+')" title="Reenviar">📤</button>';
     if(_adminLogado){
       html += '<button class="hcol-btn-del" onclick="_excluirColeta('+ri+')" title="Excluir">🗑</button>';
     }
