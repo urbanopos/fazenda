@@ -12685,13 +12685,10 @@ async function _carregarHistColetaOPFS(){
 }
 
 function abrirHistColetaSetor(setor){
-  abrirHistColeta();
-  // Aplicar filtro de setor após abrir
-  var sel = document.getElementById('hcol-setor');
-  if(sel){ sel.value = setor; renderHistColeta(); }
+  abrirHistColeta(setor);
 }
 
-function abrirHistColeta(){
+function abrirHistColeta(setorInicial){
   // Preenche anos disponiveis
   var hist = _carregarHistColeta();
   var anos = {};
@@ -12704,6 +12701,9 @@ function abrirHistColeta(){
   }).join('');
   document.getElementById('hcol-mes').value = '';
   document.getElementById('hcol-visao').value = 'detalhe';
+  // Setor: setar ANTES de renderizar para o filtro funcionar na primeira renderização
+  var selSetor = document.getElementById('hcol-setor');
+  if(selSetor) selSetor.value = setorInicial || '';
   renderHistColeta();
   document.getElementById('modal-hcol').classList.add('vis');
 }
