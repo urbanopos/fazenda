@@ -752,6 +752,16 @@ textarea{resize:none;height:72px;font-size:14px}
           <option value="detalhe">Registros detalhados</option>
         </select>
       </div>
+      <div>
+        <div class="hcol-lbl">Setor</div>
+        <select class="hcol-sel" id="hcol-setor" onchange="renderHistColeta()">
+          <option value="">Todos</option>
+          <option value="Aviario">Aviario</option>
+          <option value="Perda">Perda</option>
+          <option value="Campo">Campo</option>
+          <option value="Estoque">Estoque</option>
+        </select>
+      </div>
     </div>
     <div class="hcol-body" id="hcol-body"></div>
   </div>
@@ -12704,10 +12714,12 @@ function renderHistColeta(){
   var body  = document.getElementById('hcol-body');
 
   // Filtra por ano/mes
+  var setor = (document.getElementById('hcol-setor')||{value:''}).value||'';
   var filtrado = hist.filter(function(r){
     if(!r.data) return false;
     if(ano && r.data.slice(0,4)!==ano) return false;
     if(mes && r.data.slice(5,7)!==mes) return false;
+    if(setor && !(r.itens||[]).some(function(it){ return (it.setor||'')===setor; })) return false;
     return true;
   });
 
@@ -12840,9 +12852,7 @@ function _renderHistColetaDetalhe(body, registros){
     });
     // Linha de botões abaixo dos itens
     html += '<div class="hcol-entrada-btns">';
-    if(_adminLogado){
-      html += '<button class="hcol-btn-edit" onclick="_abrirEditColeta('+ri+')">✎ Editar</button>';
-    }
+    html += '<button class="hcol-btn-edit" onclick="_abrirEditColeta('+ri+')">✎ Editar</button>';
     html += '<button class="hcol-btn-dl" onclick="_reenviarColeta('+ri+')" title="Reenviar">📤</button>';
     if(_adminLogado){
       html += '<button class="hcol-btn-del" onclick="_excluirColeta('+ri+')" title="Excluir">🗑</button>';
