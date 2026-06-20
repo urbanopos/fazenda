@@ -13120,11 +13120,11 @@ function _gerarImagemPago(titulo, linhas, rodape, cliente, onBlob){
   } else { y+=122; }
 
   // FAIXA
-  rect(0,y,W,28,'#7a3a00');
-  txt(titulo.replace('TALAO DE PEDIDO / ','PEDIDO N.º '),PAD,y+19,10,'#fff','bold');
+  rect(0,y,W,36,'#7a3a00');
+  txt(titulo.replace('TALAO DE PEDIDO / ','PEDIDO N.º '),PAD,y+23,10,'#fff','bold');
   // 'PAGO' alinhado à direita na mesma faixa marrom
-  txt('PAGO',W-PAD,y+19,10,'#fff','bold','right');
-  y+=28;
+  txt('PAGO',W-PAD,y+26,26,'#fff','bold','right');
+  y+=36;
 
   // LINHAS
   linhas.forEach(function(it,i){
