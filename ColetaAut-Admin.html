@@ -184,7 +184,7 @@ textarea{resize:none;height:72px;font-size:14px}
 .hist-btn.ativo{background:#7a3a00;border-color:#7a3a00;color:#ffd49a}
 .hist-panel{display:none}
 .hist-panel.vis{display:block}
-.hist-item{background:var(--br);border-radius:var(--r);border:2px solid var(--ce);padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.hist-item{background:var(--br);border-radius:var(--r);border:2px solid var(--ce);padding:12px 14px;margin-bottom:10px;display:flex;flex-direction:column;gap:8px}.hist-item-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.hist-item-btns{display:flex;gap:6px;align-items:center}.hist-btn-ver{background:#7a3a00;border:none;border-radius:6px;color:#ffd49a;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.5px;padding:7px 14px;cursor:pointer;flex-shrink:0}.hist-btn-edit{background:rgba(122,58,0,.12);border:1.5px solid #7a3a00;border-radius:6px;color:#7a3a00;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.5px;padding:7px 14px;cursor:pointer;flex-shrink:0}.hist-btn-dl{background:rgba(28,78,34,.1);border:1.5px solid var(--vc);border-radius:6px;color:var(--vc);font-size:16px;padding:5px 10px;cursor:pointer;flex-shrink:0;line-height:1}.hist-btn-pago{background:rgba(28,107,42,.12);border:1.5px solid #1a6b2a;border-radius:6px;color:#1a6b2a;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.5px;padding:7px 12px;cursor:pointer;flex-shrink:0}.hist-btn-pago.pago{background:#1a6b2a;color:#fff;border-color:#1a6b2a}
 .hist-item:active{background:var(--cr)}
 .hist-num{font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:#7a3a00;flex-shrink:0;min-width:72px}
 .hist-info{flex:1;min-width:0}
@@ -769,7 +769,7 @@ textarea{resize:none;height:72px;font-size:14px}
       <div id="mp-linhas"></div>
       <div class="mp-total"><span class="mp-total-lbl">Total</span><span class="mp-total-val" id="mp-total"></span></div>
       <button class="mp-btn-img" onclick="reemitirPedido()" style="background:rgba(28,78,34,.1);color:var(--vc);border:1.5px solid var(--vc)">📤 Reenviar imagem</button>
-      <button class="mp-btn-pago" id="mp-btn-pago" onclick="_marcarPago()">✔ PAGO</button>
+      <button class="mp-btn-pago" id="mp-btn-pago" onclick="_marcarPago()">QUITAÇÃO</button>
       <div class="mp-admin-bar" id="mp-admin-bar" style="display:none">
         <button class="mp-btn-edit" onclick="_abrirEditPedido()">✎ Editar pedido</button>
         <button class="mp-btn-del" onclick="_excluirPedido()">🗑 Excluir</button>
@@ -12573,15 +12573,19 @@ function _renderHPedDetalhe(lista, pedidos){
     var nItens = p.itens ? p.itens.length : 0;
     var idxReal = _carregarHist().indexOf(p);
     return '<div class="hist-item">'
+      +'<div class="hist-item-top">'
+      +'<div>'
       +'<div class="hist-num">'+p.num+(p.pago?'<span class="hist-pago-badge">PAGO</span>':'')+'</div>'
-      +'<div class="hist-info">'
       +'<div class="hist-cli">'+(p.cliente||'(sem cliente)')+'</div>'
       +'<div class="hist-det">'+dtFmt+' &middot; '+nItens+' item(ns)</div>'
       +'</div>'
-      +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'
       +'<div class="hist-tot">R$ '+_fmt(p.total)+'</div>'
-      +'<button class="hist-viz" onclick="abrirModalPedIdx('+i+',this)">Ver</button>'
-      +'<button class="hist-viz" onclick="_reenviarPedidoIdx('+i+')" style="background:rgba(28,78,34,.1);color:var(--vc);border-color:var(--vc)">📤</button>'
+      +'</div>'
+      +'<div class="hist-item-btns">'
+      +'<button class="hist-btn-ver" onclick="abrirModalPedIdx('+i+',this)">Ver</button>'
+      +'<button class="hist-btn-edit" onclick="_abrirEditPedidoIdx('+i+')">✎ Editar</button>'
+      +'<button class="hist-btn-dl" onclick="_reenviarPedidoIdx('+i+')" title="Download / Reenviar">📤</button>'
+      +'<button class="hist-btn-pago'+(p.pago?' pago':'')+'" onclick="_marcarPagoIdx('+i+')" title="'+(p.pago?'Remover quitação':'Marcar como quitado e gerar comprovante')+'">'+(p.pago?'✔ QUITAÇÃO':'QUITAÇÃO')+'</button>'
       +'</div>'
       +'</div>';
   }).join('');
@@ -12627,10 +12631,10 @@ function abrirModalPedIdx(idxFiltrado, btn){
   var btnPago = document.getElementById('mp-btn-pago');
   if(btnPago){
     if(p.pago){
-      btnPago.textContent='✔ PAGO';
+      btnPago.textContent='✔ QUITAÇÃO';
       btnPago.classList.add('ja-pago');
     } else {
-      btnPago.textContent='✔ PAGO';
+      btnPago.textContent='QUITAÇÃO';
       btnPago.classList.remove('ja-pago');
     }
   }
@@ -12998,6 +13002,32 @@ function _salvarEditColeta(ri){
 }
 
 /* ── ADMIN: EDITAR / EXCLUIR PEDIDO ──────────────────────────────────── */
+function _marcarPagoIdx(i){
+  var hist = _carregarHist();
+  var ano  = (document.getElementById('hped-ano')||{}).value||'';
+  var mes  = (document.getElementById('hped-mes')||{}).value||'';
+  var filtrado = hist.filter(function(p){
+    if(!p.data) return false;
+    if(ano && p.data.slice(0,4)!==ano) return false;
+    if(mes && p.data.slice(5,7)!==mes) return false;
+    return true;
+  });
+  var p = filtrado[i];
+  if(!p) return;
+  var idxH = hist.findIndex(function(h){ return h.ts === p.ts; });
+  if(idxH < 0) return;
+  var novoPago = !hist[idxH].pago;
+  hist[idxH].pago = novoPago;
+  try{ localStorage.setItem(HK, JSON.stringify(hist)); }catch(e){}
+  if(novoPago){
+    _gerarImagemComPago(hist[idxH]);
+    _toast('✅ QUITAÇÃO registrada! Gerando comprovante...');
+  } else {
+    _toast('↩ Quitação removida.');
+  }
+  _renderHist();
+}
+
 function _marcarPago(){
   if(!_pedAtual) return;
   var hist = _carregarHist();
@@ -13017,9 +13047,9 @@ function _marcarPago(){
   if(novoPago){
     // Gerar e compartilhar imagem com carimbo PAGO
     _gerarImagemComPago(_pedAtual);
-    _toast('✅ Marcado como PAGO! Compartilhando comprovante...');
+    _toast('✅ QUITAÇÃO registrada! Gerando comprovante...');
   } else {
-    _toast('↩ Marcação PAGO removida.');
+    _toast('↩ Quitação removida.');
   }
   _renderHist();
 }
@@ -13153,6 +13183,25 @@ function _excluirPedido(){
   fecharModalPed();
   _renderHist();
   _toast('\u2705 Pedido excluido.');
+}
+
+function _abrirEditPedidoIdx(i){
+  // Reconstrói a lista filtrada igual a abrirModalPedIdx
+  var hist = _carregarHist();
+  var ano  = (document.getElementById('hped-ano')||{}).value||'';
+  var mes  = (document.getElementById('hped-mes')||{}).value||'';
+  var filtrado = hist.filter(function(p){
+    if(!p.data) return false;
+    if(ano && p.data.slice(0,4)!==ano) return false;
+    if(mes && p.data.slice(5,7)!==mes) return false;
+    return true;
+  });
+  var p = filtrado[i];
+  if(!p) return;
+  // Abre o modal normalmente
+  abrirModalPedIdx(i, null);
+  // Aguarda render e aciona a edição
+  setTimeout(function(){ _abrirEditPedido(); }, 80);
 }
 
 function _abrirEditPedido(){
