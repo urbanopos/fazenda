@@ -11902,9 +11902,10 @@ function _gerarImagem(titulo, linhas, rodape, onBlob){
   var c = document.createElement('canvas');
   var ctx = c.getContext('2d');
   var nome = (localStorage.getItem('wpp_nome')||'').trim();
+  var isTalaoH = titulo.indexOf('TALAO DE PEDIDO')===0;
   var H = nome?158:122;
-  H += 28; // faixa
-  linhas.forEach(function(){ H+=52; });
+  H += isTalaoH ? 36 : 28; // faixa
+  linhas.forEach(function(){ H += isTalaoH ? 58 : 52; });
   H += 48; // rodape
   H += rodape ? 44 : 0;
   H += 8;
@@ -11943,27 +11944,26 @@ function _gerarImagem(titulo, linhas, rodape, onBlob){
   } else { y+=122; }
 
   // FAIXA
-  var faixaCor = titulo.indexOf('TALAO DE PEDIDO')===0 ? '#7a3a00' : '#b8943f';
-  rect(0,y,W,28,faixaCor);
-  var faixaTxt = titulo.indexOf('TALAO DE PEDIDO')===0 ? titulo.replace('TALAO DE PEDIDO / ','PEDIDO N.\u00ba ') : titulo;
-  txt(faixaTxt,PAD,y+19,10,'#fff','bold');
-  y+=28;
+  var isTalao = titulo.indexOf('TALAO DE PEDIDO')===0;
+  var faixaCor = isTalao ? '#7a3a00' : '#b8943f';
+  var faixaH   = isTalao ? 36 : 28;
+  rect(0,y,W,faixaH,faixaCor);
+  var faixaTxt = isTalao ? titulo.replace('TALAO DE PEDIDO / ','PEDIDO N.\u00ba ') : titulo;
+  var faixaTxtY = isTalao ? y+23 : y+19;
+  txt(faixaTxt,PAD,faixaTxtY,10,'#fff','bold');
+  y+=faixaH;
 
   // LINHAS
-  var isTalao = titulo.indexOf('TALAO DE PEDIDO')===0;
-  var rowH = (isTalao) ? 58 : 52;
-  // Recalcula altura total considerando linha maior no talao
-  if(isTalao){ c.height += linhas.length * 6; }
+  var rowH = isTalao ? 58 : 52;
+  if(isTalao){ c.height += linhas.length * (58-52) + (36-28); }
   linhas.forEach(function(it,i){
     var bg = i%2===0 ? '#fff' : '#f8f6f1';
     rect(0,y,W,rowH,bg);
     txt(it.col1||'',PAD,y+18,10,'#888');
     txt(it.col2||'',PAD,y+36,12,'#1a1a1a','bold');
     txt(it.col3||'',PAD+180,y+28,12,'#1c2e22','bold');
-    if(isTalao && it.col5){
-      // Linha superior: preco unitario em cinza
+    if(isTalao){
       txt(it.col4||'',W-PAD,y+20,9,'#999','normal','right');
-      // Linha inferior: subtotal em destaque
       txt(it.col5||'',W-PAD,y+40,14,'#7a3a00','bold','right');
     } else {
       txt(it.col4||'',W-PAD,y+28,13,'#7a3a00','bold','right');
