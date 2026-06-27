@@ -11325,7 +11325,7 @@ function _caAutenticarParaScanner(){
 function _caFecharScanner(){
   _caParaScan();
   document.getElementById('ca-scanner').classList.remove('vis');
-  if(!_navSuppressNextPop) _navPop(); else _navSuppressNextPop = false;
+  _navPop();
   if(typeof _iniciar==='function') _iniciar();
 }
 async function _caIniciarScan(){
@@ -11442,11 +11442,11 @@ function _caAbrirMenu(){
 }
 function _caFecharMenu(){
   document.getElementById('ca-menu').classList.remove('vis');
-  if(!_navSuppressNextPop) _navPop(); else _navSuppressNextPop = false;
+  _navPop();
 }
 function _caFecharConf(){
   document.getElementById('ca-conf').classList.remove('vis');
-  if(!_navSuppressNextPop) _navPop(); else _navSuppressNextPop = false;
+  _navPop();
 }
 
 function _caMenuScanner(){ _caFecharMenu(); _caAbrirScanner(); }
@@ -11762,16 +11762,13 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 
 /* ════════════════════════════════════════════════════════════════
-   BOTÃO VOLTAR DO CELULAR — intercepta "<" e fecha a camada ativa
-   em vez de fechar o aplicativo.
-
-   Funcionamento:
-   - Ao abrir qualquer modal/tela, _navPush('id') empurra um estado
-     na pilha do navegador (history.pushState).
-   - O listener 'popstate' detecta o botão voltar e chama a função
-     de fechamento correspondente ao estado que acabou de sair.
-   - _navPop() é chamado por qualquer fechamento manual (botão ✕,
-     clique fora etc.) para manter a pilha sincronizada.
+   BOTÃO VOLTAR DO CELULAR
+   Estratégia: sentinela permanente no topo da pilha do browser.
+   - _navPush: abre modal → pushState com id
+   - popstate : fecha o modal do topo → replaceState sentinela
+   - _navPop  : fechamento manual (✕) → só limpa pilha interna,
+                NÃO chama history.go() para evitar loop
+   Resultado: o "<" NUNCA sai do app.
    ════════════════════════════════════════════════════════════════ */
 
 var _navFechar = {
@@ -11786,36 +11783,38 @@ var _navFechar = {
   'ca-scanner'     : _caFecharScanner
 };
 
+/* Abre modal: empurra id na pilha interna + pushState no browser */
 function _navPush(id){
   _navPilha.push(id);
-  history.pushState({ navId: id, navLen: _navPilha.length }, '');
+  history.pushState({ navId: id }, '');
 }
 
+/* Fechamento manual (botão ✕, clique fora):
+   só limpa pilha interna — NÃO toca no history para evitar loop */
 function _navPop(){
-  // Chamado quando o fechamento ocorre pelo UI (não pelo botão voltar)
-  if(_navPilha.length > 0){
-    _navPilha.pop();
-    // Retira o estado da pilha do navegador silenciosamente
-    history.go(-1);
-  }
+  if(_navSuppressNextPop){ _navSuppressNextPop = false; return; }
+  if(_navPilha.length > 0) _navPilha.pop();
+  history.replaceState({ navSentinel: true }, '');
 }
+
+/* Sentinela inicial — absorve o primeiro "<" sem sair do app */
+history.replaceState({ navSentinel: true }, '');
 
 window.addEventListener('popstate', function(e){
-  // Botão voltar físico/virtual do celular foi pressionado
-  var id = (e.state && e.state.navId) ? e.state.navId : (_navPilha[_navPilha.length-1]||null);
+  var id = (e.state && e.state.navId)
+    ? e.state.navId
+    : (_navPilha.length > 0 ? _navPilha[_navPilha.length - 1] : null);
+
   if(id && _navPilha.length > 0){
     _navPilha.pop();
+    _navSuppressNextPop = true;   /* evita que fecharXxx() chame _navPop() de novo */
     var fn = _navFechar[id];
-    if(fn){
-      // Impede que _navPop() tente fazer history.go(-1) novamente
-      _navSuppressNextPop = true;
-      fn();
-    }
+    if(fn) fn();
   }
-});
 
-// Garante estado base na pilha para que o primeiro "voltar" não saia do app
-history.replaceState({ navBase: true }, '');
+  /* Sempre reempurra sentinela: o próximo "<" também não sai do app */
+  history.replaceState({ navSentinel: true }, '');
+});
 
 function _relogio(){
   var d = new Date();
@@ -12782,7 +12781,7 @@ function abrirModalPed(idx){
 function fecharModalPed(){
   document.getElementById('modal-ped').classList.remove('vis');
   _pedAtual = null;
-  if(!_navSuppressNextPop) _navPop(); else _navSuppressNextPop = false;
+  _navPop();
 }
 
 /* ---- HISTORICO DE COLETAS ---- */
@@ -12843,7 +12842,7 @@ function abrirHistColeta(setorInicial){
 
 function fecharHistColeta(){
   document.getElementById('modal-hcol').classList.remove('vis');
-  if(!_navSuppressNextPop) _navPop(); else _navSuppressNextPop = false;
+  _navPop();
   if(_adminLogado) abrirAdmin();
 }
 
@@ -13187,7 +13186,7 @@ function _mrqFechar(){
   document.getElementById('modal-rev-quit').classList.remove('vis');
   var inp = document.getElementById('mrq-pw');
   if(inp){ inp.value=''; inp.type='password'; }
-  if(!_navSuppressNextPop) _navPop(); else _navSuppressNextPop = false;
+  _navPop();
 }
 
 function _mrqOlho(){
@@ -13650,7 +13649,7 @@ function abrirAdmin(){
 function fecharAdmin(){
   document.getElementById('painel-admin').classList.remove('vis');
   document.getElementById('ad-senha').value='';
-  if(!_navSuppressNextPop) _navPop(); else _navSuppressNextPop = false;
+  _navPop();
 }
 function toggleAdVis(){
   var i=document.getElementById('ad-senha');
@@ -13827,7 +13826,7 @@ async function _cadAbrir(){
 function _cadFechar(){
   document.getElementById('cad-tela').classList.remove('vis');
   _cadAtualizarSetores();
-  if(!_navSuppressNextPop) _navPop(); else _navSuppressNextPop = false;
+  _navPop();
 }
 
 function _cadTrocaAba(aba, btn){
