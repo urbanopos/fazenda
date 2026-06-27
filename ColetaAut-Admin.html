@@ -608,7 +608,7 @@ textarea{resize:none;height:72px;font-size:14px}
     <div class="ca-conf-t">ColetaAut</div>
     <div class="ca-conf-s" id="ca-sobre-txt" style="text-align:left"></div>
     <div class="ca-conf-btns">
-      <button class="ca-conf-nao" onclick="document.getElementById('ca-sobre').classList.remove('vis')">Fechar</button>
+      <button class="ca-conf-nao" onclick="_caFecharConf(); document.getElementById('ca-sobre').classList.remove('vis')">Fechar</button>
     </div>
   </div>
 </div>
@@ -11288,15 +11288,19 @@ window.addEventListener('load',function(){
   },1900);
 });
 
+/* ── Navegação com botão voltar do celular ── declarações antecipadas ── */
+var _navPilha = [];
+var _navSuppressNextPop = false;
+
 /* ── Scanner QR ── */
 function _caAbrirScanner(){
-  // Se ainda não autenticou (chave em memória), pede senha antes do scanner
   if(!_caChave){
     _caAutenticarParaScanner();
     return;
   }
   _caEscTodas();
   document.getElementById('ca-scanner').classList.add('vis');
+  _navPush('ca-scanner');
   _caIniciarScan();
 }
 
@@ -11320,7 +11324,7 @@ function _caAutenticarParaScanner(){
 function _caFecharScanner(){
   _caParaScan();
   document.getElementById('ca-scanner').classList.remove('vis');
-  // Volta para o app Coleta
+  if(!_navSuppressNextPop) _navPop(); else _navSuppressNextPop = false;
   if(typeof _iniciar==='function') _iniciar();
 }
 async function _caIniciarScan(){
@@ -11433,9 +11437,16 @@ function _caAbrirMenu(){
   document.getElementById('ca-menu-bkp').style.display=isAdm?'flex':'none';
   document.getElementById('ca-menu-rst').style.display=isAdm?'flex':'none';
   document.getElementById('ca-menu').classList.add('vis');
+  _navPush('ca-menu');
 }
-function _caFecharMenu(){ document.getElementById('ca-menu').classList.remove('vis'); }
-function _caFecharConf(){ document.getElementById('ca-conf').classList.remove('vis'); }
+function _caFecharMenu(){
+  document.getElementById('ca-menu').classList.remove('vis');
+  if(!_navSuppressNextPop) _navPop(); else _navSuppressNextPop = false;
+}
+function _caFecharConf(){
+  document.getElementById('ca-conf').classList.remove('vis');
+  if(!_navSuppressNextPop) _navPop(); else _navSuppressNextPop = false;
+}
 
 function _caMenuScanner(){ _caFecharMenu(); _caAbrirScanner(); }
 function _caMenuBackup(){ _caFecharMenu(); _caBaixarBackup(); }
@@ -11456,6 +11467,7 @@ function _caMenuSobre(){
       ?'<b>Segurança:</b><br>• AES-GCM 256 bits<br>• PBKDF2 100k iterações<br>• Senha nunca armazenada'
       :'<b>Histórico:</b> últimos 7 dias');
   document.getElementById('ca-sobre').classList.add('vis');
+  _navPush('ca-sobre');
 }
 
 function _caMenuDesinst(){
@@ -11467,6 +11479,7 @@ function _caMenuDesinst(){
   document.getElementById('ca-conf-sim').textContent='Sim, desinstalar';
   document.getElementById('ca-conf-sim').onclick=_caDesinstalar;
   conf.classList.add('vis');
+  _navPush('ca-conf');
 }
 
 function _caDesinstalar(){
@@ -11737,6 +11750,62 @@ document.addEventListener('DOMContentLoaded', function(){
     .catch(function(){ _iniciar(); });
 });
 
+/* ════════════════════════════════════════════════════════════════
+   BOTÃO VOLTAR DO CELULAR — intercepta "<" e fecha a camada ativa
+   em vez de fechar o aplicativo.
+
+   Funcionamento:
+   - Ao abrir qualquer modal/tela, _navPush('id') empurra um estado
+     na pilha do navegador (history.pushState).
+   - O listener 'popstate' detecta o botão voltar e chama a função
+     de fechamento correspondente ao estado que acabou de sair.
+   - _navPop() é chamado por qualquer fechamento manual (botão ✕,
+     clique fora etc.) para manter a pilha sincronizada.
+   ════════════════════════════════════════════════════════════════ */
+
+var _navFechar = {
+  'modal-ped'      : fecharModalPed,
+  'modal-hcol'     : fecharHistColeta,
+  'modal-rev-quit' : _mrqFechar,
+  'painel-admin'   : fecharAdmin,
+  'cad-tela'       : _cadFechar,
+  'ca-menu'        : _caFecharMenu,
+  'ca-conf'        : _caFecharConf,
+  'ca-sobre'       : function(){ document.getElementById('ca-sobre').classList.remove('vis'); },
+  'ca-scanner'     : _caFecharScanner
+};
+
+function _navPush(id){
+  _navPilha.push(id);
+  history.pushState({ navId: id, navLen: _navPilha.length }, '');
+}
+
+function _navPop(){
+  // Chamado quando o fechamento ocorre pelo UI (não pelo botão voltar)
+  if(_navPilha.length > 0){
+    _navPilha.pop();
+    // Retira o estado da pilha do navegador silenciosamente
+    history.go(-1);
+  }
+}
+
+window.addEventListener('popstate', function(e){
+  // Botão voltar físico/virtual do celular foi pressionado
+  var id = (e.state && e.state.navId) ? e.state.navId : (_navPilha[_navPilha.length-1]||null);
+  if(id && _navPilha.length > 0){
+    _navPilha.pop();
+    var fn = _navFechar[id];
+    if(fn){
+      // Impede que _navPop() tente fazer history.go(-1) novamente
+      _navSuppressNextPop = true;
+      fn();
+    }
+  }
+});
+
+// Garante estado base na pilha para que o primeiro "voltar" não saia do app
+history.replaceState({ navBase: true }, '');
+
 function _relogio(){
   var d = new Date();
   document.getElementById('relogio').innerHTML =
@@ -11917,7 +11986,11 @@ function _fmtFone(n){
 function _fmt(v){ return Number(v||0).toFixed(2).replace('.',','); }
 
 /* ---- IMAGEM / ENVIO ---- */
-function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt){
+function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt, opcoesExtra){
+  // opcoesExtra: { pago: bool, dataQuit: string, clientePago: string }
+  var extra  = opcoesExtra || {};
+  var isPago = !!extra.pago;
+
   var W=420, PAD=18;
   var c = document.createElement('canvas');
   var ctx = c.getContext('2d');
@@ -11928,6 +12001,7 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt){
   linhas.forEach(function(){ H += isTalaoH ? 58 : 52; });
   H += 48; // rodape
   H += rodape ? 44 : 0;
+  if(isPago) H += 22; // faixa de data de quitação
   H += 8;
   c.width=W; c.height=H;
   var y=0;
@@ -11943,7 +12017,7 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt){
     ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
   }
 
-  // CABECALHO
+  // CABECALHO — idêntico para pedido normal e comprovante PAGO
   rect(0,y,W,nome?158:122,'#1c2e22');
   ctx.fillStyle='#b8943f';
   ctx.beginPath(); ctx.arc(PAD+20,y+28,20,0,Math.PI*2); ctx.fill();
@@ -11971,6 +12045,10 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt){
   var faixaTxt = isTalao ? titulo.replace('TALAO DE PEDIDO / ','PEDIDO N.\u00ba ') : titulo;
   var faixaTxtY = isTalao ? y+23 : y+19;
   txt(faixaTxt,PAD,faixaTxtY,10,'#fff','bold');
+  // Carimbo PAGO — só aparece no comprovante de quitação
+  if(isPago && isTalao){
+    txt('PAGO',W-PAD,y+26,26,'#fff','bold','right');
+  }
   y+=faixaH;
 
   // LINHAS
@@ -12003,17 +12081,28 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt){
   if(rodape){
     rect(0,y,W,44,'#f5f0e8');
     txt('CLIENTE',PAD,y+16,8,'#888');
-    var cli = (clienteOpt !== undefined && clienteOpt !== null)
-      ? clienteOpt
-      : ((document.getElementById('venda-cliente')||{value:''}).value||'');
+    var cli;
+    if(isPago){
+      cli = extra.clientePago||'';
+    } else {
+      cli = (clienteOpt !== undefined && clienteOpt !== null)
+        ? clienteOpt
+        : ((document.getElementById('venda-cliente')||{value:''}).value||'');
+    }
     txt(cli||'-',PAD,y+34,14,'#333','bold');
     y+=44;
   }
 
+  // Faixa de quitação — só no comprovante PAGO
+  if(isPago){
+    var agora = extra.dataQuit || new Date().toLocaleString('pt-BR');
+    rect(0,y,W,22,'#e8f5e9');
+    txt('Quitado em '+agora,W/2,y+15,8,'#1a6b2a','bold','center');
+    y+=22;
+  }
+
   // ── QR CODE embutido na imagem ─────────────────────────────────────
-  // Conteúdo: JSON do payload → Admin escaneia com câmera e importa direto
   (function _embedQR(){
-    // QR só gerado quando _qrPayloadAtual foi definido explicitamente (enviarTudo / _reenviarColeta)
     var _pl = (typeof _qrPayloadAtual !== 'undefined' && _qrPayloadAtual) ? _qrPayloadAtual : null;
     var _qrText = _pl ? _gerarLinkImportacao(_pl) : null;
     if(!_qrText || typeof QRCode === 'undefined'){
@@ -12418,6 +12507,11 @@ function _salvarPedido(ped){
   var hist = _carregarHist();
   hist.unshift(ped);
   if(hist.length > 100) hist = hist.slice(0,100);
+  _gravarHist(hist);
+}
+
+/* Salva o array de pedidos em localStorage E OPFS (fonte de verdade) */
+function _gravarHist(hist){
   var json = JSON.stringify(hist);
   try{ localStorage.setItem(HK, json); }catch(e){}
   if(_caOpfs) _caOpfsSalvar(FSJ_PEDIDOS, json);
@@ -12664,6 +12758,7 @@ function abrirModalPedIdx(idxFiltrado, btn){
     }
   }
   document.getElementById('modal-ped').classList.add('vis');
+  _navPush('modal-ped');
 }
 
 function abrirModalPed(idx){
@@ -12673,6 +12768,7 @@ function abrirModalPed(idx){
 function fecharModalPed(){
   document.getElementById('modal-ped').classList.remove('vis');
   _pedAtual = null;
+  if(!_navSuppressNextPop) _navPop(); else _navSuppressNextPop = false;
 }
 
 /* ---- HISTORICO DE COLETAS ---- */
@@ -12728,10 +12824,12 @@ function abrirHistColeta(setorInicial){
   if(selSetor) selSetor.value = setorInicial || '';
   renderHistColeta();
   document.getElementById('modal-hcol').classList.add('vis');
+  _navPush('modal-hcol');
 }
 
 function fecharHistColeta(){
   document.getElementById('modal-hcol').classList.remove('vis');
+  if(!_navSuppressNextPop) _navPop(); else _navSuppressNextPop = false;
   if(_adminLogado) abrirAdmin();
 }
 
@@ -13063,6 +13161,7 @@ function _mrqAbrir(ctx){
   if(inp){ inp.value=''; inp.type='password'; }
   if(err) err.textContent='';
   document.getElementById('modal-rev-quit').classList.add('vis');
+  _navPush('modal-rev-quit');
   setTimeout(function(){ if(inp) inp.focus(); }, 80);
 }
 
@@ -13071,6 +13170,7 @@ function _mrqFechar(){
   document.getElementById('modal-rev-quit').classList.remove('vis');
   var inp = document.getElementById('mrq-pw');
   if(inp){ inp.value=''; inp.type='password'; }
+  if(!_navSuppressNextPop) _navPop(); else _navSuppressNextPop = false;
 }
 
 function _mrqOlho(){
@@ -13118,7 +13218,7 @@ function _executarReversaoIdx(i){
   var idxH = hist.findIndex(function(h){ return h.ts === p.ts; });
   if(idxH < 0) return;
   hist[idxH].pago = false;
-  try{ localStorage.setItem(HK, JSON.stringify(hist)); }catch(e){}
+  _gravarHist(hist);
   _toast('↩ Quitação removida pelo administrador.');
   _renderHist();
 }
@@ -13130,7 +13230,7 @@ function _executarReversaoModal(){
   if(idx < 0) return;
   hist[idx].pago = false;
   _pedAtual = hist[idx];
-  try{ localStorage.setItem(HK, JSON.stringify(hist)); }catch(e){}
+  _gravarHist(hist);
   var btnPago = document.getElementById('mp-btn-pago');
   if(btnPago){ btnPago.textContent='QUITAÇÃO'; btnPago.classList.remove('ja-pago'); }
   _toast('↩ Quitação removida pelo administrador.');
@@ -13160,7 +13260,7 @@ function _marcarPagoIdx(i){
 
   // Marcar como pago normalmente
   hist[idxH].pago = true;
-  try{ localStorage.setItem(HK, JSON.stringify(hist)); }catch(e){}
+  _gravarHist(hist);
   _gerarImagemComPago(hist[idxH]);
   _toast('✅ QUITAÇÃO registrada! Gerando comprovante...');
   _renderHist();
@@ -13181,7 +13281,7 @@ function _marcarPago(){
   // Marcar como pago normalmente
   hist[idx].pago = true;
   _pedAtual = hist[idx];
-  try{ localStorage.setItem(HK, JSON.stringify(hist)); }catch(e){}
+  _gravarHist(hist);
   var btnPago = document.getElementById('mp-btn-pago');
   if(btnPago){ btnPago.textContent='✔ QUITAÇÃO'; btnPago.classList.add('ja-pago'); }
   _gerarImagemComPago(_pedAtual);
@@ -13196,108 +13296,29 @@ function _gerarImagemComPago(p){
             col3:it.col3||(it.qtd+' '+it.unidade),
             col4:it.col4, col5:it.col5||('R$ '+_fmt(sub)), val:sub};
   });
-  _gerarImagemPago('TALAO DE PEDIDO / '+p.num, linhas, p.num, p.cliente||'', function(blob){
-    if(!blob){ _toast('Erro ao gerar comprovante.'); return; }
-    var file = new File([blob],'comprovante-'+p.num+'.jpg',{type:'image/jpeg'});
-    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-      navigator.share({files:[file], title:'Comprovante '+p.num}).catch(function(){
-        _fallbackDownload(blob,'comprovante-'+p.num+'.jpg');
-      });
-    } else {
-      _fallbackDownload(blob,'comprovante-'+p.num+'.jpg');
-    }
-  });
-}
-
-function _gerarImagemPago(titulo, linhas, rodape, cliente, onBlob){
-  // Reutiliza _gerarImagem mas injeta o carimbo PAGO por cima
-  var W=420, PAD=18;
-  var c = document.createElement('canvas');
-  var ctx = c.getContext('2d');
-  var nome = (localStorage.getItem('wpp_nome')||'').trim();
-  var H = nome?158:122;
-  H += 36; // faixa talão tem altura 36
-  linhas.forEach(function(){ H+=58; });
-  H += 48;
-  H += rodape ? 44 : 0;
-  H += 22; // faixa de data de quitação
-  H += 8;
-  c.width=W; c.height=H;
-  var y=0;
-
-  function rect(x,yy,w,h,col){ ctx.fillStyle=col; ctx.fillRect(x,yy,w,h); }
-  function txt(t,x,yy,sz,col,weight,align){
-    ctx.font=(weight||'normal')+' '+sz+'px Arial';
-    ctx.fillStyle=col; ctx.textAlign=(align||'left');
-    ctx.fillText(String(t),x,yy); ctx.textAlign='left';
-  }
-  function ln(x1,y1,x2,y2,col,lw){
-    ctx.strokeStyle=col; ctx.lineWidth=lw||1;
-    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
-  }
-
-  // CABECALHO
-  rect(0,y,W,nome?158:122,'#1c2e22');
-  ctx.fillStyle='#b8943f';
-  ctx.beginPath(); ctx.arc(PAD+20,y+28,20,0,Math.PI*2); ctx.fill();
-  txt('FSJ',PAD+20,y+34,10,'#1c2e22','bold','center');
-  txt('Fazenda Sao Jose',PAD+50,y+24,16,'#fff','bold');
-  txt('TALAO DE PEDIDOS',PAD+50,y+40,9,'#b8943f');
-  var data = document.getElementById('data-global').value;
-  var dfL = data ? new Date(data+'T12:00').toLocaleDateString('pt-BR') : '';
-  txt(dfL,PAD,y+82,11,'#b8943f','bold');
-  var hr = new Date().toLocaleTimeString('pt-BR').slice(0,5);
-  txt(hr,W-PAD,y+82,9,'rgba(255,255,255,0.5)','normal','right');
-  if(nome){
-    ln(PAD,y+96,W-PAD,y+96,'rgba(255,255,255,0.12)');
-    txt('RESPONSAVEL',PAD+26,y+108,8,'rgba(255,255,255,0.4)');
-    txt(nome,PAD+26,y+122,13,'#b8943f','bold');
-    y+=158;
-  } else { y+=122; }
-
-  // FAIXA
-  rect(0,y,W,36,'#7a3a00');
-  txt(titulo.replace('TALAO DE PEDIDO / ','PEDIDO N.º '),PAD,y+23,10,'#fff','bold');
-  // 'PAGO' alinhado à direita na mesma faixa marrom
-  txt('PAGO',W-PAD,y+26,26,'#fff','bold','right');
-  y+=36;
-
-  // LINHAS
-  linhas.forEach(function(it,i){
-    var bg = i%2===0 ? '#fff' : '#f8f6f1';
-    rect(0,y,W,58,bg);
-    txt(it.col1||'',PAD,y+18,10,'#888');
-    txt(it.col2||'',PAD,y+36,12,'#1a1a1a','bold');
-    txt(it.col3||'',PAD+180,y+28,12,'#1c2e22','bold');
-    txt(it.col4||'',W-PAD,y+20,9,'#999','normal','right');
-    txt(it.col5||'',W-PAD,y+40,14,'#7a3a00','bold','right');
-    ln(0,y+57,W,y+57,'#eee');
-    y+=58;
-  });
-
-  // RODAPE
-  rect(0,y,W,48,'#1c2e22');
-  txt(rodape||'',PAD,y+18,8,'#7aa88a');
-  txt('R$ '+_fmt(linhas.reduce(function(s,it){ return s+(it.val||0); },0)),W-PAD,y+34,20,'#b8943f','bold','right');
-  txt(linhas.length+' item(ns)',PAD,y+34,11,'rgba(255,255,255,0.5)');
-  y+=48;
-
-  // CLIENTE
-  if(rodape){
-    rect(0,y,W,44,'#f5f0e8');
-    txt('CLIENTE',PAD,y+16,8,'#888');
-    txt(cliente||'-',PAD,y+34,14,'#333','bold');
-    y+=44;
-  }
-
-  // Data/hora da quitação no rodapé do cliente
   var agora = new Date().toLocaleString('pt-BR');
-  rect(0,y,W,22,'#e8f5e9');
-  txt('Quitado em '+agora,W/2,y+15,8,'#1a6b2a','bold','center');
-  y+=22;
-
-  c.toBlob(onBlob,'image/jpeg',0.95);
+  _qrPayloadAtual = null;
+  _gerarImagem(
+    'TALAO DE PEDIDO / '+p.num,
+    linhas,
+    p.num,
+    function(blob){
+      if(!blob){ _toast('Erro ao gerar comprovante.'); return; }
+      var file = new File([blob],'comprovante-'+p.num+'.jpg',{type:'image/jpeg'});
+      if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+        navigator.share({files:[file], title:'Comprovante '+p.num}).catch(function(){
+          _fallbackDownload(blob,'comprovante-'+p.num+'.jpg');
+        });
+      } else {
+        _fallbackDownload(blob,'comprovante-'+p.num+'.jpg');
+      }
+    },
+    null, // clienteOpt — passado via opcoesExtra
+    { pago: true, dataQuit: agora, clientePago: p.cliente||'' }
+  );
 }
+
+/* _gerarImagemPago foi unificado em _gerarImagem com opcoesExtra.pago=true */
 
 function _excluirPedido(){
   if(!_pedAtual) return;
@@ -13305,7 +13326,7 @@ function _excluirPedido(){
   var hist = _carregarHist();
   var idx = hist.findIndex(function(p){ return p.ts === _pedAtual.ts; });
   if(idx >= 0) hist.splice(idx,1);
-  try{ localStorage.setItem(HK, JSON.stringify(hist)); }catch(e){}
+  _gravarHist(hist);
   fecharModalPed();
   _renderHist();
   _toast('\u2705 Pedido excluido.');
@@ -13433,7 +13454,7 @@ function _salvarEditPedido(){
     hist[idx].itens   = novosItens;
     hist[idx].total   = novoTotal;
     _pedAtual = hist[idx];
-    try{ localStorage.setItem(HK, JSON.stringify(hist)); }catch(e){}
+    _gravarHist(hist);
   }
   _toast('\u2705 Pedido atualizado!');
   fecharModalPed();
@@ -13601,17 +13622,18 @@ function abrirAdmin(){
   document.getElementById('ad-senha').value='';
   document.getElementById('ad-st').textContent='';
   if(_adminLogado){
-    // Ja autenticado — abre direto na tela de configuracoes
     document.getElementById('ad-cfg').style.display='block';
     _atualizarBtnDesbloquear();
   } else {
     document.getElementById('ad-cfg').style.display='none';
     setTimeout(function(){ document.getElementById('ad-senha').focus(); },200);
   }
+  _navPush('painel-admin');
 }
 function fecharAdmin(){
   document.getElementById('painel-admin').classList.remove('vis');
   document.getElementById('ad-senha').value='';
+  if(!_navSuppressNextPop) _navPop(); else _navSuppressNextPop = false;
 }
 function toggleAdVis(){
   var i=document.getElementById('ad-senha');
@@ -13782,12 +13804,13 @@ async function _cadAbrir(){
   _cadEdicaoLimpar();
   document.getElementById('cad-tela').classList.add('vis');
   _cadRenderAba(_cadAbaAtual);
+  _navPush('cad-tela');
 }
 
 function _cadFechar(){
   document.getElementById('cad-tela').classList.remove('vis');
-  // Aplica mudanças nos setores
   _cadAtualizarSetores();
+  if(!_navSuppressNextPop) _navPop(); else _navSuppressNextPop = false;
 }
 
 function _cadTrocaAba(aba, btn){
