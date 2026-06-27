@@ -609,7 +609,7 @@ textarea{resize:none;height:72px;font-size:14px}
     <div class="ca-conf-t">ColetaAut</div>
     <div class="ca-conf-s" id="ca-sobre-txt" style="text-align:left"></div>
     <div class="ca-conf-btns">
-      <button class="ca-conf-nao" onclick="_caFecharConf(); document.getElementById('ca-sobre').classList.remove('vis')">Fechar</button>
+      <button class="ca-conf-nao" onclick="_navFechar['ca-sobre']&&_navFechar['ca-sobre']()">Fechar</button>
     </div>
   </div>
 </div>
@@ -11277,13 +11277,16 @@ function _caInjetarMenuBtn(){
 window.addEventListener('load',function(){
   _caGerarIcone();
   _cadInit();
+  /* Instala sentinela AQUI — depois de qualquer fetch/redirect do auto-update,
+     garantindo que é sempre o estado mais recente da pilha do browser */
+  history.replaceState({ navSentinel: true }, '');
   setTimeout(function(){
     var modo=localStorage.getItem(CA_MODO);
     document.getElementById('ca-splash').classList.remove('vis');
     if(!modo){
       document.getElementById('ca-setup').classList.add('vis');
+      _navPush('ca-setup');
     } else {
-      // Admin e Coletor: inicia direto — senha exigida apenas ao abrir seção Administrador
       _caIniciarApp();
     }
   },1900);
@@ -11306,16 +11309,15 @@ function _caAbrirScanner(){
 }
 
 function _caAutenticarParaScanner(){
-  // Mostra tela de lock com callback para abrir scanner após auth
   var lock = document.getElementById('ca-lock');
   var lockS = lock.querySelector('.ca-lock-s');
   if(lockS) lockS.textContent = 'Digite a senha para importar coleta';
   _caEscTodas();
   lock.classList.add('vis');
-  // Sobrescreve _caIniciarApp temporariamente para redirecionar para o scanner
+  _navPush('ca-lock');
   var _origIniciar = _caIniciarApp;
   _caIniciarApp = function(){
-    _caIniciarApp = _origIniciar; // restaura
+    _caIniciarApp = _origIniciar;
     _caEscTodas();
     document.getElementById('ca-scanner').classList.add('vis');
     _caIniciarScan();
@@ -11609,10 +11611,13 @@ if(!_sa){
 function dispensarInst(){ /* sem banner */ }
 function abrirInst(){
   if(_ip){ _ip.prompt(); _ip.userChoice.then(function(r){ if(r.outcome==='accepted'){ _ip=null; document.getElementById('btn-inst').classList.remove('vis'); _toast('App instalado!'); } }); }
-  else if(_ios) document.getElementById('guia-ios').classList.add('vis');
+  else if(_ios){ document.getElementById('guia-ios').classList.add('vis'); _navPush('guia-ios'); }
   else _toast('Menu do navegador - Adicionar a tela inicial');
 }
-function fecharGuiaIos(){ document.getElementById('guia-ios').classList.remove('vis'); }
+function fecharGuiaIos(){
+  document.getElementById('guia-ios').classList.remove('vis');
+  _navPop();
+}
 
 /* ---- CARD EDITAVEL ---- */
 // CSS injetado para o card editavel
@@ -11762,13 +11767,10 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 
 /* ════════════════════════════════════════════════════════════════
-   BOTÃO VOLTAR DO CELULAR
-   Estratégia: sentinela permanente no topo da pilha do browser.
-   - _navPush: abre modal → pushState com id
-   - popstate : fecha o modal do topo → replaceState sentinela
-   - _navPop  : fechamento manual (✕) → só limpa pilha interna,
-                NÃO chama history.go() para evitar loop
-   Resultado: o "<" NUNCA sai do app.
+   BOTÃO VOLTAR DO CELULAR — sentinela permanente
+   O sentinela é instalado no evento 'load' (após qualquer fetch/
+   redirect do auto-update) e reempurrado após cada popstate.
+   Assim o "<" NUNCA sai do app enquanto houver sentinela no topo.
    ════════════════════════════════════════════════════════════════ */
 
 var _navFechar = {
@@ -11779,26 +11781,24 @@ var _navFechar = {
   'cad-tela'       : _cadFechar,
   'ca-menu'        : _caFecharMenu,
   'ca-conf'        : _caFecharConf,
-  'ca-sobre'       : function(){ document.getElementById('ca-sobre').classList.remove('vis'); },
-  'ca-scanner'     : _caFecharScanner
+  'ca-sobre'       : function(){ document.getElementById('ca-sobre').classList.remove('vis'); _navPop(); },
+  'ca-scanner'     : _caFecharScanner,
+  'ca-lock'        : function(){ document.getElementById('ca-lock').classList.remove('vis'); },
+  'ca-setup'       : function(){ document.getElementById('ca-setup').classList.remove('vis'); },
+  'guia-ios'       : fecharGuiaIos
 };
 
-/* Abre modal: empurra id na pilha interna + pushState no browser */
 function _navPush(id){
   _navPilha.push(id);
   history.pushState({ navId: id }, '');
 }
 
-/* Fechamento manual (botão ✕, clique fora):
-   só limpa pilha interna — NÃO toca no history para evitar loop */
+/* Fechamento pelo botão ✕ interno: limpa pilha e restaura sentinela */
 function _navPop(){
   if(_navSuppressNextPop){ _navSuppressNextPop = false; return; }
   if(_navPilha.length > 0) _navPilha.pop();
   history.replaceState({ navSentinel: true }, '');
 }
-
-/* Sentinela inicial — absorve o primeiro "<" sem sair do app */
-history.replaceState({ navSentinel: true }, '');
 
 window.addEventListener('popstate', function(e){
   var id = (e.state && e.state.navId)
@@ -11807,12 +11807,11 @@ window.addEventListener('popstate', function(e){
 
   if(id && _navPilha.length > 0){
     _navPilha.pop();
-    _navSuppressNextPop = true;   /* evita que fecharXxx() chame _navPop() de novo */
+    _navSuppressNextPop = true;
     var fn = _navFechar[id];
     if(fn) fn();
   }
-
-  /* Sempre reempurra sentinela: o próximo "<" também não sai do app */
+  /* Reempurra sentinela — próximo "<" também não sai do app */
   history.replaceState({ navSentinel: true }, '');
 });
 
