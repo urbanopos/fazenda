@@ -12006,16 +12006,21 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt, opcoesExtra){
   var c = document.createElement('canvas');
   var ctx = c.getContext('2d');
   var nome = (localStorage.getItem('wpp_nome')||'').trim();
-  var isTalaoH = titulo.indexOf('TALAO DE PEDIDO')===0;
-  var H = nome?158:122;
-  H += isTalaoH ? 36 : 28; // faixa
-  linhas.forEach(function(){ H += isTalaoH ? 58 : 52; });
-  H += 48; // rodape
-  H += rodape ? 44 : 0;
-  if(isPago) H += 22; // faixa de data de quitação
-  H += 8;
-  c.width=W; c.height=H;
-  var y=0;
+  var isTalao = titulo.indexOf('TALAO DE PEDIDO')===0;
+
+  // Calcula altura TOTAL antes de criar o canvas
+  // (alterar c.height após desenhar apaga tudo — bug crítico)
+  var H = nome ? 158 : 122;            // cabeçalho
+  H += isTalao ? 36 : 28;             // faixa título
+  H += linhas.length * (isTalao ? 58 : 52); // linhas de itens
+  H += 48;                             // rodapé totais
+  H += rodape ? 44 : 0;               // bloco cliente
+  if(isPago) H += 22;                  // faixa quitação
+  H += 8;                              // margem inferior
+
+  c.width = W;
+  c.height = H;
+  var y = 0;
 
   function rect(x,yy,w,h,col){ ctx.fillStyle=col; ctx.fillRect(x,yy,w,h); }
   function txt(t,x,yy,sz,col,weight,align){
@@ -12034,7 +12039,7 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt, opcoesExtra){
   ctx.beginPath(); ctx.arc(PAD+20,y+28,20,0,Math.PI*2); ctx.fill();
   txt('FSJ',PAD+20,y+34,10,'#1c2e22','bold','center');
   txt('Fazenda Sao Jose',PAD+50,y+24,16,'#fff','bold');
-  var subtitulo = titulo.indexOf('TALAO DE PEDIDO')===0 ? 'TALAO DE PEDIDOS' : titulo;
+  var subtitulo = isTalao ? 'TALAO DE PEDIDOS' : titulo;
   txt(subtitulo,PAD+50,y+40,9,'#b8943f');
   var data = document.getElementById('data-global').value;
   var dfL = data ? new Date(data+'T12:00').toLocaleDateString('pt-BR') : '';
@@ -12049,7 +12054,6 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt, opcoesExtra){
   } else { y+=122; }
 
   // FAIXA
-  var isTalao = titulo.indexOf('TALAO DE PEDIDO')===0;
   var faixaCor = isTalao ? '#7a3a00' : '#b8943f';
   var faixaH   = isTalao ? 36 : 28;
   rect(0,y,W,faixaH,faixaCor);
@@ -12062,9 +12066,8 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt, opcoesExtra){
   }
   y+=faixaH;
 
-  // LINHAS
+  // LINHAS — rowH já está no cálculo de H acima, não alterar c.height aqui
   var rowH = isTalao ? 58 : 52;
-  if(isTalao){ c.height += linhas.length * (58-52) + (36-28); }
   linhas.forEach(function(it,i){
     var bg = i%2===0 ? '#fff' : '#f8f6f1';
     rect(0,y,W,rowH,bg);
