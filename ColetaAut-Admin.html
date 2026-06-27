@@ -11277,8 +11277,8 @@ function _caInjetarMenuBtn(){
 window.addEventListener('load',function(){
   _caGerarIcone();
   _cadInit();
-  /* Instala sentinela AQUI — depois de qualquer fetch/redirect do auto-update,
-     garantindo que é sempre o estado mais recente da pilha do browser */
+  /* Sentinela inicial: instalado APÓS o app carregar
+     Garante que o primeiro "<" cai no popstate (não sai direto) */
   history.replaceState({ navSentinel: true }, '');
   setTimeout(function(){
     var modo=localStorage.getItem(CA_MODO);
@@ -11767,10 +11767,11 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 
 /* ════════════════════════════════════════════════════════════════
-   BOTÃO VOLTAR DO CELULAR — sentinela permanente
-   O sentinela é instalado no evento 'load' (após qualquer fetch/
-   redirect do auto-update) e reempurrado após cada popstate.
-   Assim o "<" NUNCA sai do app enquanto houver sentinela no topo.
+   BOTÃO VOLTAR DO CELULAR
+   Pilha de navegação com 3 níveis:
+     1. Modal/tela flutuante aberta  → fecha o modal
+     2. Aba diferente de 'aviario'   → volta para aviario
+     3. Aba aviario, nada aberto     → fecha o app (comportamento nativo)
    ════════════════════════════════════════════════════════════════ */
 
 var _navFechar = {
@@ -11785,20 +11786,34 @@ var _navFechar = {
   'ca-scanner'     : _caFecharScanner,
   'ca-lock'        : function(){ document.getElementById('ca-lock').classList.remove('vis'); },
   'ca-setup'       : function(){ document.getElementById('ca-setup').classList.remove('vis'); },
-  'guia-ios'       : fecharGuiaIos
+  'guia-ios'       : fecharGuiaIos,
+  'aba'            : function(){ trocarAba('aviario'); }
 };
 
+/* Retorna a aba atualmente ativa */
+function _navAbaAtual(){
+  var abas = ['aviario','perda','campo','estoque','vendas'];
+  for(var i=0;i<abas.length;i++){
+    var el = document.getElementById('aba-'+abas[i]);
+    if(el && el.classList.contains('at')) return abas[i];
+  }
+  return 'aviario';
+}
+
+/* Empurra estado na pilha interna + pushState no browser */
 function _navPush(id){
   _navPilha.push(id);
   history.pushState({ navId: id }, '');
 }
 
-/* Fechamento pelo botão ✕ interno: limpa pilha e restaura sentinela */
+/* Fechamento manual (✕, clique fora): só limpa pilha interna */
 function _navPop(){
   if(_navSuppressNextPop){ _navSuppressNextPop = false; return; }
   if(_navPilha.length > 0) _navPilha.pop();
   history.replaceState({ navSentinel: true }, '');
 }
+
+var _navTrocandoAba = false; /* flag: trocarAba chamado pelo popstate, não empurrar */
 
 window.addEventListener('popstate', function(e){
   var id = (e.state && e.state.navId)
@@ -11806,13 +11821,26 @@ window.addEventListener('popstate', function(e){
     : (_navPilha.length > 0 ? _navPilha[_navPilha.length - 1] : null);
 
   if(id && _navPilha.length > 0){
+    /* Nível 1: há modal/tela flutuante aberta — fecha */
     _navPilha.pop();
     _navSuppressNextPop = true;
     var fn = _navFechar[id];
     if(fn) fn();
+    history.replaceState({ navSentinel: true }, '');
+    return;
   }
-  /* Reempurra sentinela — próximo "<" também não sai do app */
-  history.replaceState({ navSentinel: true }, '');
+
+  /* Nível 2: nenhum modal — verifica se está em aba secundária */
+  var abaAtual = _navAbaAtual();
+  if(abaAtual !== 'aviario'){
+    _navTrocandoAba = true;
+    trocarAba('aviario');
+    _navTrocandoAba = false;
+    history.replaceState({ navSentinel: true }, '');
+    return;
+  }
+
+  /* Nível 3: já está em aviario sem nada aberto — fecha o app normalmente */
 });
 
 function _relogio(){
@@ -11936,6 +11964,21 @@ function trocarAba(s){
   var ab = document.getElementById('aba-'+s); if(ab) ab.classList.add('at');
   var lbl = document.getElementById('lbl-data');
   if(lbl) lbl.textContent = s==='vendas' ? 'Data da Venda' : 'Data da Coleta';
+
+  /* Gerencia pilha de navegação das abas:
+     - aviario → remove 'aba' da pilha (é a tela inicial, permite sair)
+     - outra   → empurra 'aba' se ainda não estava (permite voltar para aviario)
+     Quando chamado pelo popstate (_navTrocandoAba=true) não altera a pilha */
+  if(!_navTrocandoAba){
+    if(s === 'aviario'){
+      var idx = _navPilha.lastIndexOf('aba');
+      if(idx >= 0) _navPilha.splice(idx, 1);
+    } else {
+      if(_navPilha.indexOf('aba') < 0){
+        _navPush('aba');
+      }
+    }
+  }
 }
 
 function setHoje(){
