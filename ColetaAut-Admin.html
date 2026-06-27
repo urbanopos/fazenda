@@ -281,6 +281,26 @@ textarea{resize:none;height:72px;font-size:14px}
 .hcol-tab-btn.ativo{background:var(--vd);border-color:var(--vd);color:var(--ac)}
 
 
+/* ── MODAL REVERTER QUITAÇÃO ── */
+#modal-rev-quit{display:none;position:fixed;inset:0;z-index:99995;background:rgba(0,0,0,.82);align-items:center;justify-content:center}
+#modal-rev-quit.vis{display:flex}
+.mrq-box{background:var(--vd);width:88%;max-width:320px;border-radius:16px;border:2px solid #c0392b;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.mrq-hd{background:rgba(192,57,43,.15);padding:16px 18px;border-bottom:1px solid rgba(192,57,43,.3);display:flex;align-items:center;gap:10px}
+.mrq-hd-ico{font-size:22px}
+.mrq-hd-t{font-family:'DM Serif Display',serif;font-size:16px;color:#fff}
+.mrq-hd-s{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.45);letter-spacing:1px;margin-top:2px}
+.mrq-body{padding:18px}
+.mrq-aviso{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.55);line-height:1.5;margin-bottom:14px;padding:10px 12px;background:rgba(192,57,43,.1);border-radius:8px;border:1px solid rgba(192,57,43,.25)}
+.mrq-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:6px}
+.mrq-iw{position:relative}
+.mrq-inp{width:100%;padding:12px 44px 12px 12px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);border-radius:var(--r);color:#fff;font-family:'DM Mono',monospace;font-size:16px;letter-spacing:3px;outline:none}
+.mrq-inp:focus{border-color:rgba(192,57,43,.7)}
+.mrq-olho{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.35);font-size:18px;cursor:pointer;padding:4px;line-height:1}
+.mrq-erro{font-family:'DM Mono',monospace;font-size:10px;color:#e08080;margin-top:6px;min-height:14px}
+.mrq-btns{display:flex;gap:8px;margin-top:14px}
+.mrq-ok{flex:1;padding:11px;border:none;border-radius:var(--r);background:#c0392b;color:#fff;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px}
+.mrq-cl{padding:11px 14px;border:1px solid rgba(255,255,255,.15);border-radius:var(--r);background:none;color:rgba(255,255,255,.45);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer}
+
 /* Variante admin */
 .topo{ border-bottom-color: #b8943f !important; }
 .topo-ico{ background: #b8943f !important; }
@@ -13031,6 +13051,92 @@ function _salvarEditColeta(ri){
 }
 
 /* ── ADMIN: EDITAR / EXCLUIR PEDIDO ──────────────────────────────────── */
+/* ════════════════════════════════════════════════════════
+   REVERSÃO DE QUITAÇÃO — protegida por senha admin
+   ════════════════════════════════════════════════════════ */
+var _mrqCtx = null; // { origem: 'idx'|'modal', idx: Number }
+
+function _mrqAbrir(ctx){
+  _mrqCtx = ctx;
+  var inp = document.getElementById('mrq-pw');
+  var err = document.getElementById('mrq-erro');
+  if(inp){ inp.value=''; inp.type='password'; }
+  if(err) err.textContent='';
+  document.getElementById('modal-rev-quit').classList.add('vis');
+  setTimeout(function(){ if(inp) inp.focus(); }, 80);
+}
+
+function _mrqFechar(){
+  _mrqCtx = null;
+  document.getElementById('modal-rev-quit').classList.remove('vis');
+  var inp = document.getElementById('mrq-pw');
+  if(inp){ inp.value=''; inp.type='password'; }
+}
+
+function _mrqOlho(){
+  var inp = document.getElementById('mrq-pw');
+  var btn = document.getElementById('mrq-olho-btn');
+  if(!inp) return;
+  if(inp.type==='password'){ inp.type='text'; if(btn) btn.textContent='🙈'; }
+  else { inp.type='password'; if(btn) btn.textContent='👁'; }
+}
+
+function _mrqConfirmar(){
+  var pw   = (document.getElementById('mrq-pw').value||'');
+  var corr = localStorage.getItem(SK)||SP;
+  var err  = document.getElementById('mrq-erro');
+  if(pw !== corr){
+    err.textContent = 'Senha incorreta. Tente novamente.';
+    var inp = document.getElementById('mrq-pw');
+    if(inp){ inp.value=''; inp.focus(); }
+    // Animação de shake
+    var box = document.querySelector('.mrq-box');
+    if(box){ box.style.transition='transform .07s'; box.style.transform='translateX(6px)';
+      setTimeout(function(){ box.style.transform='translateX(-6px)';
+        setTimeout(function(){ box.style.transform=''; }, 70); }, 70); }
+    return;
+  }
+  // Senha correta — executar reversão
+  var ctx = _mrqCtx;
+  _mrqFechar();
+  if(ctx && ctx.origem==='idx') _executarReversaoIdx(ctx.idx);
+  else if(ctx && ctx.origem==='modal') _executarReversaoModal();
+}
+
+function _executarReversaoIdx(i){
+  var hist = _carregarHist();
+  var ano  = (document.getElementById('hped-ano')||{}).value||'';
+  var mes  = (document.getElementById('hped-mes')||{}).value||'';
+  var filtrado = hist.filter(function(p){
+    if(!p.data) return false;
+    if(ano && p.data.slice(0,4)!==ano) return false;
+    if(mes && p.data.slice(5,7)!==mes) return false;
+    return true;
+  });
+  var p = filtrado[i];
+  if(!p) return;
+  var idxH = hist.findIndex(function(h){ return h.ts === p.ts; });
+  if(idxH < 0) return;
+  hist[idxH].pago = false;
+  try{ localStorage.setItem(HK, JSON.stringify(hist)); }catch(e){}
+  _toast('↩ Quitação removida pelo administrador.');
+  _renderHist();
+}
+
+function _executarReversaoModal(){
+  if(!_pedAtual) return;
+  var hist = _carregarHist();
+  var idx  = hist.findIndex(function(p){ return p.ts === _pedAtual.ts; });
+  if(idx < 0) return;
+  hist[idx].pago = false;
+  _pedAtual = hist[idx];
+  try{ localStorage.setItem(HK, JSON.stringify(hist)); }catch(e){}
+  var btnPago = document.getElementById('mp-btn-pago');
+  if(btnPago){ btnPago.textContent='QUITAÇÃO'; btnPago.classList.remove('ja-pago'); }
+  _toast('↩ Quitação removida pelo administrador.');
+  _renderHist();
+}
+
 function _marcarPagoIdx(i){
   var hist = _carregarHist();
   var ano  = (document.getElementById('hped-ano')||{}).value||'';
@@ -13045,15 +13151,18 @@ function _marcarPagoIdx(i){
   if(!p) return;
   var idxH = hist.findIndex(function(h){ return h.ts === p.ts; });
   if(idxH < 0) return;
-  var novoPago = !hist[idxH].pago;
-  hist[idxH].pago = novoPago;
-  try{ localStorage.setItem(HK, JSON.stringify(hist)); }catch(e){}
-  if(novoPago){
-    _gerarImagemComPago(hist[idxH]);
-    _toast('✅ QUITAÇÃO registrada! Gerando comprovante...');
-  } else {
-    _toast('↩ Quitação removida.');
+
+  // Se já está pago → pede senha admin para reverter
+  if(hist[idxH].pago){
+    _mrqAbrir({ origem:'idx', idx:i });
+    return;
   }
+
+  // Marcar como pago normalmente
+  hist[idxH].pago = true;
+  try{ localStorage.setItem(HK, JSON.stringify(hist)); }catch(e){}
+  _gerarImagemComPago(hist[idxH]);
+  _toast('✅ QUITAÇÃO registrada! Gerando comprovante...');
   _renderHist();
 }
 
@@ -13062,24 +13171,21 @@ function _marcarPago(){
   var hist = _carregarHist();
   var idx  = hist.findIndex(function(p){ return p.ts === _pedAtual.ts; });
   if(idx < 0) return;
-  // Toggle: se já pago, despaga; se não pago, marca como pago
-  var novoPago = !hist[idx].pago;
-  hist[idx].pago = novoPago;
+
+  // Se já está pago → pede senha admin para reverter
+  if(hist[idx].pago){
+    _mrqAbrir({ origem:'modal' });
+    return;
+  }
+
+  // Marcar como pago normalmente
+  hist[idx].pago = true;
   _pedAtual = hist[idx];
   try{ localStorage.setItem(HK, JSON.stringify(hist)); }catch(e){}
-  // Atualizar botão no modal
   var btnPago = document.getElementById('mp-btn-pago');
-  if(btnPago){
-    if(novoPago){ btnPago.classList.add('ja-pago'); }
-    else { btnPago.classList.remove('ja-pago'); }
-  }
-  if(novoPago){
-    // Gerar e compartilhar imagem com carimbo PAGO
-    _gerarImagemComPago(_pedAtual);
-    _toast('✅ QUITAÇÃO registrada! Gerando comprovante...');
-  } else {
-    _toast('↩ Quitação removida.');
-  }
+  if(btnPago){ btnPago.textContent='✔ QUITAÇÃO'; btnPago.classList.add('ja-pago'); }
+  _gerarImagemComPago(_pedAtual);
+  _toast('✅ QUITAÇÃO registrada! Gerando comprovante...');
   _renderHist();
 }
 
@@ -14008,6 +14114,33 @@ async function _cadInit(){
   </div>
 </div>
 <input type="file" id="cad-imp-inp" accept=".listas" style="display:none" onchange="_cadImportarListas(this.files[0])">
+
+<!-- MODAL REVERTER QUITAÇÃO -->
+<div id="modal-rev-quit" onclick="_mrqFechar()">
+  <div class="mrq-box" onclick="event.stopPropagation()">
+    <div class="mrq-hd">
+      <span class="mrq-hd-ico">🔒</span>
+      <div>
+        <div class="mrq-hd-t">Reverter Quitação</div>
+        <div class="mrq-hd-s">ACESSO RESTRITO — ADMINISTRADOR</div>
+      </div>
+    </div>
+    <div class="mrq-body">
+      <div class="mrq-aviso">Esta operação remove o status de PAGO do pedido. Apenas o administrador pode realizar esta ação.</div>
+      <div class="mrq-lbl">Senha do administrador</div>
+      <div class="mrq-iw">
+        <input class="mrq-inp" type="password" id="mrq-pw" placeholder="••••••" maxlength="32"
+               autocomplete="off" onkeydown="if(event.key==='Enter')_mrqConfirmar()">
+        <button class="mrq-olho" onclick="_mrqOlho()" id="mrq-olho-btn" tabindex="-1">👁</button>
+      </div>
+      <div class="mrq-erro" id="mrq-erro"></div>
+      <div class="mrq-btns">
+        <button class="mrq-ok" onclick="_mrqConfirmar()">Confirmar reversão</button>
+        <button class="mrq-cl" onclick="_mrqFechar()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
