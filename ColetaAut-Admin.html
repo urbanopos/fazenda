@@ -12505,7 +12505,7 @@ async function enviarPedido(){
     } else {
       _fallbackDownload(blob,'pedido-'+numPed+'.jpg');
     }
-  });
+  }, cliente);
   setTimeout(function(){
     _vItens=[]; _vIdx=0;
     var cl=document.getElementById('venda-cliente'); if(cl) cl.value='';
@@ -13538,7 +13538,7 @@ function reemitirPedido(){
     } else {
       _fallbackDownload(blob,'pedido-'+p.num+'.jpg');
     }
-  });
+  }, p.cliente||'');
 }
 
 /* ---- BLOQUEIO ---- */
