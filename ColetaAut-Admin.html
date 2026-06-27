@@ -298,8 +298,9 @@ textarea{resize:none;height:72px;font-size:14px}
 .mrq-olho{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.35);font-size:18px;cursor:pointer;padding:4px;line-height:1}
 .mrq-erro{font-family:'DM Mono',monospace;font-size:10px;color:#e08080;margin-top:6px;min-height:14px}
 .mrq-btns{display:flex;gap:8px;margin-top:14px}
-.mrq-ok{flex:1;padding:11px;border:none;border-radius:var(--r);background:#c0392b;color:#fff;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px}
-.mrq-cl{padding:11px 14px;border:1px solid rgba(255,255,255,.15);border-radius:var(--r);background:none;color:rgba(255,255,255,.45);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer}
+.mrq-ok{padding:11px 14px;border:1px solid rgba(192,57,43,.5);border-radius:var(--r);background:none;color:rgba(192,57,43,.7);font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px}
+.mrq-cl{flex:1;padding:11px;border:2px solid rgba(255,255,255,.35);border-radius:var(--r);background:rgba(255,255,255,.08);color:#fff;font-family:'DM Mono',monospace;font-size:13px;font-weight:700;cursor:pointer}
+.mrq-cl:focus{outline:2px solid #fff;outline-offset:2px}
 
 /* Variante admin */
 .topo{ border-bottom-color: #b8943f !important; }
@@ -11702,13 +11703,23 @@ function apagarCardEdit(k, cl){
 }
 
 /* ---- INIT ---- */
-function _iniciar(){
+async function _iniciar(){
   setHoje(); _relogio(); setInterval(_relogio, 30000);
-  // Sincroniza OPFS → localStorage na inicialização
+
+  // Sincroniza OPFS → localStorage ANTES de qualquer render
+  // O await garante que os dados do OPFS (fonte de verdade) estejam
+  // no localStorage antes que qualquer função os leia.
   if(_caOpfs){
-    _caOpfsLer(FSJ_COLETAS).then(function(r){ if(r) try{ localStorage.setItem(CK,r); }catch(e){} });
-    _caOpfsLer(FSJ_PEDIDOS).then(function(r){ if(r) try{ localStorage.setItem(HK,r); }catch(e){} });
+    try{
+      var rc = await _caOpfsLer(FSJ_COLETAS);
+      if(rc) try{ localStorage.setItem(CK, rc); }catch(e){}
+    }catch(e){}
+    try{
+      var rp = await _caOpfsLer(FSJ_PEDIDOS);
+      if(rp) try{ localStorage.setItem(HK, rp); }catch(e){}
+    }catch(e){}
   }
+
   Object.keys(SETORES).forEach(function(s){
     var cfg = SETORES[s];
     var g = document.getElementById('grid-'+s);
@@ -12455,7 +12466,7 @@ function _atualizarTotalV(){
   if(el) el.textContent = 'R$ '+_fmt(tot);
 }
 
-function enviarPedido(){
+async function enviarPedido(){
   var conc = _vItens.filter(function(it){ return it.concluido; });
   if(!conc.length){ _toast('Confirme ao menos um item.'); return; }
   var n = _getNum();
@@ -12474,7 +12485,7 @@ function enviarPedido(){
   });
   var total = conc.reduce(function(s,it){ return s+it.sub; },0);
   // GRAVA no historico
-  _salvarPedido({num:numPed, cliente:cliente, data:dataVenda, itens:linhas, total:total, ts:Date.now()});
+  await _salvarPedido({num:numPed, cliente:cliente, data:dataVenda, itens:linhas, total:total, ts:Date.now()});
 
   // Gera link de importacao para o granja
   var payload = _gerarPayloadPedido(conc, numPed, cliente, dataVenda);
@@ -12503,18 +12514,18 @@ function enviarPedido(){
 var HK = 'fsj_hist_pedidos';
 var _pedAtual = null; // pedido aberto no modal
 
-function _salvarPedido(ped){
+async function _salvarPedido(ped){
   var hist = _carregarHist();
   hist.unshift(ped);
   if(hist.length > 100) hist = hist.slice(0,100);
-  _gravarHist(hist);
+  await _gravarHist(hist);
 }
 
-/* Salva o array de pedidos em localStorage E OPFS (fonte de verdade) */
-function _gravarHist(hist){
+/* Salva o array de pedidos em localStorage E aguarda OPFS (fonte de verdade) */
+async function _gravarHist(hist){
   var json = JSON.stringify(hist);
   try{ localStorage.setItem(HK, json); }catch(e){}
-  if(_caOpfs) _caOpfsSalvar(FSJ_PEDIDOS, json);
+  if(_caOpfs) await _caOpfsSalvar(FSJ_PEDIDOS, json);
 }
 
 function _carregarHist(){
@@ -13162,7 +13173,10 @@ function _mrqAbrir(ctx){
   if(err) err.textContent='';
   document.getElementById('modal-rev-quit').classList.add('vis');
   _navPush('modal-rev-quit');
-  setTimeout(function(){ if(inp) inp.focus(); }, 80);
+  setTimeout(function(){
+    var btnCl = document.getElementById('mrq-btn-cl');
+    if(btnCl) btnCl.focus();
+  }, 80);
 }
 
 function _mrqFechar(){
@@ -13203,7 +13217,7 @@ function _mrqConfirmar(){
   else if(ctx && ctx.origem==='modal') _executarReversaoModal();
 }
 
-function _executarReversaoIdx(i){
+async function _executarReversaoIdx(i){
   var hist = _carregarHist();
   var ano  = (document.getElementById('hped-ano')||{}).value||'';
   var mes  = (document.getElementById('hped-mes')||{}).value||'';
@@ -13218,26 +13232,26 @@ function _executarReversaoIdx(i){
   var idxH = hist.findIndex(function(h){ return h.ts === p.ts; });
   if(idxH < 0) return;
   hist[idxH].pago = false;
-  _gravarHist(hist);
+  await _gravarHist(hist);
   _toast('↩ Quitação removida pelo administrador.');
   _renderHist();
 }
 
-function _executarReversaoModal(){
+async function _executarReversaoModal(){
   if(!_pedAtual) return;
   var hist = _carregarHist();
   var idx  = hist.findIndex(function(p){ return p.ts === _pedAtual.ts; });
   if(idx < 0) return;
   hist[idx].pago = false;
   _pedAtual = hist[idx];
-  _gravarHist(hist);
+  await _gravarHist(hist);
   var btnPago = document.getElementById('mp-btn-pago');
   if(btnPago){ btnPago.textContent='QUITAÇÃO'; btnPago.classList.remove('ja-pago'); }
   _toast('↩ Quitação removida pelo administrador.');
   _renderHist();
 }
 
-function _marcarPagoIdx(i){
+async function _marcarPagoIdx(i){
   var hist = _carregarHist();
   var ano  = (document.getElementById('hped-ano')||{}).value||'';
   var mes  = (document.getElementById('hped-mes')||{}).value||'';
@@ -13260,13 +13274,13 @@ function _marcarPagoIdx(i){
 
   // Marcar como pago normalmente
   hist[idxH].pago = true;
-  _gravarHist(hist);
+  await _gravarHist(hist);
   _gerarImagemComPago(hist[idxH]);
   _toast('✅ QUITAÇÃO registrada! Gerando comprovante...');
   _renderHist();
 }
 
-function _marcarPago(){
+async function _marcarPago(){
   if(!_pedAtual) return;
   var hist = _carregarHist();
   var idx  = hist.findIndex(function(p){ return p.ts === _pedAtual.ts; });
@@ -13281,7 +13295,7 @@ function _marcarPago(){
   // Marcar como pago normalmente
   hist[idx].pago = true;
   _pedAtual = hist[idx];
-  _gravarHist(hist);
+  await _gravarHist(hist);
   var btnPago = document.getElementById('mp-btn-pago');
   if(btnPago){ btnPago.textContent='✔ QUITAÇÃO'; btnPago.classList.add('ja-pago'); }
   _gerarImagemComPago(_pedAtual);
@@ -13320,13 +13334,13 @@ function _gerarImagemComPago(p){
 
 /* _gerarImagemPago foi unificado em _gerarImagem com opcoesExtra.pago=true */
 
-function _excluirPedido(){
+async function _excluirPedido(){
   if(!_pedAtual) return;
   if(!confirm('Excluir o pedido '+_pedAtual.num+'?\n\nEsta acao nao pode ser desfeita.')) return;
   var hist = _carregarHist();
   var idx = hist.findIndex(function(p){ return p.ts === _pedAtual.ts; });
   if(idx >= 0) hist.splice(idx,1);
-  _gravarHist(hist);
+  await _gravarHist(hist);
   fecharModalPed();
   _renderHist();
   _toast('\u2705 Pedido excluido.');
@@ -13420,7 +13434,7 @@ function _addItemEditPed(){
   wrap.appendChild(row);
 }
 
-function _salvarEditPedido(){
+async function _salvarEditPedido(){
   if(!_pedAtual) return;
   var novaData    = (document.getElementById('mpe-data')||{value:''}).value;
   var novoCliente = (document.getElementById('mpe-cliente')||{value:''}).value.trim();
@@ -13454,7 +13468,7 @@ function _salvarEditPedido(){
     hist[idx].itens   = novosItens;
     hist[idx].total   = novoTotal;
     _pedAtual = hist[idx];
-    _gravarHist(hist);
+    await _gravarHist(hist);
   }
   _toast('\u2705 Pedido atualizado!');
   fecharModalPed();
@@ -14158,8 +14172,8 @@ async function _cadInit(){
       </div>
       <div class="mrq-erro" id="mrq-erro"></div>
       <div class="mrq-btns">
+        <button class="mrq-cl" id="mrq-btn-cl" onclick="_mrqFechar()">Cancelar</button>
         <button class="mrq-ok" onclick="_mrqConfirmar()">Confirmar reversão</button>
-        <button class="mrq-cl" onclick="_mrqFechar()">Cancelar</button>
       </div>
     </div>
   </div>
