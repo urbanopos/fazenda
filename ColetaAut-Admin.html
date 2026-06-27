@@ -10987,7 +10987,7 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
    ════════════════════════════════════════════════════════════ */
 
 var CA_VER       = '1.0';
-var CA_APP_VER   = '1';        // Incrementar a cada nova versão publicada
+var CA_APP_VER   = '2';        // Incrementar a cada nova versão publicada
 var CA_VLK       = 'ca_vlk';   // Versão confirmada neste dispositivo
 var CA_MODO      = 'ca_modo';
 var CA_MODO_FIXO = 'admin';  // modo pré-definido neste arquivo  // 'coletor' | 'admin'
@@ -11248,14 +11248,18 @@ function _caInjetarMenuBtn(){
 /* Registra Service Worker apenas quando hospedado no GitHub Pages */
 (function(){
   if(!('serviceWorker' in navigator)) return;
-  if(location.hostname !== 'urbanopos.github.io') return; // ignora fora do domínio correto
+  if(location.hostname !== 'urbanopos.github.io') return;
+  /* Limpa registros antigos antes de registrar o atual */
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    regs.forEach(function(r){ r.unregister(); });
+  });
   navigator.serviceWorker.register('/fazenda/ca-sw.js', {scope:'/fazenda/'})
     .then(function(){ console.log('ColetaAut SW registrado'); })
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
 (function _caAutoUpdate(){
-  var FP = '37880c346c45';
+  var FP = 'a9f3e72c1b84';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
