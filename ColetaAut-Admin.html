@@ -302,6 +302,22 @@ textarea{resize:none;height:72px;font-size:14px}
 .mrq-cl{flex:1;padding:11px;border:2px solid rgba(255,255,255,.35);border-radius:var(--r);background:rgba(255,255,255,.08);color:#fff;font-family:'DM Mono',monospace;font-size:13px;font-weight:700;cursor:pointer}
 .mrq-cl:focus{outline:2px solid #fff;outline-offset:2px}
 
+/* ── MODAL CONFIRMAÇÃO DE QUITAÇÃO ── */
+#modal-conf-quit{display:none;position:fixed;inset:0;z-index:99994;background:rgba(0,0,0,.82);align-items:center;justify-content:center}
+#modal-conf-quit.vis{display:flex}
+.mcq-box{background:var(--vd);width:88%;max-width:320px;border-radius:16px;border:2px solid #1a6b2a;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.mcq-hd{background:rgba(26,107,42,.15);padding:16px 18px;border-bottom:1px solid rgba(26,107,42,.3);display:flex;align-items:center;gap:10px}
+.mcq-hd-ico{font-size:22px}
+.mcq-hd-t{font-family:'DM Serif Display',serif;font-size:16px;color:#fff}
+.mcq-hd-s{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.45);letter-spacing:1px;margin-top:2px}
+.mcq-body{padding:18px}
+.mcq-info{font-family:'DM Mono',monospace;font-size:12px;color:rgba(255,255,255,.7);line-height:1.6;margin-bottom:16px;padding:10px 12px;background:rgba(26,107,42,.12);border-radius:8px;border:1px solid rgba(26,107,42,.3)}
+.mcq-info strong{color:#4caf74;display:block;margin-bottom:4px;font-size:13px}
+.mcq-btns{display:flex;gap:8px}
+.mcq-ok{flex:1;padding:12px;border:none;border-radius:var(--r);background:#1a6b2a;color:#fff;font-family:'DM Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.5px}
+.mcq-cl{padding:12px 16px;border:2px solid rgba(255,255,255,.25);border-radius:var(--r);background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer}
+.mcq-cl:focus{outline:2px solid rgba(255,255,255,.5);outline-offset:2px}
+
 /* Variante admin */
 .topo{ border-bottom-color: #b8943f !important; }
 .topo-ico{ background: #b8943f !important; }
@@ -855,10 +871,20 @@ textarea{resize:none;height:72px;font-size:14px}
       </select>
     </div>
     <div>
+      <div class="hcol-lbl">Valor</div>
+      <div id="hped-total" style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:#7a3a00;padding:5px 0;min-width:90px">R$ 0,00</div>
+    </div>
+    <div>
       <div class="hcol-lbl">Visao</div>
       <select class="hcol-sel" id="hped-visao" onchange="_renderHist()">
         <option value="total">Totalizacao por produto</option>
         <option value="detalhe">Pedidos detalhados</option>
+      </select>
+    </div>
+    <div>
+      <div class="hcol-lbl">Cliente</div>
+      <select class="hcol-sel" id="hped-cli" onchange="_renderHist()" style="max-width:130px">
+        <option value="">Todos</option>
       </select>
     </div>
   </div>
@@ -11782,6 +11808,7 @@ var _navFechar = {
   'modal-ped'      : fecharModalPed,
   'modal-hcol'     : fecharHistColeta,
   'modal-rev-quit' : _mrqFechar,
+  'modal-conf-quit': _mcqFechar,
   'painel-admin'   : fecharAdmin,
   'cad-tela'       : _cadFechar,
   'ca-menu'        : _caFecharMenu,
@@ -12605,6 +12632,20 @@ function mostrarPainelVendas(qual){
   }
 }
 
+/* Filtro centralizado — ano, mes e cliente — usado em toda a tela Vendas */
+function _filtrarHist(hist){
+  var ano = (document.getElementById('hped-ano')||{}).value||'';
+  var mes = (document.getElementById('hped-mes')||{}).value||'';
+  var cli = (document.getElementById('hped-cli')||{}).value||'';
+  return hist.filter(function(p){
+    if(!p.data) return false;
+    if(ano && p.data.slice(0,4)!==ano) return false;
+    if(mes && p.data.slice(5,7)!==mes) return false;
+    if(cli && (p.cliente||'')!==cli) return false;
+    return true;
+  });
+}
+
 function _renderHist(){
   var lista = document.getElementById('hist-lista');
   if(!lista) return;
@@ -12629,14 +12670,40 @@ function _renderHist(){
   var ano   = (document.getElementById('hped-ano')||{}).value||'';
   var mes   = (document.getElementById('hped-mes')||{}).value||'';
   var visao = (document.getElementById('hped-visao')||{}).value||'detalhe';
+  var cli   = (document.getElementById('hped-cli')||{}).value||'';
 
-  // Filtra por ano/mes
-  var filtrado = hist.filter(function(p){
+  // Filtra por ano/mes (sem cliente ainda — para popular lista de clientes)
+  var filtradoAnoMes = hist.filter(function(p){
     if(!p.data) return false;
     if(ano && p.data.slice(0,4)!==ano) return false;
     if(mes && p.data.slice(5,7)!==mes) return false;
     return true;
   });
+
+  // Popula select de clientes com os existentes no período
+  var selCli = document.getElementById('hped-cli');
+  if(selCli){
+    var clientes = {};
+    filtradoAnoMes.forEach(function(p){ if(p.cliente) clientes[p.cliente]=1; });
+    var cliOpts = Object.keys(clientes).sort();
+    var cliAtual = selCli.value; // preserva seleção atual
+    selCli.innerHTML = '<option value="">Todos</option>'
+      + cliOpts.map(function(c){
+          return '<option value="'+c+'"'+(c===cliAtual?' selected':'')+'>'+c+'</option>';
+        }).join('');
+    cli = selCli.value; // reler após rebuild
+  }
+
+  // Aplica filtro de cliente
+  var filtrado = filtradoAnoMes.filter(function(p){
+    if(cli && (p.cliente||'') !== cli) return false;
+    return true;
+  });
+
+  // Atualiza campo Valor com somatório dos pedidos filtrados
+  var totalFiltrado = filtrado.reduce(function(s,p){ return s+(p.total||0); },0);
+  var elTotal = document.getElementById('hped-total');
+  if(elTotal) elTotal.textContent = 'R$ '+_fmt(totalFiltrado);
 
   if(!filtrado.length){
     lista.innerHTML = '<div class="hist-empty">Nenhum pedido no periodo selecionado.</div>';
@@ -12703,14 +12770,7 @@ function _renderHPedTotal(lista, pedidos, ano, mes){
 
 function _reenviarPedidoIdx(idxFiltrado){
   var hist = _carregarHist();
-  var ano = (document.getElementById('hped-ano')||{}).value||'';
-  var mes = (document.getElementById('hped-mes')||{}).value||'';
-  var filtrado = hist.filter(function(p){
-    if(!p.data) return false;
-    if(ano && p.data.slice(0,4)!==ano) return false;
-    if(mes && p.data.slice(5,7)!==mes) return false;
-    return true;
-  });
+  var filtrado = _filtrarHist(hist);
   var p = filtrado[idxFiltrado];
   if(!p) return;
   var linhas = (p.itens||[]).map(function(it){
@@ -12757,16 +12817,8 @@ function _renderHPedDetalhe(lista, pedidos){
 }
 
 function abrirModalPedIdx(idxFiltrado, btn){
-  // Reconstrói a lista filtrada para pegar o índice correto
   var hist = _carregarHist();
-  var ano   = (document.getElementById('hped-ano')||{}).value||'';
-  var mes   = (document.getElementById('hped-mes')||{}).value||'';
-  var filtrado = hist.filter(function(p){
-    if(!p.data) return false;
-    if(ano && p.data.slice(0,4)!==ano) return false;
-    if(mes && p.data.slice(5,7)!==mes) return false;
-    return true;
-  });
+  var filtrado = _filtrarHist(hist);
   var p = filtrado[idxFiltrado];
   if(!p) return;
   _pedAtual = p;
@@ -13253,14 +13305,7 @@ function _mrqConfirmar(){
 
 async function _executarReversaoIdx(i){
   var hist = _carregarHist();
-  var ano  = (document.getElementById('hped-ano')||{}).value||'';
-  var mes  = (document.getElementById('hped-mes')||{}).value||'';
-  var filtrado = hist.filter(function(p){
-    if(!p.data) return false;
-    if(ano && p.data.slice(0,4)!==ano) return false;
-    if(mes && p.data.slice(5,7)!==mes) return false;
-    return true;
-  });
+  var filtrado = _filtrarHist(hist);
   var p = filtrado[i];
   if(!p) return;
   var idxH = hist.findIndex(function(h){ return h.ts === p.ts; });
@@ -13285,16 +13330,73 @@ async function _executarReversaoModal(){
   _renderHist();
 }
 
+/* ════════════════════════════════════════════════════════
+   CONFIRMAÇÃO DE QUITAÇÃO — modal antes de marcar como pago
+   ════════════════════════════════════════════════════════ */
+var _mcqCtx = null; // { origem: 'idx'|'modal', idx, pedido }
+
+function _mcqAbrir(ctx){
+  _mcqCtx = ctx;
+  var p = ctx.pedido;
+  var numEl  = document.getElementById('mcq-pedido-num');
+  var infoEl = document.getElementById('mcq-pedido-info');
+  if(numEl)  numEl.textContent  = p.num || '';
+  if(infoEl) infoEl.textContent = (p.cliente ? p.cliente : '(sem cliente)')
+    + (p.total ? ' — R$ ' + _fmt(p.total) : '');
+  document.getElementById('modal-conf-quit').classList.add('vis');
+  _navPush('modal-conf-quit');
+  setTimeout(function(){
+    var btn = document.getElementById('mcq-btn-cl');
+    if(btn) btn.focus();
+  }, 60);
+}
+
+function _mcqFechar(){
+  _mcqCtx = null;
+  document.getElementById('modal-conf-quit').classList.remove('vis');
+  _navPop();
+}
+
+async function _mcqConfirmarQuit(){
+  var ctx = _mcqCtx;
+  _mcqFechar();
+  if(!ctx) return;
+  if(ctx.origem === 'idx') await _executarQuitacaoIdx(ctx.idx);
+  else if(ctx.origem === 'modal') await _executarQuitacaoModal();
+}
+
+async function _executarQuitacaoIdx(i){
+  var hist = _carregarHist();
+  var filtrado = _filtrarHist(hist);
+  var p = filtrado[i];
+  if(!p) return;
+  var idxH = hist.findIndex(function(h){ return h.ts === p.ts; });
+  if(idxH < 0) return;
+  hist[idxH].pago = true;
+  await _gravarHist(hist);
+  _gerarImagemComPago(hist[idxH]);
+  _toast('✅ QUITAÇÃO registrada! Gerando comprovante...');
+  _renderHist();
+}
+
+async function _executarQuitacaoModal(){
+  if(!_pedAtual) return;
+  var hist = _carregarHist();
+  var idx  = hist.findIndex(function(p){ return p.ts === _pedAtual.ts; });
+  if(idx < 0) return;
+  hist[idx].pago = true;
+  _pedAtual = hist[idx];
+  await _gravarHist(hist);
+  var btnPago = document.getElementById('mp-btn-pago');
+  if(btnPago){ btnPago.textContent='✔ QUITAÇÃO'; btnPago.classList.add('ja-pago'); }
+  _gerarImagemComPago(_pedAtual);
+  _toast('✅ QUITAÇÃO registrada! Gerando comprovante...');
+  _renderHist();
+}
+
 async function _marcarPagoIdx(i){
   var hist = _carregarHist();
-  var ano  = (document.getElementById('hped-ano')||{}).value||'';
-  var mes  = (document.getElementById('hped-mes')||{}).value||'';
-  var filtrado = hist.filter(function(p){
-    if(!p.data) return false;
-    if(ano && p.data.slice(0,4)!==ano) return false;
-    if(mes && p.data.slice(5,7)!==mes) return false;
-    return true;
-  });
+  var filtrado = _filtrarHist(hist);
   var p = filtrado[i];
   if(!p) return;
   var idxH = hist.findIndex(function(h){ return h.ts === p.ts; });
@@ -13306,12 +13408,8 @@ async function _marcarPagoIdx(i){
     return;
   }
 
-  // Marcar como pago normalmente
-  hist[idxH].pago = true;
-  await _gravarHist(hist);
-  _gerarImagemComPago(hist[idxH]);
-  _toast('✅ QUITAÇÃO registrada! Gerando comprovante...');
-  _renderHist();
+  // Não pago → abre confirmação
+  _mcqAbrir({ origem:'idx', idx:i, pedido:hist[idxH] });
 }
 
 async function _marcarPago(){
@@ -13326,15 +13424,8 @@ async function _marcarPago(){
     return;
   }
 
-  // Marcar como pago normalmente
-  hist[idx].pago = true;
-  _pedAtual = hist[idx];
-  await _gravarHist(hist);
-  var btnPago = document.getElementById('mp-btn-pago');
-  if(btnPago){ btnPago.textContent='✔ QUITAÇÃO'; btnPago.classList.add('ja-pago'); }
-  _gerarImagemComPago(_pedAtual);
-  _toast('✅ QUITAÇÃO registrada! Gerando comprovante...');
-  _renderHist();
+  // Não pago → abre confirmação
+  _mcqAbrir({ origem:'modal', pedido:hist[idx] });
 }
 
 function _gerarImagemComPago(p){
@@ -13381,16 +13472,8 @@ async function _excluirPedido(){
 }
 
 function _abrirEditPedidoIdx(i){
-  // Reconstrói a lista filtrada igual a abrirModalPedIdx
   var hist = _carregarHist();
-  var ano  = (document.getElementById('hped-ano')||{}).value||'';
-  var mes  = (document.getElementById('hped-mes')||{}).value||'';
-  var filtrado = hist.filter(function(p){
-    if(!p.data) return false;
-    if(ano && p.data.slice(0,4)!==ano) return false;
-    if(mes && p.data.slice(5,7)!==mes) return false;
-    return true;
-  });
+  var filtrado = _filtrarHist(hist);
   var p = filtrado[i];
   if(!p) return;
   // Abre o modal normalmente
@@ -14179,7 +14262,31 @@ async function _cadInit(){
 </div>
 <input type="file" id="cad-imp-inp" accept=".listas" style="display:none" onchange="_cadImportarListas(this.files[0])">
 
-<!-- MODAL REVERTER QUITAÇÃO -->
+<!-- MODAL CONFIRMAÇÃO DE QUITAÇÃO -->
+<div id="modal-conf-quit" onclick="_mcqFechar()">
+  <div class="mcq-box" onclick="event.stopPropagation()">
+    <div class="mcq-hd">
+      <span class="mcq-hd-ico">✅</span>
+      <div>
+        <div class="mcq-hd-t">Confirmar Quitação</div>
+        <div class="mcq-hd-s">ESTA AÇÃO GERA O COMPROVANTE</div>
+      </div>
+    </div>
+    <div class="mcq-body">
+      <div class="mcq-info">
+        <strong id="mcq-pedido-num"></strong>
+        <span id="mcq-pedido-info"></span>
+      </div>
+      <div class="mcq-btns">
+        <button class="mcq-cl" id="mcq-btn-cl" onclick="_mcqFechar()">Cancelar</button>
+        <button class="mcq-ok" onclick="_mcqConfirmarQuit()">✔ Confirmar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
 <div id="modal-rev-quit" onclick="_mrqFechar()">
   <div class="mrq-box" onclick="event.stopPropagation()">
     <div class="mrq-hd">
