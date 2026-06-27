@@ -814,8 +814,8 @@ textarea{resize:none;height:72px;font-size:14px}
   <div class="sec-d">Talao de pedido numerado</div>
   <!-- Alternancia Novo / Historico -->
   <div class="hist-toggle">
-    <button class="hist-btn ativo" id="btn-aba-novo" onclick="mostrarPainelVendas(&#39;novo&#39;)">+ Novo Pedido</button>
-    <button class="hist-btn" id="btn-aba-hist" onclick="mostrarPainelVendas(&#39;hist&#39;)" style="display:none">📄 Historico</button>
+    <button class="hist-btn ativo" id="btn-aba-novo" onclick="mostrarPainelVendas('novo')">+ Novo Pedido</button>
+    <button class="hist-btn" id="btn-aba-hist" onclick="mostrarPainelVendas('hist')">📄 Historico</button>
   </div>
   <!-- PAINEL NOVO PEDIDO -->
   <div class="hist-panel vis" id="painel-novo">
@@ -870,7 +870,7 @@ textarea{resize:none;height:72px;font-size:14px}
   <div class="div"></div>
   <div style="display:flex;gap:8px;margin-bottom:8px">
     <button onclick="abrirHistColeta()" style="flex:1;padding:11px 0;border:1.5px solid var(--ce);border-radius:var(--r);background:#fff;color:#1e3a5f;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer">📊 Coletas</button>
-    <button id="btn-consulta-pedidos" onclick="abrirHistPedidos()" style="flex:1;padding:11px 0;border:1.5px solid var(--ce);border-radius:var(--r);background:#fff;color:#7a3a00;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;display:none">📄 Pedidos</button>
+    <button id="btn-consulta-pedidos" onclick="abrirHistPedidos()" style="flex:1;padding:11px 0;border:1.5px solid var(--ce);border-radius:var(--r);background:#fff;color:#7a3a00;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer">📄 Pedidos</button>
   </div>
   <div class="cont" id="contador">Nenhum item preenchido</div>
   <button class="btn-wpp" onclick="enviarTudo()">💬 Enviar coleta</button>
@@ -11787,6 +11787,7 @@ var _navFechar = {
   'ca-lock'        : function(){ document.getElementById('ca-lock').classList.remove('vis'); },
   'ca-setup'       : function(){ document.getElementById('ca-setup').classList.remove('vis'); },
   'guia-ios'       : fecharGuiaIos,
+  'vendas-hist'    : function(){ mostrarPainelVendas('novo'); },
   'aba'            : function(){ trocarAba('aviario'); }
 };
 
@@ -11948,13 +11949,6 @@ function apagarCard(k, cl){
 }
 
 function trocarAba(s){
-  // Se estava no historico de pedidos vindo do admin, volta ao admin
-  if(_histPedDoAdmin && s !== 'vendas'){
-    _histPedDoAdmin = false;
-    mostrarPainelVendas('novo');
-    abrirAdmin();
-    return;
-  }
   document.querySelectorAll('.secao').forEach(function(x){ x.classList.remove('at'); });
   document.querySelectorAll('.aba').forEach(function(x){ x.classList.remove('at'); });
   var secV = document.getElementById('sec-vendas');
@@ -12376,11 +12370,9 @@ function _aplicarVendas(ativa){
   var btn = document.getElementById('btn-toggle-vendas');
   if(ativa){
     aba.classList.add('vis');
-    var _bcp=document.getElementById('btn-consulta-pedidos'); if(_bcp) _bcp.style.display='flex';
     if(btn){ btn.textContent='Desativar Vendas'; btn.style.background='#5a1010'; btn.style.color='#fca5a5'; }
   } else {
     aba.classList.remove('vis','at');
-    var _bcp=document.getElementById('btn-consulta-pedidos'); if(_bcp) _bcp.style.display='none';
     if(btn){ btn.textContent='Ativar Vendas'; btn.style.background='#7a3a00'; btn.style.color='#ffd49a'; }
     var sv = document.getElementById('sec-vendas');
     if(sv && sv.classList.contains('at')) trocarAba('aviario');
@@ -12596,21 +12588,16 @@ function mostrarPainelVendas(qual){
   if(qual==='hist'){
     btnNovo.classList.remove('ativo'); btnHist.classList.add('ativo');
     pNovo.classList.remove('vis');     pHist.classList.add('vis');
-    // Muda o botao para "← Voltar" quando veio do admin
-    if(_histPedDoAdmin){
-      btnNovo.textContent = '← Voltar';
-      btnNovo.classList.add('ativo');
-    }
     _renderHist();
+    /* Sub-painel histórico entra na pilha de navegação */
+    if(_navPilha.indexOf('vendas-hist') < 0) _navPush('vendas-hist');
   } else {
     btnHist.classList.remove('ativo'); btnNovo.classList.add('ativo');
     btnNovo.textContent = '+ Novo Pedido';
     pHist.classList.remove('vis');     pNovo.classList.add('vis');
-    // Se veio do admin, reabre o painel admin
-    if(_histPedDoAdmin){
-      _histPedDoAdmin = false;
-      abrirAdmin();
-    }
+    /* Remove do histórico de navegação */
+    var idx = _navPilha.indexOf('vendas-hist');
+    if(idx >= 0){ _navPilha.splice(idx,1); history.replaceState({navSentinel:true},''); }
   }
 }
 
@@ -13535,12 +13522,8 @@ function _excluirColeta(ri){
   renderHistColeta();
 }
 
-var _histPedDoAdmin = false;
-
 function abrirHistPedidos(){
-  _histPedDoAdmin = true;
   trocarAba('vendas');
-  // Reseta filtros
   var selAno = document.getElementById('hped-ano');
   if(selAno) selAno.dataset.built='';
   var selMes = document.getElementById('hped-mes');
@@ -13552,11 +13535,8 @@ function abrirHistPedidos(){
   if(sv) sv.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
-// Mostra/oculta os botoes de consulta conforme status admin
-function _atualizarBtnConsulta(adminLogado){
-  var btnHist = document.getElementById('btn-aba-hist');
-  if(btnHist) btnHist.style.display = adminLogado ? '' : 'none';
-}
+// _atualizarBtnConsulta mantida para compatibilidade mas sem efeito (botão sempre visível)
+function _atualizarBtnConsulta(adminLogado){ /* btn-consulta-pedidos sempre visível */ }
 var _adminLogado = false;
 
 function reemitirPedido(){
