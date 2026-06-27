@@ -11897,7 +11897,7 @@ function _fmtFone(n){
 function _fmt(v){ return Number(v||0).toFixed(2).replace('.',','); }
 
 /* ---- IMAGEM / ENVIO ---- */
-function _gerarImagem(titulo, linhas, rodape, onBlob){
+function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt){
   var W=420, PAD=18;
   var c = document.createElement('canvas');
   var ctx = c.getContext('2d');
@@ -11983,7 +11983,9 @@ function _gerarImagem(titulo, linhas, rodape, onBlob){
   if(rodape){
     rect(0,y,W,44,'#f5f0e8');
     txt('CLIENTE',PAD,y+16,8,'#888');
-    var cli = (document.getElementById('venda-cliente')||{value:''}).value||'';
+    var cli = (clienteOpt !== undefined && clienteOpt !== null)
+      ? clienteOpt
+      : ((document.getElementById('venda-cliente')||{value:''}).value||'');
     txt(cli||'-',PAD,y+34,14,'#333','bold');
     y+=44;
   }
@@ -12568,7 +12570,7 @@ function _reenviarPedidoIdx(idxFiltrado){
     } else {
       _fallbackDownload(blob,'pedido-'+p.num+'.jpg');
     }
-  });
+  }, p.cliente||'');
 }
 function _renderHPedDetalhe(lista, pedidos){
   lista.innerHTML = pedidos.map(function(p, i){
@@ -13108,7 +13110,7 @@ function _gerarImagemPago(titulo, linhas, rodape, cliente, onBlob){
   var ctx = c.getContext('2d');
   var nome = (localStorage.getItem('wpp_nome')||'').trim();
   var H = nome?158:122;
-  H += 28;
+  H += 36; // faixa talão tem altura 36
   linhas.forEach(function(){ H+=58; });
   H += 48;
   H += rodape ? 44 : 0;
