@@ -341,7 +341,6 @@ textarea{resize:none;height:72px;font-size:14px}
 .mpd-item-btns{display:flex;gap:8px;padding:10px 14px;background:#faf7f0;border-top:1px solid #eee}
 .mpd-btn-ok{flex:1;padding:11px;border:none;border-radius:var(--r);background:#1a6b2a;color:#fff;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.5px}
 .mpd-btn-rej{padding:11px 14px;border:1.5px solid #c0392b;border-radius:var(--r);background:none;color:#c0392b;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer}
-.mpd-badge{display:inline-block;background:var(--ac);color:var(--vd);font-family:'DM Mono',monospace;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:6px;vertical-align:middle}
 .mpd-loading{text-align:center;padding:32px;font-family:'DM Mono',monospace;font-size:11px;color:#999}
 
 /* Variante admin */
@@ -925,7 +924,7 @@ textarea{resize:none;height:72px;font-size:14px}
     <button id="btn-consulta-pedidos" onclick="abrirHistPedidos()" style="flex:1;padding:11px 0;border:1.5px solid var(--ce);border-radius:var(--r);background:#fff;color:#7a3a00;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer">📄 Pedidos</button>
   </div>
   <div style="margin-bottom:8px">
-    <button onclick="abrirPendentes()" id="btn-pendentes" style="width:100%;padding:12px 0;border:2px solid #1a6b2a;border-radius:var(--r);background:rgba(26,107,42,.08);color:#1a6b2a;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;position:relative">
+    <button onclick="abrirPendentes()" style="width:100%;padding:12px 0;border:2px solid #1a6b2a;border-radius:var(--r);background:rgba(26,107,42,.08);color:#1a6b2a;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer">
       📥 Coletas Pendentes <span id="badge-pendentes" style="display:none;background:#1a6b2a;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;margin-left:4px"></span>
     </button>
   </div>
@@ -933,6 +932,20 @@ textarea{resize:none;height:72px;font-size:14px}
   <button class="btn-wpp" onclick="enviarTudo()">💬 Enviar coleta</button>
 </div>
 <div class="toast" id="toast"></div>
+
+<!-- MODAL COLETAS PENDENTES -->
+<div id="modal-pendentes">
+  <div class="mpd-hd">
+    <div>
+      <div class="mpd-hd-t">📥 Coletas Pendentes <span id="mpd-badge" style="display:none;background:var(--ac);color:var(--vd);font-family:'DM Mono',monospace;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:4px"></span></div>
+      <div class="mpd-hd-s">AGUARDANDO APROVAÇÃO DO ADMINISTRADOR</div>
+    </div>
+    <button class="mpd-hd-x" onclick="_mpdFechar()">✕</button>
+  </div>
+  <div class="mpd-body" id="mpd-body">
+    <div class="mpd-loading">Carregando...</div>
+  </div>
+</div>
 
 <script>
 /* ════════════ LIBS QR ════════════ */
@@ -11606,7 +11619,7 @@ var MK = 'fsj_blk_msg';
 var VK = 'fsj_vendas_ativa';
 var NK = 'fsj_pedido_num';
 
-/* ── GitHub API ─────────────────────────────────────────────── */
+/* ── GitHub API — coletas pendentes ─────────────────────────── */
 var GH_REPO  = 'urbanopos/fazenda';
 var GH_FILE  = 'coletas-pendentes.json';
 var GH_TOKEN = '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';
@@ -11847,16 +11860,16 @@ var _navFechar = {
   'modal-conf-quit' : _mcqFechar,
   'modal-pendentes' : _mpdFechar,
   'painel-admin'    : fecharAdmin,
-  'cad-tela'       : _cadFechar,
-  'ca-menu'        : _caFecharMenu,
-  'ca-conf'        : _caFecharConf,
-  'ca-sobre'       : function(){ document.getElementById('ca-sobre').classList.remove('vis'); _navPop(); },
-  'ca-scanner'     : _caFecharScanner,
-  'ca-lock'        : function(){ document.getElementById('ca-lock').classList.remove('vis'); },
-  'ca-setup'       : function(){ document.getElementById('ca-setup').classList.remove('vis'); },
-  'guia-ios'       : fecharGuiaIos,
-  'vendas-hist'    : function(){ mostrarPainelVendas('novo'); },
-  'aba'            : function(){ trocarAba('aviario'); }
+  'cad-tela'        : _cadFechar,
+  'ca-menu'         : _caFecharMenu,
+  'ca-conf'         : _caFecharConf,
+  'ca-sobre'        : function(){ document.getElementById('ca-sobre').classList.remove('vis'); _navPop(); },
+  'ca-scanner'      : _caFecharScanner,
+  'ca-lock'         : function(){ document.getElementById('ca-lock').classList.remove('vis'); },
+  'ca-setup'        : function(){ document.getElementById('ca-setup').classList.remove('vis'); },
+  'guia-ios'        : fecharGuiaIos,
+  'vendas-hist'     : function(){ mostrarPainelVendas('novo'); },
+  'aba'             : function(){ trocarAba('aviario'); }
 };
 
 /* Retorna a aba atualmente ativa */
@@ -13666,63 +13679,47 @@ var _adminLogado = false;
    COLETAS PENDENTES — GitHub API
    ════════════════════════════════════════════════════════════════ */
 
-/* Verifica silenciosamente se há pendentes e atualiza o badge */
 async function _verificarPendentes(){
   try{
-    var headers = {
-      'Authorization': 'token '+GH_TOKEN,
-      'Accept': 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28'
-    };
-    var resp = await fetch(GH_API+'?t='+Date.now(), {headers:headers, cache:'no-store'});
+    var h = {'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+    var resp = await fetch(GH_API+'?t='+Date.now(),{headers:h,cache:'no-store'});
     if(!resp.ok) return;
     var meta = await resp.json();
-    var pendentes = [];
-    try{ pendentes = JSON.parse(atob(meta.content.replace(/\n/g,''))); }catch(e){}
-    var count = pendentes.filter(function(r){ return r.status==='pendente'; }).length;
+    var lista = [];
+    try{ lista = JSON.parse(atob(meta.content.replace(/\n/g,''))); }catch(e){}
+    var count = lista.filter(function(r){ return r.status==='pendente'; }).length;
     var badge = document.getElementById('badge-pendentes');
-    if(badge){
-      if(count > 0){ badge.textContent=count; badge.style.display='inline'; }
-      else { badge.style.display='none'; }
-    }
-  }catch(e){ /* silencioso */ }
+    if(badge){ badge.textContent=count; badge.style.display=count>0?'inline':'none'; }
+  }catch(e){}
 }
 
 async function abrirPendentes(){
   var modal = document.getElementById('modal-pendentes');
   var body  = document.getElementById('mpd-body');
-  if(!modal || !body) return;
+  if(!modal||!body) return;
   modal.classList.add('vis');
   _navPush('modal-pendentes');
-  body.innerHTML = '<div class="mpd-loading">🔄 Buscando coletas...</div>';
+  body.innerHTML='<div class="mpd-loading">🔄 Buscando coletas...</div>';
   try{
-    var headers = {
-      'Authorization': 'token '+GH_TOKEN,
-      'Accept': 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28'
-    };
-    var resp = await fetch(GH_API+'?t='+Date.now(), {headers:headers, cache:'no-store'});
-    if(resp.status === 404){
-      body.innerHTML = '<div class="mpd-vazia">✅ Nenhuma coleta pendente.</div>';
-      return;
-    }
+    var h = {'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+    var resp = await fetch(GH_API+'?t='+Date.now(),{headers:h,cache:'no-store'});
+    if(resp.status===404){ body.innerHTML='<div class="mpd-vazia">✅ Nenhuma coleta pendente.</div>'; return; }
     if(!resp.ok) throw new Error('HTTP '+resp.status);
     var meta = await resp.json();
     window._mpdSHA = meta.sha;
-    var pendentes = [];
-    try{ pendentes = JSON.parse(atob(meta.content.replace(/\n/g,''))); }catch(e){}
-    var lista = pendentes.filter(function(r){ return r.status==='pendente'; });
-    if(!lista.length){
-      body.innerHTML = '<div class="mpd-vazia">✅ Nenhuma coleta pendente.</div>';
-      return;
-    }
-    /* Badge no botão */
+    var todos = [];
+    try{ todos = JSON.parse(atob(meta.content.replace(/\n/g,''))); }catch(e){}
+    window._mpdTodos = todos;
+    var lista = todos.filter(function(r){ return r.status==='pendente'; });
+    window._mpdLista = lista;
     var badge = document.getElementById('badge-pendentes');
-    if(badge){ badge.textContent=lista.length; badge.style.display='inline'; }
-    /* Renderiza cada coleta */
-    body.innerHTML = lista.map(function(reg, i){
-      var dfL = reg.data ? new Date(reg.data+'T12:00').toLocaleDateString('pt-BR') : reg.data||'';
-      var enviadoEm = reg.enviadoEm ? new Date(reg.enviadoEm).toLocaleString('pt-BR') : '';
+    if(badge){ badge.textContent=lista.length; badge.style.display=lista.length>0?'inline':'none'; }
+    var mpdb = document.getElementById('mpd-badge');
+    if(mpdb){ mpdb.textContent=lista.length; mpdb.style.display=lista.length>0?'inline':'none'; }
+    if(!lista.length){ body.innerHTML='<div class="mpd-vazia">✅ Nenhuma coleta pendente.</div>'; return; }
+    body.innerHTML = lista.map(function(reg,i){
+      var dfL = reg.data ? new Date(reg.data+'T12:00').toLocaleDateString('pt-BR') : (reg.data||'');
+      var env = reg.enviadoEm ? new Date(reg.enviadoEm).toLocaleString('pt-BR') : '';
       var linhas = (reg.itens||[]).map(function(it){
         return '<div class="mpd-linha">'
           +'<div><div class="mpd-linha-nome">'+it.nome+'</div>'
@@ -13732,22 +13729,18 @@ async function abrirPendentes(){
       }).join('');
       return '<div class="mpd-item">'
         +'<div class="mpd-item-hd">'
-        +  '<div><div class="mpd-item-col">'+(reg.coletor||'Coletor')+'</div>'
-        +  '<div class="mpd-item-num">'+dfL+(enviadoEm?' · Enviado: '+enviadoEm:'')+'</div></div>'
-        +  '<div class="mpd-item-data">'+(reg.itens||[]).length+' item(ns)</div>'
+        +'<div><div class="mpd-item-col">'+(reg.coletor||'Coletor')+'</div>'
+        +'<div class="mpd-item-num">'+dfL+(env?' · '+env:'')+'</div></div>'
+        +'<div class="mpd-item-data">'+(reg.itens||[]).length+' item(ns)</div>'
         +'</div>'
         +'<div class="mpd-item-body">'+linhas+'</div>'
         +'<div class="mpd-item-btns">'
-        +  '<button class="mpd-btn-rej" onclick="_rejeitarColeta('+i+')">✕ Rejeitar</button>'
-        +  '<button class="mpd-btn-ok" onclick="_aprovarColeta('+i+')">✔ Aprovar</button>'
-        +'</div>'
-        +'</div>';
+        +'<button class="mpd-btn-rej" onclick="_rejeitarColeta('+i+')">✕ Rejeitar</button>'
+        +'<button class="mpd-btn-ok" onclick="_aprovarColeta('+i+')">✔ Aprovar</button>'
+        +'</div></div>';
     }).join('');
-    /* Guarda lista em memória para aprovar/rejeitar por índice */
-    window._mpdLista = lista;
-    window._mpdTodos = pendentes;
   }catch(e){
-    body.innerHTML = '<div class="mpd-vazia">⚠️ Erro ao buscar coletas.<br><small>'+e.message+'</small></div>';
+    body.innerHTML='<div class="mpd-vazia">⚠️ Erro: '+e.message+'</div>';
   }
 }
 
@@ -13760,17 +13753,16 @@ async function _aprovarColeta(idx){
   var reg = (window._mpdLista||[])[idx];
   if(!reg){ _toast('Erro: coleta não encontrada.'); return; }
   /* Importa para o histórico local */
-  var histColeta = _carregarHistColeta();
-  var novoReg = Object.assign({}, reg);
-  delete novoReg.status; delete novoReg.enviadoEm;
-  histColeta.unshift(novoReg);
-  try{ localStorage.setItem(CK, JSON.stringify(histColeta)); }catch(e){}
-  if(_caOpfs) await _caOpfsSalvar(FSJ_COLETAS, JSON.stringify(histColeta));
-  /* Marca como aprovada no array completo */
+  var hist = _carregarHistColeta();
+  var novo = Object.assign({},reg);
+  delete novo.status; delete novo.enviadoEm;
+  hist.unshift(novo);
+  try{ localStorage.setItem(CK, JSON.stringify(hist)); }catch(e){}
+  if(_caOpfs) await _caOpfsSalvar(FSJ_COLETAS, JSON.stringify(hist));
+  /* Remove dos pendentes no GitHub */
   reg.status = 'aprovada';
   await _salvarPendentesGitHub(window._mpdTodos);
   _toast('✅ Coleta aprovada e importada!');
-  /* Recarrega a tela */
   abrirPendentes();
 }
 
@@ -13786,35 +13778,19 @@ async function _rejeitarColeta(idx){
 
 async function _salvarPendentesGitHub(todos){
   try{
-    var headers = {
-      'Authorization': 'token '+GH_TOKEN,
-      'Accept': 'application/vnd.github+json',
-      'Content-Type': 'application/json',
-      'X-GitHub-Api-Version': '2022-11-28'
-    };
-    /* Mantém só as pendentes — aprovadas e rejeitadas saem do arquivo */
+    var h = {'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github+json','Content-Type':'application/json','X-GitHub-Api-Version':'2022-11-28'};
     var restantes = todos.filter(function(r){ return r.status==='pendente'; });
-    var conteudo  = btoa(unescape(encodeURIComponent(JSON.stringify(restantes, null, 2))));
-    var body = { message: 'Admin: atualiza coletas-pendentes.json', content: conteudo };
+    var conteudo  = btoa(unescape(encodeURIComponent(JSON.stringify(restantes,null,2))));
+    var body = {message:'Admin: atualiza coletas-pendentes.json',content:conteudo};
     if(window._mpdSHA) body.sha = window._mpdSHA;
-    var put = await fetch(GH_API, {method:'PUT', headers:headers, body:JSON.stringify(body)});
-    if(put.ok){
-      var r = await put.json();
-      window._mpdSHA = r.content ? r.content.sha : window._mpdSHA;
-    } else {
-      var err = await put.json().catch(function(){ return {}; });
-      _toast('⚠️ Erro ao salvar: '+(err.message||put.status));
-    }
-  }catch(e){ _toast('⚠️ Erro de conexão: '+e.message); }
+    var put = await fetch(GH_API,{method:'PUT',headers:h,body:JSON.stringify(body)});
+    if(put.ok){ var r=await put.json(); if(r.content) window._mpdSHA=r.content.sha; }
+    else{ var e=await put.json().catch(function(){ return {}; }); _toast('⚠️ Erro: '+(e.message||put.status)); }
+  }catch(e){ _toast('⚠️ Conexão: '+e.message); }
 }
 
-/* Verifica pendentes ao inicializar e a cada 5 minutos */
-(function _agendarVerificacao(){
-  setTimeout(function(){
-    _verificarPendentes();
-    setInterval(_verificarPendentes, 5*60*1000);
-  }, 3000);
-})();
+/* Verifica pendentes 3s após abrir e depois a cada 5min */
+setTimeout(function(){ _verificarPendentes(); setInterval(_verificarPendentes,5*60*1000); },3000);
 
 function reemitirPedido(){
   if(!_pedAtual) return;
@@ -14452,20 +14428,6 @@ async function _cadInit(){
   </div>
 </div>
 <input type="file" id="cad-imp-inp" accept=".listas" style="display:none" onchange="_cadImportarListas(this.files[0])">
-
-<!-- MODAL COLETAS PENDENTES -->
-<div id="modal-pendentes">
-  <div class="mpd-hd">
-    <div>
-      <div class="mpd-hd-t">📥 Coletas Pendentes <span class="mpd-badge" id="mpd-badge" style="display:none"></span></div>
-      <div class="mpd-hd-s">AGUARDANDO APROVAÇÃO DO ADMINISTRADOR</div>
-    </div>
-    <button class="mpd-hd-x" onclick="_mpdFechar()">✕</button>
-  </div>
-  <div class="mpd-body" id="mpd-body">
-    <div class="mpd-loading">Carregando...</div>
-  </div>
-</div>
 
 <!-- MODAL CONFIRMAÇÃO DE QUITAÇÃO -->
 <div id="modal-conf-quit" onclick="_mcqFechar()">
