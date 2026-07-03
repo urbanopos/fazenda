@@ -1078,29 +1078,22 @@ function enviarTudo(){
     ordemSetores.forEach(function(s){
       blocos.push('['+s.toUpperCase()+']\n'+setores[s].map(function(l){ return '  '+l; }).join('\n'));
     });
-    var msgTexto = 'COLETA FAZENDA SJ\n'
-      + (nome ? 'Coletor: '+nome+'\n' : '')
-      + 'Data: '+dfL+'\n\n'
-      + blocos.join('\n\n')
-      + '\n\n'+itens.length+' item(ns)'
-      + (linkImport ? '\n\n[Admin] Importar:\n'+linkImport : '');
-
-    // Abre WhatsApp direto para o numero configurado com imagem + texto
+    // Envia apenas a imagem, sem texto — o link de importação
+    // chega ao Admin automaticamente via GitHub (Coletas Pendentes)
     var file = new File([blob],'coleta-'+data+'.jpg',{type:'image/jpeg'});
-    var wppUrl = 'https://wa.me/'+n+'?text='+encodeURIComponent(msgTexto);
 
     if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-      navigator.share({text:msgTexto, files:[file]})
+      navigator.share({files:[file]})
         .then(function(){ _toast('✅ Coleta enviada! Verifique seu WhatsApp.'); })
         .catch(function(err){
           if(err && err.name !== 'AbortError'){
-            window.open(wppUrl,'_blank');
-            _toast('✅ Coleta enviada via WhatsApp!');
+            _fallbackDownload(blob,'coleta-'+data+'.jpg');
+            _toast('✅ Imagem salva — compartilhe pelo WhatsApp.');
           }
         });
     } else {
-      window.open(wppUrl,'_blank');
-      _toast('✅ Coleta enviada! Verifique seu WhatsApp.');
+      _fallbackDownload(blob,'coleta-'+data+'.jpg');
+      _toast('✅ Imagem salva — compartilhe pelo WhatsApp.');
     }
   });
 
