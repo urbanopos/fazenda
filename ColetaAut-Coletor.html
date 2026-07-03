@@ -1076,27 +1076,14 @@ function enviarTudo(){
     });
     var blocos = [];
     ordemSetores.forEach(function(s){
-      blocos.push('['+s.toUpperCase()+']
-'+setores[s].map(function(l){ return '  '+l; }).join('
-'));
+      blocos.push('['+s.toUpperCase()+']\n'+setores[s].map(function(l){ return '  '+l; }).join('\n'));
     });
-    var msgTexto = 'COLETA FAZENDA SJ
-'
-      + (nome ? 'Coletor: '+nome+'
-' : '')
-      + 'Data: '+dfL+'
-
-'
-      + blocos.join('
-
-')
-      + '
-
-'+itens.length+' item(ns)'
-      + (linkImport ? '
-
-[Admin] Importar:
-'+linkImport : '');
+    var msgTexto = 'COLETA FAZENDA SJ\n'
+      + (nome ? 'Coletor: '+nome+'\n' : '')
+      + 'Data: '+dfL+'\n\n'
+      + blocos.join('\n\n')
+      + '\n\n'+itens.length+' item(ns)'
+      + (linkImport ? '\n\n[Admin] Importar:\n'+linkImport : '');
 
     // Abre WhatsApp direto para o numero configurado com imagem + texto
     var file = new File([blob],'coleta-'+data+'.jpg',{type:'image/jpeg'});
