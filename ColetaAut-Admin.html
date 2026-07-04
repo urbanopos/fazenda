@@ -343,6 +343,13 @@ textarea{resize:none;height:72px;font-size:14px}
 .mpd-btn-rej{padding:11px 14px;border:1.5px solid #c0392b;border-radius:var(--r);background:none;color:#c0392b;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer}
 .mpd-loading{text-align:center;padding:32px;font-family:'DM Mono',monospace;font-size:11px;color:#999}
 
+/* ── BACKUP GITHUB ── */
+.bkp-status{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.45);margin-top:6px;line-height:1.5;padding:8px 10px;background:rgba(255,255,255,.04);border-radius:6px;border:1px solid rgba(255,255,255,.08)}
+.bkp-ok{color:#4caf74}
+.bkp-err{color:#e08080}
+.bkp-spin{display:inline-block;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
 /* Variante admin */
 .topo{ border-bottom-color: #b8943f !important; }
 .topo-ico{ background: #b8943f !important; }
@@ -737,6 +744,13 @@ textarea{resize:none;height:72px;font-size:14px}
           <div class="ad-iw" style="margin-bottom:0"><input class="ad-inp" type="password" id="ad-gh-token-inp" placeholder="ghp_..." autocomplete="off"></div>
         </div>
         <div class="ad-row"><button class="ad-ok" onclick="_salvarGhToken()" style="background:#1a6b2a;color:#fff">Salvar token</button></div>
+        <div class="ad-div"></div>
+        <span class="ad-lbl">Backup no GitHub</span>
+        <div class="bkp-status" id="bkp-status">Último backup: nunca</div>
+        <div class="ad-row" style="gap:8px;margin-top:8px">
+          <button class="ad-ok" onclick="_fazerBackup(true)" style="flex:1;background:#1a4a6b;color:#fff">☁️ Backup agora</button>
+          <button class="ad-ok" onclick="_restaurarBackup()" style="flex:1;background:#4a3a00;color:#ffd49a">📥 Restaurar</button>
+        </div>
         <div class="ad-div"></div>
         <span class="ad-lbl">Enviar app para novo coletor</span>
         <div class="ad-row"><button class="ad-ok" onclick="compartilharLink()" style="background:linear-gradient(135deg,#25d366,#128c7e);color:#fff">Enviar link pelo WhatsApp</button></div>
@@ -11630,6 +11644,10 @@ var NK = 'fsj_pedido_num';
 var GH_REPO  = 'urbanopos/fazenda';
 var GH_FILE  = 'coletas-pendentes.json';
 var GH_TOKEN_KEY = 'fsj_gh_token'; // token salvo no dispositivo, nunca no código
+/* Arquivos de backup no GitHub */
+var GH_BCK_COLETAS  = 'backup/coletas.json';
+var GH_BCK_PEDIDOS  = 'backup/pedidos.json';
+var GH_BCK_CADASTROS= 'backup/cadastros.json';
 var GH_API   = 'https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE;
 function _ghToken(){ return localStorage.getItem(GH_TOKEN_KEY)||''; }
 
@@ -12651,6 +12669,8 @@ async function _gravarHist(hist){
   var json = JSON.stringify(hist);
   try{ localStorage.setItem(HK, json); }catch(e){}
   if(_caOpfs) await _caOpfsSalvar(FSJ_PEDIDOS, json);
+  /* Backup automático assíncrono — não bloqueia o fluxo */
+  setTimeout(function(){ _fazerBackup(false); }, 2000);
 }
 
 function _carregarHist(){
@@ -13805,6 +13825,7 @@ async function _aprovarColeta(idx){
   reg.status = 'aprovada';
   await _salvarPendentesGitHub(window._mpdTodos);
   _toast('✅ Coleta aprovada e importada!');
+  setTimeout(function(){ _fazerBackup(false); }, 2000);
   abrirPendentes();
 }
 
@@ -13833,6 +13854,136 @@ async function _salvarPendentesGitHub(todos){
 
 /* Verifica pendentes 3s após abrir e depois a cada 5min */
 setTimeout(function(){ _verificarPendentes(); setInterval(_verificarPendentes,5*60*1000); },3000);
+
+/* ════════════════════════════════════════════════════════════════
+   BACKUP AUTOMÁTICO NO GITHUB
+   Arquivos: backup/coletas.json, backup/pedidos.json, backup/cadastros.json
+   ════════════════════════════════════════════════════════════════ */
+var BKP_TS_KEY = 'fsj_bkp_ts'; // timestamp do último backup
+
+function _bkpH(extra){
+  return Object.assign({
+    'Authorization':'token '+_ghToken(),
+    'Accept':'application/vnd.github+json',
+    'X-GitHub-Api-Version':'2022-11-28'
+  }, extra||{});
+}
+
+async function _ghLerSHA(caminho){
+  try{
+    var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+caminho+'?t='+Date.now(),
+      {headers:_bkpH(), cache:'no-store'});
+    if(r.ok){ var m=await r.json(); return m.sha||null; }
+  }catch(e){}
+  return null;
+}
+
+async function _ghGravar(caminho, dados, mensagem){
+  var sha = await _ghLerSHA(caminho);
+  var conteudo = btoa(unescape(encodeURIComponent(JSON.stringify(dados, null, 2))));
+  var body = {message: mensagem, content: conteudo};
+  if(sha) body.sha = sha;
+  var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+caminho,{
+    method:'PUT',
+    headers:_bkpH({'Content-Type':'application/json'}),
+    body:JSON.stringify(body)
+  });
+  if(!r.ok){ var e=await r.json().catch(function(){return{};}); throw new Error(e.message||r.status); }
+  return true;
+}
+
+async function _ghLer(caminho){
+  var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+caminho+'?t='+Date.now(),
+    {headers:_bkpH(), cache:'no-store'});
+  if(!r.ok) return null;
+  var m = await r.json();
+  return JSON.parse(atob(m.content.replace(/\n/g,'')));
+}
+
+function _bkpSetStatus(msg, cls){
+  var el = document.getElementById('bkp-status');
+  if(!el) return;
+  el.innerHTML = msg;
+  el.className = 'bkp-status'+(cls?' '+cls:'');
+}
+
+async function _fazerBackup(manual){
+  if(!_ghToken()){
+    if(manual) _toast('Configure o token GitHub primeiro.');
+    return;
+  }
+  var ts = new Date().toLocaleString('pt-BR');
+  _bkpSetStatus('<span class="bkp-spin">⏳</span> Fazendo backup...','');
+  try{
+    /* Coletas */
+    var coletas = _carregarHistColeta();
+    await _ghGravar(GH_BCK_COLETAS, coletas, 'Backup coletas — '+ts);
+    /* Pedidos */
+    var pedidos = _carregarHist();
+    await _ghGravar(GH_BCK_PEDIDOS, pedidos, 'Backup pedidos — '+ts);
+    /* Cadastros */
+    var cads = {};
+    try{ cads = JSON.parse(localStorage.getItem('fsj_cad')||'{}'); }catch(e){}
+    await _ghGravar(GH_BCK_CADASTROS, cads, 'Backup cadastros — '+ts);
+
+    localStorage.setItem(BKP_TS_KEY, ts);
+    _bkpSetStatus('☁️ <span class="bkp-ok">Último backup: '+ts+'</span>');
+    if(manual) _toast('✅ Backup concluído!');
+  }catch(e){
+    _bkpSetStatus('☁️ <span class="bkp-err">Erro no backup: '+e.message+'</span>');
+    if(manual) _toast('⚠️ Erro no backup: '+e.message);
+  }
+}
+
+async function _restaurarBackup(){
+  if(!_ghToken()){ _toast('Configure o token GitHub primeiro.'); return; }
+  if(!confirm('Restaurar backup do GitHub?\n\nOs dados locais serão SUBSTITUÍDOS pelos dados do backup.\n\nContinuar?')) return;
+  _bkpSetStatus('<span class="bkp-spin">⏳</span> Restaurando...','');
+  try{
+    var erros = [];
+    /* Coletas */
+    var coletas = await _ghLer(GH_BCK_COLETAS);
+    if(coletas){
+      var jc = JSON.stringify(coletas);
+      try{ localStorage.setItem(CK, jc); }catch(e){}
+      if(_caOpfs) await _caOpfsSalvar(FSJ_COLETAS, jc);
+    } else erros.push('coletas não encontradas');
+    /* Pedidos */
+    var pedidos = await _ghLer(GH_BCK_PEDIDOS);
+    if(pedidos){
+      var jp = JSON.stringify(pedidos);
+      try{ localStorage.setItem(HK, jp); }catch(e){}
+      if(_caOpfs) await _caOpfsSalvar(FSJ_PEDIDOS, jp);
+    } else erros.push('pedidos não encontrados');
+    /* Cadastros */
+    var cads = await _ghLer(GH_BCK_CADASTROS);
+    if(cads){
+      try{ localStorage.setItem('fsj_cad', JSON.stringify(cads)); }catch(e){}
+    } else erros.push('cadastros não encontrados');
+
+    var ts = new Date().toLocaleString('pt-BR');
+    _bkpSetStatus('📥 <span class="bkp-ok">Restaurado em: '+ts+(erros.length?' ('+erros.join(', ')+')':"")+'</span>');
+    _toast(erros.length ? '⚠️ Restaurado com avisos.' : '✅ Backup restaurado com sucesso!');
+    /* Atualiza telas */
+    _renderHist();
+    if(typeof renderHistColeta==='function') renderHistColeta();
+  }catch(e){
+    _bkpSetStatus('📥 <span class="bkp-err">Erro: '+e.message+'</span>');
+    _toast('⚠️ Erro ao restaurar: '+e.message);
+  }
+}
+
+/* Exibe data do último backup ao abrir o painel */
+function _atualizarStatusBackup(){
+  var ts = localStorage.getItem(BKP_TS_KEY);
+  _bkpSetStatus(ts ? '☁️ <span class="bkp-ok">Último backup: '+ts+'</span>' : 'Último backup: nunca');
+}
+
+/* Backup automático a cada 30 minutos se token configurado */
+setTimeout(function(){
+  _atualizarStatusBackup();
+  setInterval(function(){ _fazerBackup(false); }, 30*60*1000);
+}, 5000);
 
 function reemitirPedido(){
   if(!_pedAtual) return;
@@ -13958,6 +14109,7 @@ function abrirAdmin(){
     document.getElementById('ad-cfg').style.display='block';
     _atualizarBtnDesbloquear();
     _atualizarExibicaoToken();
+    _atualizarStatusBackup();
   } else {
     document.getElementById('ad-cfg').style.display='none';
     setTimeout(function(){ document.getElementById('ad-senha').focus(); },200);
