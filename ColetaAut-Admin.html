@@ -933,6 +933,13 @@ textarea{resize:none;height:72px;font-size:14px}
         <option value="">Todos</option>
       </select>
     </div>
+    <div>
+      <div class="hcol-lbl">Pgto</div>
+      <button id="hped-pgto" onclick="_toggleFiltroPgto()"
+        style="font-family:'DM Mono',monospace;font-size:11px;font-weight:700;padding:5px 12px;border-radius:6px;cursor:pointer;border:1.5px solid #c0392b;background:#fff;color:#c0392b;white-space:nowrap">
+        Em aberto
+      </button>
+    </div>
   </div>
   <!-- PAINEL HISTORICO DE PEDIDOS -->
   <div class="hist-panel" id="painel-hist">
@@ -12711,6 +12718,28 @@ function mostrarPainelVendas(qual){
 }
 
 /* Filtro centralizado — ano, mes e cliente — usado em toda a tela Vendas */
+/* ── Filtro de pagamento ── */
+var _filtroPgtoAtivo = false; // false = todos | true = apenas não pagos
+
+function _toggleFiltroPgto(){
+  _filtroPgtoAtivo = !_filtroPgtoAtivo;
+  var btn = document.getElementById('hped-pgto');
+  if(btn){
+    if(_filtroPgtoAtivo){
+      btn.textContent = '⚠️ Em aberto';
+      btn.style.background = '#c0392b';
+      btn.style.color = '#fff';
+      btn.style.borderColor = '#c0392b';
+    } else {
+      btn.textContent = 'Em aberto';
+      btn.style.background = '#fff';
+      btn.style.color = '#c0392b';
+      btn.style.borderColor = '#c0392b';
+    }
+  }
+  _renderHist();
+}
+
 function _filtrarHist(hist){
   var ano = (document.getElementById('hped-ano')||{}).value||'';
   var mes = (document.getElementById('hped-mes')||{}).value||'';
@@ -12720,6 +12749,7 @@ function _filtrarHist(hist){
     if(ano && p.data.slice(0,4)!==ano) return false;
     if(mes && p.data.slice(5,7)!==mes) return false;
     if(cli && (p.cliente||'')!==cli) return false;
+    if(_filtroPgtoAtivo && p.pago) return false; // exclui os já pagos
     return true;
   });
 }
@@ -12781,7 +12811,11 @@ function _renderHist(){
   // Atualiza campo Valor com somatório dos pedidos filtrados
   var totalFiltrado = filtrado.reduce(function(s,p){ return s+(p.total||0); },0);
   var elTotal = document.getElementById('hped-total');
-  if(elTotal) elTotal.textContent = 'R$ '+_fmt(totalFiltrado);
+  if(elTotal){
+    elTotal.textContent = 'R$ '+_fmt(totalFiltrado);
+    elTotal.style.color = _filtroPgtoAtivo ? '#c0392b' : '#7a3a00';
+    elTotal.title = _filtroPgtoAtivo ? 'Total em aberto (não pago)' : 'Total do período';
+  }
 
   if(!filtrado.length){
     lista.innerHTML = '<div class="hist-empty">Nenhum pedido no periodo selecionado.</div>';
