@@ -731,6 +731,13 @@ textarea{resize:none;height:72px;font-size:14px}
         <div class="ad-iw"><input class="ad-inp" type="password" id="ad-senha-nova" placeholder="Nova senha..." autocomplete="new-password"></div>
         <div class="ad-row"><button class="ad-ok" onclick="salvarSenha()" style="background:#2d4a38;color:var(--ac)">Salvar senha</button></div>
         <div class="ad-div"></div>
+        <span class="ad-lbl">Token GitHub (Coletas Pendentes)</span>
+        <div class="ad-val"><span id="ad-gh-token-sp">Não configurado</span></div>
+        <div style="margin-top:10px"><span class="ad-lbl">Cole o token ghp_... gerado no GitHub</span>
+          <div class="ad-iw" style="margin-bottom:0"><input class="ad-inp" type="password" id="ad-gh-token-inp" placeholder="ghp_..." autocomplete="off"></div>
+        </div>
+        <div class="ad-row"><button class="ad-ok" onclick="_salvarGhToken()" style="background:#1a6b2a;color:#fff">Salvar token</button></div>
+        <div class="ad-div"></div>
         <span class="ad-lbl">Enviar app para novo coletor</span>
         <div class="ad-row"><button class="ad-ok" onclick="compartilharLink()" style="background:linear-gradient(135deg,#25d366,#128c7e);color:#fff">Enviar link pelo WhatsApp</button></div>
 
@@ -11622,8 +11629,9 @@ var NK = 'fsj_pedido_num';
 /* ── GitHub API — coletas pendentes ─────────────────────────── */
 var GH_REPO  = 'urbanopos/fazenda';
 var GH_FILE  = 'coletas-pendentes.json';
-var GH_TOKEN = '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';
+var GH_TOKEN_KEY = 'fsj_gh_token'; // token salvo no dispositivo, nunca no código
 var GH_API   = 'https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE;
+function _ghToken(){ return localStorage.getItem(GH_TOKEN_KEY)||''; }
 
 var SETORES = {
   aviario:{label:'Aviario',cl:'',forn:false,produtos:[
@@ -13675,13 +13683,38 @@ function abrirHistPedidos(){
 function _atualizarBtnConsulta(adminLogado){ /* btn-consulta-pedidos sempre visível */ }
 var _adminLogado = false;
 
+/* ── Token GitHub: salvo apenas no dispositivo ─────────────── */
+function _salvarGhToken(){
+  var inp = document.getElementById('ad-gh-token-inp');
+  if(!inp) return;
+  var val = inp.value.trim();
+  if(!val){ _toast('Cole o token antes de salvar.'); return; }
+  if(!val.startsWith('ghp_') && !val.startsWith('github_pat_')){
+    _toast('Token inválido — deve começar com ghp_'); return;
+  }
+  localStorage.setItem(GH_TOKEN_KEY, val);
+  inp.value = '';
+  _atualizarExibicaoToken();
+  _toast('✅ Token salvo no dispositivo!');
+  /* Compartilha o token com o app Coletor via QR/link se necessário */
+  _verificarPendentes();
+}
+
+function _atualizarExibicaoToken(){
+  var sp = document.getElementById('ad-gh-token-sp');
+  if(!sp) return;
+  var t = _ghToken();
+  sp.textContent = t ? '✅ Configurado ('+t.slice(0,8)+'***)' : '⚠️ Não configurado';
+  sp.style.color  = t ? '#4caf74' : '#e08080';
+}
+
 /* ════════════════════════════════════════════════════════════════
    COLETAS PENDENTES — GitHub API
    ════════════════════════════════════════════════════════════════ */
 
 async function _verificarPendentes(){
   try{
-    var h = {'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+    var h = {'Authorization':'token '+_ghToken(),'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
     var resp = await fetch(GH_API+'?t='+Date.now(),{headers:h,cache:'no-store'});
     if(!resp.ok) return;
     var meta = await resp.json();
@@ -13699,9 +13732,18 @@ async function abrirPendentes(){
   if(!modal||!body) return;
   modal.classList.add('vis');
   _navPush('modal-pendentes');
+
+  /* Verifica se o token está configurado */
+  if(!_ghToken()){
+    body.innerHTML='<div class="mpd-vazia">🔑 Token GitHub não configurado.<br><br>'
+      +'Acesse o painel <b>Administrador</b> e cole o token no campo<br>'
+      +'<b>"Token GitHub (Coletas Pendentes)"</b>.</div>';
+    return;
+  }
+
   body.innerHTML='<div class="mpd-loading">🔄 Buscando coletas...</div>';
   try{
-    var h = {'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+    var h = {'Authorization':'token '+_ghToken(),'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
     var resp = await fetch(GH_API+'?t='+Date.now(),{headers:h,cache:'no-store'});
     if(resp.status===404){ body.innerHTML='<div class="mpd-vazia">✅ Nenhuma coleta pendente.</div>'; return; }
     if(!resp.ok) throw new Error('HTTP '+resp.status);
@@ -13778,7 +13820,7 @@ async function _rejeitarColeta(idx){
 
 async function _salvarPendentesGitHub(todos){
   try{
-    var h = {'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github+json','Content-Type':'application/json','X-GitHub-Api-Version':'2022-11-28'};
+    var h = {'Authorization':'token '+_ghToken(),'Accept':'application/vnd.github+json','Content-Type':'application/json','X-GitHub-Api-Version':'2022-11-28'};
     var restantes = todos.filter(function(r){ return r.status==='pendente'; });
     var conteudo  = btoa(unescape(encodeURIComponent(JSON.stringify(restantes,null,2))));
     var body = {message:'Admin: atualiza coletas-pendentes.json',content:conteudo};
@@ -13915,6 +13957,7 @@ function abrirAdmin(){
   if(_adminLogado){
     document.getElementById('ad-cfg').style.display='block';
     _atualizarBtnDesbloquear();
+    _atualizarExibicaoToken();
   } else {
     document.getElementById('ad-cfg').style.display='none';
     setTimeout(function(){ document.getElementById('ad-senha').focus(); },200);
