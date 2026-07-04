@@ -506,8 +506,9 @@ var VRK = 'fsj_versao_remota';   // ultima versao recebida do status.json
 /* ── GitHub API ─────────────────────────────────────────────── */
 var GH_REPO  = 'urbanopos/fazenda';
 var GH_FILE  = 'coletas-pendentes.json';
-var GH_TOKEN = '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';
+var GH_TOKEN_KEY = 'fsj_gh_token';
 var GH_API   = 'https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE;
+function _ghToken(){ return localStorage.getItem(GH_TOKEN_KEY)||''; }
 
 var SETORES = {
   aviario:{label:'Aviario',cl:'',forn:false,produtos:[
@@ -1523,10 +1524,14 @@ function _carregarHistColeta(){
 
 /* ── Envia coleta para coletas-pendentes.json no GitHub ──────── */
 async function _enviarColetaGitHub(reg){
+  if(!_ghToken()){
+    console.warn('Token GitHub não configurado — coleta salva apenas localmente.');
+    return;
+  }
   try{
     /* 1. Lê o arquivo atual (para obter o SHA necessário para o PUT) */
     var headers = {
-      'Authorization': 'token '+GH_TOKEN,
+      'Authorization': 'token '+_ghToken(),
       'Accept': 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28'
     };
