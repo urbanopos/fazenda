@@ -11609,11 +11609,16 @@ function _caGerarIcone(){
   try{
     var cv=document.createElement('canvas'); cv.width=cv.height=192;
     var ctx=cv.getContext('2d');
+    /* Fundo */
     var g=ctx.createLinearGradient(0,0,192,192);
-    g.addColorStop(0,'#2d4a38'); g.addColorStop(1,'#1c2e22');
+    g.addColorStop(0,'#0a2550'); g.addColorStop(1,'#0a2550');
     ctx.fillStyle=g;
-    if(ctx.roundRect) ctx.roundRect(0,0,192,192,40); else{ ctx.rect(0,0,192,192); }
+    ctx.beginPath();
+    if(ctx.roundRect) ctx.roundRect(0,0,192,192,38); else ctx.rect(0,0,192,192);
     ctx.fill();
+    /* Logo folha — escalado e centralizado para deixar espaço para "ADMIN" */
+    var sc=0.72, ox=96, oy=14; // escala 72%, deslocado para cima
+    ctx.save(); ctx.translate(ox,oy); ctx.scale(sc,sc); ctx.translate(-96,-28);
     ctx.fillStyle='#b8943f';
     ctx.beginPath(); ctx.moveTo(96,28);
     ctx.bezierCurveTo(58,55,44,100,60,138);
@@ -11626,8 +11631,14 @@ function _caGerarIcone(){
     ctx.bezierCurveTo(97,72,97,50,96,28); ctx.fill();
     ctx.strokeStyle='#b8943f'; ctx.lineWidth=5; ctx.lineCap='round';
     ctx.beginPath(); ctx.moveTo(96,138); ctx.lineTo(96,158); ctx.stroke();
-    ctx.fillStyle='#b8943f'; ctx.font='bold 34px serif'; ctx.textAlign='center';
-    ctx.fillText('ADMIN',96,182);
+    ctx.restore();
+    /* Separador dourado */
+    var logoBot = oy + (158-28)*sc + 10;
+    ctx.strokeStyle='#b8943f'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(32,logoBot); ctx.lineTo(160,logoBot); ctx.stroke();
+    /* Texto ADMIN */
+    ctx.fillStyle='#b8943f'; ctx.font='bold 28px serif'; ctx.textAlign='center';
+    ctx.fillText('ADMIN', 96, logoBot+28);
     var url=cv.toDataURL('image/png');
     var al=document.getElementById('apple-icon-link');
     var fl=document.getElementById('favicon-link');
