@@ -508,7 +508,26 @@ var GH_REPO  = 'urbanopos/fazenda';
 var GH_FILE  = 'coletas-pendentes.json';
 var GH_TOKEN_KEY = 'fsj_gh_token';
 var GH_API   = 'https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE;
+var GH_BCK_COLETAS = 'backup/coletas.json';
 function _ghToken(){ return localStorage.getItem(GH_TOKEN_KEY)||''; }
+
+/* Backup de coletas após cada envio */
+async function _bkpColetas(hist){
+  if(!_ghToken()) return;
+  try{
+    var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_BCK_COLETAS+'?t='+Date.now(),
+      {headers:{'Authorization':'token '+_ghToken(),'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'},cache:'no-store'});
+    var sha = r.ok ? (await r.json()).sha : null;
+    var conteudo = btoa(unescape(encodeURIComponent(JSON.stringify(hist,null,2))));
+    var body = {message:'Backup coletas — coletor',content:conteudo};
+    if(sha) body.sha = sha;
+    await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_BCK_COLETAS,{
+      method:'PUT',
+      headers:{'Authorization':'token '+_ghToken(),'Accept':'application/vnd.github+json','Content-Type':'application/json','X-GitHub-Api-Version':'2022-11-28'},
+      body:JSON.stringify(body)
+    });
+  }catch(e){ console.warn('Backup coletas:', e.message); }
+}
 
 var SETORES = {
   aviario:{label:'Aviario',cl:'',forn:false,produtos:[
@@ -1514,8 +1533,9 @@ function _salvarColeta(reg){
   hist.unshift(reg);
   if(hist.length > 500) hist = hist.slice(0,500);
   try{ localStorage.setItem(CK, JSON.stringify(hist)); }catch(e){}
-  /* Envia simultaneamente para o GitHub */
+  /* Envia para pendentes e faz backup */
   _enviarColetaGitHub(reg);
+  setTimeout(function(){ _bkpColetas(hist); }, 3000);
 }
 
 function _carregarHistColeta(){
