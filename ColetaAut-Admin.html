@@ -12804,9 +12804,10 @@ function _renderHist(){
     cli = selCli.value; // reler após rebuild
   }
 
-  // Aplica filtro de cliente
+  // Aplica filtro de cliente E de pagamento
   var filtrado = filtradoAnoMes.filter(function(p){
     if(cli && (p.cliente||'') !== cli) return false;
+    if(_filtroPgtoAtivo && p.pago === true) return false;
     return true;
   });
 
