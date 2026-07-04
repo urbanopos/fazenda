@@ -12749,7 +12749,9 @@ function _filtrarHist(hist){
     if(ano && p.data.slice(0,4)!==ano) return false;
     if(mes && p.data.slice(5,7)!==mes) return false;
     if(cli && (p.cliente||'')!==cli) return false;
-    if(_filtroPgtoAtivo && p.pago) return false; // exclui os já pagos
+    // Filtro Pgto: quando ativo mostra APENAS os não quitados
+    // p.pago pode ser true, false, undefined ou null — só true = quitado
+    if(_filtroPgtoAtivo && p.pago === true) return false;
     return true;
   });
 }
