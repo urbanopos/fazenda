@@ -1,7 +1,22 @@
 [
   {
+    "data": "2026-07-07",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "unid": "unid",
+        "qtd": 61,
+        "obs": "",
+        "forn": ""
+      }
+    ],
+    "ts": 1783396652665
+  },
+  {
     "data": "2026-07-01",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Campo",
@@ -16,7 +31,7 @@
   },
   {
     "data": "2026-06-15",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Campo",
@@ -29,7 +44,7 @@
   },
   {
     "data": "2026-07-01",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -44,7 +59,7 @@
   },
   {
     "data": "2026-06-27",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -59,7 +74,7 @@
   },
   {
     "data": "2026-06-01",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -78,7 +93,7 @@
   },
   {
     "data": "2026-06-22",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Campo",
@@ -93,7 +108,7 @@
   },
   {
     "data": "2026-06-22",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Perda",
@@ -108,7 +123,7 @@
   },
   {
     "data": "2026-06-22",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Perda",
@@ -123,7 +138,7 @@
   },
   {
     "data": "2026-06-11",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -138,7 +153,7 @@
   },
   {
     "data": "2026-06-10",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -153,7 +168,7 @@
   },
   {
     "data": "2026-06-10",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -168,7 +183,7 @@
   },
   {
     "data": "2026-06-10",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -183,7 +198,7 @@
   },
   {
     "data": "2026-06-10",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -198,7 +213,7 @@
   },
   {
     "data": "2026-06-10",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -213,7 +228,7 @@
   },
   {
     "data": "2026-06-10",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -228,7 +243,7 @@
   },
   {
     "data": "2026-06-09",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
