@@ -1,5 +1,54 @@
 [
   {
+    "num": "PED-0029",
+    "cliente": "Luiza Gomes",
+    "data": "2026-07-08",
+    "itens": [
+      {
+        "col1": "08/07/2026",
+        "col2": "Esterco",
+        "col3": "13 Sacos",
+        "col4": "R$ 15,00 x 13",
+        "col5": "R$ 195,00",
+        "val": 195,
+        "prodId": "esterco",
+        "nome": "Esterco",
+        "unidade": "Sacos",
+        "qtd": 13,
+        "preco": 15,
+        "sub": 195,
+        "data": "08/07/2026"
+      }
+    ],
+    "total": 195,
+    "ts": 1783509756283
+  },
+  {
+    "num": "PED-0028",
+    "cliente": "Raiane de Oliveira",
+    "data": "2026-07-07",
+    "itens": [
+      {
+        "col1": "07/07/2026",
+        "col2": "Ovos de Capoeira",
+        "col3": "5 Bandeja c/30 ovos",
+        "col4": "R$ 30,00 x 5",
+        "col5": "R$ 150,00",
+        "val": 150,
+        "prodId": "ovo",
+        "nome": "Ovos de Capoeira",
+        "unidade": "Bandeja c/30 ovos",
+        "qtd": 5,
+        "preco": 30,
+        "sub": 150,
+        "data": "07/07/2026"
+      }
+    ],
+    "total": 150,
+    "ts": 1783430445423,
+    "pago": true
+  },
+  {
     "num": "PED-0027",
     "cliente": "Luiza Gomes",
     "data": "2026-07-03",
@@ -76,7 +125,7 @@
   },
   {
     "num": "PED-0024",
-    "cliente": "JosafÃÂ¡ (Casa Amarela)",
+    "cliente": "Josafá (Casa Amarela)",
     "data": "2026-07-01",
     "itens": [
       {
@@ -98,7 +147,7 @@
   },
   {
     "num": "PED-0023",
-    "cliente": "FÃÂ¡tima ",
+    "cliente": "Fátima ",
     "data": "2026-07-01",
     "itens": [
       {
@@ -138,7 +187,7 @@
   },
   {
     "num": "PED-0022",
-    "cliente": "LÃÂ©o Alencar",
+    "cliente": "Léo Alencar",
     "data": "2026-07-01",
     "itens": [
       {
@@ -442,7 +491,7 @@
   },
   {
     "num": "PED-0013",
-    "cliente": "JOSAFÃÂ (CASA AMARELA)",
+    "cliente": "JOSAFÁ (CASA AMARELA)",
     "data": "2026-06-17",
     "itens": [
       {
