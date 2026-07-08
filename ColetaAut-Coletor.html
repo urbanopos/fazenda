@@ -328,6 +328,14 @@ textarea{resize:none;height:72px;font-size:14px}
         <div class="ad-iw"><input class="ad-inp" type="password" id="ad-senha-nova" placeholder="Nova senha..." autocomplete="new-password"></div>
         <div class="ad-row"><button class="ad-ok" onclick="salvarSenha()" style="background:#2d4a38;color:var(--ac)">Salvar senha</button></div>
         <div class="ad-div"></div>
+        <span class="ad-lbl">Token GitHub (envio de coletas)</span>
+        <div class="ad-val"><span id="ad-gh-token-sp">Não configurado</span></div>
+        <div class="ad-val" style="font-size:11px;margin-top:4px"><span id="ad-gh-status-sp"></span></div>
+        <div style="margin-top:10px"><span class="ad-lbl">Cole o token ghp_... gerado no GitHub</span>
+          <div class="ad-iw" style="margin-bottom:0"><input class="ad-inp" type="password" id="ad-gh-token-inp" placeholder="ghp_..." autocomplete="off"></div>
+        </div>
+        <div class="ad-row"><button class="ad-ok" onclick="_salvarGhToken()" style="background:#1a6b2a;color:#fff">Salvar token</button></div>
+        <div class="ad-div"></div>
         <span class="ad-lbl">Enviar app para novo coletor</span>
         <div class="ad-row"><button class="ad-ok" onclick="compartilharLink()" style="background:linear-gradient(135deg,#25d366,#128c7e);color:#fff">Enviar link pelo WhatsApp</button></div>
         <div class="ad-div"></div>
@@ -510,6 +518,50 @@ var GH_TOKEN_KEY = 'fsj_gh_token';
 var GH_API   = 'https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE;
 var GH_BCK_COLETAS = 'backup/coletas.json';
 function _ghToken(){ return localStorage.getItem(GH_TOKEN_KEY)||''; }
+
+/* ── Configuração remota via link (#cfg=...) ───────────────────────────
+   Permite habilitar o envio de coletas sem precisar abrir o painel
+   admin no celular do operador: o administrador gera um link com o
+   token embutido e envia por WhatsApp; ao abrir o link uma única vez,
+   o app se configura sozinho. ──────────────────────────────────────── */
+function _aplicarConfigDoLink(){
+  try{
+    var hash = location.hash || '';
+    var m = hash.match(/cfg=([^&]+)/);
+    if(!m) return;
+    var cfg = JSON.parse(decodeURIComponent(escape(atob(m[1]))));
+    if(cfg && cfg.tk){
+      localStorage.setItem(GH_TOKEN_KEY, cfg.tk);
+      setTimeout(function(){ _toast('✅ App habilitado! Suas coletas já serão enviadas.'); }, 800);
+    }
+    // Remove o token da URL/histórico do navegador assim que aplicado
+    history.replaceState(null, '', location.pathname + location.search);
+  }catch(e){ console.warn('config do link:', e.message); }
+}
+
+/* ── Token GitHub: salvo apenas neste dispositivo coletor ─────────────── */
+function _salvarGhToken(){
+  var inp = document.getElementById('ad-gh-token-inp');
+  if(!inp) return;
+  var val = inp.value.trim();
+  if(!val){ alert('Cole o token antes de salvar.'); return; }
+  if(!val.startsWith('ghp_') && !val.startsWith('github_pat_')){
+    alert('Token inválido — deve começar com ghp_'); return;
+  }
+  localStorage.setItem(GH_TOKEN_KEY, val);
+  inp.value = '';
+  _atualizarExibicaoToken();
+  alert('✅ Token salvo neste dispositivo! As próximas coletas já serão enviadas ao Admin.');
+}
+function _atualizarExibicaoToken(){
+  var sp = document.getElementById('ad-gh-token-sp');
+  if(!sp) return;
+  var t = _ghToken();
+  sp.textContent = t ? '✅ Configurado ('+t.slice(0,8)+'***)' : '⚠️ Não configurado';
+  sp.style.color  = t ? '#4caf74' : '#e08080';
+  var st = document.getElementById('ad-gh-status-sp');
+  if(st){ st.textContent = localStorage.getItem('fsj_gh_ultimo_status') || ''; }
+}
 
 /* Backup de coletas após cada envio */
 async function _bkpColetas(hist){
@@ -706,6 +758,7 @@ function _iniciar(){
 }
 
 document.addEventListener('DOMContentLoaded', function(){
+  _aplicarConfigDoLink();
   if(localStorage.getItem(BK)==='1'){
     var msg = localStorage.getItem(MK)||'Aplicativo desativado pelo administrador.';
     document.getElementById('bl-msg').innerHTML = msg.replace(/\n/g,'<br>');
@@ -1543,9 +1596,11 @@ function _carregarHistColeta(){
 }
 
 /* ── Envia coleta para coletas-pendentes.json no GitHub ──────── */
-async function _enviarColetaGitHub(reg){
+async function _enviarColetaGitHub(reg,tentativa){
+  tentativa = tentativa || 1;
   if(!_ghToken()){
     console.warn('Token GitHub não configurado — coleta salva apenas localmente.');
+    try{ localStorage.setItem('fsj_gh_ultimo_status','⚠️ Token não configurado — coleta ficou só neste aparelho.'); }catch(e){}
     return;
   }
   try{
@@ -1587,13 +1642,20 @@ async function _enviarColetaGitHub(reg){
 
     if(put.ok){
       console.log('✅ Coleta enviada ao GitHub');
+      try{ localStorage.setItem('fsj_gh_ultimo_status','✅ Última coleta enviada em '+new Date().toLocaleString('pt-BR')); }catch(e){}
+    } else if(put.status===409 && tentativa<3){
+      // Conflito de versão (outro dispositivo gravou ao mesmo tempo) — tenta de novo com o SHA mais recente
+      console.warn('GitHub gravação: conflito (409), tentando novamente...');
+      return _enviarColetaGitHub(reg, tentativa+1);
     } else {
       var err = await put.json().catch(function(){ return {}; });
       console.warn('GitHub gravação:', put.status, err.message||'');
+      try{ localStorage.setItem('fsj_gh_ultimo_status','❌ Falha ao enviar (HTTP '+put.status+'). A coleta ficou salva só neste aparelho.'); }catch(e){}
     }
   } catch(e){
     console.warn('_enviarColetaGitHub:', e.message);
-    /* Falha silenciosa — coleta já foi salva localmente */
+    try{ localStorage.setItem('fsj_gh_ultimo_status','❌ Sem conexão — a coleta ficou salva só neste aparelho.'); }catch(e2){}
+    /* Falha silenciosa na tela, mas registrada para consulta no painel — coleta já foi salva localmente */
   }
 }
 
@@ -1805,6 +1867,7 @@ function abrirAdmin(){
     // Ja autenticado — abre direto na tela de configuracoes
     document.getElementById('ad-cfg').style.display='block';
     _atualizarBtnDesbloquear();
+    _atualizarExibicaoToken();
   } else {
     document.getElementById('ad-cfg').style.display='none';
     setTimeout(function(){ document.getElementById('ad-senha').focus(); },200);
@@ -1836,6 +1899,7 @@ function verificarAdmin(){
     _adminLogado = true;
     _atualizarBtnConsulta(true);
     _atualizarBtnDesbloquear();
+    _atualizarExibicaoToken();
   } else {
     st.textContent='Senha incorreta'; st.className='ad-st er';
     document.getElementById('ad-senha').value='';
