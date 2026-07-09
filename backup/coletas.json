@@ -1,5 +1,20 @@
 [
   {
+    "data": "2026-07-08",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Frango",
+        "unid": "unid",
+        "qtd": 1,
+        "obs": "",
+        "forn": ""
+      }
+    ],
+    "ts": 1783539772875
+  },
+  {
     "data": "2026-07-07",
     "coletor": "Júnior",
     "itens": [
