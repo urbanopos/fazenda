@@ -74,14 +74,7 @@
   {
     "data": "2026-06-01",
     "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Estoque",
-        "nome": "Pre-inicial Mauricea",
-        "qtd": 1,
-        "unid": "sc 40kg"
-      }
-    ],
+    "itens": [],
     "ts": 1783688505523
   },
   {
@@ -314,59 +307,125 @@
     "ts": 1781188985765
   },
   {
-    "data": "2026-06-10",
+    "data": "2026-07-03",
     "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
-        "nome": "Milho",
-        "unid": "sc 40kg",
-        "qtd": 5,
-        "obs": "",
-        "forn": ""
+        "nome": "Crescimento",
+        "qtd": 2,
+        "unid": "sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Engorda",
+        "qtd": 2,
+        "unid": "sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Postura",
+        "qtd": 2,
+        "unid": "sc 40kg"
       }
     ],
     "ts": 1781095076513
   },
   {
-    "data": "2026-06-10",
+    "data": "2026-06-27",
     "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
-        "nome": "Inicial",
-        "unid": "sc 40kg",
-        "qtd": 4,
-        "obs": "",
-        "forn": ""
+        "nome": "Crescimento",
+        "qtd": 2,
+        "unid": "sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Engorda",
+        "qtd": 2,
+        "unid": "sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Postura",
+        "qtd": 3,
+        "unid": "sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Milho",
+        "qtd": 2,
+        "unid": "sc 50kg"
       }
     ],
     "ts": 1781094500821
   },
   {
-    "data": "2026-06-10",
+    "data": "2026-06-17",
     "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "unid": "sc 40kg",
-        "qtd": 5,
-        "obs": "",
-        "forn": ""
+        "qtd": 2,
+        "unid": "sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Crescimento",
+        "qtd": 3,
+        "unid": "sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Postura",
+        "qtd": 3,
+        "unid": "sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Milho",
+        "qtd": 2,
+        "unid": "sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Tilamax",
+        "qtd": 1,
+        "unid": "sc 25kg"
       }
     ],
     "ts": 1781090425770
   },
   {
-    "data": "2026-06-06",
+    "data": "2026-06-10",
     "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
-        "nome": "Farelo de trigo",
+        "nome": "Crescimento",
         "qtd": 2,
-        "unid": "sc 30kg"
+        "unid": "sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Engorda",
+        "qtd": 2,
+        "unid": "sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Postura",
+        "qtd": 2,
+        "unid": "sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Milho",
+        "qtd": 2,
+        "unid": "sc 50kg"
       }
     ],
     "ts": 1781089929186
