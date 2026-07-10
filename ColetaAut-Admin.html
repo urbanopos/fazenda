@@ -13169,9 +13169,7 @@ function _renderHistColetaDetalhe(body, registros, setorFiltro){
     html += '<div class="hcol-entrada-btns">';
     html += '<button class="hcol-btn-edit" onclick="_abrirEditColeta('+ri+')">✎ Editar</button>';
     html += '<button class="hcol-btn-dl" onclick="_reenviarColeta('+ri+')" title="Reenviar">📤</button>';
-    if(_adminLogado){
-      html += '<button class="hcol-btn-del" onclick="_excluirColeta('+ri+')" title="Excluir">🗑</button>';
-    }
+    html += '<button class="hcol-btn-del" onclick="_excluirColeta('+ri+')" title="Excluir">🗑</button>';
     html += '</div>';
     html += '</div>';
   });
@@ -13315,7 +13313,9 @@ function _salvarEditColeta(ri){
     if(hist[i].ts === ts){ hist[i] = regs[ri]; found = true; break; }
   }
   if(!found){ hist.unshift(regs[ri]); } // segurança
-  try{ localStorage.setItem(CK, JSON.stringify(hist)); }catch(e){}
+  var jsonEdit = JSON.stringify(hist);
+  try{ localStorage.setItem(CK, jsonEdit); }catch(e){}
+  if(_caOpfs) _caOpfsSalvar(FSJ_COLETAS, jsonEdit); // grava a edição na pasta real (OPFS/servidor local)
 
   _toast('\u2705 Registro atualizado!');
   // Fecha form e re-renderiza
@@ -13682,8 +13682,10 @@ function _excluirColeta(ri){
   var hist = _carregarHistColeta();
   var idx = hist.findIndex(function(x){ return x.ts === r.ts; });
   if(idx >= 0) hist.splice(idx,1);
-  try{ localStorage.setItem(CK, JSON.stringify(hist)); }catch(e){}
-  _toast('\u2705 Coleta excluida.');
+  var json = JSON.stringify(hist);
+  try{ localStorage.setItem(CK, json); }catch(e){}
+  if(_caOpfs) _caOpfsSalvar(FSJ_COLETAS, json); // grava a exclusão na pasta real (OPFS/servidor local)
+  _toast('✅ Coleta excluida.');
   renderHistColeta();
 }
 
