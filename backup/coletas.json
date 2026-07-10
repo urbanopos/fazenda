@@ -6,42 +6,20 @@
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg"
       },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Milho",
-        "unid": "sc 40kg",
-        "qtd": 1,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Farelo da vaca",
-        "unid": "unid",
-        "qtd": 1,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg"
       }
     ],
     "ts": 1783688506163
@@ -94,48 +72,14 @@
     "ts": 1783688506163
   },
   {
-    "data": "2026-07-10",
+    "data": "2026-06-01",
     "coletor": "Menininha",
     "itens": [
       {
         "setor": "Estoque",
-        "nome": "Postura",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Crescimento",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Engorda",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Milho",
-        "unid": "sc 40kg",
+        "nome": "Pre-inicial Mauricea",
         "qtd": 1,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Farelo da vaca",
-        "unid": "unid",
-        "qtd": 1,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg"
       }
     ],
     "ts": 1783688505523
@@ -415,46 +359,58 @@
     "ts": 1781090425770
   },
   {
-    "data": "2026-06-10",
+    "data": "2026-06-06",
     "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
-        "nome": "Crescimento",
-        "unid": "sc 40kg",
-        "qtd": 3,
-        "obs": "",
-        "forn": ""
+        "nome": "Farelo de trigo",
+        "qtd": 2,
+        "unid": "sc 30kg"
       }
     ],
     "ts": 1781089929186
   },
   {
-    "data": "2026-06-10",
+    "data": "2026-06-02",
     "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "unid": "sc 40kg",
+        "qtd": 3,
+        "unid": "sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Crescimento",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Engorda",
+        "qtd": 3,
+        "unid": "sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Milho",
+        "qtd": 1,
+        "unid": "sc 50kg"
       }
     ],
     "ts": 1781089417326
   },
   {
-    "data": "2026-06-10",
+    "data": "2026-06-01",
     "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
-        "nome": "Postura",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "nome": "Pré-inicial Mauricea",
+        "qtd": 1,
+        "unid": "sc 40kg"
       }
     ],
     "ts": 1781089303703
