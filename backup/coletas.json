@@ -34,11 +34,56 @@
         "qtd": 1,
         "obs": "",
         "forn": ""
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Farelo da vaca",
+        "unid": "unid",
+        "qtd": 1,
+        "obs": "",
+        "forn": ""
       }
     ],
-    "ts": 1783688420441,
-    "status": "pendente",
-    "enviadoEm": "2026-07-10T13:00:21.551Z"
+    "ts": 1783688505523
+  },
+  {
+    "data": "2026-07-10",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Postura",
+        "unid": "sc 40kg",
+        "qtd": 2,
+        "obs": "",
+        "forn": ""
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Crescimento",
+        "unid": "sc 40kg",
+        "qtd": 2,
+        "obs": "",
+        "forn": ""
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Engorda",
+        "unid": "sc 40kg",
+        "qtd": 2,
+        "obs": "",
+        "forn": ""
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Milho",
+        "unid": "sc 40kg",
+        "qtd": 1,
+        "obs": "",
+        "forn": ""
+      }
+    ],
+    "ts": 1783688420441
   },
   {
     "data": "2026-07-09",
