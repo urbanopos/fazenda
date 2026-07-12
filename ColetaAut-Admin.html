@@ -789,9 +789,12 @@ textarea{resize:none;height:72px;font-size:14px}
 <div class="corpo">
   <div class="cg" style="margin-bottom:20px">
     <span class="cl" id="lbl-data">Data da Coleta</span>
-    <div class="cdata">
-      <input type="date" id="data-global" style="flex:1">
-      <button class="btn-hj" onclick="setHoje()">Hoje</button>
+    <div class="cdata" style="justify-content:space-between;align-items:center">
+      <div style="display:flex;gap:8px;align-items:center;flex:1;min-width:0">
+        <input type="date" id="data-global" style="flex:1">
+        <button class="btn-hj" onclick="setHoje()">Hoje</button>
+      </div>
+      <button class="btn-hj" onclick="sairColeta()" style="background:#5a1a1a;color:#ffb4b4;border:1px solid #7a2a2a;margin-left:12px;flex:none">Sair</button>
     </div>
   </div>
   <div class="abas">
@@ -11355,7 +11358,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '9289f923398e';
+  var FP = '8f942a96dce1';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -11654,6 +11657,10 @@ var GH_BCK_COLETAS  = 'backup/coletas.json';
 var GH_BCK_PEDIDOS  = 'backup/pedidos.json';
 var GH_BCK_CADASTROS= 'backup/cadastros.json';
 var GH_API   = 'https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE;
+/* Catalogo de itens compartilhado entre Admin e Coletores */
+var GH_CATALOGO_FILE = 'catalogo.json';
+var GH_CATALOGO_API  = 'https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_CATALOGO_FILE;
+var GH_CATALOGO_PUB  = 'https://urbanopos.github.io/fazenda/catalogo.json'; // leitura publica, sem token
 function _ghToken(){ return localStorage.getItem(GH_TOKEN_KEY)||''; }
 
 var SETORES = {
@@ -11732,22 +11739,137 @@ function _catalogoSlug(nome){
   return s || ('item'+Date.now());
 }
 function _catalogoBuscar(setor, nome){
+  // Retorna o primeiro registro com esse nome (qualquer unidade) — usado para saber se o NOME ja existe
   var cat = _catalogoCarregar()[setor]||[];
   var alvo = String(nome).trim().toLowerCase();
   return cat.find(function(it){ return it.nome.trim().toLowerCase()===alvo; });
 }
+function _catalogoBuscarExato(setor, nome, unid){
+  var cat = _catalogoCarregar()[setor]||[];
+  var an = String(nome).trim().toLowerCase(), au = String(unid).trim().toLowerCase();
+  return cat.find(function(it){ return it.nome.trim().toLowerCase()===an && it.unid.trim().toLowerCase()===au; });
+}
+function _catalogoNomesUnicos(setor){
+  var cat = _catalogoCarregar()[setor]||[];
+  var vistos = {}, out = [];
+  cat.forEach(function(it){
+    var chave = it.nome.trim().toLowerCase();
+    if(!vistos[chave]){ vistos[chave]=true; out.push(it.nome); }
+  });
+  return out.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
+}
+function _catalogoUnidadesPara(setor, nome){
+  var cat = _catalogoCarregar()[setor]||[];
+  var alvo = String(nome).trim().toLowerCase();
+  var vistos = {}, out = [];
+  cat.forEach(function(it){
+    if(it.nome.trim().toLowerCase()===alvo){
+      var u = it.unid.trim();
+      if(!vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
+    }
+  });
+  return out;
+}
 function _catalogoAdicionar(setor, nome, unid, passo){
+  // Uma mesma "nome" pode ter mais de uma unidade/apresentacao cadastrada —
+  // so evita duplicar quando nome+unidade forem exatamente iguais.
   var cat = _catalogoCarregar();
-  var existente = _catalogoBuscar(setor, nome);
+  var existente = _catalogoBuscarExato(setor, nome, unid||'unid');
   if(existente) return existente;
-  var id = _catalogoSlug(nome);
-  // Evita colisao de id dentro do mesmo setor
+  var id = _catalogoSlug(nome)+'_'+_catalogoSlug(unid||'unid');
   var base = id, n = 2;
   while(cat[setor].some(function(it){ return it.id===id; })){ id = base+'_'+(n++); }
   var novo = { id:id, nome:String(nome).trim(), unid:(unid||'unid').trim(), passo:passo||1 };
   cat[setor].push(novo);
   _catalogoSalvar();
+  _catalogoEnviarGitHub(); // publica no GitHub (nao bloqueia) — Coletores puxam essa versao automaticamente
   return novo;
+}
+
+/* ── Sincronizacao do catalogo entre Admin e Coletores via GitHub ─────
+   Admin: publica (PUT) o catalogo completo sempre que cadastra item novo.
+   Coletor/Admin: buscam (GET, sem precisar de token) a versao publicada
+   e mesclam com o catalogo local, periodicamente. ──────────────────── */
+async function _catalogoEnviarGitHub(){
+  if(!_ghToken()) return; // sem token configurado — segue funcionando so localmente neste aparelho
+  try{
+    var headers = {
+      'Authorization': 'token '+_ghToken(),
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28'
+    };
+    var sha = null;
+    var r = await fetch(GH_CATALOGO_API+'?t='+Date.now(), {headers:headers});
+    if(r.ok){ var meta = await r.json(); sha = meta.sha; }
+    var conteudo = btoa(unescape(encodeURIComponent(JSON.stringify(_catalogoCarregar(), null, 2))));
+    var body = { message: 'Atualiza catalogo de itens', content: conteudo };
+    if(sha) body.sha = sha;
+    var put = await fetch(GH_CATALOGO_API, {
+      method: 'PUT',
+      headers: Object.assign({'Content-Type':'application/json'}, headers),
+      body: JSON.stringify(body)
+    });
+    if(!put.ok && put.status===409){
+      // Conflito (outro dispositivo publicou ao mesmo tempo) — tenta mais uma vez com o sha atual
+      var r2 = await fetch(GH_CATALOGO_API+'?t='+Date.now(), {headers:headers});
+      if(r2.ok){
+        var meta2 = await r2.json();
+        body.sha = meta2.sha;
+        await fetch(GH_CATALOGO_API, {method:'PUT', headers:Object.assign({'Content-Type':'application/json'},headers), body:JSON.stringify(body)});
+      }
+    }
+  }catch(e){ console.warn('_catalogoEnviarGitHub:', e.message); }
+}
+
+function _catalogoMesclarRemoto(remoto){
+  if(!remoto || typeof remoto !== 'object') return false;
+  var local = _catalogoCarregar();
+  var mudou = false;
+  Object.keys(remoto).forEach(function(setor){
+    if(!Array.isArray(local[setor])) local[setor] = [];
+    (remoto[setor]||[]).forEach(function(itRemoto){
+      if(!itRemoto || !itRemoto.nome) return;
+      var existe = local[setor].some(function(itLocal){
+        return itLocal.nome.trim().toLowerCase()===itRemoto.nome.trim().toLowerCase()
+            && itLocal.unid.trim().toLowerCase()===(itRemoto.unid||'unid').trim().toLowerCase();
+      });
+      if(!existe){
+        local[setor].push({ id:itRemoto.id||_catalogoSlug(itRemoto.nome), nome:itRemoto.nome, unid:itRemoto.unid||'unid', passo:itRemoto.passo||1 });
+        mudou = true;
+      }
+    });
+  });
+  if(mudou){ _catalogo = local; try{ localStorage.setItem(CAT_KEY, JSON.stringify(local)); }catch(e){} }
+  return mudou;
+}
+
+async function _catalogoBuscarRemoto(){
+  try{
+    var r = await fetch(GH_CATALOGO_PUB+'?t='+Date.now(), {cache:'no-store'});
+    if(!r.ok) return null;
+    return await r.json();
+  }catch(e){ return null; }
+}
+
+async function _catalogoSincronizarLocal(){
+  var remoto = await _catalogoBuscarRemoto();
+  var mudou = _catalogoMesclarRemoto(remoto);
+  if(mudou) _atualizarFormulariosComCatalogo();
+}
+
+function _atualizarFormulariosComCatalogo(){
+  // Reconstroi os formularios das abas que estiverem sem nada selecionado no
+  // momento (para nao atrapalhar quem esta no meio de um registro), mantendo
+  // os itens ja adicionados na lista da sessao.
+  Object.keys(SETORES).forEach(function(s){
+    var sel = document.getElementById('sel-'+s+'_novo');
+    var g = document.getElementById('grid-'+s);
+    if(g && (!sel || !sel.value)){
+      var cfg = SETORES[s];
+      g.innerHTML = _cardColetaSetor(s, cfg.cl, cfg.forn);
+      _renderListaSessao(s);
+    }
+  });
 }
 
 var PROD_VENDA = [
@@ -11888,35 +12010,82 @@ function _sessaoInit(){
   Object.keys(SETORES).forEach(function(s){ if(!_sessaoItens[s]) _sessaoItens[s]=[]; });
 }
 
+/* ── Pendencias, salvamento local e saida controlada do app ───────────── */
+var SESSAO_PEND_KEY = 'fsj_sessao_pendente';
+
+function _haPendencias(){
+  _sessaoInit();
+  return Object.keys(_sessaoItens).some(function(s){ return (_sessaoItens[s]||[]).length > 0; });
+}
+
+function _sessaoSalvarLocal(){
+  try{ localStorage.setItem(SESSAO_PEND_KEY, JSON.stringify(_sessaoItens)); }catch(e){}
+}
+
+function _sessaoRestaurarLocal(){
+  try{
+    var raw = localStorage.getItem(SESSAO_PEND_KEY);
+    if(!raw) return;
+    var salvo = JSON.parse(raw);
+    _sessaoInit();
+    Object.keys(salvo).forEach(function(s){
+      if(Array.isArray(salvo[s]) && salvo[s].length) _sessaoItens[s] = salvo[s];
+    });
+  }catch(e){}
+}
+
+function _sessaoLimparLocal(){
+  try{ localStorage.removeItem(SESSAO_PEND_KEY); }catch(e){}
+}
+
+function sairColeta(){
+  _sessaoSalvarLocal();
+  var msg = _haPendencias()
+    ? 'Seus itens coletados foram salvos neste aparelho.\n\nEles ainda NÃO foram enviados — abra o aplicativo de novo e toque em "Enviar coleta" quando quiser enviá-los.\n\nJá pode fechar o aplicativo agora.'
+    : 'Tudo salvo. Já pode fechar o aplicativo agora.';
+  if(!confirm(msg+'\n\nToque OK para sair.')) return;
+  try{ window.close(); }catch(e){}
+  setTimeout(function(){
+    document.body.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;text-align:center;padding:20px;background:#0e1f16;color:#cfead9">'
+      +'<div style="font-size:44px;margin-bottom:12px">✅</div>'
+      +'<div style="font-size:17px;margin-bottom:8px">Tudo salvo.</div>'
+      +'<div style="font-size:13px;opacity:.75">Pode fechar o aplicativo agora.</div>'
+      +'</div>';
+  }, 200);
+}
+
 function _cardColetaSetor(setor, cl, forn){
   var k = setor+'_novo';
-  var itensCat = (_catalogoCarregar()[setor]||[]).slice().sort(function(a,b){ return a.nome.localeCompare(b.nome,'pt-BR'); });
-  var opts = itensCat.map(function(p){
-    return '<option value="'+p.id+'">'+p.nome.replace(/</g,'&lt;')+' ('+p.unid+')</option>';
+  var nomes = _catalogoNomesUnicos(setor);
+  var opts = nomes.map(function(n){
+    return '<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/</g,'&lt;')+'</option>';
   }).join('');
   var fH = forn ? '<div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-'+k+'" placeholder="Nome do fornecedor..." style="font-size:15px"></div>' : '';
   return '<div class="pc at pc-edit'+(cl?' '+cl:'')+'" id="card-'+k+'" style="cursor:default">'
     +'<div class="pbd" style="display:block;padding:16px 14px" id="body-'+k+'">'
 
-    +'<div class="cg"><span class="cl">1. Selecione um item ja cadastrado</span>'
+    +'<div class="cg"><span class="cl">Item coletado</span>'
     +'<select id="sel-'+k+'" onchange="_onSelecionarItem(\''+setor+'\')" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#fff">'
     +'<option value="">— Escolha um item —</option>'
     +opts
-    +'<option value="__novo__">+ Novo item (nao esta na lista)</option>'
+    +'<option value="__novo__" style="color:#1a6b2a;font-weight:700">+ Cadastrar item novo</option>'
     +'</select>'
     +'</div>'
 
+    +'<input type="hidden" id="enome-'+k+'" value="">'
     +'<div id="wrap-novo-'+k+'" style="display:none;margin-top:4px;padding:10px;background:rgba(184,148,63,.08);border:1px dashed var(--ac);border-radius:8px">'
-    +'<div class="cg"><span class="cl">2. Novo item — nome</span>'
-    +'<input class="pc-edit-nome" type="text" id="enome-'+k+'" placeholder="Descreva o item..." autocomplete="off"></div>'
-    +'<div class="cg"><span class="cl">Novo item — unidade</span>'
-    +'<input type="text" id="eunid-'+k+'" placeholder="Ex: unid, sacos, kg..." style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box"></div>'
-    +'</div>'
+    +'<div class="cg"><span class="cl">Descreva o que foi coletado</span>'
+    +'<input class="pc-edit-nome" type="text" id="nomevis-'+k+'" placeholder="Descreva o item..." autocomplete="off" oninput="document.getElementById(\'enome-'+k+'\').value=this.value">'
+    +'</div></div>'
+
+    +'<div class="cg"><span class="cl">Unidade</span><div id="unid-wrap-'+k+'">'
+    +'<input type="text" id="eunid-'+k+'" value="" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">'
+    +'</div></div>'
 
     +'<div class="cg"><span class="cl">Quantidade</span>'
     +'<div class="step" style="display:flex;align-items:center;gap:6px">'
     +'<button class="sb" onclick="stepQ(\''+k+'\',1,-1)">-</button>'
-    +'<input class="si" type="number" id="qtd-'+k+'" inputmode="decimal" min="0" step="1" value="0">'
+    +'<input class="si" type="number" id="qtd-'+k+'" inputmode="decimal" min="0" step="1" value="0" onkeypress="if(event.key===\'Enter\'){_adicionarItemSessao(\''+setor+'\');return false;}">'
     +'<button class="sb" onclick="stepQ(\''+k+'\',1,1)">+</button>'
     +'</div></div>'
     +fH
@@ -11931,23 +12100,32 @@ function _onSelecionarItem(setor){
   var sel = document.getElementById('sel-'+k);
   var wrapNovo = document.getElementById('wrap-novo-'+k);
   var nomeEl = document.getElementById('enome-'+k);
-  var unidEl = document.getElementById('eunid-'+k);
+  var nomeVisEl = document.getElementById('nomevis-'+k);
+  var unidWrap = document.getElementById('unid-wrap-'+k);
   if(!sel) return;
   var val = sel.value;
   if(val === '__novo__'){
-    // Mostra a linha "Novo Item" para digitar nome e unidade
+    // Item novo — mostra o campo de nome; unidade fica editavel
     wrapNovo.style.display = 'block';
-    nomeEl.value = ''; unidEl.value = '';
-    setTimeout(function(){ nomeEl.focus(); }, 50);
+    nomeEl.value = ''; if(nomeVisEl) nomeVisEl.value='';
+    unidWrap.innerHTML = '<input type="text" id="eunid-'+k+'" placeholder="Ex: unid, sacos, kg..." style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box">';
+    setTimeout(function(){ var el=document.getElementById('nomevis-'+k); if(el) el.focus(); }, 50);
   } else if(val){
-    // Item existente selecionado — preenche nome/unidade automaticamente e esconde a linha Novo Item
-    var item = (_catalogoCarregar()[setor]||[]).find(function(p){ return p.id===val; });
+    // Item existente — preenche o nome (oculto) e mostra a(s) unidade(s) ja cadastradas
     wrapNovo.style.display = 'none';
-    nomeEl.value = item ? item.nome : '';
-    unidEl.value = item ? item.unid : '';
+    nomeEl.value = val;
+    var unidades = _catalogoUnidadesPara(setor, val);
+    if(unidades.length > 1){
+      // Mais de uma apresentacao cadastrada — mostra como lista de opcoes
+      var opts = unidades.map(function(u){ return '<option value="'+u.replace(/"/g,'&quot;')+'">'+u.replace(/</g,'&lt;')+'</option>'; }).join('');
+      unidWrap.innerHTML = '<select id="eunid-'+k+'" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#fff">'+opts+'</select>';
+    } else {
+      unidWrap.innerHTML = '<input type="text" id="eunid-'+k+'" value="'+(unidades[0]||'unid')+'" readonly style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">';
+    }
   } else {
     wrapNovo.style.display = 'none';
-    nomeEl.value = ''; unidEl.value = '';
+    nomeEl.value = '';
+    unidWrap.innerHTML = '<input type="text" id="eunid-'+k+'" value="" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">';
   }
 }
 
@@ -11961,32 +12139,37 @@ function _adicionarItemSessao(setor){
   var nome = (nomeEl?nomeEl.value:'').trim();
   var qtd  = parseFloat(qtdEl?qtdEl.value:0)||0;
   var unid = (unidEl?unidEl.value:'').trim()||'unid';
-  if(!nome){ _toast('Informe o nome do item.'); nomeEl&&nomeEl.focus(); return; }
+  if(!nome){ _toast('Informe o nome do item.'); return; }
   if(qtd<=0){ _toast('Informe a quantidade antes de adicionar.'); return; }
   var forn = (forEl?forEl.value:'')||'';
   var obs  = (obsEl?obsEl.value:'')||'';
-  // Item novo (sem similar existente) passa a compor o catalogo — nao precisa
-  // digitar nome/unidade de novo da proxima vez.
-  if(!_catalogoBuscar(setor, nome)) _catalogoAdicionar(setor, nome, unid);
+  // Se essa combinacao nome+unidade ainda nao existe, cadastra automaticamente —
+  // nao precisa digitar de novo da proxima vez (mesmo que o nome ja exista com
+  // outra unidade/apresentacao).
+  if(!_catalogoBuscarExato(setor, nome, unid)) _catalogoAdicionar(setor, nome, unid);
   _sessaoInit();
   _sessaoItens[setor].push({nome:nome, unid:unid, qtd:qtd, obs:obs.trim(), forn:forn.trim()});
   // Limpa o formulario para o proximo item
   var sel = document.getElementById('sel-'+k);
   var wrapNovo = document.getElementById('wrap-novo-'+k);
+  var nomeVisEl = document.getElementById('nomevis-'+k);
+  var unidWrap = document.getElementById('unid-wrap-'+k);
   nomeEl.value=''; qtdEl.value=0;
-  if(unidEl) unidEl.value='';
+  if(nomeVisEl) nomeVisEl.value='';
   if(obsEl) obsEl.value='';
   if(forEl) forEl.value='';
   if(wrapNovo) wrapNovo.style.display='none';
+  if(unidWrap) unidWrap.innerHTML = '<input type="text" id="eunid-'+k+'" value="" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">';
   if(sel){
     // Reconstroi as opcoes (inclui o item novo, se foi o caso)
-    var itensCat = (_catalogoCarregar()[setor]||[]).slice().sort(function(a,b){ return a.nome.localeCompare(b.nome,'pt-BR'); });
-    var opts = itensCat.map(function(p){ return '<option value="'+p.id+'">'+p.nome.replace(/</g,'&lt;')+' ('+p.unid+')</option>'; }).join('');
-    sel.innerHTML = '<option value="">— Escolha um item —</option>'+opts+'<option value="__novo__">+ Novo item (nao esta na lista)</option>';
+    var nomes = _catalogoNomesUnicos(setor);
+    var opts = nomes.map(function(n){ return '<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/</g,'&lt;')+'</option>'; }).join('');
+    sel.innerHTML = '<option value="">— Escolha um item —</option>'+opts+'<option value="__novo__" style="color:#1a6b2a;font-weight:700">+ Cadastrar item novo</option>';
     sel.value = '';
   }
   _renderListaSessao(setor);
   _atualizarContador();
+  _sessaoSalvarLocal();
   _toast(nome+' adicionado');
 }
 
@@ -11995,6 +12178,7 @@ function _removerItemSessao(setor, idx){
   _sessaoItens[setor].splice(idx,1);
   _renderListaSessao(setor);
   _atualizarContador();
+  _sessaoSalvarLocal();
 }
 
 function _renderListaSessao(setor){
@@ -12014,6 +12198,7 @@ function _renderListaSessao(setor){
 async function _iniciar(){
   setHoje(); _relogio(); setInterval(_relogio, 30000);
   _sessaoInit();
+  _sessaoRestaurarLocal();
 
   // Sincroniza OPFS → localStorage ANTES de qualquer render
   // O await garante que os dados do OPFS (fonte de verdade) estejam
@@ -12034,9 +12219,15 @@ async function _iniciar(){
     var cfg = SETORES[s];
     var g = document.getElementById('grid-'+s);
     if(g) g.innerHTML = _cardColetaSetor(s, cfg.cl, cfg.forn);
+    _renderListaSessao(s);
   });
+  _atualizarContador();
   _initLP();
   _initVendas();
+
+  // Busca itens novos do catalogo publicados por este ou outros dispositivos
+  _catalogoSincronizarLocal();
+  setInterval(_catalogoSincronizarLocal, 60000);
 }
 
 /* ── MIGRACAO: limpa chaves obsoletas de versoes anteriores ──────────────
@@ -12145,7 +12336,15 @@ window.addEventListener('popstate', function(e){
     return;
   }
 
-  /* Nível 3: já está em aviario sem nada aberto — fecha o app normalmente */
+  /* Nível 3: já está em aviario sem nada aberto — não fecha sozinho.
+     O app só deve ser encerrado pelo botão "Sair". */
+  _sessaoSalvarLocal();
+  if(_haPendencias()){
+    alert('Você tem itens coletados ainda não enviados.\n\nEles já estão salvos neste aparelho — mas, para sair do aplicativo, use o botão "Sair" no topo da tela.');
+  } else {
+    _toast('Use o botão "Sair" no topo da tela para fechar o aplicativo.');
+  }
+  history.pushState({ navSentinel: true }, '');
 });
 
 function _relogio(){
@@ -12624,6 +12823,7 @@ function enviarTudo(){
       _renderListaSessao(setor);
     });
     document.getElementById('contador').innerHTML = 'Nenhum item preenchido';
+    _sessaoLimparLocal();
   }, 2000);
 }
 
