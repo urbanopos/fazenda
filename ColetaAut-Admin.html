@@ -11355,7 +11355,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '95923978a532';
+  var FP = '9289f923398e';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -11891,17 +11891,28 @@ function _sessaoInit(){
 function _cardColetaSetor(setor, cl, forn){
   var k = setor+'_novo';
   var itensCat = (_catalogoCarregar()[setor]||[]).slice().sort(function(a,b){ return a.nome.localeCompare(b.nome,'pt-BR'); });
-  var opts = itensCat.map(function(p){ return '<option value="'+p.nome.replace(/"/g,'&quot;')+'">'; }).join('');
+  var opts = itensCat.map(function(p){
+    return '<option value="'+p.id+'">'+p.nome.replace(/</g,'&lt;')+' ('+p.unid+')</option>';
+  }).join('');
   var fH = forn ? '<div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-'+k+'" placeholder="Nome do fornecedor..." style="font-size:15px"></div>' : '';
-  return '<div class="pc pc-edit'+(cl?' '+cl:'')+'" id="card-'+k+'" style="cursor:default">'
-    +'<div class="pbd" style="max-height:none;padding:16px 14px" id="body-'+k+'">'
-    +'<div class="cg"><span class="cl">Item</span>'
-    +'<input class="pc-edit-nome" type="text" id="enome-'+k+'" list="dl-'+k+'" placeholder="Digite ou escolha um item ja cadastrado..." autocomplete="off" oninput="_onNomeItemInput(\''+setor+'\')" onchange="_onNomeItemInput(\''+setor+'\')">'
-    +'<datalist id="dl-'+k+'">'+opts+'</datalist>'
+  return '<div class="pc at pc-edit'+(cl?' '+cl:'')+'" id="card-'+k+'" style="cursor:default">'
+    +'<div class="pbd" style="display:block;padding:16px 14px" id="body-'+k+'">'
+
+    +'<div class="cg"><span class="cl">1. Selecione um item ja cadastrado</span>'
+    +'<select id="sel-'+k+'" onchange="_onSelecionarItem(\''+setor+'\')" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#fff">'
+    +'<option value="">— Escolha um item —</option>'
+    +opts
+    +'<option value="__novo__">+ Novo item (nao esta na lista)</option>'
+    +'</select>'
     +'</div>'
-    +'<div class="cg"><span class="cl" id="lbl-unid-'+k+'">Unidade</span>'
-    +'<input type="text" id="eunid-'+k+'" placeholder="unid" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box">'
+
+    +'<div id="wrap-novo-'+k+'" style="display:none;margin-top:4px;padding:10px;background:rgba(184,148,63,.08);border:1px dashed var(--ac);border-radius:8px">'
+    +'<div class="cg"><span class="cl">2. Novo item — nome</span>'
+    +'<input class="pc-edit-nome" type="text" id="enome-'+k+'" placeholder="Descreva o item..." autocomplete="off"></div>'
+    +'<div class="cg"><span class="cl">Novo item — unidade</span>'
+    +'<input type="text" id="eunid-'+k+'" placeholder="Ex: unid, sacos, kg..." style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box"></div>'
     +'</div>'
+
     +'<div class="cg"><span class="cl">Quantidade</span>'
     +'<div class="step" style="display:flex;align-items:center;gap:6px">'
     +'<button class="sb" onclick="stepQ(\''+k+'\',1,-1)">-</button>'
@@ -11915,23 +11926,28 @@ function _cardColetaSetor(setor, cl, forn){
     +'<div id="lista-'+setor+'" style="margin-top:12px"></div>';
 }
 
-function _onNomeItemInput(setor){
+function _onSelecionarItem(setor){
   var k = setor+'_novo';
+  var sel = document.getElementById('sel-'+k);
+  var wrapNovo = document.getElementById('wrap-novo-'+k);
   var nomeEl = document.getElementById('enome-'+k);
   var unidEl = document.getElementById('eunid-'+k);
-  var lbl = document.getElementById('lbl-unid-'+k);
-  if(!nomeEl || !unidEl) return;
-  var nome = nomeEl.value.trim();
-  var achado = nome ? _catalogoBuscar(setor, nome) : null;
-  if(achado){
-    unidEl.value = achado.unid;
-    unidEl.readOnly = true;
-    unidEl.style.background = '#f0ede6';
-    if(lbl) lbl.textContent = 'Unidade (ja cadastrada)';
+  if(!sel) return;
+  var val = sel.value;
+  if(val === '__novo__'){
+    // Mostra a linha "Novo Item" para digitar nome e unidade
+    wrapNovo.style.display = 'block';
+    nomeEl.value = ''; unidEl.value = '';
+    setTimeout(function(){ nomeEl.focus(); }, 50);
+  } else if(val){
+    // Item existente selecionado — preenche nome/unidade automaticamente e esconde a linha Novo Item
+    var item = (_catalogoCarregar()[setor]||[]).find(function(p){ return p.id===val; });
+    wrapNovo.style.display = 'none';
+    nomeEl.value = item ? item.nome : '';
+    unidEl.value = item ? item.unid : '';
   } else {
-    unidEl.readOnly = false;
-    unidEl.style.background = '';
-    if(lbl) lbl.textContent = nome ? 'Unidade (item novo — informe)' : 'Unidade';
+    wrapNovo.style.display = 'none';
+    nomeEl.value = ''; unidEl.value = '';
   }
 }
 
@@ -11955,15 +11971,23 @@ function _adicionarItemSessao(setor){
   _sessaoInit();
   _sessaoItens[setor].push({nome:nome, unid:unid, qtd:qtd, obs:obs.trim(), forn:forn.trim()});
   // Limpa o formulario para o proximo item
+  var sel = document.getElementById('sel-'+k);
+  var wrapNovo = document.getElementById('wrap-novo-'+k);
   nomeEl.value=''; qtdEl.value=0;
-  if(unidEl){ unidEl.value=''; unidEl.readOnly=false; unidEl.style.background=''; }
+  if(unidEl) unidEl.value='';
   if(obsEl) obsEl.value='';
   if(forEl) forEl.value='';
-  var lbl = document.getElementById('lbl-unid-'+k); if(lbl) lbl.textContent='Unidade';
+  if(wrapNovo) wrapNovo.style.display='none';
+  if(sel){
+    // Reconstroi as opcoes (inclui o item novo, se foi o caso)
+    var itensCat = (_catalogoCarregar()[setor]||[]).slice().sort(function(a,b){ return a.nome.localeCompare(b.nome,'pt-BR'); });
+    var opts = itensCat.map(function(p){ return '<option value="'+p.id+'">'+p.nome.replace(/</g,'&lt;')+' ('+p.unid+')</option>'; }).join('');
+    sel.innerHTML = '<option value="">— Escolha um item —</option>'+opts+'<option value="__novo__">+ Novo item (nao esta na lista)</option>';
+    sel.value = '';
+  }
   _renderListaSessao(setor);
   _atualizarContador();
   _toast(nome+' adicionado');
-  nomeEl.focus();
 }
 
 function _removerItemSessao(setor, idx){
