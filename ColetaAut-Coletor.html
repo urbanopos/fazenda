@@ -487,6 +487,10 @@ textarea{resize:none;height:72px;font-size:14px}
         <option value="detalhe">Pedidos detalhados</option>
       </select>
     </div>
+    <div>
+      <div class="hcol-lbl">&nbsp;</div>
+      <button class="hcol-sel" id="hped-aberto-btn" onclick="_toggleFiltroAberto()" style="cursor:pointer;font-weight:700">Em aberto</button>
+    </div>
   </div>
   <!-- PAINEL HISTORICO DE PEDIDOS -->
   <div class="hist-panel" id="painel-hist">
@@ -1021,7 +1025,7 @@ function _iniciar(){
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
 (function _caAutoUpdate(){
-  var FP = '4e0791e57c2e';
+  var FP = '2e62011279d4';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -1795,6 +1799,18 @@ function mostrarPainelVendas(qual){
   }
 }
 
+var _filtroAbertoAtivo = false;
+function _toggleFiltroAberto(){
+  _filtroAbertoAtivo = !_filtroAbertoAtivo;
+  var btn = document.getElementById('hped-aberto-btn');
+  if(btn){
+    btn.style.background = _filtroAbertoAtivo ? '#1a6b2a' : '';
+    btn.style.color = _filtroAbertoAtivo ? '#fff' : '';
+    btn.style.borderColor = _filtroAbertoAtivo ? '#1a6b2a' : '';
+  }
+  _renderHist();
+}
+
 function _renderHist(){
   var lista = document.getElementById('hist-lista');
   if(!lista) return;
@@ -1820,16 +1836,17 @@ function _renderHist(){
   var mes   = (document.getElementById('hped-mes')||{}).value||'';
   var visao = (document.getElementById('hped-visao')||{}).value||'detalhe';
 
-  // Filtra por ano/mes
+  // Filtra por ano/mes e status (Em aberto)
   var filtrado = hist.filter(function(p){
     if(!p.data) return false;
     if(ano && p.data.slice(0,4)!==ano) return false;
     if(mes && p.data.slice(5,7)!==mes) return false;
+    if(_filtroAbertoAtivo && p.pago) return false;
     return true;
   });
 
   if(!filtrado.length){
-    lista.innerHTML = '<div class="hist-empty">Nenhum pedido no periodo selecionado.</div>';
+    lista.innerHTML = '<div class="hist-empty">'+(_filtroAbertoAtivo ? 'Nenhum pedido em aberto no periodo selecionado.' : 'Nenhum pedido no periodo selecionado.')+'</div>';
     return;
   }
 
