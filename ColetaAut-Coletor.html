@@ -1025,7 +1025,7 @@ function _iniciar(){
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
 (function _caAutoUpdate(){
-  var FP = '013feef1bee7';
+  var FP = 'c391fd12246b';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -1186,12 +1186,11 @@ function sairColeta(){
       _sessaoLimparLocal();
     }
     try{ window.close(); }catch(e){}
-    // Se o navegador nao permitir fechar sozinho (comum em abas nao abertas
-    // por script), a execucao continua daqui — orienta o fechamento manual.
-    setTimeout(function(){
-      overlay.innerHTML = '<div style="font-size:40px;margin-bottom:16px">✅</div>'
-        +'<div style="font-size:16px;line-height:1.5;max-width:320px">Tudo certo, pode fechar.<br><br>Este navegador não deixa o aplicativo se fechar sozinho — deslize para fora ou toque no botão de início do celular para fechar.</div>';
-    }, 400);
+    // O navegador nao permite que o proprio site feche a aba/app quando ela nao
+    // foi aberta por script (restricao de seguranca do navegador, nao um bug
+    // nosso — nenhum site consegue contornar isso). Orienta o fechamento manual.
+    overlay.innerHTML = '<div style="font-size:40px;margin-bottom:16px">✅</div>'
+      +'<div style="font-size:16px;line-height:1.5;max-width:320px">Tudo certo, pode fechar.<br><br>Deslize o aplicativo para fora ou toque no botão de início do celular para fechar.</div>';
   };
 }
 
