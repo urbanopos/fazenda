@@ -11362,7 +11362,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '4f05a3f8d144';
+  var FP = '43ee6ed2e752';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -11778,6 +11778,23 @@ function _catalogoUnidadesPara(setor, nome){
   });
   return out;
 }
+/* Mesma busca, mas em todos os setores — usada na tela de Vendas, onde o
+   produto nao esta amarrado a um setor especifico (ex: "Ovos de Capoeira"
+   pode ter unidades cadastradas em Aviario). */
+function _catalogoUnidadesParaNomeGlobal(nome){
+  var cat = _catalogoCarregar();
+  var alvo = String(nome).trim().toLowerCase();
+  var vistos = {}, out = [];
+  Object.keys(cat).forEach(function(setor){
+    (cat[setor]||[]).forEach(function(it){
+      if(it.nome.trim().toLowerCase()===alvo){
+        var u = it.unid.trim();
+        if(!vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
+      }
+    });
+  });
+  return out;
+}
 function _catalogoAdicionar(setor, nome, unid, passo){
   // Uma mesma "nome" pode ter mais de uma unidade/apresentacao cadastrada —
   // so evita duplicar quando nome+unidade forem exatamente iguais.
@@ -12080,12 +12097,11 @@ function sairColeta(){
       _sessaoLimparLocal();
     }
     try{ window.close(); }catch(e){}
-    // Se o navegador nao permitir fechar sozinho (comum em abas nao abertas
-    // por script), a execucao continua daqui — orienta o fechamento manual.
-    setTimeout(function(){
-      overlay.innerHTML = '<div style="font-size:40px;margin-bottom:16px">✅</div>'
-        +'<div style="font-size:16px;line-height:1.5;max-width:320px">Tudo certo, pode fechar.<br><br>Este navegador não deixa o aplicativo se fechar sozinho — deslize para fora ou toque no botão de início do celular para fechar.</div>';
-    }, 400);
+    // O navegador nao permite que o proprio site feche a aba/app quando ela nao
+    // foi aberta por script (restricao de seguranca do navegador, nao um bug
+    // nosso — nenhum site consegue contornar isso). Orienta o fechamento manual.
+    overlay.innerHTML = '<div style="font-size:40px;margin-bottom:16px">✅</div>'
+      +'<div style="font-size:16px;line-height:1.5;max-width:320px">Tudo certo, pode fechar.<br><br>Deslize o aplicativo para fora ou toque no botão de início do celular para fechar.</div>';
   };
 }
 
@@ -12979,12 +12995,27 @@ function _renderVItens(){
         ? '<span class="vi-lbl">Nome do item</span>'
           +'<input class="vi-inp pc-edit-nome" type="text" id="vedit-nome-'+it.idx+'" placeholder="Descreva o item..." value="'+(it._editNome||'')+'" oninput="_vItens['+i+']._editNome=this.value" style="margin-bottom:10px;border:2px solid #b8943f">'
         : '';
+      // Se o item tiver unidades ja cadastradas (em qualquer setor de coleta),
+      // mostra como lista de opcoes em vez de texto livre.
+      var nomeAtual = isEdit ? (it._editNome||'') : ((PROD_VENDA.filter(function(x){ return x.id===it.prodId; })[0]||{}).nome||'');
+      var unidadesCat = nomeAtual ? _catalogoUnidadesParaNomeGlobal(nomeAtual) : [];
+      var campoUnidade;
+      if(unidadesCat.length){
+        if(!it.unidade || unidadesCat.indexOf(it.unidade)===-1) it.unidade = unidadesCat[0];
+        var optsUnid = unidadesCat.map(function(u){
+          return '<option value="'+u.replace(/"/g,'&quot;')+'"'+(it.unidade===u?' selected':'')+'>'+u.replace(/</g,'&lt;')+'</option>';
+        }).join('');
+        campoUnidade = '<span class="vi-lbl">Unidade</span>'
+          +'<select class="vi-sel" onchange="setUnidV('+i+',this.value)" style="margin-bottom:12px">'+optsUnid+'</select>';
+      } else {
+        campoUnidade = '<span class="vi-lbl">Unidade (ex: bandeja, kg, duzia...)</span>'
+          +'<input class="vi-inp" type="text" placeholder="Digite a unidade..." value="'+it.unidade+'" oninput="setUnidV('+i+',this.value)" style="margin-bottom:12px">';
+      }
       html += '<div class="vi" id="vi-'+it.idx+'">'
         +'<span class="vi-lbl">Produto</span>'
         +'<select class="vi-sel" onchange="setProdV('+i+',this.value);_renderVItens()">'+_optsVenda(it.prodId)+'</select>'
         +nomeEditField
-        +'<span class="vi-lbl">Unidade (ex: bandeja, kg, duzia...)</span>'
-        +'<input class="vi-inp" type="text" placeholder="Digite a unidade..." value="'+it.unidade+'" oninput="setUnidV('+i+',this.value)" style="margin-bottom:12px">'
+        +campoUnidade
         +'<div class="vi-row2">'
         +'<div class="vi-campo"><span class="vi-lbl">Data</span><input class="vi-inp" type="date" value="'+it.data+'" oninput="setDataV('+i+',this.value)"></div>'
         +'<div class="vi-campo"><span class="vi-lbl">Quantidade</span><input class="vi-inp" type="number" min="0" step="0.5" inputmode="decimal" placeholder="0" value="'+(it.qtd||'')+'" oninput="setQtdV('+i+',this.value)"></div>'
@@ -13003,7 +13034,7 @@ function _renderVItens(){
   _atualizarTotalV();
 }
 
-function setProdV(i,v){ _vItens[i].prodId=v; }
+function setProdV(i,v){ _vItens[i].prodId=v; _vItens[i].unidade=''; }
 function setUnidV(i,v){ _vItens[i].unidade=v; }
 function setDataV(i,v){ _vItens[i].data=v; }
 function setQtdV(i,v){
