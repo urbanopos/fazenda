@@ -11355,7 +11355,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = 'a5cddf4f45ec';
+  var FP = 'c71b0a9de234';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -11691,6 +11691,65 @@ var SETORES = {
   ]}
 };
 
+/* ── CATÁLOGO DE ITENS — lista de produtos por setor, salva no aparelho.
+   Começa com os itens atuais (abaixo) e cresce conforme novos itens são
+   digitados na linha "Editável" de cada aba. Uma vez cadastrado, o item
+   passa a aparecer como card pronto — só precisa informar a quantidade. */
+var CAT_KEY = 'fsj_catalogo_itens';
+var FSJ_CATALOGO = 'catalogo.json';
+var _catalogo = null;
+
+function _catalogoPadrao(){
+  var out = {};
+  Object.keys(SETORES).forEach(function(s){
+    out[s] = SETORES[s].produtos.map(function(p){
+      return {id:p.id, nome:p.nome, unid:p.unid, passo:p.passo||1};
+    });
+  });
+  return out;
+}
+function _catalogoCarregar(){
+  if(_catalogo) return _catalogo;
+  try{ _catalogo = JSON.parse(localStorage.getItem(CAT_KEY)||'null'); }catch(e){ _catalogo=null; }
+  if(!_catalogo || typeof _catalogo!=='object'){ _catalogo = _catalogoPadrao(); _catalogoSalvar(); }
+  Object.keys(SETORES).forEach(function(s){ if(!Array.isArray(_catalogo[s])) _catalogo[s]=[]; });
+  return _catalogo;
+}
+function _catalogoSalvar(){
+  var json = JSON.stringify(_catalogo);
+  try{ localStorage.setItem(CAT_KEY, json); }catch(e){}
+  if(typeof _caOpfs !== 'undefined' && _caOpfs) _caOpfsSalvar(FSJ_CATALOGO, json);
+}
+async function _catalogoCarregarOPFS(){
+  if(typeof _caOpfs === 'undefined' || !_caOpfs) return;
+  try{
+    var raw = await _caOpfsLer(FSJ_CATALOGO);
+    if(raw){ _catalogo = JSON.parse(raw); try{ localStorage.setItem(CAT_KEY, raw); }catch(e){} }
+  }catch(e){}
+}
+function _catalogoSlug(nome){
+  var s = String(nome).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+  return s || ('item'+Date.now());
+}
+function _catalogoBuscar(setor, nome){
+  var cat = _catalogoCarregar()[setor]||[];
+  var alvo = String(nome).trim().toLowerCase();
+  return cat.find(function(it){ return it.nome.trim().toLowerCase()===alvo; });
+}
+function _catalogoAdicionar(setor, nome, unid, passo){
+  var cat = _catalogoCarregar();
+  var existente = _catalogoBuscar(setor, nome);
+  if(existente) return existente;
+  var id = _catalogoSlug(nome);
+  // Evita colisao de id dentro do mesmo setor
+  var base = id, n = 2;
+  while(cat[setor].some(function(it){ return it.id===id; })){ id = base+'_'+(n++); }
+  var novo = { id:id, nome:String(nome).trim(), unid:(unid||'unid').trim(), passo:passo||1 };
+  cat[setor].push(novo);
+  _catalogoSalvar();
+  return novo;
+}
+
 var PROD_VENDA = [
   {id:'ovo',nome:'Ovos de Capoeira'},{id:'galinha',nome:'Galinha'},
   {id:'frango',nome:'Frango'},{id:'pinto',nome:'Pinto'},
@@ -11793,6 +11852,13 @@ function concluirCardEdit(k, setor){
   if(forn) html += '<div class="rc-l">Fornecedor: <strong>'+forn+'</strong></div>';
   if(obs)  html += '<div class="rc-l">Obs: <strong>'+obs+'</strong></div>';
   res.innerHTML = html;
+  // Se o item nao existe no catalogo deste setor, cadastra automaticamente —
+  // da proxima vez (ou ja nesta mesma tela) ele aparece como card pronto,
+  // sem precisar digitar nome nem unidade de novo.
+  if(!_catalogoBuscar(setor, nome)){
+    _catalogoAdicionar(setor, nome, unid);
+    _renderGridSetor(setor);
+  }
   _atualizarContador();
   _toast(nome+' registrado');
 }
@@ -11817,6 +11883,24 @@ function apagarCardEdit(k, cl){
   _atualizarContador();
 }
 
+function _renderGridSetor(setor){
+  var cfg = SETORES[setor];
+  var g = document.getElementById('grid-'+setor);
+  if(!g || !cfg) return;
+  var itens = _catalogoCarregar()[setor] || [];
+  var editCard = document.getElementById('card-'+setor+'_edit');
+  itens.forEach(function(p){
+    var k = setor+'_'+p.id;
+    if(document.getElementById('card-'+k)) return; // ja existe na tela — nao mexe (preserva o que foi digitado)
+    var html = _card(setor, p, cfg.cl, cfg.forn);
+    if(editCard) editCard.insertAdjacentHTML('beforebegin', html);
+    else g.insertAdjacentHTML('beforeend', html);
+  });
+  if(!editCard){
+    g.insertAdjacentHTML('beforeend', _cardEditavel(setor, cfg.cl, cfg.forn));
+  }
+}
+
 /* ---- INIT ---- */
 async function _iniciar(){
   setHoje(); _relogio(); setInterval(_relogio, 30000);
@@ -11833,15 +11917,13 @@ async function _iniciar(){
       var rp = await _caOpfsLer(FSJ_PEDIDOS);
       if(rp) try{ localStorage.setItem(HK, rp); }catch(e){}
     }catch(e){}
+    await _catalogoCarregarOPFS();
   }
 
   Object.keys(SETORES).forEach(function(s){
-    var cfg = SETORES[s];
     var g = document.getElementById('grid-'+s);
-    if(g){
-      g.innerHTML = cfg.produtos.map(function(p){ return _card(s,p,cfg.cl,cfg.forn); }).join('')
-                  + _cardEditavel(s, cfg.cl, cfg.forn);
-    }
+    if(g) g.innerHTML = ''; // limpa qualquer marcacao estatica antiga do HTML
+    _renderGridSetor(s);
   });
   _initLP();
   _initVendas();
@@ -12096,8 +12178,9 @@ function _coletarItens(){
   var itens = [];
   Object.keys(SETORES).forEach(function(setor){
     var cfg = SETORES[setor];
-    // Cards fixos
-    cfg.produtos.forEach(function(p){
+    // Cards do catalogo (itens padrao + itens adicionados via Editavel)
+    var produtosCat = _catalogoCarregar()[setor] || [];
+    produtosCat.forEach(function(p){
       var k = setor+'_'+p.id;
       var card = document.getElementById('card-'+k);
       if(!card || !card.classList.contains('concluido')) return;
@@ -12447,7 +12530,8 @@ function enviarTudo(){
   setTimeout(function(){
     Object.keys(SETORES).forEach(function(setor){
       var cfg = SETORES[setor];
-      cfg.produtos.forEach(function(p){ apagarCard(setor+'_'+p.id, cfg.cl||''); });
+      var produtosCat = _catalogoCarregar()[setor] || [];
+      produtosCat.forEach(function(p){ apagarCard(setor+'_'+p.id, cfg.cl||''); });
       // Limpa card editavel
       apagarCardEdit(setor+'_edit', cfg.cl||'');
     });
