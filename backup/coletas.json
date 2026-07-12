@@ -21,42 +21,20 @@
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg"
       },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Milho",
-        "unid": "sc 40kg",
-        "qtd": 1,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Farelo da vaca",
-        "unid": "unid",
-        "qtd": 1,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg"
       }
     ],
     "ts": 1783688506163
@@ -219,7 +197,7 @@
   },
   {
     "data": "2026-07-08",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -234,7 +212,7 @@
   },
   {
     "data": "2026-07-07",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -249,7 +227,7 @@
   },
   {
     "data": "2026-07-01",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Campo",
@@ -264,7 +242,7 @@
   },
   {
     "data": "2026-06-15",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Campo",
@@ -277,7 +255,7 @@
   },
   {
     "data": "2026-07-01",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -292,7 +270,7 @@
   },
   {
     "data": "2026-06-27",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -307,7 +285,7 @@
   },
   {
     "data": "2026-06-01",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -326,7 +304,7 @@
   },
   {
     "data": "2026-06-22",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Campo",
@@ -341,7 +319,7 @@
   },
   {
     "data": "2026-06-22",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Perda",
@@ -356,7 +334,7 @@
   },
   {
     "data": "2026-06-22",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Perda",
@@ -371,7 +349,7 @@
   },
   {
     "data": "2026-06-11",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -386,7 +364,7 @@
   },
   {
     "data": "2026-06-10",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -401,7 +379,7 @@
   },
   {
     "data": "2026-06-10",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -416,7 +394,7 @@
   },
   {
     "data": "2026-06-10",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -431,7 +409,7 @@
   },
   {
     "data": "2026-06-10",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -446,7 +424,7 @@
   },
   {
     "data": "2026-06-10",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -461,7 +439,7 @@
   },
   {
     "data": "2026-06-10",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -476,7 +454,7 @@
   },
   {
     "data": "2026-06-09",
-    "coletor": "JÃºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
