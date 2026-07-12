@@ -11362,7 +11362,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '3b6b114ab70f';
+  var FP = '4f05a3f8d144';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -12080,6 +12080,12 @@ function sairColeta(){
       _sessaoLimparLocal();
     }
     try{ window.close(); }catch(e){}
+    // Se o navegador nao permitir fechar sozinho (comum em abas nao abertas
+    // por script), a execucao continua daqui — orienta o fechamento manual.
+    setTimeout(function(){
+      overlay.innerHTML = '<div style="font-size:40px;margin-bottom:16px">✅</div>'
+        +'<div style="font-size:16px;line-height:1.5;max-width:320px">Tudo certo, pode fechar.<br><br>Este navegador não deixa o aplicativo se fechar sozinho — deslize para fora ou toque no botão de início do celular para fechar.</div>';
+    }, 400);
   };
 }
 
@@ -12102,11 +12108,19 @@ function _cardColetaSetor(setor, cl, forn){
     +'</div>'
 
     +'<input type="hidden" id="enome-'+k+'" value="">'
-    +'<div id="wrap-novo-'+k+'" style="display:none;margin-top:4px;padding:10px;background:rgba(184,148,63,.08);border:1px dashed var(--ac);border-radius:8px">'
-    +'<div class="cg"><span class="cl">Descreva o que foi coletado</span>'
-    +'<input class="pc-edit-nome" type="text" id="nomevis-'+k+'" placeholder="Descreva o item..." autocomplete="off" oninput="document.getElementById(\'enome-'+k+'\').value=this.value">'
-    +'</div></div>'
 
+    +'<div id="wrap-novo-'+k+'" style="display:none;margin-top:4px;padding:10px;background:rgba(184,148,63,.08);border:1px dashed var(--ac);border-radius:8px">'
+    +'<div class="cg"><span class="cl">Item cadastrado</span>'
+    +'<input class="pc-edit-nome" type="text" id="nomevis-'+k+'" placeholder="Nome do produto..." autocomplete="off" oninput="document.getElementById(\'enome-'+k+'\').value=this.value">'
+    +'</div>'
+    +'<div class="cg"><span class="cl">Unidade</span>'
+    +'<input type="text" id="novaunid-'+k+'" placeholder="Ex: unid, sacos, kg..." style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box">'
+    +'</div>'
+    +'<div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obsnovo-'+k+'" placeholder="Detalhes sobre este item..."></textarea></div>'
+    +'<div class="card-acoes"><button class="btn-con" onclick="_cadastrarItemCatalogo(\''+setor+'\')" style="background:#1a6b2a">Cadastrar item</button></div>'
+    +'</div>'
+
+    +'<div id="wrap-coleta-'+k+'" style="display:none">'
     +'<div class="cg"><span class="cl">Unidade</span><div id="unid-wrap-'+k+'">'
     +'<input type="text" id="eunid-'+k+'" value="" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">'
     +'</div></div>'
@@ -12120,6 +12134,8 @@ function _cardColetaSetor(setor, cl, forn){
     +fH
     +'<div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-'+k+'" placeholder="Ex: lote A, qualidade boa..."></textarea></div>'
     +'<div class="card-acoes"><button class="btn-con" onclick="_adicionarItemSessao(\''+setor+'\')">+ Adicionar item</button></div>'
+    +'</div>'
+
     +'</div></div>'
     +'<div id="lista-'+setor+'" style="margin-top:12px"></div>';
 }
@@ -12128,20 +12144,24 @@ function _onSelecionarItem(setor){
   var k = setor+'_novo';
   var sel = document.getElementById('sel-'+k);
   var wrapNovo = document.getElementById('wrap-novo-'+k);
+  var wrapColeta = document.getElementById('wrap-coleta-'+k);
   var nomeEl = document.getElementById('enome-'+k);
   var nomeVisEl = document.getElementById('nomevis-'+k);
   var unidWrap = document.getElementById('unid-wrap-'+k);
   if(!sel) return;
   var val = sel.value;
   if(val === '__novo__'){
-    // Item novo — mostra o campo de nome; unidade fica editavel
+    // Cadastro de item novo — so pede nome, unidade e observacao do PRODUTO (sem quantidade, nao eh coleta)
     wrapNovo.style.display = 'block';
+    wrapColeta.style.display = 'none';
     nomeEl.value = ''; if(nomeVisEl) nomeVisEl.value='';
-    unidWrap.innerHTML = '<input type="text" id="eunid-'+k+'" placeholder="Ex: unid, sacos, kg..." style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box">';
+    var novaUnidEl = document.getElementById('novaunid-'+k); if(novaUnidEl) novaUnidEl.value='';
+    var obsNovoEl = document.getElementById('obsnovo-'+k); if(obsNovoEl) obsNovoEl.value='';
     setTimeout(function(){ var el=document.getElementById('nomevis-'+k); if(el) el.focus(); }, 50);
   } else if(val){
-    // Item existente — preenche o nome (oculto) e mostra a(s) unidade(s) ja cadastradas
+    // Item existente — mostra a(s) unidade(s) ja cadastradas + quantidade, para registrar a coleta
     wrapNovo.style.display = 'none';
+    wrapColeta.style.display = 'block';
     nomeEl.value = val;
     var unidades = _catalogoUnidadesPara(setor, val);
     if(unidades.length > 1){
@@ -12153,8 +12173,38 @@ function _onSelecionarItem(setor){
     }
   } else {
     wrapNovo.style.display = 'none';
+    wrapColeta.style.display = 'none';
     nomeEl.value = '';
-    unidWrap.innerHTML = '<input type="text" id="eunid-'+k+'" value="" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">';
+  }
+}
+
+function _cadastrarItemCatalogo(setor){
+  var k = setor+'_novo';
+  var nomeVisEl = document.getElementById('nomevis-'+k);
+  var unidEl = document.getElementById('novaunid-'+k);
+  var nome = (nomeVisEl?nomeVisEl.value:'').trim();
+  var unid = (unidEl?unidEl.value:'').trim();
+  if(!nome){ _toast('Informe o nome do item.'); nomeVisEl&&nomeVisEl.focus(); return; }
+  if(!unid){ _toast('Informe a unidade do item.'); unidEl&&unidEl.focus(); return; }
+  if(_catalogoBuscarExato(setor, nome, unid)){
+    _toast('Esse item com essa unidade já existe no catálogo.');
+    return;
+  }
+  _catalogoAdicionar(setor, nome, unid);
+  _catalogoEnviarGitHub(); // publica no GitHub (nao bloqueia) — Coletores puxam essa versao automaticamente
+  _toast('✅ '+nome+' cadastrado no catálogo!');
+
+  // Limpa o formulario de cadastro e ja seleciona o item recem-criado,
+  // caso queiram registrar uma coleta dele agora mesmo
+  var obsNovoEl = document.getElementById('obsnovo-'+k);
+  nomeVisEl.value=''; unidEl.value=''; if(obsNovoEl) obsNovoEl.value='';
+  var sel = document.getElementById('sel-'+k);
+  if(sel){
+    var nomes = _catalogoNomesUnicos(setor);
+    var opts = nomes.map(function(n){ return '<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/</g,'&lt;')+'</option>'; }).join('');
+    sel.innerHTML = '<option value="">— Escolha um item —</option>'+opts+'<option value="__novo__" style="color:#1a6b2a;font-weight:700">+ Cadastrar item novo</option>';
+    sel.value = nome;
+    _onSelecionarItem(setor);
   }
 }
 
@@ -12168,34 +12218,21 @@ function _adicionarItemSessao(setor){
   var nome = (nomeEl?nomeEl.value:'').trim();
   var qtd  = parseFloat(qtdEl?qtdEl.value:0)||0;
   var unid = (unidEl?unidEl.value:'').trim()||'unid';
-  if(!nome){ _toast('Informe o nome do item.'); return; }
+  if(!nome){ _toast('Selecione um item da lista.'); return; }
   if(qtd<=0){ _toast('Informe a quantidade antes de adicionar.'); return; }
   var forn = (forEl?forEl.value:'')||'';
   var obs  = (obsEl?obsEl.value:'')||'';
-  // Se essa combinacao nome+unidade ainda nao existe, cadastra automaticamente —
-  // nao precisa digitar de novo da proxima vez (mesmo que o nome ja exista com
-  // outra unidade/apresentacao).
-  if(!_catalogoBuscarExato(setor, nome, unid)) _catalogoAdicionar(setor, nome, unid);
   _sessaoInit();
   _sessaoItens[setor].push({nome:nome, unid:unid, qtd:qtd, obs:obs.trim(), forn:forn.trim()});
   // Limpa o formulario para o proximo item
   var sel = document.getElementById('sel-'+k);
-  var wrapNovo = document.getElementById('wrap-novo-'+k);
-  var nomeVisEl = document.getElementById('nomevis-'+k);
-  var unidWrap = document.getElementById('unid-wrap-'+k);
-  nomeEl.value=''; qtdEl.value=0;
-  if(nomeVisEl) nomeVisEl.value='';
+  var wrapColeta = document.getElementById('wrap-coleta-'+k);
+  qtdEl.value=0;
   if(obsEl) obsEl.value='';
   if(forEl) forEl.value='';
-  if(wrapNovo) wrapNovo.style.display='none';
-  if(unidWrap) unidWrap.innerHTML = '<input type="text" id="eunid-'+k+'" value="" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">';
-  if(sel){
-    // Reconstroi as opcoes (inclui o item novo, se foi o caso)
-    var nomes = _catalogoNomesUnicos(setor);
-    var opts = nomes.map(function(n){ return '<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/</g,'&lt;')+'</option>'; }).join('');
-    sel.innerHTML = '<option value="">— Escolha um item —</option>'+opts+'<option value="__novo__" style="color:#1a6b2a;font-weight:700">+ Cadastrar item novo</option>';
-    sel.value = '';
-  }
+  if(wrapColeta) wrapColeta.style.display='none';
+  nomeEl.value='';
+  if(sel) sel.value = '';
   _renderListaSessao(setor);
   _atualizarContador();
   _sessaoSalvarLocal();
