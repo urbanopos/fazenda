@@ -1,0 +1,166 @@
+{
+  "aviario": [
+    {
+      "id": "ovo",
+      "nome": "Ovos de Capoeira",
+      "unid": "unid",
+      "passo": 1
+    },
+    {
+      "id": "esterco",
+      "nome": "Esterco",
+      "unid": "sacos",
+      "passo": 1
+    },
+    {
+      "id": "galinha",
+      "nome": "Galinha",
+      "unid": "unid",
+      "passo": 1
+    },
+    {
+      "id": "frango",
+      "nome": "Frango",
+      "unid": "unid",
+      "passo": 1
+    },
+    {
+      "id": "pinto",
+      "nome": "Pinto",
+      "unid": "unid",
+      "passo": 1
+    },
+    {
+      "id": "pintainha",
+      "nome": "Pintainha",
+      "unid": "unid",
+      "passo": 1
+    },
+    {
+      "id": "peru",
+      "nome": "Peru",
+      "unid": "Jovem",
+      "passo": 1
+    }
+  ],
+  "perda": [
+    {
+      "id": "ovo",
+      "nome": "Ovos de Capoeira",
+      "unid": "unid",
+      "passo": 1
+    },
+    {
+      "id": "esterco",
+      "nome": "Esterco",
+      "unid": "sacos",
+      "passo": 1
+    },
+    {
+      "id": "galinha",
+      "nome": "Galinha",
+      "unid": "unid",
+      "passo": 1
+    },
+    {
+      "id": "frango",
+      "nome": "Frango",
+      "unid": "unid",
+      "passo": 1
+    },
+    {
+      "id": "pinto",
+      "nome": "Pinto",
+      "unid": "unid",
+      "passo": 1
+    },
+    {
+      "id": "pintainha",
+      "nome": "Pintainha",
+      "unid": "unid",
+      "passo": 1
+    },
+    {
+      "id": "ovos_de_capoeira_bandeja_c_30_ovos",
+      "nome": "Ovos de Capoeira",
+      "unid": "Bandeja c/30 ovos",
+      "passo": 1
+    }
+  ],
+  "campo": [
+    {
+      "id": "coco",
+      "nome": "Coco Seco",
+      "unid": "unid",
+      "passo": 1
+    },
+    {
+      "id": "manga",
+      "nome": "Manga",
+      "unid": "unid",
+      "passo": 1
+    },
+    {
+      "id": "abacate",
+      "nome": "Abacate",
+      "unid": "unid",
+      "passo": 1
+    },
+    {
+      "id": "banana",
+      "nome": "Banana",
+      "unid": "cac.",
+      "passo": 1
+    },
+    {
+      "id": "pitomba",
+      "nome": "Pitomba",
+      "unid": "kg",
+      "passo": 0.5
+    }
+  ],
+  "estoque": [
+    {
+      "id": "ipos",
+      "nome": "Postura",
+      "unid": "sc 40kg",
+      "passo": 1
+    },
+    {
+      "id": "iini",
+      "nome": "Inicial",
+      "unid": "sc 40kg",
+      "passo": 1
+    },
+    {
+      "id": "ipre",
+      "nome": "Pre-Inicial",
+      "unid": "sc 40kg",
+      "passo": 1
+    },
+    {
+      "id": "icre",
+      "nome": "Crescimento",
+      "unid": "sc 40kg",
+      "passo": 1
+    },
+    {
+      "id": "ieng",
+      "nome": "Engorda",
+      "unid": "sc 40kg",
+      "passo": 1
+    },
+    {
+      "id": "milho",
+      "nome": "Milho",
+      "unid": "sc 40kg",
+      "passo": 1
+    },
+    {
+      "id": "farelo",
+      "nome": "Farelo de Trigo",
+      "unid": "sc 40kg",
+      "passo": 1
+    }
+  ]
+}
