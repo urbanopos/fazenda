@@ -11358,7 +11358,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '8f942a96dce1';
+  var FP = '4ef6260a008e';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -11381,8 +11381,12 @@ window.addEventListener('load',function(){
   _caGerarIcone();
   _cadInit();
   /* Sentinela inicial: instalado APÓS o app carregar
-     Garante que o primeiro "<" cai no popstate (não sai direto) */
+     Garante que o primeiro "<" cai no popstate (não sai direto).
+     Precisa ser pushState (não só replaceState) para existir uma segunda
+     posição no histórico — senão a primeira vez que aperta voltar sai
+     direto do app, sem disparar o popstate. */
   history.replaceState({ navSentinel: true }, '');
+  history.pushState({ navSentinel: true }, '');
   setTimeout(function(){
     var modo=localStorage.getItem(CA_MODO);
     document.getElementById('ca-splash').classList.remove('vis');
@@ -12022,6 +12026,15 @@ function _sessaoSalvarLocal(){
   try{ localStorage.setItem(SESSAO_PEND_KEY, JSON.stringify(_sessaoItens)); }catch(e){}
 }
 
+/* Rede de seguranca: salva sozinho sempre que o app sai de foco, é minimizado,
+   trocado por outro app, ou a tela é desligada — nao depende só do botao "Sair"
+   nem da seta de voltar. */
+document.addEventListener('visibilitychange', function(){
+  if(document.visibilityState === 'hidden') _sessaoSalvarLocal();
+});
+window.addEventListener('pagehide', _sessaoSalvarLocal);
+window.addEventListener('blur', _sessaoSalvarLocal);
+
 function _sessaoRestaurarLocal(){
   try{
     var raw = localStorage.getItem(SESSAO_PEND_KEY);
@@ -12039,16 +12052,24 @@ function _sessaoLimparLocal(){
 }
 
 function sairColeta(){
-  _sessaoSalvarLocal();
-  var msg = _haPendencias()
-    ? 'Seus itens coletados foram salvos neste aparelho.\n\nEles ainda NÃO foram enviados — abra o aplicativo de novo e toque em "Enviar coleta" quando quiser enviá-los.\n\nJá pode fechar o aplicativo agora.'
-    : 'Tudo salvo. Já pode fechar o aplicativo agora.';
-  if(!confirm(msg+'\n\nToque OK para sair.')) return;
+  if(_haPendencias()){
+    var confirmou = confirm('Você tem itens coletados ainda NÃO enviados.\n\nSe sair agora, esses itens serão APAGADOS e não poderão ser recuperados depois.\n\nDeseja realmente sair mesmo assim?');
+    if(!confirmou) return;
+    // Usuario confirmou sair mesmo com pendencias — apaga o que nao foi enviado
+    Object.keys(SETORES).forEach(function(s){
+      _sessaoItens[s] = [];
+      _renderListaSessao(s);
+    });
+    _atualizarContador();
+    _sessaoLimparLocal();
+  } else {
+    if(!confirm('Tudo enviado/sem pendências. Deseja sair do aplicativo agora?')) return;
+  }
   try{ window.close(); }catch(e){}
   setTimeout(function(){
     document.body.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;text-align:center;padding:20px;background:#0e1f16;color:#cfead9">'
       +'<div style="font-size:44px;margin-bottom:12px">✅</div>'
-      +'<div style="font-size:17px;margin-bottom:8px">Tudo salvo.</div>'
+      +'<div style="font-size:17px;margin-bottom:8px">Aplicativo encerrado.</div>'
       +'<div style="font-size:13px;opacity:.75">Pode fechar o aplicativo agora.</div>'
       +'</div>';
   }, 200);
