@@ -11355,7 +11355,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = 'c71b0a9de234';
+  var FP = '95923978a532';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -11883,27 +11883,113 @@ function apagarCardEdit(k, cl){
   _atualizarContador();
 }
 
-function _renderGridSetor(setor){
-  var cfg = SETORES[setor];
-  var g = document.getElementById('grid-'+setor);
-  if(!g || !cfg) return;
-  var itens = _catalogoCarregar()[setor] || [];
-  var editCard = document.getElementById('card-'+setor+'_edit');
-  itens.forEach(function(p){
-    var k = setor+'_'+p.id;
-    if(document.getElementById('card-'+k)) return; // ja existe na tela — nao mexe (preserva o que foi digitado)
-    var html = _card(setor, p, cfg.cl, cfg.forn);
-    if(editCard) editCard.insertAdjacentHTML('beforebegin', html);
-    else g.insertAdjacentHTML('beforeend', html);
-  });
-  if(!editCard){
-    g.insertAdjacentHTML('beforeend', _cardEditavel(setor, cfg.cl, cfg.forn));
+var _sessaoItens = {}; // {setor:[{nome,unid,qtd,obs,forn}]}
+function _sessaoInit(){
+  Object.keys(SETORES).forEach(function(s){ if(!_sessaoItens[s]) _sessaoItens[s]=[]; });
+}
+
+function _cardColetaSetor(setor, cl, forn){
+  var k = setor+'_novo';
+  var itensCat = (_catalogoCarregar()[setor]||[]).slice().sort(function(a,b){ return a.nome.localeCompare(b.nome,'pt-BR'); });
+  var opts = itensCat.map(function(p){ return '<option value="'+p.nome.replace(/"/g,'&quot;')+'">'; }).join('');
+  var fH = forn ? '<div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-'+k+'" placeholder="Nome do fornecedor..." style="font-size:15px"></div>' : '';
+  return '<div class="pc pc-edit'+(cl?' '+cl:'')+'" id="card-'+k+'" style="cursor:default">'
+    +'<div class="pbd" style="max-height:none;padding:16px 14px" id="body-'+k+'">'
+    +'<div class="cg"><span class="cl">Item</span>'
+    +'<input class="pc-edit-nome" type="text" id="enome-'+k+'" list="dl-'+k+'" placeholder="Digite ou escolha um item ja cadastrado..." autocomplete="off" oninput="_onNomeItemInput(\''+setor+'\')" onchange="_onNomeItemInput(\''+setor+'\')">'
+    +'<datalist id="dl-'+k+'">'+opts+'</datalist>'
+    +'</div>'
+    +'<div class="cg"><span class="cl" id="lbl-unid-'+k+'">Unidade</span>'
+    +'<input type="text" id="eunid-'+k+'" placeholder="unid" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box">'
+    +'</div>'
+    +'<div class="cg"><span class="cl">Quantidade</span>'
+    +'<div class="step" style="display:flex;align-items:center;gap:6px">'
+    +'<button class="sb" onclick="stepQ(\''+k+'\',1,-1)">-</button>'
+    +'<input class="si" type="number" id="qtd-'+k+'" inputmode="decimal" min="0" step="1" value="0">'
+    +'<button class="sb" onclick="stepQ(\''+k+'\',1,1)">+</button>'
+    +'</div></div>'
+    +fH
+    +'<div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-'+k+'" placeholder="Ex: lote A, qualidade boa..."></textarea></div>'
+    +'<div class="card-acoes"><button class="btn-con" onclick="_adicionarItemSessao(\''+setor+'\')">+ Adicionar item</button></div>'
+    +'</div></div>'
+    +'<div id="lista-'+setor+'" style="margin-top:12px"></div>';
+}
+
+function _onNomeItemInput(setor){
+  var k = setor+'_novo';
+  var nomeEl = document.getElementById('enome-'+k);
+  var unidEl = document.getElementById('eunid-'+k);
+  var lbl = document.getElementById('lbl-unid-'+k);
+  if(!nomeEl || !unidEl) return;
+  var nome = nomeEl.value.trim();
+  var achado = nome ? _catalogoBuscar(setor, nome) : null;
+  if(achado){
+    unidEl.value = achado.unid;
+    unidEl.readOnly = true;
+    unidEl.style.background = '#f0ede6';
+    if(lbl) lbl.textContent = 'Unidade (ja cadastrada)';
+  } else {
+    unidEl.readOnly = false;
+    unidEl.style.background = '';
+    if(lbl) lbl.textContent = nome ? 'Unidade (item novo — informe)' : 'Unidade';
   }
+}
+
+function _adicionarItemSessao(setor){
+  var k = setor+'_novo';
+  var nomeEl = document.getElementById('enome-'+k);
+  var qtdEl  = document.getElementById('qtd-'+k);
+  var unidEl = document.getElementById('eunid-'+k);
+  var obsEl  = document.getElementById('obs-'+k);
+  var forEl  = document.getElementById('for-'+k);
+  var nome = (nomeEl?nomeEl.value:'').trim();
+  var qtd  = parseFloat(qtdEl?qtdEl.value:0)||0;
+  var unid = (unidEl?unidEl.value:'').trim()||'unid';
+  if(!nome){ _toast('Informe o nome do item.'); nomeEl&&nomeEl.focus(); return; }
+  if(qtd<=0){ _toast('Informe a quantidade antes de adicionar.'); return; }
+  var forn = (forEl?forEl.value:'')||'';
+  var obs  = (obsEl?obsEl.value:'')||'';
+  // Item novo (sem similar existente) passa a compor o catalogo — nao precisa
+  // digitar nome/unidade de novo da proxima vez.
+  if(!_catalogoBuscar(setor, nome)) _catalogoAdicionar(setor, nome, unid);
+  _sessaoInit();
+  _sessaoItens[setor].push({nome:nome, unid:unid, qtd:qtd, obs:obs.trim(), forn:forn.trim()});
+  // Limpa o formulario para o proximo item
+  nomeEl.value=''; qtdEl.value=0;
+  if(unidEl){ unidEl.value=''; unidEl.readOnly=false; unidEl.style.background=''; }
+  if(obsEl) obsEl.value='';
+  if(forEl) forEl.value='';
+  var lbl = document.getElementById('lbl-unid-'+k); if(lbl) lbl.textContent='Unidade';
+  _renderListaSessao(setor);
+  _atualizarContador();
+  _toast(nome+' adicionado');
+  nomeEl.focus();
+}
+
+function _removerItemSessao(setor, idx){
+  if(!confirm('Remover este item da lista?')) return;
+  _sessaoItens[setor].splice(idx,1);
+  _renderListaSessao(setor);
+  _atualizarContador();
+}
+
+function _renderListaSessao(setor){
+  var cont = document.getElementById('lista-'+setor);
+  if(!cont) return;
+  var itens = _sessaoItens[setor]||[];
+  if(!itens.length){ cont.innerHTML=''; return; }
+  cont.innerHTML = itens.map(function(it,i){
+    return '<div style="display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid #e6ddd0;border-radius:8px;padding:10px 12px;margin-bottom:6px">'
+      +'<div><strong>'+it.nome+'</strong><br><span style="font-size:12px;color:#999">'+it.qtd+' '+it.unid+(it.forn?' &middot; '+it.forn:'')+(it.obs?' &middot; '+it.obs:'')+'</span></div>'
+      +'<button onclick="_removerItemSessao(\''+setor+'\','+i+')" style="background:none;border:none;color:#c0392b;font-size:18px;cursor:pointer;padding:4px 8px" title="Remover">\uD83D\uDDD1</button>'
+      +'</div>';
+  }).join('');
 }
 
 /* ---- INIT ---- */
 async function _iniciar(){
   setHoje(); _relogio(); setInterval(_relogio, 30000);
+  _sessaoInit();
 
   // Sincroniza OPFS → localStorage ANTES de qualquer render
   // O await garante que os dados do OPFS (fonte de verdade) estejam
@@ -11921,9 +12007,9 @@ async function _iniciar(){
   }
 
   Object.keys(SETORES).forEach(function(s){
+    var cfg = SETORES[s];
     var g = document.getElementById('grid-'+s);
-    if(g) g.innerHTML = ''; // limpa qualquer marcacao estatica antiga do HTML
-    _renderGridSetor(s);
+    if(g) g.innerHTML = _cardColetaSetor(s, cfg.cl, cfg.forn);
   });
   _initLP();
   _initVendas();
@@ -12176,31 +12262,12 @@ function setHoje(){
 /* ---- COLETA ---- */
 function _coletarItens(){
   var itens = [];
+  _sessaoInit();
   Object.keys(SETORES).forEach(function(setor){
     var cfg = SETORES[setor];
-    // Cards do catalogo (itens padrao + itens adicionados via Editavel)
-    var produtosCat = _catalogoCarregar()[setor] || [];
-    produtosCat.forEach(function(p){
-      var k = setor+'_'+p.id;
-      var card = document.getElementById('card-'+k);
-      if(!card || !card.classList.contains('concluido')) return;
-      var qtd = parseFloat(document.getElementById('qtd-'+k).value)||0;
-      if(qtd<=0) return;
-      var obs  = (document.getElementById('obs-'+k)||{value:''}).value||'';
-      var forn = (document.getElementById('for-'+k)||{value:''}).value||'';
-      itens.push({setor:cfg.label, nome:p.nome, unid:p.unid, qtd:qtd, obs:obs.trim(), forn:forn.trim()});
+    (_sessaoItens[setor]||[]).forEach(function(it){
+      itens.push({setor:cfg.label, nome:it.nome, unid:it.unid, qtd:it.qtd, obs:it.obs, forn:it.forn});
     });
-    // Card editavel
-    var ke = setor+'_edit';
-    var cardE = document.getElementById('card-'+ke);
-    if(cardE && cardE.classList.contains('concluido')){
-      var qtd  = parseFloat((document.getElementById('qtd-'+ke)||{value:0}).value)||0;
-      var nome = ((document.getElementById('enome-'+ke)||{value:''}).value||'').trim();
-      var unid = ((document.getElementById('eunid-'+ke)||{value:''}).value||'').trim()||'unid';
-      var obs  = ((document.getElementById('obs-'+ke)||{value:''}).value||'').trim();
-      var forn = ((document.getElementById('for-'+ke)||{value:''}).value||'').trim();
-      if(qtd>0 && nome) itens.push({setor:cfg.label, nome:nome, unid:unid, qtd:qtd, obs:obs, forn:forn});
-    }
   });
   return itens;
 }
@@ -12529,11 +12596,8 @@ function enviarTudo(){
   // Limpa apos envio
   setTimeout(function(){
     Object.keys(SETORES).forEach(function(setor){
-      var cfg = SETORES[setor];
-      var produtosCat = _catalogoCarregar()[setor] || [];
-      produtosCat.forEach(function(p){ apagarCard(setor+'_'+p.id, cfg.cl||''); });
-      // Limpa card editavel
-      apagarCardEdit(setor+'_edit', cfg.cl||'');
+      _sessaoItens[setor] = [];
+      _renderListaSessao(setor);
     });
     document.getElementById('contador').innerHTML = 'Nenhum item preenchido';
   }, 2000);
