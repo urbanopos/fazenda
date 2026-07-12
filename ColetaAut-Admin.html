@@ -860,8 +860,12 @@ textarea{resize:none;height:72px;font-size:14px}
     </div>
     <div class="mp-body">
       <div class="mp-meta" id="mp-meta"></div>
-      <div id="mp-linhas"></div>
-      <div class="mp-total"><span class="mp-total-lbl">Total</span><span class="mp-total-val" id="mp-total"></span></div>
+      <div id="mp-linhas" style="display:none"></div>
+      <div class="mp-total" style="display:none"><span class="mp-total-lbl">Total</span><span class="mp-total-val" id="mp-total"></span></div>
+      <div id="mp-preview-wrap" style="position:relative;border-radius:var(--r);overflow:hidden;background:#f0f0f0;min-height:120px;display:flex;align-items:center;justify-content:center">
+        <span id="mp-preview-loading" style="font-family:'DM Mono',monospace;font-size:10px;color:#999">Gerando pre-visualizacao...</span>
+        <img id="mp-preview-img" alt="Pre-visualizacao do pedido" style="width:100%;display:block;opacity:0;transition:opacity .2s">
+      </div>
       <button class="mp-btn-img" onclick="reemitirPedido()" style="background:rgba(28,78,34,.1);color:var(--vc);border:1.5px solid var(--vc)">📤 Reenviar imagem</button>
       <div class="mp-admin-bar" id="mp-admin-bar" style="display:none">
         <button class="mp-btn-edit" onclick="_abrirEditPedido()">✎ Editar pedido</button>
@@ -12941,6 +12945,31 @@ function abrirModalPedIdx(idxFiltrado, btn){
   }
   document.getElementById('modal-ped').classList.add('vis');
   _navPush('modal-ped');
+  _atualizarPreviewPedido(p);
+}
+
+var _mpPreviewUrl = null;
+function _atualizarPreviewPedido(p){
+  var img = document.getElementById('mp-preview-img');
+  var loading = document.getElementById('mp-preview-loading');
+  if(!img) return;
+  img.style.opacity = '0';
+  if(loading){ loading.style.display='block'; loading.textContent='Gerando pré-visualização...'; }
+  var linhas = (p.itens||[]).map(function(it){
+    var sub = it.sub || (it.qtd * it.preco) || 0;
+    var col5 = it.col5 || ('R$ '+_fmt(sub));
+    return {col1:it.col1||it.data, col2:it.nome||it.col2, col3:it.col3||(it.qtd+' '+it.unidade),
+            col4:it.col4, col5:col5, val:sub};
+  });
+  _qrPayloadAtual = null;
+  var opcoesExtra = p.pago ? { pago:true, dataQuit: p.dataQuit || new Date().toLocaleString('pt-BR'), clientePago: p.cliente||'' } : null;
+  _gerarImagem('TALAO DE PEDIDO / '+p.num, linhas, p.num, function(blob){
+    if(!blob){ if(loading) loading.textContent='Erro ao gerar pré-visualização.'; return; }
+    if(_mpPreviewUrl) URL.revokeObjectURL(_mpPreviewUrl);
+    _mpPreviewUrl = URL.createObjectURL(blob);
+    img.src = _mpPreviewUrl;
+    img.onload = function(){ img.style.opacity='1'; if(loading) loading.style.display='none'; };
+  }, p.cliente||'', opcoesExtra);
 }
 
 function abrirModalPed(idx){
@@ -13410,6 +13439,7 @@ async function _executarReversaoModal(){
   await _gravarHist(hist);
   var btnPago = document.getElementById('mp-btn-pago');
   if(btnPago){ btnPago.textContent='QUITAÇÃO'; btnPago.classList.remove('ja-pago'); }
+  _atualizarPreviewPedido(_pedAtual);
   _toast('↩ Quitação removida pelo administrador.');
   _renderHist();
 }
@@ -13475,6 +13505,7 @@ async function _executarQuitacaoModal(){
   await _gravarHist(hist);
   var btnPago = document.getElementById('mp-btn-pago');
   if(btnPago){ btnPago.textContent='✔ QUITAÇÃO'; btnPago.classList.add('ja-pago'); }
+  _atualizarPreviewPedido(_pedAtual);
   _gerarImagemComPago(_pedAtual);
   _toast('✅ QUITAÇÃO registrada! Gerando comprovante...');
   _renderHist();
