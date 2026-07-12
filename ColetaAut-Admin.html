@@ -11362,7 +11362,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '81436e96db0f';
+  var FP = '4a7cf81e83e1';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -12070,13 +12070,6 @@ function sairColeta(){
     if(!confirm('Tudo enviado/sem pendências. Deseja sair do aplicativo agora?')) return;
   }
   try{ window.close(); }catch(e){}
-  setTimeout(function(){
-    document.body.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;text-align:center;padding:20px;background:#0e1f16;color:#cfead9">'
-      +'<div style="font-size:44px;margin-bottom:12px">✅</div>'
-      +'<div style="font-size:17px;margin-bottom:8px">Aplicativo encerrado.</div>'
-      +'<div style="font-size:13px;opacity:.75">Pode fechar o aplicativo agora.</div>'
-      +'</div>';
-  }, 200);
 }
 
 function _cardColetaSetor(setor, cl, forn){
