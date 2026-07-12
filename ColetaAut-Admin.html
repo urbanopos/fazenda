@@ -941,6 +941,10 @@ textarea{resize:none;height:72px;font-size:14px}
         <option value="">Todos</option>
       </select>
     </div>
+    <div>
+      <div class="hcol-lbl">&nbsp;</div>
+      <button class="hcol-sel" id="hped-aberto-btn" onclick="_toggleFiltroAberto()" style="cursor:pointer;font-weight:700">Em aberto</button>
+    </div>
   </div>
   <!-- PAINEL HISTORICO DE PEDIDOS -->
   <div class="hist-panel" id="painel-hist">
@@ -11358,7 +11362,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '4ef6260a008e';
+  var FP = '81436e96db0f';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -13108,7 +13112,18 @@ function mostrarPainelVendas(qual){
   }
 }
 
-/* Filtro centralizado — ano, mes e cliente — usado em toda a tela Vendas */
+/* Filtro centralizado — ano, mes, cliente e status — usado em toda a tela Vendas */
+var _filtroAbertoAtivo = false;
+function _toggleFiltroAberto(){
+  _filtroAbertoAtivo = !_filtroAbertoAtivo;
+  var btn = document.getElementById('hped-aberto-btn');
+  if(btn){
+    btn.style.background = _filtroAbertoAtivo ? '#1a6b2a' : '';
+    btn.style.color = _filtroAbertoAtivo ? '#fff' : '';
+    btn.style.borderColor = _filtroAbertoAtivo ? '#1a6b2a' : '';
+  }
+  _renderHist();
+}
 function _filtrarHist(hist){
   var ano = (document.getElementById('hped-ano')||{}).value||'';
   var mes = (document.getElementById('hped-mes')||{}).value||'';
@@ -13118,6 +13133,7 @@ function _filtrarHist(hist){
     if(ano && p.data.slice(0,4)!==ano) return false;
     if(mes && p.data.slice(5,7)!==mes) return false;
     if(cli && (p.cliente||'')!==cli) return false;
+    if(_filtroAbertoAtivo && p.pago) return false;
     return true;
   });
 }
@@ -13170,9 +13186,10 @@ function _renderHist(){
     cli = selCli.value; // reler após rebuild
   }
 
-  // Aplica filtro de cliente
+  // Aplica filtro de cliente e status (Em aberto)
   var filtrado = filtradoAnoMes.filter(function(p){
     if(cli && (p.cliente||'') !== cli) return false;
+    if(_filtroAbertoAtivo && p.pago) return false;
     return true;
   });
 
@@ -13182,7 +13199,7 @@ function _renderHist(){
   if(elTotal) elTotal.textContent = 'R$ '+_fmt(totalFiltrado);
 
   if(!filtrado.length){
-    lista.innerHTML = '<div class="hist-empty">Nenhum pedido no periodo selecionado.</div>';
+    lista.innerHTML = '<div class="hist-empty">'+(_filtroAbertoAtivo ? 'Nenhum pedido em aberto no periodo selecionado.' : 'Nenhum pedido no periodo selecionado.')+'</div>';
     return;
   }
 
