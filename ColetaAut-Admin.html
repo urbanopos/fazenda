@@ -12852,6 +12852,11 @@ function _reenviarPedidoIdx(idxFiltrado){
   var filtrado = _filtrarHist(hist);
   var p = filtrado[idxFiltrado];
   if(!p) return;
+  if(p.pago){
+    // Pedido ja quitado — reenvia o comprovante de quitacao, nao o talao original
+    _gerarImagemComPago(p);
+    return;
+  }
   var linhas = (p.itens||[]).map(function(it){
     var sub = it.sub || (it.qtd * it.preco) || 0;
     var col5 = it.col5 || ('R$ '+_fmt(sub));
@@ -13452,6 +13457,7 @@ async function _executarQuitacaoIdx(i){
   var idxH = hist.findIndex(function(h){ return h.ts === p.ts; });
   if(idxH < 0) return;
   hist[idxH].pago = true;
+  hist[idxH].dataQuit = new Date().toLocaleString('pt-BR');
   await _gravarHist(hist);
   _gerarImagemComPago(hist[idxH]);
   _toast('✅ QUITAÇÃO registrada! Gerando comprovante...');
@@ -13464,6 +13470,7 @@ async function _executarQuitacaoModal(){
   var idx  = hist.findIndex(function(p){ return p.ts === _pedAtual.ts; });
   if(idx < 0) return;
   hist[idx].pago = true;
+  hist[idx].dataQuit = new Date().toLocaleString('pt-BR');
   _pedAtual = hist[idx];
   await _gravarHist(hist);
   var btnPago = document.getElementById('mp-btn-pago');
@@ -13514,7 +13521,7 @@ function _gerarImagemComPago(p){
             col3:it.col3||(it.qtd+' '+it.unidade),
             col4:it.col4, col5:it.col5||('R$ '+_fmt(sub)), val:sub};
   });
-  var agora = new Date().toLocaleString('pt-BR');
+  var agora = p.dataQuit || new Date().toLocaleString('pt-BR');
   _qrPayloadAtual = null;
   _gerarImagem(
     'TALAO DE PEDIDO / '+p.num,
@@ -13663,10 +13670,15 @@ async function _salvarEditPedido(){
     hist[idx].cliente = novoCliente;
     hist[idx].itens   = novosItens;
     hist[idx].total   = novoTotal;
+    if(hist[idx].pago){
+      // Pedido editado depois de quitado — volta ao inicio (precisa quitar de novo)
+      hist[idx].pago = false;
+      delete hist[idx].dataQuit;
+    }
     _pedAtual = hist[idx];
     await _gravarHist(hist);
   }
-  _toast('\u2705 Pedido atualizado!');
+  _toast('✅ Pedido atualizado!');
   fecharModalPed();
   _renderHist();
 }
@@ -13991,6 +14003,11 @@ setTimeout(function(){
 function reemitirPedido(){
   if(!_pedAtual) return;
   var p = _pedAtual;
+  if(p.pago){
+    // Pedido ja quitado — reemite o comprovante de quitacao, nao o talao original
+    _gerarImagemComPago(p);
+    return;
+  }
   var n = _getNum();
   if(!n){ _toast('Numero nao configurado.'); return; }
   var linhas = (p.itens||[]).map(function(it){
