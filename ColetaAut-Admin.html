@@ -11362,7 +11362,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '4a7cf81e83e1';
+  var FP = '3b6b114ab70f';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -12056,20 +12056,31 @@ function _sessaoLimparLocal(){
 }
 
 function sairColeta(){
-  if(_haPendencias()){
-    var confirmou = confirm('Você tem itens coletados ainda NÃO enviados.\n\nSe sair agora, esses itens serão APAGADOS e não poderão ser recuperados depois.\n\nDeseja realmente sair mesmo assim?');
-    if(!confirmou) return;
-    // Usuario confirmou sair mesmo com pendencias — apaga o que nao foi enviado
-    Object.keys(SETORES).forEach(function(s){
-      _sessaoItens[s] = [];
-      _renderListaSessao(s);
-    });
-    _atualizarContador();
-    _sessaoLimparLocal();
-  } else {
-    if(!confirm('Tudo enviado/sem pendências. Deseja sair do aplicativo agora?')) return;
-  }
-  try{ window.close(); }catch(e){}
+  var pend = _haPendencias();
+  var msg = pend
+    ? 'Você tem itens coletados ainda NÃO enviados.<br><br>Se sair agora, esses itens serão <strong>apagados</strong> e não poderão ser recuperados depois.<br><br>Deseja realmente sair mesmo assim?'
+    : 'Deseja sair do aplicativo agora?';
+  var overlay = document.createElement('div');
+  overlay.id = 'tela-sair-confirmar';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;background:#0e1f16;color:#cfead9;font-family:sans-serif';
+  overlay.innerHTML = '<div style="font-size:40px;margin-bottom:16px">'+(pend?'⚠️':'👋')+'</div>'
+    +'<div style="font-size:16px;line-height:1.5;margin-bottom:28px;max-width:320px">'+msg+'</div>'
+    +'<button id="btn-sair-confirmar" style="background:#c0392b;color:#fff;border:none;padding:13px 28px;border-radius:8px;font-size:15px;font-weight:700;margin-bottom:10px;cursor:pointer;width:240px">'+(pend?'Sim, sair e apagar':'Sim, sair')+'</button>'
+    +'<button id="btn-sair-cancelar" style="background:transparent;color:#cfead9;border:1px solid #4a8c6f;padding:11px 28px;border-radius:8px;font-size:14px;cursor:pointer;width:240px">Cancelar</button>';
+  document.body.appendChild(overlay);
+  document.getElementById('btn-sair-cancelar').onclick = function(){ overlay.remove(); };
+  document.getElementById('btn-sair-confirmar').onclick = function(){
+    if(pend){
+      // Usuario confirmou sair mesmo com pendencias — apaga o que nao foi enviado
+      Object.keys(SETORES).forEach(function(s){
+        _sessaoItens[s] = [];
+        _renderListaSessao(s);
+      });
+      _atualizarContador();
+      _sessaoLimparLocal();
+    }
+    try{ window.close(); }catch(e){}
+  };
 }
 
 function _cardColetaSetor(setor, cl, forn){
@@ -12355,14 +12366,10 @@ window.addEventListener('popstate', function(e){
   }
 
   /* Nível 3: já está em aviario sem nada aberto — não fecha sozinho.
-     O app só deve ser encerrado pelo botão "Sair". */
+     Reaproveita a mesma tela verde de confirmação do botão "Sair". */
   _sessaoSalvarLocal();
-  if(_haPendencias()){
-    alert('Você tem itens coletados ainda não enviados.\n\nEles já estão salvos neste aparelho — mas, para sair do aplicativo, use o botão "Sair" no topo da tela.');
-  } else {
-    _toast('Use o botão "Sair" no topo da tela para fechar o aplicativo.');
-  }
   history.pushState({ navSentinel: true }, '');
+  if(!document.getElementById('tela-sair-confirmar')) sairColeta();
 });
 
 function _relogio(){
