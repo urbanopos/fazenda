@@ -21,7 +21,9 @@
       }
     ],
     "total": 150,
-    "ts": 1783723177467
+    "ts": 1783723177467,
+    "pago": true,
+    "dataQuit": "13/07/2026, 09:16:27"
   },
   {
     "num": "PED-0032",
@@ -49,7 +51,7 @@
   },
   {
     "num": "PED-0031",
-    "cliente": "LÃÂ©o Alencar",
+    "cliente": "Léo Alencar",
     "data": "2026-07-09",
     "itens": [
       {
@@ -223,7 +225,7 @@
   },
   {
     "num": "PED-0024",
-    "cliente": "JosafÃÂ¡ (Casa Amarela)",
+    "cliente": "Josafá (Casa Amarela)",
     "data": "2026-07-01",
     "itens": [
       {
@@ -245,7 +247,7 @@
   },
   {
     "num": "PED-0023",
-    "cliente": "FÃÂ¡tima ",
+    "cliente": "Fátima ",
     "data": "2026-07-01",
     "itens": [
       {
@@ -285,7 +287,7 @@
   },
   {
     "num": "PED-0022",
-    "cliente": "LÃÂ©o Alencar",
+    "cliente": "Léo Alencar",
     "data": "2026-07-01",
     "itens": [
       {
@@ -591,7 +593,7 @@
   },
   {
     "num": "PED-0013",
-    "cliente": "JOSAFÃÂ (CASA AMARELA)",
+    "cliente": "JOSAFÁ (CASA AMARELA)",
     "data": "2026-06-17",
     "itens": [
       {
