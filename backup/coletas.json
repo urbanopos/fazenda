@@ -1,5 +1,46 @@
 [
   {
+    "data": "2026-07-06",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "qtd": 61,
+        "unid": "unid"
+      }
+    ],
+    "ts": 1783890595108
+  },
+  {
+    "data": "2026-07-12",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "unid": "unid",
+        "qtd": 63,
+        "obs": "",
+        "forn": ""
+      }
+    ],
+    "ts": 1783890202742
+  },
+  {
+    "data": "2026-07-11",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "qtd": 68,
+        "unid": "unid"
+      }
+    ],
+    "ts": 1783890097781
+  },
+  {
     "data": "2026-07-10",
     "coletor": "Menininha",
     "itens": [
@@ -21,42 +62,20 @@
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg"
       },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Milho",
-        "unid": "sc 40kg",
-        "qtd": 1,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Farelo da vaca",
-        "unid": "unid",
-        "qtd": 1,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg"
       }
     ],
     "ts": 1783688506163
@@ -219,7 +238,7 @@
   },
   {
     "data": "2026-07-08",
-    "coletor": "JÃÂºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -234,7 +253,7 @@
   },
   {
     "data": "2026-07-07",
-    "coletor": "JÃÂºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -249,7 +268,7 @@
   },
   {
     "data": "2026-07-01",
-    "coletor": "JÃÂºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Campo",
@@ -264,7 +283,7 @@
   },
   {
     "data": "2026-06-15",
-    "coletor": "JÃÂºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Campo",
@@ -276,49 +295,39 @@
     "ts": 1782948322445
   },
   {
-    "data": "2026-07-01",
-    "coletor": "JÃÂºnior",
+    "data": "2026-07-05",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 65,
-        "obs": "Unidades",
-        "forn": ""
+        "qtd": 58,
+        "unid": "unid"
       }
     ],
     "ts": 1782944393767
   },
   {
-    "data": "2026-06-27",
-    "coletor": "JÃÂºnior",
+    "data": "2026-07-04",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 66,
-        "obs": "Menininha",
-        "forn": ""
+        "qtd": 65,
+        "unid": "unid"
       }
     ],
     "ts": 1782525480178
   },
   {
-    "data": "2026-06-01",
-    "coletor": "JÃÂºnior",
+    "data": "2026-07-03",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
-        "qtd": 69,
-        "unid": "unid"
-      },
-      {
-        "setor": "Aviario",
-        "nome": "Pinto",
-        "qtd": 200,
+        "qtd": 64,
         "unid": "unid"
       }
     ],
@@ -326,7 +335,7 @@
   },
   {
     "data": "2026-06-22",
-    "coletor": "JÃÂºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Campo",
@@ -341,7 +350,7 @@
   },
   {
     "data": "2026-06-22",
-    "coletor": "JÃÂºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Perda",
@@ -356,7 +365,7 @@
   },
   {
     "data": "2026-06-22",
-    "coletor": "JÃÂºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Perda",
@@ -370,23 +379,21 @@
     "ts": 1782156111193
   },
   {
-    "data": "2026-06-11",
-    "coletor": "JÃÂºnior",
+    "data": "2026-07-02",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 56,
-        "obs": "",
-        "forn": ""
+        "qtd": 60,
+        "unid": "unid"
       }
     ],
     "ts": 1781188985765
   },
   {
     "data": "2026-06-10",
-    "coletor": "JÃÂºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -401,7 +408,7 @@
   },
   {
     "data": "2026-06-10",
-    "coletor": "JÃÂºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -416,7 +423,7 @@
   },
   {
     "data": "2026-06-10",
-    "coletor": "JÃÂºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -431,7 +438,7 @@
   },
   {
     "data": "2026-06-10",
-    "coletor": "JÃÂºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -446,7 +453,7 @@
   },
   {
     "data": "2026-06-10",
-    "coletor": "JÃÂºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -461,7 +468,7 @@
   },
   {
     "data": "2026-06-10",
-    "coletor": "JÃÂºnior",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -475,16 +482,14 @@
     "ts": 1781089303703
   },
   {
-    "data": "2026-06-09",
-    "coletor": "JÃÂºnior",
+    "data": "2026-07-01",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 79,
-        "obs": "",
-        "forn": ""
+        "qtd": 65,
+        "unid": "unid"
       }
     ],
     "ts": 1781038271229
