@@ -1,5 +1,33 @@
 [
   {
+    "data": "2026-07-13",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "qtd": 77,
+        "unid": "unid"
+      }
+    ],
+    "ts": 1784028321810
+  },
+  {
+    "data": "2026-07-13",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Pinto",
+        "unid": "unid",
+        "qtd": 200,
+        "obs": "",
+        "forn": ""
+      }
+    ],
+    "ts": 1783953986428
+  },
+  {
     "data": "2026-07-06",
     "coletor": "Júnior",
     "itens": [
