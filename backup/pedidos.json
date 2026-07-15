@@ -1,5 +1,29 @@
 [
   {
+    "num": "PED-0034",
+    "cliente": "Gilvando",
+    "data": "2026-07-15",
+    "itens": [
+      {
+        "col1": "15/07/2026",
+        "col2": "Ovos de Capoeira",
+        "col3": "1 unid",
+        "col4": "R$ 30,00 x 1",
+        "col5": "R$ 30,00",
+        "val": 30,
+        "prodId": "ovo",
+        "nome": "Ovos de Capoeira",
+        "unidade": "unid",
+        "qtd": 1,
+        "preco": 30,
+        "sub": 30,
+        "data": "15/07/2026"
+      }
+    ],
+    "total": 30,
+    "ts": 1784141333640
+  },
+  {
     "num": "PED-0033",
     "cliente": "Luiza Gomes",
     "data": "2026-07-10",
