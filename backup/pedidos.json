@@ -27,20 +27,18 @@
   },
   {
     "num": "PED-0037",
-    "cliente": "Buiu",
+    "cliente": "Buiu (Casa Amarela)",
     "data": "2026-07-15",
     "itens": [
       {
-        "col1": "15/07/2026",
+        "nome": "Ovos de Capoeira",
         "col2": "Ovos de Capoeira",
+        "col1": "15/07/2026",
         "col3": "5 Bandeja c/30 ovos",
         "col4": "R$ 30,00 x 5",
         "col5": "R$ 150,00",
-        "val": 150,
-        "prodId": "ovo",
-        "nome": "Ovos de Capoeira",
-        "unidade": "Bandeja c/30 ovos",
         "qtd": 5,
+        "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 150,
         "data": "15/07/2026"
