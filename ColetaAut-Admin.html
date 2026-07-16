@@ -892,7 +892,8 @@ textarea{resize:none;height:72px;font-size:14px}
     <div class="talao-num" id="talao-num">Pedido <strong>PED-0001</strong></div>
     <div class="cg" style="margin-bottom:12px">
       <span class="cl">Nome do Cliente</span>
-      <input type="text" id="venda-cliente" placeholder="Nome do cliente..." autocomplete="off" style="font-size:15px">
+      <input type="text" id="venda-cliente" list="dl-clientes-pedido" placeholder="Nome do cliente..." autocomplete="off" style="font-size:15px">
+      <datalist id="dl-clientes-pedido"></datalist>
     </div>
     <div id="vendas-itens"></div>
     <button class="btn-add" onclick="addItemVenda()">+ Adicionar item</button>
@@ -11362,7 +11363,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '43ee6ed2e752';
+  var FP = 'b2e9f628aeeb';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -12925,6 +12926,20 @@ function _initVendas(){
   _aplicarVendas(ativa);
   _pedNum = parseInt(localStorage.getItem(NK)||'0');
   _renderTalaoNum();
+  _atualizarSugestoesClientes();
+}
+
+function _atualizarSugestoesClientes(){
+  var dl = document.getElementById('dl-clientes-pedido');
+  if(!dl) return;
+  var hist = _carregarHist();
+  var vistos = {}, nomes = [];
+  hist.forEach(function(p){
+    var nome = (p.cliente||'').trim();
+    if(nome && !vistos[nome.toLowerCase()]){ vistos[nome.toLowerCase()]=true; nomes.push(nome); }
+  });
+  nomes.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
+  dl.innerHTML = nomes.map(function(n){ return '<option value="'+n.replace(/"/g,'&quot;')+'">'; }).join('');
 }
 
 function _aplicarVendas(ativa){
@@ -13139,6 +13154,7 @@ async function _gravarHist(hist){
   var json = JSON.stringify(hist);
   try{ localStorage.setItem(HK, json); }catch(e){}
   if(_caOpfs) await _caOpfsSalvar(FSJ_PEDIDOS, json);
+  _atualizarSugestoesClientes();
   /* Backup automático assíncrono — não bloqueia o fluxo */
   setTimeout(function(){ _fazerBackup(false); }, 2000);
 }
@@ -13376,7 +13392,7 @@ function _renderHPedDetalhe(lista, pedidos){
       +'<button class="hist-btn-ver" onclick="abrirModalPedIdx('+i+',this)">Ver</button>'
       +'<button class="hist-btn-edit" onclick="_abrirEditPedidoIdx('+i+')">✎ Editar</button>'
       +'<button class="hist-btn-dl" onclick="_reenviarPedidoIdx('+i+')" title="Download / Reenviar">📤</button>'
-      +'<button class="hist-btn-pago'+(p.pago?' pago':'')+'" onclick="_marcarPagoIdx('+i+')" title="'+(p.pago?'Remover quitação':'Marcar como quitado e gerar comprovante')+'">'+(p.pago?'✔ QUITAÇÃO':'QUITAÇÃO')+'</button>'
+      +'<button class="hist-btn-pago'+(p.pago?' pago':'')+'" onclick="_marcarPagoIdx('+i+')" title="'+(p.pago?'Remover quitação':'Marcar como quitado e gerar comprovante')+'">'+(p.pago?'✔ PAGO':'QUITAÇÃO')+'</button>'
       +'</div>'
       +'</div>';
   }).join('');
@@ -13414,7 +13430,7 @@ function abrirModalPedIdx(idxFiltrado, btn){
   var btnPago = document.getElementById('mp-btn-pago');
   if(btnPago){
     if(p.pago){
-      btnPago.textContent='✔ QUITAÇÃO';
+      btnPago.textContent='✔ PAGO';
       btnPago.classList.add('ja-pago');
     } else {
       btnPago.textContent='QUITAÇÃO';
@@ -13982,7 +13998,7 @@ async function _executarQuitacaoModal(){
   _pedAtual = hist[idx];
   await _gravarHist(hist);
   var btnPago = document.getElementById('mp-btn-pago');
-  if(btnPago){ btnPago.textContent='✔ QUITAÇÃO'; btnPago.classList.add('ja-pago'); }
+  if(btnPago){ btnPago.textContent='✔ PAGO'; btnPago.classList.add('ja-pago'); }
   _atualizarPreviewPedido(_pedAtual);
   _gerarImagemComPago(_pedAtual);
   _toast('✅ QUITAÇÃO registrada! Gerando comprovante...');
