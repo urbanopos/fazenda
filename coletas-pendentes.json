@@ -4,6 +4,47 @@
     "coletor": "Menininha",
     "itens": [
       {
+        "setor": "Estoque",
+        "nome": "Crescimento",
+        "unid": "sc 40kg",
+        "qtd": 2,
+        "obs": "",
+        "forn": ""
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Engorda",
+        "unid": "sc 40kg",
+        "qtd": 2,
+        "obs": "",
+        "forn": ""
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Postura",
+        "unid": "sc 40kg",
+        "qtd": 2,
+        "obs": "",
+        "forn": ""
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Milho",
+        "unid": "sc 40kg",
+        "qtd": 1,
+        "obs": "",
+        "forn": ""
+      }
+    ],
+    "ts": 1784294203660,
+    "status": "pendente",
+    "enviadoEm": "2026-07-17T13:16:44.348Z"
+  },
+  {
+    "data": "2026-07-17",
+    "coletor": "Menininha",
+    "itens": [
+      {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
         "unid": "unid",
