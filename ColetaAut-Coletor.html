@@ -414,6 +414,11 @@ textarea{resize:none;height:72px;font-size:14px}
           <option value="detalhe">Registros detalhados</option>
         </select>
       </div>
+      <div>
+        <div class="hcol-lbl">Setor</div>
+        <input type="hidden" id="hcol-setor" value="">
+        <button class="hcol-sel" id="hcol-todos-btn" onclick="_toggleHistColetaTodos()" style="cursor:pointer">Todos</button>
+      </div>
     </div>
     <div class="hcol-body" id="hcol-body"></div>
   </div>
@@ -1031,7 +1036,7 @@ function _iniciar(){
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
 (function _caAutoUpdate(){
-  var FP = '9daf0afd683c';
+  var FP = '8d5b7c84206b';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -1319,8 +1324,19 @@ function trocarAba(s){
   if(lbl) lbl.textContent = s==='vendas' ? 'Data da Venda' : 'Data da Coleta';
 }
 
+/* Retorna a data de HOJE no fuso horário local do aparelho (YYYY-MM-DD).
+   Nunca usar new Date().toISOString() para isso — toISOString() converte
+   para UTC, o que faz a data "virar" cedo demais à noite em fusos como o
+   do Brasil (UTC-3), mostrando o dia seguinte antes da meia-noite local. */
+function _dataLocalHoje(){
+  var d = new Date();
+  var mm = String(d.getMonth()+1).padStart(2,'0');
+  var dd = String(d.getDate()).padStart(2,'0');
+  return d.getFullYear()+'-'+mm+'-'+dd;
+}
+
 function setHoje(){
-  document.getElementById('data-global').value = new Date().toISOString().split('T')[0];
+  document.getElementById('data-global').value = _dataLocalHoje();
 }
 
 /* ---- COLETA ---- */
@@ -1445,7 +1461,7 @@ function _gerarImagem(titulo, linhas, rodape, onBlob){
 function _gerarPayloadColeta(){
   var itens = _coletarItens();
   if(!itens.length) return null;
-  var data = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
+  var data = document.getElementById('data-global').value||_dataLocalHoje();
   var nome = (localStorage.getItem('wpp_nome')||'').trim();
   var payload = {
     origem: 'coleta',
@@ -1545,7 +1561,7 @@ function enviarTudo(){
   if(!n){ _toast('Numero nao configurado. Contacte o administrador.'); return; }
 
   // Grava coleta no historico
-  var _dataColeta = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
+  var _dataColeta = document.getElementById('data-global').value||_dataLocalHoje();
   var _nomeColeta = (localStorage.getItem('wpp_nome')||'').trim();
   _salvarColeta({data:_dataColeta, coletor:_nomeColeta, itens:itens, ts:Date.now()});
 
@@ -1561,7 +1577,7 @@ function enviarTudo(){
 
   _gerarImagem('BOLETIM DE COLETA', linhas, null, function(blob){
     if(!blob){ _toast('Erro ao gerar imagem.'); return; }
-    var data = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
+    var data = document.getElementById('data-global').value||_dataLocalHoje();
     // Mostra a imagem gerada na tela — confirmacao visual garantida de que o
     // registro foi salvo, independente do compartilhamento funcionar ou nao
     _mostrarConfirmacaoEnvio(blob, 'coleta-'+data+'.jpg');
@@ -1638,7 +1654,7 @@ function _nextPedNum(){
 
 function addItemVenda(){
   var idx = _vIdx++;
-  var hoje = new Date().toISOString().split('T')[0];
+  var hoje = _dataLocalHoje();
   _vItens.push({idx:idx, prodId:'ovo', unidade:'', data:hoje, qtd:0, preco:0, sub:0, concluido:false});
   _renderVItens();
 }
@@ -1744,7 +1760,7 @@ function enviarPedido(){
   if(!n){ _toast('Numero nao configurado.'); return; }
   var numPed = _nextPedNum();
   var cliente = (document.getElementById('venda-cliente')||{value:''}).value||'';
-  var dataVenda = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
+  var dataVenda = document.getElementById('data-global').value||_dataLocalHoje();
   var linhas = conc.map(function(it){
     return {col1:it._data, col2:it._nome, col3:it.qtd+' '+it.unidade, col4:'R$ '+_fmt(it.preco), val:it.sub,
             prodId:it.prodId, nome:it._nome, unidade:it.unidade, qtd:it.qtd, preco:it.preco, sub:it.sub, data:it._data};
@@ -2099,8 +2115,46 @@ function abrirHistColeta(restrito){
     if(sub) sub.textContent = 'Acesso restrito — Administrador';
   }
 
+  // Setor: usa a aba atualmente selecionada como filtro padrao — a aba funciona como filtro
+  var abas = ['aviario','perda','campo','estoque'];
+  var abaAtual = 'aviario';
+  for(var i=0;i<abas.length;i++){
+    var elA = document.getElementById('aba-'+abas[i]);
+    if(elA && elA.classList.contains('at')){ abaAtual = abas[i]; break; }
+  }
+  var setorPadrao = SETORES[abaAtual] ? SETORES[abaAtual].label : '';
+  var selSetor = document.getElementById('hcol-setor');
+  if(selSetor){ selSetor.value = setorPadrao; selSetor.dataset.setorAba = setorPadrao; }
+  _atualizarBtnHistColetaTodos();
+
   renderHistColeta();
   document.getElementById('modal-hcol').classList.add('vis');
+}
+
+function _atualizarBtnHistColetaTodos(){
+  var input = document.getElementById('hcol-setor');
+  var btn = document.getElementById('hcol-todos-btn');
+  if(!input || !btn) return;
+  if(input.value){
+    btn.textContent = 'Todos';
+    btn.style.background = ''; btn.style.color = '';
+  } else {
+    btn.textContent = '✓ Vendo Todos';
+    btn.style.background = '#1a6b2a'; btn.style.color = '#fff';
+  }
+}
+
+function _toggleHistColetaTodos(){
+  var input = document.getElementById('hcol-setor');
+  if(!input) return;
+  if(input.value){
+    input.dataset.setorAba = input.value;
+    input.value = '';
+  } else {
+    input.value = input.dataset.setorAba || '';
+  }
+  _atualizarBtnHistColetaTodos();
+  renderHistColeta();
 }
 
 function fecharHistColeta(){
@@ -2115,12 +2169,18 @@ function renderHistColeta(){
   var ano = '', mes = '';
   var filtrado;
 
+  var setor = (document.getElementById('hcol-setor')||{value:''}).value||'';
+
   if(_histColetaRestrito){
     // Botao "Coletas" (sem senha) — sempre limitado aos ultimos 7 dias corridos
     var limite = new Date();
     limite.setDate(limite.getDate() - 6); // hoje + 6 dias atras = janela de 7 dias
     var limiteStr = limite.toISOString().slice(0,10);
-    filtrado = hist.filter(function(r){ return r.data && r.data >= limiteStr; });
+    filtrado = hist.filter(function(r){
+      if(!r.data || r.data < limiteStr) return false;
+      if(setor && !(r.itens||[]).some(function(it){ return (it.setor||'')===setor; })) return false;
+      return true;
+    });
   } else {
     // Modo Admin — filtro completo por ano/mes, sem limite de dias
     ano = document.getElementById('hcol-ano').value;
@@ -2129,6 +2189,7 @@ function renderHistColeta(){
       if(!r.data) return false;
       if(ano && r.data.slice(0,4)!==ano) return false;
       if(mes && r.data.slice(5,7)!==mes) return false;
+      if(setor && !(r.itens||[]).some(function(it){ return (it.setor||'')===setor; })) return false;
       return true;
     });
   }
