@@ -11363,7 +11363,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = 'b2e9f628aeeb';
+  var FP = 'bbd4352b949e';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -12838,6 +12838,44 @@ function _gerarLinkImportacao(payload){
 
 
 
+/* Mostra a imagem gerada do boletim direto na tela — garante que o operador
+   veja a confirmacao visual do que foi salvo, mesmo que o compartilhamento
+   pelo WhatsApp falhe silenciosamente (comum em alguns aparelhos). */
+function _mostrarConfirmacaoEnvio(blob, nomeArquivo, numeroWpp){
+  var url = URL.createObjectURL(blob);
+  var overlay = document.createElement('div');
+  overlay.id = 'tela-confirmacao-envio';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:rgba(14,31,22,.97);overflow:auto';
+  overlay.innerHTML = '<div style="color:#cfead9;font-family:sans-serif;text-align:center;margin-bottom:14px">'
+    +'<div style="font-size:36px">✅</div>'
+    +'<div style="font-size:16px;font-weight:700">Coleta registrada com sucesso!</div>'
+    +'</div>'
+    +'<img src="'+url+'" style="max-width:90%;max-height:55vh;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.4);margin-bottom:18px">'
+    +'<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">'
+    +'<button id="btn-compartilhar-envio" style="background:#1a6b2a;color:#fff;border:none;padding:12px 20px;border-radius:8px;font-weight:700;cursor:pointer">💬 Compartilhar</button>'
+    +'<button id="btn-fechar-envio" style="background:transparent;color:#cfead9;border:1px solid #4a8c6f;padding:12px 20px;border-radius:8px;cursor:pointer">Fechar</button>'
+    +'</div>';
+  document.body.appendChild(overlay);
+  document.getElementById('btn-fechar-envio').onclick = function(){ overlay.remove(); URL.revokeObjectURL(url); };
+  document.getElementById('btn-compartilhar-envio').onclick = function(){
+    var file = new File([blob], nomeArquivo, {type:'image/jpeg'});
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({files:[file]})
+        .then(function(){ _toast('✅ Compartilhado!'); })
+        .catch(function(err){
+          if(err && err.name === 'AbortError') return;
+          _fallbackDownload(blob, nomeArquivo);
+          if(numeroWpp) window.open('https://wa.me/'+numeroWpp,'_blank');
+          _toast('✅ Imagem salva — compartilhe pelo WhatsApp.');
+        });
+    } else {
+      _fallbackDownload(blob, nomeArquivo);
+      if(numeroWpp) window.open('https://wa.me/'+numeroWpp,'_blank');
+      _toast('✅ Imagem salva — compartilhe pelo WhatsApp.');
+    }
+  };
+}
+
 function enviarTudo(){
   var itens = _coletarItens();
   if(!itens.length){ _toast('Conclua ao menos um item antes de enviar.'); return; }
@@ -12873,26 +12911,12 @@ function enviarTudo(){
     var data = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
     var nome = (localStorage.getItem('wpp_nome')||'').trim();
     var dfL  = data ? new Date(data+'T12:00').toLocaleDateString('pt-BR') : data;
-    // Texto removido — informação já consta na imagem gerada
     // Confirmacao com numero formatado antes de enviar
     var fone = _fmtFone(numSalvo);
     if(!confirm('Enviar coleta para:\n' + fone + '\n\nConfirmar?')){ return; }
-    // navigator.share envia imagem + texto direto no WhatsApp (aparece na conversa)
-    var file = new File([blob], 'coleta-'+data+'.jpg', {type:'image/jpeg'});
-    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-      navigator.share({files:[file], text:msgTexto})
-        .then(function(){ _toast('\u2705 Coleta enviada!'); })
-        .catch(function(err){
-          if(err && err.name === 'AbortError') return;
-          _fallbackDownload(blob,'coleta-'+data+'.jpg');
-          window.open('https://wa.me/'+n+'?text='+encodeURIComponent(msgTexto),'_blank');
-          _toast('\u2705 Imagem salva! Confirme no WhatsApp.');
-        });
-    } else {
-      _fallbackDownload(blob,'coleta-'+data+'.jpg');
-      window.open('https://wa.me/'+n+'?text='+encodeURIComponent(msgTexto),'_blank');
-      _toast('\u2705 Imagem salva! Confirme no WhatsApp.');
-    }
+    // Mostra a imagem gerada na tela — confirmacao visual garantida de que o
+    // registro foi salvo, independente do compartilhamento funcionar ou nao
+    _mostrarConfirmacaoEnvio(blob, 'coleta-'+data+'.jpg', n);
   });
 
   // Limpa apos envio
