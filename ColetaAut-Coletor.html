@@ -1036,7 +1036,7 @@ function _iniciar(){
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
 (function _caAutoUpdate(){
-  var FP = '8d5b7c84206b';
+  var FP = '2bb5d2250d3f';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -2175,7 +2175,9 @@ function renderHistColeta(){
     // Botao "Coletas" (sem senha) — sempre limitado aos ultimos 7 dias corridos
     var limite = new Date();
     limite.setDate(limite.getDate() - 6); // hoje + 6 dias atras = janela de 7 dias
-    var limiteStr = limite.toISOString().slice(0,10);
+    var limMm = String(limite.getMonth()+1).padStart(2,'0');
+    var limDd = String(limite.getDate()).padStart(2,'0');
+    var limiteStr = limite.getFullYear()+'-'+limMm+'-'+limDd;
     filtrado = hist.filter(function(r){
       if(!r.data || r.data < limiteStr) return false;
       if(setor && !(r.itens||[]).some(function(it){ return (it.setor||'')===setor; })) return false;
@@ -2198,6 +2200,12 @@ function renderHistColeta(){
     body.innerHTML = '<div class="hcol-vazia">'+(_histColetaRestrito ? 'Nenhum registro nos ultimos 7 dias.' : 'Nenhum registro encontrado para o periodo selecionado.')+'</div>';
     return;
   }
+
+  // Ordena do mais recente para o mais antigo (por data e, em caso de empate, pelo horario do registro)
+  filtrado.sort(function(a,b){
+    if(a.data !== b.data) return a.data < b.data ? 1 : -1;
+    return (b.ts||0) - (a.ts||0);
+  });
 
   if(visao==='total'){
     _renderHistColetaTotal(body, filtrado, ano, mes);
