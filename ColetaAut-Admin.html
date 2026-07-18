@@ -11358,7 +11358,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '03635b852db4';
+  var FP = '06a4fd509c06';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -13621,6 +13621,12 @@ function renderHistColeta(){
     body.innerHTML = '<div class="hcol-vazia">Nenhum registro encontrado para o periodo selecionado.</div>';
     return;
   }
+
+  // Ordena do mais recente para o mais antigo (por data e, em caso de empate, pelo horario do registro)
+  filtrado.sort(function(a,b){
+    if(a.data !== b.data) return a.data < b.data ? 1 : -1;
+    return (b.ts||0) - (a.ts||0);
+  });
 
   if(visao==='total'){
     _renderHistColetaTotal(body, filtrado, ano, mes, setor);
