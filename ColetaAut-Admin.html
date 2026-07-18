@@ -841,13 +841,8 @@ textarea{resize:none;height:72px;font-size:14px}
       </div>
       <div>
         <div class="hcol-lbl">Setor</div>
-        <select class="hcol-sel" id="hcol-setor" onchange="renderHistColeta()">
-          <option value="">Todos</option>
-          <option value="Aviario">Aviario</option>
-          <option value="Perda">Perda</option>
-          <option value="Campo">Campo</option>
-          <option value="Estoque">Estoque</option>
-        </select>
+        <input type="hidden" id="hcol-setor" value="">
+        <button class="hcol-sel" id="hcol-todos-btn" onclick="_toggleHistColetaTodos()" style="cursor:pointer">Todos</button>
       </div>
     </div>
     <div class="hcol-body" id="hcol-body"></div>
@@ -11194,7 +11189,7 @@ async function _caBaixarBackup(){
   var env=JSON.stringify({app:'ColetaAut',v:CA_VER,ts:Date.now(),payload:raw});
   var b=new Blob([env],{type:'application/octet-stream'}),a=document.createElement('a');
   a.href=URL.createObjectURL(b);
-  a.download='fsj-backup-'+new Date().toISOString().split('T')[0]+'.caut';
+  a.download='fsj-backup-'+_dataLocalHoje()+'.caut';
   document.body.appendChild(a); a.click();
   setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(a.href); },600);
   _toast('✅ Backup salvo em Downloads');
@@ -11363,7 +11358,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = 'bbd4352b949e';
+  var FP = '03635b852db4';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -12557,8 +12552,19 @@ function trocarAba(s){
   }
 }
 
+/* Retorna a data de HOJE no fuso horário local do aparelho (YYYY-MM-DD).
+   Nunca usar new Date().toISOString() para isso — toISOString() converte
+   para UTC, o que faz a data "virar" cedo demais à noite em fusos como o
+   do Brasil (UTC-3), mostrando o dia seguinte antes da meia-noite local. */
+function _dataLocalHoje(){
+  var d = new Date();
+  var mm = String(d.getMonth()+1).padStart(2,'0');
+  var dd = String(d.getDate()).padStart(2,'0');
+  return d.getFullYear()+'-'+mm+'-'+dd;
+}
+
 function setHoje(){
-  document.getElementById('data-global').value = new Date().toISOString().split('T')[0];
+  document.getElementById('data-global').value = _dataLocalHoje();
 }
 
 /* ---- COLETA ---- */
@@ -12767,7 +12773,7 @@ var _qrPayloadAtual = null;
 function _gerarPayloadColeta(){
   var itens = _coletarItens();
   if(!itens.length) return null;
-  var data = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
+  var data = document.getElementById('data-global').value||_dataLocalHoje();
   var nome = (localStorage.getItem('wpp_nome')||'').trim();
   var payload = {
     origem: 'coleta',
@@ -12883,7 +12889,7 @@ function enviarTudo(){
   if(!n){ _toast('Numero nao configurado. Contacte o administrador.'); return; }
 
   // GRAVA coleta no historico (antes de limpar)
-  var _dataColeta = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
+  var _dataColeta = document.getElementById('data-global').value||_dataLocalHoje();
   var _nomeColeta = (localStorage.getItem('wpp_nome')||'').trim();
   _salvarColeta({data:_dataColeta, coletor:_nomeColeta, itens:itens, ts:Date.now()});
 
@@ -12908,7 +12914,7 @@ function enviarTudo(){
   _qrPayloadAtual = payload; // QR na imagem usa este payload
   _gerarImagem('BOLETIM DE COLETA', linhas, null, function(blob){
     if(!blob){ _toast('Erro ao gerar imagem.'); return; }
-    var data = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
+    var data = document.getElementById('data-global').value||_dataLocalHoje();
     var nome = (localStorage.getItem('wpp_nome')||'').trim();
     var dfL  = data ? new Date(data+'T12:00').toLocaleDateString('pt-BR') : data;
     // Confirmacao com numero formatado antes de enviar
@@ -13004,7 +13010,7 @@ function _nextPedNum(){
 
 function addItemVenda(){
   var idx = _vIdx++;
-  var hoje = new Date().toISOString().split('T')[0];
+  var hoje = _dataLocalHoje();
   _vItens.push({idx:idx, prodId:'ovo', unidade:'', data:hoje, qtd:0, preco:0, sub:0, concluido:false});
   _renderVItens();
 }
@@ -13125,7 +13131,7 @@ async function enviarPedido(){
   if(!n){ _toast('Numero nao configurado.'); return; }
   var numPed = _nextPedNum();
   var cliente = (document.getElementById('venda-cliente')||{value:''}).value||'';
-  var dataVenda = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
+  var dataVenda = document.getElementById('data-global').value||_dataLocalHoje();
   // Recalcula subtotais antes de montar as linhas (garante valores atualizados)
   conc.forEach(function(it){ it.sub = Math.round(it.qtd * it.preco * 100) / 100; });
   var linhas = conc.map(function(it){
@@ -13548,12 +13554,45 @@ function abrirHistColeta(setorInicial){
   }).join('');
   document.getElementById('hcol-mes').value = '';
   document.getElementById('hcol-visao').value = 'detalhe';
-  // Setor: setar ANTES de renderizar para o filtro funcionar na primeira renderização
+  // Setor: se nao veio explicito (ex: clicou no botao "Coletas" compartilhado,
+  // nao no "Historico" de uma secao especifica), usa a aba atualmente selecionada
+  // como filtro padrao — a aba funciona como filtro.
+  var abaAtual = _navAbaAtual();
+  var setorPadrao = setorInicial || (SETORES[abaAtual] ? SETORES[abaAtual].label : '');
   var selSetor = document.getElementById('hcol-setor');
-  if(selSetor) selSetor.value = setorInicial || '';
+  if(selSetor){ selSetor.value = setorPadrao; selSetor.dataset.setorAba = setorPadrao; }
+  _atualizarBtnHistColetaTodos();
   renderHistColeta();
   document.getElementById('modal-hcol').classList.add('vis');
   _navPush('modal-hcol');
+}
+
+function _atualizarBtnHistColetaTodos(){
+  var input = document.getElementById('hcol-setor');
+  var btn = document.getElementById('hcol-todos-btn');
+  if(!input || !btn) return;
+  if(input.value){
+    btn.textContent = 'Todos';
+    btn.style.background = ''; btn.style.color = '';
+  } else {
+    btn.textContent = '✓ Vendo Todos';
+    btn.style.background = '#1a6b2a'; btn.style.color = '#fff';
+  }
+}
+
+function _toggleHistColetaTodos(){
+  var input = document.getElementById('hcol-setor');
+  if(!input) return;
+  if(input.value){
+    // Estava filtrado pela aba — muda para Todos (guarda o setor da aba p/ poder voltar)
+    input.dataset.setorAba = input.value;
+    input.value = '';
+  } else {
+    // Estava em Todos — volta ao filtro da aba
+    input.value = input.dataset.setorAba || '';
+  }
+  _atualizarBtnHistColetaTodos();
+  renderHistColeta();
 }
 
 function fecharHistColeta(){
@@ -14825,7 +14864,7 @@ async function _cadExportarListas(){
   var blob = new Blob([envelope],{type:'application/octet-stream'});
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'fsj-listas-'+new Date().toISOString().split('T')[0]+'.listas';
+  a.download = 'fsj-listas-'+_dataLocalHoje()+'.listas';
   document.body.appendChild(a); a.click();
   setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(a.href); },600);
   _toast('\u2705 Listas exportadas! Envie pelo WhatsApp aos coletores.');
