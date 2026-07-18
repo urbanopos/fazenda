@@ -11358,7 +11358,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '06a4fd509c06';
+  var FP = '1ec537f6e6c1';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -13811,13 +13811,7 @@ function _abrirEditColeta(ri){
 
   var itensHtml = '';
   (r.itens||[]).forEach(function(it, ii){
-    itensHtml += '<div class="hcol-item-edit-row">'
-      +'<input class="hcol-edit-inp" style="width:70px;flex:none" placeholder="Setor" value="'+_esc(it.setor||'')+'" id="hcol-ei-setor-'+ri+'-'+ii+'">'
-      +'<input class="hcol-edit-inp" style="flex:2" placeholder="Nome" value="'+_esc(it.nome||'')+'" id="hcol-ei-nome-'+ri+'-'+ii+'">'
-      +'<input class="hcol-edit-inp" style="width:52px;flex:none" type="number" min="0" step="0.5" placeholder="Qtd" value="'+(it.qtd||0)+'" id="hcol-ei-qtd-'+ri+'-'+ii+'">'
-      +'<input class="hcol-edit-inp" style="width:52px;flex:none" placeholder="Unid" value="'+_esc(it.unid||'')+'" id="hcol-ei-unid-'+ri+'-'+ii+'">'
-      +'<button class="hcol-del-item" onclick="_delItemEditColeta('+ri+','+ii+')" title="Remover item">\u00d7</button>'
-      +'</div>';
+    itensHtml += _linhaEditItemColeta(ri, ii, it.setor||'', it.nome||'', it.qtd||0, it.unid||'');
   });
 
   var form = document.createElement('div');
@@ -13837,6 +13831,44 @@ function _abrirEditColeta(ri){
     +'<button class="hcol-edit-save" onclick="_salvarEditColeta('+ri+')">Salvar alteracoes</button>'
     +'<button class="hcol-edit-cancel" onclick="_fecharEditColeta(document.getElementById(\'hcol-form-'+ri+'\'))">Cancelar</button>';
   div.appendChild(form);
+}
+
+function _setorKeyFromLabel(label){
+  var keys = Object.keys(SETORES);
+  for(var i=0;i<keys.length;i++){
+    if(SETORES[keys[i]].label === label) return keys[i];
+  }
+  return (label||'').toLowerCase(); // ultimo recurso
+}
+
+function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual){
+  var setorKey = _setorKeyFromLabel(setor);
+  var nomes = _catalogoNomesUnicos(setorKey);
+  if(nomeAtual && nomes.indexOf(nomeAtual)===-1) nomes.push(nomeAtual); // preserva item legado fora do catalogo
+  var optsNome = nomes.map(function(n){
+    return '<option value="'+_esc(n)+'"'+(n===nomeAtual?' selected':'')+'>'+_esc(n)+'</option>';
+  }).join('');
+  var unidades = _catalogoUnidadesPara(setorKey, nomeAtual);
+  if(unidAtual && unidades.indexOf(unidAtual)===-1) unidades.push(unidAtual); // preserva unidade legada
+  var optsUnid = unidades.map(function(u){
+    return '<option value="'+_esc(u)+'"'+(u===unidAtual?' selected':'')+'>'+_esc(u)+'</option>';
+  }).join('');
+  return '<div class="hcol-item-edit-row">'
+    +'<input type="hidden" value="'+_esc(setor)+'" id="hcol-ei-setor-'+ri+'-'+ii+'">'
+    +'<select class="hcol-edit-inp" style="flex:2" id="hcol-ei-nome-'+ri+'-'+ii+'" onchange="_onMudarNomeEditColeta('+ri+','+ii+')">'+optsNome+'</select>'
+    +'<input class="hcol-edit-inp" style="width:52px;flex:none" type="number" min="0" step="0.5" placeholder="Qtd" value="'+qtd+'" id="hcol-ei-qtd-'+ri+'-'+ii+'">'
+    +'<select class="hcol-edit-inp" style="width:70px;flex:none" id="hcol-ei-unid-'+ri+'-'+ii+'">'+optsUnid+'</select>'
+    +'<button class="hcol-del-item" onclick="_delItemEditColeta('+ri+','+ii+')" title="Remover item">\u00d7</button>'
+    +'</div>';
+}
+
+function _onMudarNomeEditColeta(ri, ii){
+  var setorEl = document.getElementById('hcol-ei-setor-'+ri+'-'+ii);
+  var nomeEl  = document.getElementById('hcol-ei-nome-'+ri+'-'+ii);
+  var unidEl  = document.getElementById('hcol-ei-unid-'+ri+'-'+ii);
+  if(!setorEl || !nomeEl || !unidEl) return;
+  var unidades = _catalogoUnidadesPara(_setorKeyFromLabel(setorEl.value), nomeEl.value);
+  unidEl.innerHTML = unidades.map(function(u){ return '<option value="'+_esc(u)+'">'+_esc(u)+'</option>'; }).join('');
 }
 
 function _esc(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
@@ -13864,15 +13896,16 @@ function _addItemEditColeta(ri){
   var wrap = document.getElementById('hcol-ei-itens-'+ri);
   if(!wrap) return;
   var ii = wrap.querySelectorAll('.hcol-item-edit-row').length;
-  var row = document.createElement('div');
-  row.className = 'hcol-item-edit-row';
-  row.innerHTML =
-    '<input class="hcol-edit-inp" style="width:70px;flex:none" placeholder="Setor" id="hcol-ei-setor-'+ri+'-'+ii+'">'
-    +'<input class="hcol-edit-inp" style="flex:2" placeholder="Nome" id="hcol-ei-nome-'+ri+'-'+ii+'">'
-    +'<input class="hcol-edit-inp" style="width:52px;flex:none" type="number" min="0" step="0.5" placeholder="Qtd" id="hcol-ei-qtd-'+ri+'-'+ii+'">'
-    +'<input class="hcol-edit-inp" style="width:52px;flex:none" placeholder="Unid" id="hcol-ei-unid-'+ri+'-'+ii+'">'
-    +'<button class="hcol-del-item" onclick="_delItemEditColeta('+ri+','+ii+')" title="Remover">\u00d7</button>';
-  wrap.appendChild(row);
+  // Setor padrao para o item novo: usa o do primeiro item ja existente no registro,
+  // ou o filtro de aba ativo no momento, ou Aviario como ultimo recurso.
+  var setorPadrao = '';
+  var primeiroSetorEl = document.getElementById('hcol-ei-setor-'+ri+'-0');
+  if(primeiroSetorEl) setorPadrao = primeiroSetorEl.value;
+  if(!setorPadrao){
+    var filtroSetor = document.getElementById('hcol-setor');
+    setorPadrao = (filtroSetor && filtroSetor.value) || 'Aviario';
+  }
+  wrap.insertAdjacentHTML('beforeend', _linhaEditItemColeta(ri, ii, setorPadrao, '', 0, ''));
 }
 
 function _salvarEditColeta(ri){
