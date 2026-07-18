@@ -505,7 +505,7 @@ textarea{resize:none;height:72px;font-size:14px}
   <div class="div"></div>
   <button class="btn-hj" onclick="abrirHistColeta(true)" style="width:100%;margin-bottom:8px;padding:10px">📊 Coletas (últimos 7 dias)</button>
   <div class="cont" id="contador">Nenhum item preenchido</div>
-  <button class="btn-wpp" onclick="enviarTudo()">💬 Enviar coleta</button>
+  <button class="btn-wpp" id="btn-enviar-coleta" onclick="enviarTudo()">💬 Enviar coleta</button>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -1036,7 +1036,7 @@ function _iniciar(){
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
 (function _caAutoUpdate(){
-  var FP = '2bb5d2250d3f';
+  var FP = 'b2e2651cb3de';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -1554,11 +1554,18 @@ function _mostrarConfirmacaoEnvio(blob, nomeArquivo){
   };
 }
 
+var _enviandoColeta = false; // trava contra clique duplo / reenvio acidental
+
 function enviarTudo(){
+  if(_enviandoColeta) return; // ja esta processando um envio — ignora toques repetidos
   var itens = _coletarItens();
   if(!itens.length){ _toast('Conclua ao menos um item antes de enviar.'); return; }
   var n = _getNum();
   if(!n){ _toast('Numero nao configurado. Contacte o administrador.'); return; }
+
+  _enviandoColeta = true;
+  var btnEnviar = document.getElementById('btn-enviar-coleta');
+  if(btnEnviar){ btnEnviar.disabled = true; btnEnviar.style.opacity = '0.6'; btnEnviar.style.pointerEvents = 'none'; }
 
   // Grava coleta no historico
   var _dataColeta = document.getElementById('data-global').value||_dataLocalHoje();
@@ -1583,7 +1590,7 @@ function enviarTudo(){
     _mostrarConfirmacaoEnvio(blob, 'coleta-'+data+'.jpg');
   });
 
-  // Limpa apos envio
+  // Limpa apos envio e libera a trava/botao
   setTimeout(function(){
     Object.keys(SETORES).forEach(function(setor){
       _sessaoItens[setor] = [];
@@ -1591,6 +1598,8 @@ function enviarTudo(){
     });
     document.getElementById('contador').innerHTML = 'Nenhum item preenchido';
     _sessaoLimparLocal();
+    _enviandoColeta = false;
+    if(btnEnviar){ btnEnviar.disabled = false; btnEnviar.style.opacity = ''; btnEnviar.style.pointerEvents = ''; }
   }, 2000);
 }
 
