@@ -908,6 +908,7 @@ function _cardColetaSetor(setor, cl, forn){
 
     +'<input type="hidden" id="enome-'+k+'" value="">'
 
+    +'<div id="wrap-coleta-'+k+'" style="display:none">'
     +'<div class="cg"><span class="cl">Unidade</span><div id="unid-wrap-'+k+'">'
     +'<input type="text" id="eunid-'+k+'" value="" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">'
     +'</div></div>'
@@ -921,6 +922,7 @@ function _cardColetaSetor(setor, cl, forn){
     +fH
     +'<div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-'+k+'" placeholder="Ex: lote A, qualidade boa..."></textarea></div>'
     +'<div class="card-acoes"><button class="btn-con" onclick="_adicionarItemSessao(\''+setor+'\')">+ Adicionar item</button></div>'
+    +'</div>'
     +'</div></div>'
     +'<div id="lista-'+setor+'" style="margin-top:12px"></div>';
 }
@@ -928,11 +930,13 @@ function _cardColetaSetor(setor, cl, forn){
 function _onSelecionarItem(setor){
   var k = setor+'_novo';
   var sel = document.getElementById('sel-'+k);
+  var wrapColeta = document.getElementById('wrap-coleta-'+k);
   var nomeEl = document.getElementById('enome-'+k);
   var unidWrap = document.getElementById('unid-wrap-'+k);
   if(!sel) return;
   var val = sel.value;
   if(val){
+    wrapColeta.style.display = 'block';
     nomeEl.value = val;
     var unidades = _catalogoUnidadesPara(setor, val);
     if(unidades.length > 1){
@@ -942,8 +946,8 @@ function _onSelecionarItem(setor){
       unidWrap.innerHTML = '<input type="text" id="eunid-'+k+'" value="'+(unidades[0]||'unid')+'" readonly style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">';
     }
   } else {
+    wrapColeta.style.display = 'none';
     nomeEl.value = '';
-    unidWrap.innerHTML = '<input type="text" id="eunid-'+k+'" value="" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">';
   }
 }
 
@@ -966,10 +970,12 @@ function _adicionarItemSessao(setor){
   _sessaoInit();
   _sessaoItens[setor].push({nome:nome, unid:unid, qtd:qtd, obs:obs.trim(), forn:forn.trim()});
   var sel = document.getElementById('sel-'+k);
+  var wrapColeta = document.getElementById('wrap-coleta-'+k);
   var unidWrap = document.getElementById('unid-wrap-'+k);
   nomeEl.value=''; qtdEl.value=0;
   if(obsEl) obsEl.value='';
   if(forEl) forEl.value='';
+  if(wrapColeta) wrapColeta.style.display='none';
   if(unidWrap) unidWrap.innerHTML = '<input type="text" id="eunid-'+k+'" value="" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">';
   if(sel) sel.value = '';
   _renderListaSessao(setor);
@@ -1025,7 +1031,7 @@ function _iniciar(){
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
 (function _caAutoUpdate(){
-  var FP = 'c391fd12246b';
+  var FP = '9daf0afd683c';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -1495,6 +1501,43 @@ function _gerarLinkImportacao(payload){
 }
 
 
+/* Mostra a imagem gerada do boletim direto na tela — garante que o operador
+   veja a confirmacao visual do que foi salvo, mesmo que o compartilhamento
+   pelo WhatsApp falhe silenciosamente (comum em alguns aparelhos). */
+function _mostrarConfirmacaoEnvio(blob, nomeArquivo){
+  var url = URL.createObjectURL(blob);
+  var overlay = document.createElement('div');
+  overlay.id = 'tela-confirmacao-envio';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:rgba(14,31,22,.97);overflow:auto';
+  overlay.innerHTML = '<div style="color:#cfead9;font-family:sans-serif;text-align:center;margin-bottom:14px">'
+    +'<div style="font-size:36px">✅</div>'
+    +'<div style="font-size:16px;font-weight:700">Coleta registrada com sucesso!</div>'
+    +'</div>'
+    +'<img src="'+url+'" style="max-width:90%;max-height:55vh;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.4);margin-bottom:18px">'
+    +'<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">'
+    +'<button id="btn-compartilhar-envio" style="background:#1a6b2a;color:#fff;border:none;padding:12px 20px;border-radius:8px;font-weight:700;cursor:pointer">💬 Compartilhar</button>'
+    +'<button id="btn-fechar-envio" style="background:transparent;color:#cfead9;border:1px solid #4a8c6f;padding:12px 20px;border-radius:8px;cursor:pointer">Fechar</button>'
+    +'</div>';
+  document.body.appendChild(overlay);
+  document.getElementById('btn-fechar-envio').onclick = function(){ overlay.remove(); URL.revokeObjectURL(url); };
+  document.getElementById('btn-compartilhar-envio').onclick = function(){
+    var file = new File([blob], nomeArquivo, {type:'image/jpeg'});
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({files:[file]})
+        .then(function(){ _toast('✅ Compartilhado!'); })
+        .catch(function(err){
+          if(err && err.name !== 'AbortError'){
+            _fallbackDownload(blob, nomeArquivo);
+            _toast('✅ Imagem salva — compartilhe pelo WhatsApp.');
+          }
+        });
+    } else {
+      _fallbackDownload(blob, nomeArquivo);
+      _toast('✅ Imagem salva — compartilhe pelo WhatsApp.');
+    }
+  };
+}
+
 function enviarTudo(){
   var itens = _coletarItens();
   if(!itens.length){ _toast('Conclua ao menos um item antes de enviar.'); return; }
@@ -1519,39 +1562,9 @@ function enviarTudo(){
   _gerarImagem('BOLETIM DE COLETA', linhas, null, function(blob){
     if(!blob){ _toast('Erro ao gerar imagem.'); return; }
     var data = document.getElementById('data-global').value||new Date().toISOString().split('T')[0];
-    var nome = (localStorage.getItem('wpp_nome')||'').trim();
-    var dfL  = data ? new Date(data+'T12:00').toLocaleDateString('pt-BR') : data;
-
-    // Monta texto estruturado por setor
-    var setores = {}, ordemSetores = [];
-    itens.forEach(function(it){
-      if(!setores[it.setor]){ setores[it.setor]=[]; ordemSetores.push(it.setor); }
-      var linha = it.nome+': '+it.qtd+' '+it.unid;
-      if(it.forn) linha += ' ('+it.forn+')';
-      if(it.obs)  linha += ' - '+it.obs;
-      setores[it.setor].push(linha);
-    });
-    var blocos = [];
-    ordemSetores.forEach(function(s){
-      blocos.push('['+s.toUpperCase()+']\n'+setores[s].map(function(l){ return '  '+l; }).join('\n'));
-    });
-    // Envia apenas a imagem, sem texto — o link de importação
-    // chega ao Admin automaticamente via GitHub (Coletas Pendentes)
-    var file = new File([blob],'coleta-'+data+'.jpg',{type:'image/jpeg'});
-
-    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-      navigator.share({files:[file]})
-        .then(function(){ _toast('✅ Coleta enviada! Verifique seu WhatsApp.'); })
-        .catch(function(err){
-          if(err && err.name !== 'AbortError'){
-            _fallbackDownload(blob,'coleta-'+data+'.jpg');
-            _toast('✅ Imagem salva — compartilhe pelo WhatsApp.');
-          }
-        });
-    } else {
-      _fallbackDownload(blob,'coleta-'+data+'.jpg');
-      _toast('✅ Imagem salva — compartilhe pelo WhatsApp.');
-    }
+    // Mostra a imagem gerada na tela — confirmacao visual garantida de que o
+    // registro foi salvo, independente do compartilhamento funcionar ou nao
+    _mostrarConfirmacaoEnvio(blob, 'coleta-'+data+'.jpg');
   });
 
   // Limpa apos envio
