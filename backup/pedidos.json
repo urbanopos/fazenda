@@ -1,199 +1,5 @@
 [
   {
-    "num": "PED-0041",
-    "cliente": "Luiza Gomes",
-    "data": "2026-07-18",
-    "itens": [
-      {
-        "col1": "18/07/2026",
-        "col2": "Ovos de Capoeira",
-        "col3": "2 Bandeja c/30 ovos",
-        "col4": "R$ 30,00 x 2",
-        "col5": "R$ 60,00",
-        "val": 60,
-        "prodId": "ovo",
-        "nome": "Ovos de Capoeira",
-        "unidade": "Bandeja c/30 ovos",
-        "qtd": 2,
-        "preco": 30,
-        "sub": 60,
-        "data": "18/07/2026"
-      }
-    ],
-    "total": 60,
-    "ts": 1784386687838
-  },
-  {
-    "num": "PED-0040",
-    "cliente": "João Brasiliano",
-    "data": "2026-07-18",
-    "itens": [
-      {
-        "col1": "18/07/2026",
-        "col2": "Ovos de Capoeira",
-        "col3": "1 Bandeja c/30 ovos",
-        "col4": "R$ 30,00 x 1",
-        "col5": "R$ 30,00",
-        "val": 30,
-        "prodId": "ovo",
-        "nome": "Ovos de Capoeira",
-        "unidade": "Bandeja c/30 ovos",
-        "qtd": 1,
-        "preco": 30,
-        "sub": 30,
-        "data": "18/07/2026"
-      }
-    ],
-    "total": 30,
-    "ts": 1784386378205,
-    "pago": true,
-    "dataQuit": "18/07/2026, 11:53:22"
-  },
-  {
-    "num": "PED-0039",
-    "cliente": "Luiza Gomes",
-    "data": "2026-07-17",
-    "itens": [
-      {
-        "col1": "17/07/2026",
-        "col2": "Ovos de Capoeira",
-        "col3": "5 Bandeja c/30 ovos",
-        "col4": "R$ 30,00 x 5",
-        "col5": "R$ 150,00",
-        "val": 150,
-        "prodId": "ovo",
-        "nome": "Ovos de Capoeira",
-        "unidade": "Bandeja c/30 ovos",
-        "qtd": 5,
-        "preco": 30,
-        "sub": 150,
-        "data": "17/07/2026"
-      }
-    ],
-    "total": 150,
-    "ts": 1784312381030
-  },
-  {
-    "num": "PED-0038",
-    "cliente": "Léo Alencar",
-    "data": "2026-07-15",
-    "itens": [
-      {
-        "col1": "15/07/2026",
-        "col2": "Ovos de Capoeira",
-        "col3": "1 Bandeja c/30 ovos",
-        "col4": "R$ 30,00 x 1",
-        "col5": "R$ 30,00",
-        "val": 30,
-        "prodId": "ovo",
-        "nome": "Ovos de Capoeira",
-        "unidade": "Bandeja c/30 ovos",
-        "qtd": 1,
-        "preco": 30,
-        "sub": 30,
-        "data": "15/07/2026"
-      }
-    ],
-    "total": 30,
-    "ts": 1784144376240,
-    "pago": true,
-    "dataQuit": "15/07/2026, 18:37:51"
-  },
-  {
-    "num": "PED-0037",
-    "cliente": "Buiu (Casa Amarela)",
-    "data": "2026-07-15",
-    "itens": [
-      {
-        "nome": "Ovos de Capoeira",
-        "col2": "Ovos de Capoeira",
-        "col1": "15/07/2026",
-        "col3": "5 Bandeja c/30 ovos",
-        "col4": "R$ 30,00 x 5",
-        "col5": "R$ 150,00",
-        "qtd": 5,
-        "unidade": "Bandeja c/30 ovos",
-        "preco": 30,
-        "sub": 150,
-        "data": "15/07/2026"
-      }
-    ],
-    "total": 150,
-    "ts": 1784143335187
-  },
-  {
-    "num": "PED-0036",
-    "cliente": "Josafá (Casa Amarela)",
-    "data": "2026-07-15",
-    "itens": [
-      {
-        "nome": "Coco Seco",
-        "col2": "Coco Seco",
-        "col1": "15/07/2026",
-        "col3": "100 unid",
-        "col4": "R$ 2,50 x 100",
-        "col5": "R$ 250,00",
-        "qtd": 100,
-        "unidade": "unid",
-        "preco": 2.5,
-        "sub": 250,
-        "data": "15/07/2026"
-      }
-    ],
-    "total": 250,
-    "ts": 1784143261768
-  },
-  {
-    "num": "PED-0035",
-    "cliente": "Ariandne",
-    "data": "2026-07-15",
-    "itens": [
-      {
-        "col1": "15/07/2026",
-        "col2": "Ovos de Capoeira",
-        "col3": "1 Bandeja c/30 ovos",
-        "col4": "R$ 30,00 x 1",
-        "col5": "R$ 30,00",
-        "val": 30,
-        "prodId": "ovo",
-        "nome": "Ovos de Capoeira",
-        "unidade": "Bandeja c/30 ovos",
-        "qtd": 1,
-        "preco": 30,
-        "sub": 30,
-        "data": "15/07/2026"
-      }
-    ],
-    "total": 30,
-    "ts": 1784143035196,
-    "pago": true,
-    "dataQuit": "15/07/2026, 16:19:16"
-  },
-  {
-    "num": "PED-0034",
-    "cliente": "Gilvando",
-    "data": "2026-07-15",
-    "itens": [
-      {
-        "nome": "Ovos de Capoeira",
-        "col2": "Ovos de Capoeira",
-        "col1": "15/07/2026",
-        "col3": "1 Bandeja c/30 ovos",
-        "col4": "R$ 30,00 x 1",
-        "col5": "R$ 30,00",
-        "qtd": 1,
-        "unidade": "Bandeja c/30 ovos",
-        "preco": 30,
-        "sub": 30,
-        "data": "15/07/2026"
-      }
-    ],
-    "total": 30,
-    "ts": 1784141333640,
-    "pago": true,
-    "dataQuit": "15/07/2026, 16:18:26"
-  },
-  {
     "num": "PED-0033",
     "cliente": "Luiza Gomes",
     "data": "2026-07-10",
@@ -215,9 +21,7 @@
       }
     ],
     "total": 150,
-    "ts": 1783723177467,
-    "pago": true,
-    "dataQuit": "13/07/2026, 09:16:27"
+    "ts": 1783723177467
   },
   {
     "num": "PED-0032",
@@ -245,7 +49,7 @@
   },
   {
     "num": "PED-0031",
-    "cliente": "Léo Alencar",
+    "cliente": "LÃÂ©o Alencar",
     "data": "2026-07-09",
     "itens": [
       {
@@ -315,9 +119,7 @@
       }
     ],
     "total": 195,
-    "ts": 1783509756283,
-    "pago": true,
-    "dataQuit": "13/07/2026, 09:16:46"
+    "ts": 1783509756283
   },
   {
     "num": "PED-0028",
@@ -421,7 +223,7 @@
   },
   {
     "num": "PED-0024",
-    "cliente": "Josafá (Casa Amarela)",
+    "cliente": "JosafÃÂ¡ (Casa Amarela)",
     "data": "2026-07-01",
     "itens": [
       {
@@ -439,13 +241,11 @@
       }
     ],
     "total": 400,
-    "ts": 1782934467115,
-    "pago": true,
-    "dataQuit": "15/07/2026, 16:20:11"
+    "ts": 1782934467115
   },
   {
     "num": "PED-0023",
-    "cliente": "Fátima ",
+    "cliente": "FÃÂ¡tima ",
     "data": "2026-07-01",
     "itens": [
       {
@@ -485,7 +285,7 @@
   },
   {
     "num": "PED-0022",
-    "cliente": "Léo Alencar",
+    "cliente": "LÃÂ©o Alencar",
     "data": "2026-07-01",
     "itens": [
       {
@@ -530,9 +330,7 @@
       }
     ],
     "total": 500,
-    "ts": 1782934174346,
-    "pago": true,
-    "dataQuit": "14/07/2026, 13:55:00"
+    "ts": 1782934174346
   },
   {
     "num": "PED-0020",
@@ -793,7 +591,7 @@
   },
   {
     "num": "PED-0013",
-    "cliente": "JOSAFÁ (CASA AMARELA)",
+    "cliente": "JOSAFÃÂ (CASA AMARELA)",
     "data": "2026-06-17",
     "itens": [
       {
