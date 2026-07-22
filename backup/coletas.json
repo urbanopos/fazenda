@@ -5,6 +5,23 @@
     "itens": [
       {
         "setor": "Estoque",
+        "nome": "Postura",
+        "unid": "sc 40kg",
+        "qtd": 3,
+        "obs": "",
+        "forn": ""
+      }
+    ],
+    "ts": 1784751377800,
+    "status": "pendente",
+    "enviadoEm": "2026-07-22T20:16:18.539Z"
+  },
+  {
+    "data": "2026-07-22",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Estoque",
         "nome": "Crescimento",
         "unid": "sc 40kg",
         "qtd": 1,
@@ -12,9 +29,7 @@
         "forn": ""
       }
     ],
-    "ts": 1784751238222,
-    "status": "pendente",
-    "enviadoEm": "2026-07-22T20:13:58.975Z"
+    "ts": 1784751238222
   },
   {
     "data": "2026-07-22",
