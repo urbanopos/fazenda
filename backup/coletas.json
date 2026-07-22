@@ -12,39 +12,20 @@
         "forn": ""
       }
     ],
-    "ts": 1784751451847,
-    "status": "pendente",
-    "enviadoEm": "2026-07-22T20:17:32.577Z"
-  },
-  {
-    "data": "2026-07-22",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Estoque",
-        "nome": "Postura",
-        "unid": "sc 40kg",
-        "qtd": 3,
-        "obs": "",
-        "forn": ""
-      }
-    ],
-    "ts": 1784751377800
-  },
-  {
-    "data": "2026-07-22",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Estoque",
-        "nome": "Crescimento",
-        "unid": "sc 40kg",
-        "qtd": 1,
-        "obs": "",
-        "forn": ""
-      }
-    ],
     "ts": 1784751238222
+  },
+  {
+    "data": "2026-07-20",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "qtd": 67,
+        "unid": "unid"
+      }
+    ],
+    "ts": 1784749968824
   },
   {
     "data": "2026-07-22",
@@ -62,19 +43,32 @@
     "ts": 1784745995235
   },
   {
-    "data": "2026-07-22",
+    "data": "2026-07-21",
     "coletor": "Menininha",
     "itens": [
       {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
-        "unid": "unid",
         "qtd": 79,
+        "unid": "unid"
+      }
+    ],
+    "ts": 1784716939864
+  },
+  {
+    "data": "2026-07-19",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "unid": "unid",
+        "qtd": 78,
         "obs": "",
         "forn": ""
       }
     ],
-    "ts": 1784716939864
+    "ts": 1784487217969
   },
   {
     "data": "2026-07-18",
@@ -83,51 +77,78 @@
       {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
-        "unid": "unid",
         "qtd": 77,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 77,
-        "obs": "Boa",
-        "forn": ""
+        "unid": "unid"
       }
     ],
     "ts": 1784403201758
   },
   {
     "data": "2026-07-18",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Campo",
+        "nome": "Coco Seco",
+        "unid": "unid",
+        "qtd": 327,
+        "obs": "Irmão",
+        "forn": ""
+      }
+    ],
+    "ts": 1784387678980
+  },
+  {
+    "data": "2026-07-17",
     "coletor": "Menininha",
     "itens": [
       {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
-        "unid": "unid",
         "qtd": 74,
-        "obs": "",
-        "forn": ""
+        "unid": "unid"
       }
     ],
     "ts": 1784371106988
   },
   {
-    "data": "2026-07-18",
+    "data": "2026-07-14",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "qtd": 65,
+        "unid": "unid"
+      }
+    ],
+    "ts": 1784337510344
+  },
+  {
+    "data": "2026-07-15",
     "coletor": "Menininha",
     "itens": [
       {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 74,
-        "obs": "",
-        "forn": ""
+        "qtd": 81,
+        "unid": "unid"
       }
     ],
-    "ts": 1784371052605
+    "ts": 1784293742199
+  },
+  {
+    "data": "2026-07-16",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "qtd": 66,
+        "unid": "unid"
+      }
+    ],
+    "ts": 1784293898267
   },
   {
     "data": "2026-07-17",
@@ -169,64 +190,73 @@
     "ts": 1784294203660
   },
   {
-    "data": "2026-07-17",
-    "coletor": "Menininha",
+    "data": "2026-07-13",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 67,
-        "obs": "",
-        "forn": ""
+        "qtd": 77,
+        "unid": "unid"
       }
     ],
-    "ts": 1784293943998
+    "ts": 1784028321810
   },
   {
-    "data": "2026-07-17",
-    "coletor": "Menininha",
+    "data": "2026-07-13",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
+        "nome": "Pinto",
         "unid": "unid",
-        "qtd": 67,
+        "qtd": 200,
         "obs": "",
         "forn": ""
       }
     ],
-    "ts": 1784293898267
+    "ts": 1783953986428
   },
   {
-    "data": "2026-07-17",
-    "coletor": "Menininha",
+    "data": "2026-07-06",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 81,
-        "obs": "",
-        "forn": ""
+        "qtd": 61,
+        "unid": "unid"
       }
     ],
-    "ts": 1784293810010
+    "ts": 1783890595108
   },
   {
-    "data": "2026-07-17",
-    "coletor": "Menininha",
+    "data": "2026-07-12",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
         "unid": "unid",
-        "qtd": 81,
+        "qtd": 63,
         "obs": "",
         "forn": ""
       }
     ],
-    "ts": 1784293742199
+    "ts": 1783890202742
+  },
+  {
+    "data": "2026-07-11",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "qtd": 68,
+        "unid": "unid"
+      }
+    ],
+    "ts": 1783890097781
   },
   {
     "data": "2026-07-10",
@@ -250,225 +280,35 @@
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg"
       },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
-        "unid": "sc 40kg",
         "qtd": 1,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg"
       },
       {
         "setor": "Estoque",
         "nome": "Farelo da vaca",
-        "unid": "unid",
         "qtd": 1,
-        "obs": "",
-        "forn": ""
+        "unid": "Sc 30kg"
       }
     ],
     "ts": 1783688506163
-  },
-  {
-    "data": "2026-07-10",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Estoque",
-        "nome": "Postura",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Crescimento",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Engorda",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Milho",
-        "unid": "sc 40kg",
-        "qtd": 1,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Farelo da vaca",
-        "unid": "unid",
-        "qtd": 1,
-        "obs": "",
-        "forn": ""
-      }
-    ],
-    "ts": 1783688505953
-  },
-  {
-    "data": "2026-07-10",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Estoque",
-        "nome": "Postura",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Crescimento",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Engorda",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Milho",
-        "unid": "sc 40kg",
-        "qtd": 1,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Farelo da vaca",
-        "unid": "unid",
-        "qtd": 1,
-        "obs": "",
-        "forn": ""
-      }
-    ],
-    "ts": 1783688505767
-  },
-  {
-    "data": "2026-07-10",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Estoque",
-        "nome": "Postura",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Crescimento",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Engorda",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Milho",
-        "unid": "sc 40kg",
-        "qtd": 1,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Farelo da vaca",
-        "unid": "unid",
-        "qtd": 1,
-        "obs": "",
-        "forn": ""
-      }
-    ],
-    "ts": 1783688505523
-  },
-  {
-    "data": "2026-07-10",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Estoque",
-        "nome": "Postura",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Crescimento",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Engorda",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Milho",
-        "unid": "sc 40kg",
-        "qtd": 1,
-        "obs": "",
-        "forn": ""
-      }
-    ],
-    "ts": 1783688420441
   },
   {
     "data": "2026-07-09",
@@ -487,37 +327,22 @@
   },
   {
     "data": "2026-07-08",
-    "coletor": "Menininha",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
+        "nome": "Frango",
         "unid": "unid",
-        "qtd": 66,
+        "qtd": 1,
         "obs": "",
         "forn": ""
       }
     ],
-    "ts": 1783538601789
+    "ts": 1783539772875
   },
   {
     "data": "2026-07-07",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 64,
-        "obs": "",
-        "forn": ""
-      }
-    ],
-    "ts": 1783453364235
-  },
-  {
-    "data": "2026-07-06",
-    "coletor": "Menininha",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -528,388 +353,312 @@
         "forn": ""
       }
     ],
-    "ts": 1783364538305
+    "ts": 1783396652665
   },
   {
-    "data": "2026-07-06",
-    "coletor": "Menininha",
+    "data": "2026-07-01",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Campo",
+        "nome": "Coco Seco",
+        "unid": "unid",
+        "qtd": 260,
+        "obs": "Unidades",
+        "forn": ""
+      }
+    ],
+    "ts": 1782948399779
+  },
+  {
+    "data": "2026-06-15",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Campo",
+        "nome": "Coco Seco",
+        "qtd": 275,
+        "unid": "unid"
+      }
+    ],
+    "ts": 1782948322445
+  },
+  {
+    "data": "2026-07-05",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 61,
-        "obs": "",
-        "forn": ""
+        "qtd": 58,
+        "unid": "unid"
       }
     ],
-    "ts": 1783364537029
+    "ts": 1782944393767
   },
   {
     "data": "2026-07-04",
-    "coletor": "Menininha",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
-        "unid": "unid",
         "qtd": 65,
-        "obs": "",
-        "forn": ""
+        "unid": "unid"
       }
     ],
-    "ts": 1783189488243
-  },
-  {
-    "data": "2026-07-04",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 65,
-        "obs": "",
-        "forn": ""
-      }
-    ],
-    "ts": 1783189440462
+    "ts": 1782525480178
   },
   {
     "data": "2026-07-03",
-    "coletor": "Menininha",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
-        "unid": "unid",
         "qtd": 64,
-        "obs": "",
-        "forn": ""
+        "unid": "unid"
       }
     ],
-    "ts": 1783104375350
+    "ts": 1782525390690
   },
   {
-    "data": "2026-07-03",
-    "coletor": "Menininha",
+    "data": "2026-06-22",
+    "coletor": "Júnior",
     "itens": [
       {
-        "setor": "Estoque",
-        "nome": "Postura",
-        "unid": "sc 40kg",
-        "qtd": 2,
+        "setor": "Campo",
+        "nome": "Coco Seco",
+        "unid": "unid",
+        "qtd": 500,
         "obs": "",
         "forn": ""
-      },
+      }
+    ],
+    "ts": 1782156245407
+  },
+  {
+    "data": "2026-06-22",
+    "coletor": "Júnior",
+    "itens": [
       {
-        "setor": "Estoque",
-        "nome": "Crescimento",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Engorda",
-        "unid": "sc 40kg",
+        "setor": "Perda",
+        "nome": "Pinto",
+        "unid": "unid",
         "qtd": 2,
         "obs": "",
         "forn": ""
       }
     ],
-    "ts": 1783104216533
+    "ts": 1782156147049
   },
   {
-    "data": "2026-07-03",
-    "coletor": "Menininha",
+    "data": "2026-06-22",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Perda",
+        "nome": "Frango",
+        "unid": "unid",
+        "qtd": 3,
+        "obs": "Unidades",
+        "forn": ""
+      }
+    ],
+    "ts": 1782156111193
+  },
+  {
+    "data": "2026-07-02",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
-        "unid": "unid",
         "qtd": 60,
-        "obs": "",
-        "forn": ""
+        "unid": "unid"
       }
     ],
-    "ts": 1783082778378
+    "ts": 1781188985765
+  },
+  {
+    "data": "2026-07-01",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Tilamax TRX-35",
+        "qtd": 1,
+        "unid": "sc 25kg"
+      }
+    ],
+    "ts": 1781095076513
+  },
+  {
+    "data": "2026-06-02",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Crescimento",
+        "qtd": 2,
+        "unid": "sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Engorda",
+        "qtd": 3,
+        "unid": "Sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Postura",
+        "qtd": 3,
+        "unid": "Sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Milho",
+        "qtd": 1,
+        "unid": "Sc 50kg"
+      }
+    ],
+    "ts": 1781094500821
   },
   {
     "data": "2026-07-03",
-    "coletor": "Menininha",
+    "coletor": "Júnior",
     "itens": [
-      {
-        "setor": "Aviario",
-        "nome": "Galinha",
-        "unid": "unid",
-        "qtd": 17,
-        "obs": "",
-        "forn": ""
-      }
-    ],
-    "ts": 1783082698957
-  },
-  {
-    "data": "2026-06-30",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 70,
-        "obs": "",
-        "forn": ""
-      }
-    ],
-    "ts": 1782846470157
-  },
-  {
-    "data": "2026-06-30",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 70,
-        "obs": "",
-        "forn": ""
-      }
-    ],
-    "ts": 1782846468384
-  },
-  {
-    "data": "2026-06-13",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 78,
-        "obs": "",
-        "forn": ""
-      }
-    ],
-    "ts": 1781390522374
-  },
-  {
-    "data": "2026-06-11",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 79,
-        "obs": "",
-        "forn": ""
-      }
-    ],
-    "ts": 1781205996883
-  },
-  {
-    "data": "2026-06-10",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 78,
-        "obs": "",
-        "forn": ""
-      }
-    ],
-    "ts": 1781120185035
-  },
-  {
-    "data": "2026-06-10",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Estoque",
-        "nome": "Postura",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "Sc 40kg"
       },
-      {
-        "setor": "Estoque",
-        "nome": "Milho",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
-      }
-    ],
-    "ts": 1781098239550
-  },
-  {
-    "data": "2026-06-10",
-    "coletor": "Menininha",
-    "itens": [
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
+        "unid": "Se 40kg"
+      }
+    ],
+    "ts": 1781090425770
+  },
+  {
+    "data": "2026-06-27",
+    "coletor": "Júnior",
+    "itens": [
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "Sc 40kg"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "Sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Postura",
+        "qtd": 3,
+        "unid": "Sc 40kg"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "Sc 40kg"
       }
     ],
-    "ts": 1781088013465
+    "ts": 1781089929186
   },
   {
-    "data": "2026-06-10",
-    "coletor": "Menininha",
+    "data": "2026-06-17",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
-        "nome": "Postura",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
         "nome": "Crescimento",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "qtd": 3,
+        "unid": "sc 40kg"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "Sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Postura",
+        "qtd": 3,
+        "unid": "Sc 40kg"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "Sc 50kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Tilamax TRX-35",
+        "qtd": 1,
+        "unid": "Sc 25kg"
       }
     ],
-    "ts": 1781086752434
+    "ts": 1781089417326
   },
   {
     "data": "2026-06-10",
-    "coletor": "Menininha",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Crescimento",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Engorda",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "Sc 50kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Crescimento",
+        "qtd": 2,
+        "unid": "Sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Engorda",
+        "qtd": 2,
+        "unid": "Sc 40kg"
       }
     ],
-    "ts": 1781086669694
+    "ts": 1781089303703
   },
   {
-    "data": "2026-06-09",
-    "coletor": "Menininha",
+    "data": "2026-07-01",
+    "coletor": "Júnior",
     "itens": [
       {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 79,
-        "obs": "",
-        "forn": ""
+        "qtd": 65,
+        "unid": "unid"
       }
     ],
-    "ts": 1781034003406
-  },
-  {
-    "data": "2026-06-09",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 79,
-        "obs": "",
-        "forn": ""
-      }
-    ],
-    "ts": 1781033961095
+    "ts": 1781038271229
   }
 ]
