@@ -167,6 +167,12 @@
       "nome": "Farelo de Trigo",
       "unid": "sc 40kg",
       "passo": 1
+    },
+    {
+      "id": "racao_de_peixe_sc_25kg",
+      "nome": "Ração de peixe",
+      "unid": "Sc 25kg",
+      "passo": 1
     }
   ]
 }
