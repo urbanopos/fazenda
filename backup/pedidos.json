@@ -1,5 +1,44 @@
 [
   {
+    "num": "PED-0047",
+    "cliente": "Buiu (Casa Amarela)",
+    "data": "2026-07-23",
+    "itens": [
+      {
+        "col1": "23/07/2026",
+        "col2": "Frango",
+        "col3": "6 unid",
+        "col4": "R$ 40,00 x 6",
+        "col5": "R$ 240,00",
+        "val": 240,
+        "prodId": "frango",
+        "nome": "Frango",
+        "unidade": "unid",
+        "qtd": 6,
+        "preco": 40,
+        "sub": 240,
+        "data": "23/07/2026"
+      },
+      {
+        "col1": "23/07/2026",
+        "col2": "Pinto",
+        "col3": "10 unid",
+        "col4": "R$ 25,00 x 10",
+        "col5": "R$ 250,00",
+        "val": 250,
+        "prodId": "pinto",
+        "nome": "Pinto",
+        "unidade": "unid",
+        "qtd": 10,
+        "preco": 25,
+        "sub": 250,
+        "data": "23/07/2026"
+      }
+    ],
+    "total": 490,
+    "ts": 1784831902827
+  },
+  {
     "num": "PED-0046",
     "cliente": "Ana Porpino",
     "data": "2026-07-23",
