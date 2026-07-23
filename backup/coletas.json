@@ -6,10 +6,32 @@
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "unid": "sc 40kg",
         "qtd": 1,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Postura",
+        "qtd": 3,
+        "unid": "sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Engorda",
+        "qtd": 2,
+        "unid": "sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Milho",
+        "qtd": 1,
+        "unid": "sc 40kg"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Ração de peixe",
+        "qtd": 1,
+        "unid": "Sc 25kg"
       }
     ],
     "ts": 1784751238222
