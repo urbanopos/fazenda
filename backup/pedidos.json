@@ -5,22 +5,33 @@
     "data": "2026-07-24",
     "itens": [
       {
-        "col1": "24/07/2026",
+        "nome": "Galinha",
         "col2": "Galinha",
+        "col1": "24/07/2026",
         "col3": "1 unid",
         "col4": "R$ 50,00 x 1",
         "col5": "R$ 50,00",
-        "val": 50,
-        "prodId": "galinha",
-        "nome": "Galinha",
-        "unidade": "unid",
         "qtd": 1,
+        "unidade": "unid",
         "preco": 50,
         "sub": 50,
         "data": "24/07/2026"
+      },
+      {
+        "nome": "Ovos de capoeira",
+        "col2": "Ovos de capoeira",
+        "col1": "24/07/2026",
+        "col3": "5 Bandeja c/30 ovos",
+        "col4": "R$ 30,00 x 5",
+        "col5": "R$ 150,00",
+        "qtd": 5,
+        "unidade": "Bandeja c/30 ovos",
+        "preco": 30,
+        "sub": 150,
+        "data": "24/07/2026"
       }
     ],
-    "total": 50,
+    "total": 200,
     "ts": 1784896715779
   },
   {
