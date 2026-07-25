@@ -1,5 +1,29 @@
 [
   {
+    "num": "PED-0049",
+    "cliente": "Carlos Alberto",
+    "data": "2026-07-25",
+    "itens": [
+      {
+        "col1": "25/07/2026",
+        "col2": "Galinha",
+        "col3": "2 unid",
+        "col4": "R$ 60,00 x 2",
+        "col5": "R$ 120,00",
+        "val": 120,
+        "prodId": "galinha",
+        "nome": "Galinha",
+        "unidade": "unid",
+        "qtd": 2,
+        "preco": 60,
+        "sub": 120,
+        "data": "25/07/2026"
+      }
+    ],
+    "total": 120,
+    "ts": 1784988384914
+  },
+  {
     "num": "PED-0048",
     "cliente": "Luiza Gomes",
     "data": "2026-07-24",
