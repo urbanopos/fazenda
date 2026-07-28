@@ -4,23 +4,6 @@
     "coletor": "Menininha",
     "itens": [
       {
-        "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 79,
-        "obs": "",
-        "forn": ""
-      }
-    ],
-    "ts": 1785267488183,
-    "status": "pendente",
-    "enviadoEm": "2026-07-28T19:38:09.036Z"
-  },
-  {
-    "data": "2026-07-28",
-    "coletor": "Menininha",
-    "itens": [
-      {
         "setor": "Estoque",
         "nome": "Crescimento",
         "unid": "sc 40kg",
