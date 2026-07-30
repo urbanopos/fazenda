@@ -1,5 +1,29 @@
 [
   {
+    "num": "PED-0056",
+    "cliente": "Wagner Vivaldo",
+    "data": "2026-07-30",
+    "itens": [
+      {
+        "col1": "30/07/2026",
+        "col2": "Ovos de Capoeira",
+        "col3": "3 unid",
+        "col4": "R$ 30,00 x 3",
+        "col5": "R$ 90,00",
+        "val": 90,
+        "prodId": "ovo",
+        "nome": "Ovos de Capoeira",
+        "unidade": "unid",
+        "qtd": 3,
+        "preco": 30,
+        "sub": 90,
+        "data": "30/07/2026"
+      }
+    ],
+    "total": 90,
+    "ts": 1785428009261
+  },
+  {
     "num": "PED-0055",
     "cliente": "Léo Alencar",
     "data": "2026-07-30",
