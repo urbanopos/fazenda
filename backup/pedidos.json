@@ -1,5 +1,29 @@
 [
   {
+    "num": "PED-0052",
+    "cliente": "Josafá (Casa Amarela)",
+    "data": "2026-07-30",
+    "itens": [
+      {
+        "col1": "30/07/2026",
+        "col2": "Coco Seco",
+        "col3": "200 unid",
+        "col4": "R$ 2,50 x 200",
+        "col5": "R$ 500,00",
+        "val": 500,
+        "prodId": "coco",
+        "nome": "Coco Seco",
+        "unidade": "unid",
+        "qtd": 200,
+        "preco": 2.5,
+        "sub": 500,
+        "data": "30/07/2026"
+      }
+    ],
+    "total": 500,
+    "ts": 1785425531778
+  },
+  {
     "num": "PED-0051",
     "cliente": "Buiu (Casa Amarela)",
     "data": "2026-07-30",
