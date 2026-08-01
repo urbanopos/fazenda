@@ -1,22 +1,5 @@
 [
   {
-    "data": "2026-08-01",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 62,
-        "obs": "",
-        "forn": ""
-      }
-    ],
-    "ts": 1785611410646,
-    "status": "pendente",
-    "enviadoEm": "2026-08-01T19:10:11.393Z"
-  },
-  {
     "data": "2026-07-31",
     "coletor": "Menininha",
     "itens": [
