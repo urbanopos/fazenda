@@ -1250,24 +1250,22 @@
     "data": "2026-06-17",
     "itens": [
       {
-        "col1": "17/06/2026",
-        "col2": "Coco Seco",
-        "col3": "200 Unidade",
-        "col4": "R$ 2,50 x 200",
-        "col5": "R$ 500,00",
-        "val": 500,
-        "prodId": "coco",
         "nome": "Coco Seco",
-        "unidade": "Unidade",
+        "col2": "Coco Seco",
+        "col1": "17/06/2026",
+        "col3": "200 Unidade",
+        "col4": "R$ 2,00 x 200",
+        "col5": "R$ 400,00",
         "qtd": 200,
-        "preco": 2.5,
-        "sub": 500,
+        "unidade": "Unidade",
+        "preco": 2,
+        "sub": 400,
         "data": "17/06/2026"
       }
     ],
-    "total": 500,
+    "total": 400,
     "ts": 1781728716476,
-    "pago": true
+    "pago": false
   },
   {
     "num": "PED-0012",
