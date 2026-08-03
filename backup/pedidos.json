@@ -1254,16 +1254,16 @@
         "col2": "Coco Seco",
         "col1": "17/06/2026",
         "col3": "200 Unidade",
-        "col4": "R$ 2,00 x 200",
-        "col5": "R$ 400,00",
+        "col4": "R$ 2,50 x 200",
+        "col5": "R$ 500,00",
         "qtd": 200,
         "unidade": "Unidade",
-        "preco": 2,
-        "sub": 400,
+        "preco": 2.5,
+        "sub": 500,
         "data": "17/06/2026"
       }
     ],
-    "total": 400,
+    "total": 500,
     "ts": 1781728716476,
     "pago": false
   },
