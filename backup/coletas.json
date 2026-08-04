@@ -1,5 +1,35 @@
 [
   {
+    "data": "2026-08-04",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Pre-Inicial",
+        "unid": "sc 40kg",
+        "qtd": 1,
+        "obs": "",
+        "forn": ""
+      }
+    ],
+    "ts": 1785843820269
+  },
+  {
+    "data": "2026-08-04",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "unid": "unid",
+        "qtd": 73,
+        "obs": "",
+        "forn": ""
+      }
+    ],
+    "ts": 1785872575480
+  },
+  {
     "data": "2026-08-02",
     "coletor": "Júnior",
     "itens": [
