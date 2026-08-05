@@ -1,5 +1,29 @@
 [
   {
+    "num": "PED-0059",
+    "cliente": "Jaime Baía de Guanabara",
+    "data": "2026-08-05",
+    "itens": [
+      {
+        "col1": "05/08/2026",
+        "col2": "Galinha",
+        "col3": "2 unid",
+        "col4": "R$ 60,00 x 2",
+        "col5": "R$ 120,00",
+        "val": 120,
+        "prodId": "galinha",
+        "nome": "Galinha",
+        "unidade": "unid",
+        "qtd": 2,
+        "preco": 60,
+        "sub": 120,
+        "data": "05/08/2026"
+      }
+    ],
+    "total": 120,
+    "ts": 1785956239545
+  },
+  {
     "num": "PED-0058",
     "cliente": "Buiu (Casa Amarela)",
     "data": "2026-08-05",
