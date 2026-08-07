@@ -5,22 +5,20 @@
     "data": "2026-08-06",
     "itens": [
       {
-        "col1": "06/08/2026",
-        "col2": "Galinha",
-        "col3": "6 unid",
-        "col4": "R$ 50,00 x 6",
-        "col5": "R$ 300,00",
-        "val": 300,
-        "prodId": "galinha",
         "nome": "Galinha",
+        "col2": "Galinha",
+        "col1": "06/08/2026",
+        "col3": "17 unid",
+        "col4": "R$ 40,00 x 17",
+        "col5": "R$ 680,00",
+        "qtd": 17,
         "unidade": "unid",
-        "qtd": 6,
-        "preco": 50,
-        "sub": 300,
+        "preco": 40,
+        "sub": 680,
         "data": "06/08/2026"
       }
     ],
-    "total": 300,
+    "total": 680,
     "ts": 1786049344455
   },
   {
