@@ -1,5 +1,39 @@
 [
   {
+    "data": "2026-08-05",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Frango",
+        "qtd": 16,
+        "unid": "unid"
+      },
+      {
+        "setor": "Aviario",
+        "nome": "Frango",
+        "qtd": 2,
+        "unid": "unid"
+      }
+    ],
+    "ts": 1786049905315
+  },
+  {
+    "data": "2026-08-06",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Galinha",
+        "unid": "unid",
+        "qtd": 17,
+        "obs": "Abatidas",
+        "forn": ""
+      }
+    ],
+    "ts": 1786049729624
+  },
+  {
     "data": "2026-08-06",
     "coletor": "Menininha",
     "itens": [
