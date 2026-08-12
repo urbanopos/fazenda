@@ -71,17 +71,17 @@
         "nome": "Ovos de Capoeira",
         "col2": "Ovos de Capoeira",
         "col1": "12/08/2026",
-        "col3": "0 Bandeja c/30 ovos",
-        "col4": "R$ 30,00 x 0",
-        "col5": "R$ 0,00",
-        "qtd": 0,
+        "col3": "1 Bandeja c/30 ovos",
+        "col4": "R$ 30,00 x 1",
+        "col5": "R$ 30,00",
+        "qtd": 1,
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
-        "sub": 0,
+        "sub": 30,
         "data": "12/08/2026"
       }
     ],
-    "total": 0,
+    "total": 30,
     "ts": 1786549418241
   },
   {
