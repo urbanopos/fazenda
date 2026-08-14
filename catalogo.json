@@ -173,6 +173,12 @@
       "nome": "Ração de peixe",
       "unid": "Sc 25kg",
       "passo": 1
+    },
+    {
+      "id": "racao_de_gado_sc_40kg",
+      "nome": "Ração de Gado",
+      "unid": "Sc 40kg",
+      "passo": 1
     }
   ]
 }
