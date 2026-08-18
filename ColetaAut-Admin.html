@@ -11363,7 +11363,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '73c466bc8ddd';
+  var FP = '14474b5877a4';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -14000,7 +14000,7 @@ function _abrirEditColeta(ri){
 
   var itensHtml = '';
   (r.itens||[]).forEach(function(it, ii){
-    itensHtml += _linhaEditItemColeta(ri, ii, it.setor||'', it.nome||'', it.qtd||0, it.unid||'');
+    itensHtml += _linhaEditItemColeta(ri, ii, it.setor||'', it.nome||'', it.qtd||0, it.unid||'', it.tipo||'');
   });
 
   var form = document.createElement('div');
@@ -14030,7 +14030,7 @@ function _setorKeyFromLabel(label){
   return (label||'').toLowerCase(); // ultimo recurso
 }
 
-function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual){
+function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtual){
   var setorKey = _setorKeyFromLabel(setor);
   var nomes = _catalogoNomesUnicos(setorKey);
   if(nomeAtual && nomes.indexOf(nomeAtual)===-1) nomes.push(nomeAtual); // preserva item legado fora do catalogo
@@ -14042,12 +14042,23 @@ function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual){
   var optsUnid = unidades.map(function(u){
     return '<option value="'+_esc(u)+'"'+(u===unidAtual?' selected':'')+'>'+_esc(u)+'</option>';
   }).join('');
-  return '<div class="hcol-item-edit-row">'
+  var linhaTipo = '';
+  if(setorKey === 'estoque'){
+    var ehSaida = (tipoAtual === 'Saida');
+    linhaTipo = '<div class="hcol-item-edit-tipo" style="display:flex;gap:16px;padding:4px 0 8px;font-size:13px">'
+      +'<label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="hcol-ei-tipo-'+ri+'-'+ii+'" value="Entrada" id="hcol-ei-tipo-entrada-'+ri+'-'+ii+'"'+(!ehSaida?' checked':'')+' style="width:16px;height:16px;accent-color:#1a6b2a"> Entrada</label>'
+      +'<label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="hcol-ei-tipo-'+ri+'-'+ii+'" value="Saida" id="hcol-ei-tipo-saida-'+ri+'-'+ii+'"'+(ehSaida?' checked':'')+' style="width:16px;height:16px;accent-color:#c0392b"> Saida</label>'
+      +'</div>';
+  }
+  return '<div class="hcol-item-edit-wrap">'
+    +'<div class="hcol-item-edit-row">'
     +'<input type="hidden" value="'+_esc(setor)+'" id="hcol-ei-setor-'+ri+'-'+ii+'">'
     +'<select class="hcol-edit-inp" style="flex:2" id="hcol-ei-nome-'+ri+'-'+ii+'" onchange="_onMudarNomeEditColeta('+ri+','+ii+')">'+optsNome+'</select>'
     +'<input class="hcol-edit-inp" style="width:52px;flex:none" type="number" min="0" step="0.5" placeholder="Qtd" value="'+qtd+'" id="hcol-ei-qtd-'+ri+'-'+ii+'">'
     +'<select class="hcol-edit-inp" style="width:70px;flex:none" id="hcol-ei-unid-'+ri+'-'+ii+'">'+optsUnid+'</select>'
     +'<button class="hcol-del-item" onclick="_delItemEditColeta('+ri+','+ii+')" title="Remover item">\u00d7</button>'
+    +'</div>'
+    +linhaTipo
     +'</div>';
 }
 
@@ -14069,12 +14080,13 @@ function _fecharEditColeta(form){
 function _delItemEditColeta(ri, ii){
   var wrap = document.getElementById('hcol-ei-itens-'+ri);
   if(!wrap) return;
-  var rows = wrap.querySelectorAll('.hcol-item-edit-row');
+  var rows = wrap.querySelectorAll('.hcol-item-edit-wrap');
   if(rows[ii]) rows[ii].parentElement.removeChild(rows[ii]);
-  // Renumera ids
-  wrap.querySelectorAll('.hcol-item-edit-row').forEach(function(row, newii){
-    row.querySelectorAll('input,button').forEach(function(el){
+  // Renumera ids, onclick e o "name" dos radios (Entrada/Saida)
+  wrap.querySelectorAll('.hcol-item-edit-wrap').forEach(function(rowWrap, newii){
+    rowWrap.querySelectorAll('input,select,button').forEach(function(el){
       if(el.id) el.id = el.id.replace(/-\d+$/, '-'+newii);
+      if(el.name) el.name = el.name.replace(/-\d+$/, '-'+newii);
       if(el.getAttribute && el.getAttribute('onclick'))
         el.setAttribute('onclick', el.getAttribute('onclick').replace(/,\d+\)/, ','+newii+')'));
     });
@@ -14114,7 +14126,9 @@ function _salvarEditColeta(ri){
       var nome  = (document.getElementById('hcol-ei-nome-'+ri+'-'+ii)||{value:''}).value.trim();
       var qtd   = parseFloat((document.getElementById('hcol-ei-qtd-'+ri+'-'+ii)||{value:0}).value)||0;
       var unid  = (document.getElementById('hcol-ei-unid-'+ri+'-'+ii)||{value:''}).value.trim();
-      if(nome) novosItens.push({setor:setor, nome:nome, qtd:qtd, unid:unid});
+      var tipoEl = document.querySelector('input[name="hcol-ei-tipo-'+ri+'-'+ii+'"]:checked');
+      var tipo = tipoEl ? tipoEl.value : '';
+      if(nome) novosItens.push({setor:setor, nome:nome, qtd:qtd, unid:unid, tipo:tipo});
     });
   }
 
