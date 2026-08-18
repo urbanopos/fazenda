@@ -11363,7 +11363,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = 'c735d0a95907';
+  var FP = '556311c501af';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -13574,8 +13574,11 @@ function _gerarRelatorioPDF(setorLabel, anoFiltro, mesFiltro){
     _toast('Carregando gerador de PDF, tente novamente em alguns segundos...');
     return;
   }
-  // Se ano nao foi informado (botao "Relatório" clicado direto na aba), usa o ano atual
-  if(anoFiltro === undefined) anoFiltro = new Date().getFullYear().toString();
+  // Se ano nao foi informado (botao "Relatório" clicado direto na aba, sem
+  // filtro aplicado), considera TODO o historico — nao so o ano atual —
+  // para que o saldo final reflita o estoque acumulado de verdade.
+  if(anoFiltro === undefined) anoFiltro = '';
+  if(mesFiltro === undefined) mesFiltro = '';
 
   var hist = _carregarHistColeta();
   var filtrado = hist.filter(function(r){
@@ -13677,9 +13680,13 @@ function _gerarRelatorioPDF(setorLabel, anoFiltro, mesFiltro){
   if(!qtdRegistros){ _toast('Nenhum item encontrado para esse setor no periodo.'); return; }
 
   // Pagina de totais
+  var semFiltroDePeríodo = !anoFiltro && !mesFiltro;
   doc.addPage(); y = 18;
   doc.setFont('helvetica','bold'); doc.setFontSize(13);
-  doc.text(mostrarTipo ? 'Balanco simplificado do periodo' : 'Totais do periodo', margin, y);
+  var tituloTotais = mostrarTipo
+    ? (semFiltroDePeríodo ? 'Saldo atual em estoque' : 'Balanco do periodo (itens movimentados)')
+    : 'Totais do periodo';
+  doc.text(tituloTotais, margin, y);
   y += 9;
 
   if(mostrarTipo){
@@ -13738,7 +13745,7 @@ function abrirHistColeta(setorInicial){
   var anoAtual = new Date().getFullYear().toString();
   if(!anos[anoAtual]) anos[anoAtual]=1;
   var selAno = document.getElementById('hcol-ano');
-  selAno.innerHTML = Object.keys(anos).sort().reverse().map(function(a){
+  selAno.innerHTML = '<option value="">Todos os anos</option>' + Object.keys(anos).sort().reverse().map(function(a){
     return '<option value="'+a+'"'+(a===anoAtual?' selected':'')+'>'+a+'</option>';
   }).join('');
   document.getElementById('hcol-mes').value = '';
