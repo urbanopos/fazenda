@@ -11363,7 +11363,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = 'bc2a9cffba6f';
+  var FP = 'c735d0a95907';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -13936,10 +13936,20 @@ function _renderHistColetaDetalhe(body, registros, setorFiltro){
       ? (r.itens||[]).filter(function(it){ return (it.setor||'')=== setorFiltro; })
       : (r.itens||[]);
     if(!itensVisiveis.length) return; // pular registro se nenhum item do setor
+
+    // Se os itens visiveis tiverem "tipo" (Entrada/Saida — usado no Estoque) e
+    // todos forem do mesmo tipo, mostra uma etiqueta ao lado da data.
+    var tiposPresentes = itensVisiveis.map(function(it){ return it.tipo; }).filter(Boolean);
+    var tipoUnico = tiposPresentes.length && tiposPresentes.every(function(t){ return t===tiposPresentes[0]; })
+      ? tiposPresentes[0] : null;
+    var tagTipoHd = tipoUnico
+      ? '<span style="margin-left:8px;font-weight:700;font-size:12px;color:'+(tipoUnico==='Saida'?'#c0392b':'#1e5fbf')+'">'+(tipoUnico==='Saida'?'Saída':'Entrada')+'</span>'
+      : '';
+
     html += '<div class="hcol-entrada" id="hcol-reg-'+ri+'">';
     // Cabeçalho: data + coletor
     html += '<div class="hcol-entrada-hd">'
-      +'<span class="hcol-entrada-data">'+dtFmt+'</span>'
+      +'<span class="hcol-entrada-data">'+dtFmt+tagTipoHd+'</span>'
       +'<span class="hcol-entrada-col">'+(r.coletor||'')+'</span>'
       +'</div>';
     // Itens filtrados — sem prefixo de setor quando filtrado (já é óbvio)
