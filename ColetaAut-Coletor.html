@@ -911,13 +911,6 @@ function _cardColetaSetor(setor, cl, forn){
     +'</select>'
     +'</div>'
 
-    +'<input type="hidden" id="enome-'+k+'" value="">'
-
-    +'<div id="wrap-coleta-'+k+'" style="display:none">'
-    +'<div class="cg"><span class="cl">Unidade</span><div id="unid-wrap-'+k+'">'
-    +'<input type="text" id="eunid-'+k+'" value="" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">'
-    +'</div></div>'
-
     +(setor==='estoque' ?
       '<div class="cg"><span class="cl">Movimentacao</span>'
       +'<div style="display:flex;gap:20px;margin-top:4px">'
@@ -925,6 +918,13 @@ function _cardColetaSetor(setor, cl, forn){
       +'<label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px"><input type="radio" name="tipo-'+k+'" value="Saida" id="tipo-saida-'+k+'" style="width:18px;height:18px;accent-color:#c0392b"> Saida</label>'
       +'</div></div>'
       : '')
+
+    +'<input type="hidden" id="enome-'+k+'" value="">'
+
+    +'<div id="wrap-coleta-'+k+'" style="display:none">'
+    +'<div class="cg"><span class="cl">Unidade</span><div id="unid-wrap-'+k+'">'
+    +'<input type="text" id="eunid-'+k+'" value="" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">'
+    +'</div></div>'
 
     +'<div class="cg"><span class="cl">Quantidade</span>'
     +'<div class="step" style="display:flex;align-items:center;gap:6px">'
@@ -1052,7 +1052,7 @@ function _iniciar(){
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
 (function _caAutoUpdate(){
-  var FP = 'ddd7d00fa1be';
+  var FP = 'b700d24ce89c';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
