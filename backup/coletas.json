@@ -1,5 +1,187 @@
 [
   {
+    "data": "2026-08-14",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Farelo de Trigo",
+        "qtd": 4,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      }
+    ],
+    "ts": 1787092865427
+  },
+  {
+    "data": "2026-08-12",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Ração de peixe",
+        "qtd": 10,
+        "unid": "Sc 25kg",
+        "tipo": "Entrada"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Postura",
+        "qtd": 15,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Crescimento",
+        "qtd": 10,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Engorda",
+        "qtd": 10,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Ração de Gado",
+        "qtd": 10,
+        "unid": "Sc 40kg",
+        "tipo": "Entrada"
+      }
+    ],
+    "ts": 1787092762795
+  },
+  {
+    "data": "2026-08-05",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Ração de peixe",
+        "qtd": 1,
+        "unid": "Sc 25kg",
+        "tipo": "Entrada"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Farelo de Trigo",
+        "qtd": 3,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      }
+    ],
+    "ts": 1787092426716
+  },
+  {
+    "data": "2026-07-30",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Ração de peixe",
+        "qtd": 3,
+        "unid": "Sc 25kg",
+        "tipo": "Entrada"
+      }
+    ],
+    "ts": 1787092301594
+  },
+  {
+    "data": "2026-07-06",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Pre-Inicial",
+        "qtd": 2,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Crescimento",
+        "qtd": 20,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Engorda",
+        "qtd": 8,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Postura",
+        "qtd": 20,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Farelo de Trigo",
+        "qtd": 3,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      }
+    ],
+    "ts": 1787091950102
+  },
+  {
+    "data": "2026-06-05",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Milho",
+        "qtd": 10,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      }
+    ],
+    "ts": 1787091684915
+  },
+  {
+    "data": "2026-06-02",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Crescimento",
+        "qtd": 27,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Engorda",
+        "qtd": 10,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Postura",
+        "qtd": 25,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Ração de peixe",
+        "qtd": 3,
+        "unid": "Sc 25kg",
+        "tipo": "Entrada"
+      }
+    ],
+    "ts": 1787091283784
+  },
+  {
     "data": "2026-08-18",
     "coletor": "Menininha",
     "itens": [
@@ -37,34 +219,30 @@
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "unid": "sc 40kg",
         "qtd": 3,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "unid": "sc 40kg",
         "qtd": 3,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
-        "unid": "sc 40kg",
         "qtd": 1,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       }
     ],
     "ts": 1786962898272
@@ -221,25 +399,29 @@
         "setor": "Estoque",
         "nome": "Crescimento",
         "qtd": 2,
-        "unid": "sc 40kg"
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
-        "unid": "sc 40kg"
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
         "qtd": 1,
-        "unid": "sc 40kg"
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 3,
-        "unid": "sc 40kg"
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       }
     ],
     "ts": 1786358780904
@@ -373,10 +555,9 @@
       {
         "setor": "Estoque",
         "nome": "Pre-Inicial",
-        "unid": "sc 40kg",
         "qtd": 1,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       }
     ],
     "ts": 1785843820269
@@ -439,34 +620,30 @@
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
-        "unid": "sc 40kg",
         "qtd": 1,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       }
     ],
     "ts": 1785759358679
@@ -553,26 +730,23 @@
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "unid": "sc 40kg",
         "qtd": 3,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       }
     ],
     "ts": 1785249179757
@@ -675,31 +849,36 @@
         "setor": "Estoque",
         "nome": "Crescimento",
         "qtd": 1,
-        "unid": "sc 40kg"
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 3,
-        "unid": "sc 40kg"
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
-        "unid": "sc 40kg"
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
         "qtd": 1,
-        "unid": "sc 40kg"
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Ração de peixe",
         "qtd": 1,
-        "unid": "Sc 25kg"
+        "unid": "Sc 25kg",
+        "tipo": "Saida"
       }
     ],
     "ts": 1784751238222
@@ -847,34 +1026,30 @@
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
-        "unid": "sc 40kg",
         "qtd": 1,
-        "obs": "",
-        "forn": ""
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       }
     ],
     "ts": 1784294203660
@@ -971,31 +1146,36 @@
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 2,
-        "unid": "sc 40kg"
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
         "qtd": 2,
-        "unid": "sc 40kg"
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
-        "unid": "sc 40kg"
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
         "qtd": 1,
-        "unid": "sc 40kg"
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Farelo da vaca",
         "qtd": 1,
-        "unid": "Sc 30kg"
+        "unid": "Sc 30kg",
+        "tipo": "Saida"
       }
     ],
     "ts": 1783688506163
@@ -1178,7 +1358,8 @@
         "setor": "Estoque",
         "nome": "Tilamax TRX-35",
         "qtd": 1,
-        "unid": "sc 25kg"
+        "unid": "sc 25kg",
+        "tipo": "Saida"
       }
     ],
     "ts": 1781095076513
@@ -1191,25 +1372,29 @@
         "setor": "Estoque",
         "nome": "Crescimento",
         "qtd": 2,
-        "unid": "sc 40kg"
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 3,
-        "unid": "Sc 40kg"
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 3,
-        "unid": "Sc 40kg"
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
         "qtd": 1,
-        "unid": "Sc 50kg"
+        "unid": "Sc 50kg",
+        "tipo": "Saida"
       }
     ],
     "ts": 1781094500821
@@ -1222,19 +1407,22 @@
         "setor": "Estoque",
         "nome": "Crescimento",
         "qtd": 2,
-        "unid": "sc 40kg"
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
-        "unid": "Sc 40kg"
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 2,
-        "unid": "Se 40kg"
+        "unid": "Se 40kg",
+        "tipo": "Saida"
       }
     ],
     "ts": 1781090425770
@@ -1247,25 +1435,29 @@
         "setor": "Estoque",
         "nome": "Crescimento",
         "qtd": 2,
-        "unid": "Sc 40kg"
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
-        "unid": "Sc 40kg"
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 3,
-        "unid": "Sc 40kg"
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
         "qtd": 2,
-        "unid": "Sc 40kg"
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       }
     ],
     "ts": 1781089929186
@@ -1278,31 +1470,36 @@
         "setor": "Estoque",
         "nome": "Crescimento",
         "qtd": 3,
-        "unid": "sc 40kg"
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
-        "unid": "Sc 40kg"
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 3,
-        "unid": "Sc 40kg"
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
         "qtd": 2,
-        "unid": "Sc 50kg"
+        "unid": "Sc 50kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Tilamax TRX-35",
         "qtd": 1,
-        "unid": "Sc 25kg"
+        "unid": "Sc 25kg",
+        "tipo": "Saida"
       }
     ],
     "ts": 1781089417326
@@ -1315,25 +1512,29 @@
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 2,
-        "unid": "sc 40kg"
+        "unid": "sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
         "qtd": 2,
-        "unid": "Sc 50kg"
+        "unid": "Sc 50kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
         "qtd": 2,
-        "unid": "Sc 40kg"
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
-        "unid": "Sc 40kg"
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       }
     ],
     "ts": 1781089303703
