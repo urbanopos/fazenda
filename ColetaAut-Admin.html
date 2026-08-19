@@ -11363,7 +11363,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '2f93171f55a2';
+  var FP = 'fbabfce4ba0f';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -13920,6 +13920,7 @@ function _gerarRelatorioPDF(setorLabel, anoFiltro, mesFiltro){
     var dataFmt = r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '';
     (r.itens||[]).forEach(function(it){
       if(setorLabel && (it.setor||'') !== setorLabel) return; // dentro do registro, só os itens do setor filtrado
+      if(!setorLabel && (it.setor||'') === 'Estoque') return; // Estoque tem relatório próprio (kardex mensal) — não entra no relatório geral
       novaLinhaSeNecessario();
       qtdRegistros++;
       doc.text(dataFmt, colX.data, y);
