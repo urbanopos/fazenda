@@ -913,10 +913,9 @@ function _cardColetaSetor(setor, cl, forn){
 
     +(setor==='estoque' ?
       '<div class="cg"><span class="cl">Movimentacao</span>'
-      +'<div style="display:flex;gap:20px;margin-top:4px">'
-      +'<label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px"><input type="radio" name="tipo-'+k+'" value="Entrada" id="tipo-entrada-'+k+'" checked style="width:18px;height:18px;accent-color:#1a6b2a"> Entrada</label>'
-      +'<label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px"><input type="radio" name="tipo-'+k+'" value="Saida" id="tipo-saida-'+k+'" style="width:18px;height:18px;accent-color:#c0392b"> Saida</label>'
-      +'</div></div>'
+      +'<div style="font-size:13px;color:#c0392b;font-weight:700;margin-top:4px">🔻 Saida (consumo)</div>'
+      +'<div style="font-size:11px;color:#999;margin-top:2px">Entradas de estoque so podem ser lancadas pelo Administrador.</div>'
+      +'</div>'
       : '')
 
     +'<input type="hidden" id="enome-'+k+'" value="">'
@@ -978,13 +977,10 @@ function _adicionarItemSessao(setor){
   if(qtd<=0){ _toast('Informe a quantidade antes de adicionar.'); return; }
   var forn = (forEl?forEl.value:'')||'';
   var obs  = (obsEl?obsEl.value:'')||'';
-  var tipo = '';
-  if(setor==='estoque'){
-    var tipoEl = document.querySelector('input[name="tipo-'+k+'"]:checked');
-    tipo = tipoEl ? tipoEl.value : 'Entrada';
-  }
+  var tipo = (setor==='estoque') ? 'Saida' : '';
   // No app Coletor so e possivel usar itens ja cadastrados pelo Admin —
-  // nao cadastra item novo no catalogo aqui.
+  // nao cadastra item novo no catalogo aqui. No Estoque, so sao permitidas
+  // saidas (consumo) — entradas ficam exclusivas do painel Administrador.
   _sessaoInit();
   _sessaoItens[setor].push({nome:nome, unid:unid, qtd:qtd, obs:obs.trim(), forn:forn.trim(), tipo:tipo});
   var sel = document.getElementById('sel-'+k);
@@ -993,8 +989,6 @@ function _adicionarItemSessao(setor){
   nomeEl.value=''; qtdEl.value=0;
   if(obsEl) obsEl.value='';
   if(forEl) forEl.value='';
-  var tipoEntradaEl = document.getElementById('tipo-entrada-'+k);
-  if(tipoEntradaEl) tipoEntradaEl.checked = true;
   if(wrapColeta) wrapColeta.style.display='none';
   if(unidWrap) unidWrap.innerHTML = '<input type="text" id="eunid-'+k+'" value="" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">';
   if(sel) sel.value = '';
@@ -1052,7 +1046,7 @@ function _iniciar(){
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
 (function _caAutoUpdate(){
-  var FP = 'b700d24ce89c';
+  var FP = 'f7a0de5661dc';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
