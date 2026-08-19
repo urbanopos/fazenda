@@ -11363,7 +11363,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '4e6434933c08';
+  var FP = '8019f85fd8d9';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -13717,9 +13717,10 @@ function _gerarRelatorioEstoqueMensal(){
       var balanco = mv.entrada - mv.saida;
       var saldo = ab + balanco;
 
-      var linhas = [];
-      if(mv.entrada > 0) linhas.push({mov:'Entrada', qtd:mv.entrada, cor:[26,107,42]});
-      if(mv.saida > 0)   linhas.push({mov:'Saida',   qtd:mv.saida,   cor:[192,57,43]});
+      var linhas = [
+        {mov:'Entrada', qtd:mv.entrada, cor: mv.entrada>0 ? [26,107,42] : [150,150,150]},
+        {mov:'Saida',   qtd:mv.saida,   cor: mv.saida>0   ? [192,57,43] : [150,150,150]}
+      ];
 
       linhas.forEach(function(linha, li){
         novaLinhaSeNecessario();
