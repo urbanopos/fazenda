@@ -11363,7 +11363,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '8019f85fd8d9';
+  var FP = '2f93171f55a2';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -13658,7 +13658,7 @@ function _gerarRelatorioEstoqueMensal(){
     doc.text('Mov.', colX.mov, y);
     doc.text('Qtd', colX.qtd, y);
     doc.text('Unid', colX.unid, y);
-    doc.text('Balanco', colX.bal, y);
+    doc.text('Balanço', colX.bal, y);
     doc.text('Saldo', colX.saldo, y);
     y += 2; doc.setDrawColor(180); doc.line(margin, y, pageW-margin, y); y += 5.5;
     doc.setFont('helvetica','normal'); doc.setFontSize(9);
@@ -13762,7 +13762,7 @@ function _gerarRelatorioEstoqueMensal(){
     doc.setDrawColor(150); doc.line(margin, y, pageW-margin, y);
     y += 6.5;
     doc.setFont('helvetica','bold'); doc.setFontSize(9.5);
-    doc.text('Entradas: '+totalEntradaMes+' sacos   Saidas: '+totalSaidaMes+' sacos   Balanco: '+(totalEntradaMes-totalSaidaMes)+' sacos   Estoque: '+totalSaldoMes+' sacos', margin, y);
+    doc.text('Entradas: '+totalEntradaMes+' sacos   Saidas: '+totalSaidaMes+' sacos   Balanço: '+(totalEntradaMes-totalSaidaMes)+' sacos   Estoque: '+totalSaldoMes+' sacos', margin, y);
     doc.setFont('helvetica','normal');
   });
 
