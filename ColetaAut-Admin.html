@@ -84,6 +84,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--vd);min-height:100vh;colo
 .topo-t{font-family:'DM Serif Display',serif;font-size:18px;color:#fff;line-height:1.1}
 .topo-s{font-family:'DM Mono',monospace;font-size:10px;color:var(--ac);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
 .topo-d{margin-left:auto;font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.45);text-align:right;line-height:1.5}
+.topo-r{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.topo-btn{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.1);border:none;color:var(--ac);font-size:20px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1}
 .btn-inst{background:rgba(184,148,63,.14);border:1px solid rgba(184,148,63,.35);color:var(--ac);border-radius:20px;padding:8px 18px;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;display:none;letter-spacing:.5px}
 .btn-inst.vis{display:block}
 /* CORPO */
@@ -784,6 +786,7 @@ textarea{resize:none;height:72px;font-size:14px}
   <div><div class="topo-t">Fazenda Sao Jose</div><div class="topo-s">Coleta de Campo</div></div>
   <button class="btn-inst" id="btn-inst" onclick="abrirInst()">Instalar</button>
   <div class="topo-d" id="relogio">seg., 08 de jun.<br>05:34</div>
+  <div class="topo-r" id="topo-r"></div>
 </div>
 
 <!-- CORPO -->
@@ -12623,7 +12626,7 @@ function _fmtFone(n){
 function _fmt(v){ return Number(v||0).toFixed(2).replace('.',','); }
 
 /* ---- IMAGEM / ENVIO ---- */
-function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt, opcoesExtra){
+function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt, opcoesExtra, faixaSufixo){
   // opcoesExtra: { pago: bool, dataQuit: string, clientePago: string }
   var extra  = opcoesExtra || {};
   var isPago = !!extra.pago;
@@ -12683,7 +12686,7 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt, opcoesExtra){
   var faixaCor = isTalao ? '#7a3a00' : '#b8943f';
   var faixaH   = isTalao ? 36 : 28;
   rect(0,y,W,faixaH,faixaCor);
-  var faixaTxt = isTalao ? titulo.replace('TALAO DE PEDIDO / ','PEDIDO N.\u00ba ') : titulo;
+  var faixaTxt = isTalao ? titulo.replace('TALAO DE PEDIDO / ','PEDIDO N.\u00ba ') : titulo + (faixaSufixo ? ' - '+faixaSufixo : '');
   var faixaTxtY = isTalao ? y+23 : y+19;
   txt(faixaTxt,PAD,faixaTxtY,10,'#fff','bold');
   // Carimbo PAGO — só aparece no comprovante de quitação
@@ -12925,6 +12928,16 @@ function enviarTudo(){
     if(it.forn) linhas[linhas.length-1].col4 = it.forn;
   });
 
+  // Nome(s) da(s) aba(s) de origem, exibido na faixa amarela ao lado de "BOLETIM DE COLETA"
+  var NOMES_SETOR_TITULO = {Aviario:'AVIÁRIO', Perda:'PERDA', Campo:'CAMPO', Estoque:'ESTOQUE'};
+  var setoresUsados = [];
+  itens.forEach(function(it){
+    if(it.setor && setoresUsados.indexOf(it.setor)===-1) setoresUsados.push(it.setor);
+  });
+  var faixaSufixoColeta = setoresUsados.map(function(s){
+    return NOMES_SETOR_TITULO[s] || String(s).toUpperCase();
+  }).join(' / ');
+
   // Bloqueia envio se numero nao estiver configurado
   var numSalvo = (localStorage.getItem('wpp_numero')||'').replace(/\D/g,'');
   if(!numSalvo || numSalvo !== n){
@@ -12944,7 +12957,7 @@ function enviarTudo(){
     // Mostra a imagem gerada na tela — confirmacao visual garantida de que o
     // registro foi salvo, independente do compartilhamento funcionar ou nao
     _mostrarConfirmacaoEnvio(blob, 'coleta-'+data+'.jpg', n);
-  });
+  }, undefined, undefined, faixaSufixoColeta);
 
   // Limpa apos envio
   setTimeout(function(){
@@ -14587,6 +14600,17 @@ function _reenviarColeta(ri){
   var linhas = (r.itens||[]).map(function(it){
     return {col1:it.setor, col2:it.nome, col3:it.qtd+' '+it.unid, col4:it.forn||'', val:0};
   });
+
+  // Nome(s) da(s) aba(s) de origem, exibido na faixa amarela ao lado de "BOLETIM DE COLETA"
+  var NOMES_SETOR_TITULO = {Aviario:'AVIÁRIO', Perda:'PERDA', Campo:'CAMPO', Estoque:'ESTOQUE'};
+  var setoresUsados = [];
+  (r.itens||[]).forEach(function(it){
+    if(it.setor && setoresUsados.indexOf(it.setor)===-1) setoresUsados.push(it.setor);
+  });
+  var faixaSufixoColeta = setoresUsados.map(function(s){
+    return NOMES_SETOR_TITULO[s] || String(s).toUpperCase();
+  }).join(' / ');
+
   _qrPayloadAtual = {origem:'coleta', coletor:r.coletor, data:r.data, ts:r.ts, itens:r.itens};
   _gerarImagem('BOLETIM DE COLETA', linhas, null, function(blob){
     if(!blob){ _toast('Erro ao gerar imagem.'); return; }
@@ -14599,7 +14623,7 @@ function _reenviarColeta(ri){
     } else {
       _fallbackDownload(blob, nomearq);
     }
-  });
+  }, undefined, undefined, faixaSufixoColeta);
 }
 function _abrirEditColeta(ri){
   var body = document.getElementById('hcol-body');
