@@ -15809,37 +15809,10 @@ async function _cadSalvar(){
   try{ localStorage.setItem('ca_cad', json); }catch(e){}
 }
 
-/* ── Exportar listas para coletores ── */
-async function _cadExportarListas(){
-  await _cadCarregar();
-  var envelope = JSON.stringify({app:'ColetaAut',tipo:'listas',v:'1',ts:Date.now(),dados:_cadDados});
-  var blob = new Blob([envelope],{type:'application/octet-stream'});
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'fsj-listas-'+_dataLocalHoje()+'.listas';
-  document.body.appendChild(a); a.click();
-  setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(a.href); },600);
-  _toast('\u2705 Listas exportadas! Envie pelo WhatsApp aos coletores.');
-}
-
-/* ── Importar listas (coletor recebe do admin) ── */
-async function _cadImportarListas(file){
-  if(!file) return;
-  try{
-    var txt = await file.text();
-    var env = JSON.parse(txt);
-    if(env.app !== 'ColetaAut' || env.tipo !== 'listas'){ _toast('\u26a0\ufe0f Arquivo inválido'); return; }
-    var d = env.dados;
-    if(d.produtos)     _cadDados.produtos     = d.produtos;
-    if(d.clientes)     _cadDados.clientes     = d.clientes;
-    if(d.fornecedores) _cadDados.fornecedores = d.fornecedores;
-    if(d.precos)       _cadDados.precos       = d.precos;
-    await _cadSalvar();
-    // Atualiza setores dinâmicos se houver produtos
-    _cadAtualizarSetores();
-    _toast('\u2705 Listas importadas! '+(d.produtos?d.produtos.length:0)+' produtos, '+(d.clientes?d.clientes.length:0)+' clientes.');
-  }catch(e){ _toast('\u26a0\ufe0f Erro ao importar: '+e.message); }
-}
+/* NOTA: o botão "Exportar" foi removido — a exportação de listas em .listas
+   gerava um arquivo sem nenhum destino real (o Coletor nunca teve como
+   importar esse formato). Se a sincronização de Cadastros com o Coletor for
+   implementada no futuro, refazer este fluxo do zero. */
 
 /* ── Atualiza SETORES_DEF dinamicamente com produtos cadastrados ── */
 function _cadAtualizarSetores(){
@@ -16174,10 +16147,7 @@ async function _cadInit(){
 <div class="cad-tela" id="cad-tela">
   <div class="cad-topo">
     <span class="cad-topo-t">📚 Cadastros</span>
-    <div style="display:flex;gap:8px;align-items:center">
-      <button onclick="_cadExportarListas()" style="padding:7px 12px;background:rgba(184,148,63,.2);border:1px solid var(--ac);border-radius:8px;color:var(--ac);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;font-weight:700">↑ Exportar</button>
-      <button class="cad-topo-x" onclick="_cadFechar()">✕</button>
-    </div>
+    <button class="cad-topo-x" onclick="_cadFechar()">✕</button>
   </div>
   <div class="cad-abas">
     <button class="cad-aba sel" onclick="_cadTrocaAba('produtos',this)">Produtos</button>
@@ -16218,7 +16188,6 @@ async function _cadInit(){
     </div>
   </div>
 </div>
-<input type="file" id="cad-imp-inp" accept=".listas" style="display:none" onchange="_cadImportarListas(this.files[0])">
 
 <!-- MODAL CONFIRMAÇÃO DE QUITAÇÃO -->
 <div id="modal-conf-quit" onclick="_mcqFechar()">
