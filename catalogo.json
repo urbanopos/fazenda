@@ -85,12 +85,6 @@
       "nome": "Ovos de Capoeira",
       "unid": "Bandeja c/30 ovos",
       "passo": 1
-    },
-    {
-      "id": "consumo_unidade",
-      "nome": "Consumo",
-      "unid": "Unidade",
-      "passo": 1
     }
   ],
   "campo": [
