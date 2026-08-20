@@ -11815,6 +11815,20 @@ function _catalogoAdicionar(setor, nome, unid, passo){
   return novo;
 }
 
+/* Remove do catalogo TODAS as apresentacoes (unidades) de um item, quando
+   ele deixa de fazer parte do menu. So disponivel no App Admin — o Coletor
+   apenas consome o catalogo publicado, nunca remove itens dele. */
+function _catalogoRemover(setor, nome){
+  var cat = _catalogoCarregar();
+  if(!cat[setor]) return false;
+  var antes = cat[setor].length;
+  cat[setor] = cat[setor].filter(function(it){ return it.nome !== nome; });
+  if(cat[setor].length === antes) return false;
+  _catalogoSalvar();
+  _catalogoEnviarGitHub(); // publica no GitHub (nao bloqueia) — Coletores puxam essa versao automaticamente
+  return true;
+}
+
 /* ── Sincronizacao do catalogo entre Admin e Coletores via GitHub ─────
    Admin: publica (PUT) o catalogo completo sempre que cadastra item novo.
    Coletor/Admin: buscam (GET, sem precisar de token) a versao publicada
@@ -11901,6 +11915,15 @@ function _atualizarFormulariosComCatalogo(){
   });
 }
 
+/* Lista de produtos usada no Talao de Pedidos (Vendas). Fonte: Cadastros →
+   Produtos (_cadDados.produtos), com a opcao "Editavel" sempre disponivel
+   no final para itens avulsos fora do cadastro. PROD_VENDA abaixo so serve
+   como SEMENTE inicial (ver _cadInit) para quem ja usava o app antes desta
+   mudanca — garante que os mesmos produtos continuem aparecendo no pedido,
+   agora editaveis/removiveis pela tela Cadastros, sem quebrar nada.
+   O historico de pedidos ja emitidos NAO depende desta lista — cada pedido
+   salvo guarda o nome/preco/unidade como texto, entao remover ou renomear
+   um produto no cadastro nunca altera pedidos ja gravados. */
 var PROD_VENDA = [
   {id:'ovo',nome:'Ovos de Capoeira'},{id:'galinha',nome:'Galinha'},
   {id:'frango',nome:'Frango'},{id:'pinto',nome:'Pinto'},
@@ -11909,6 +11932,12 @@ var PROD_VENDA = [
   {id:'abacate',nome:'Abacate'},
   {id:'_edit',nome:'Editavel'}
 ];
+
+function _prodVenda(){
+  var out = (_cadDados.produtos||[]).map(function(p){ return {id:p.id, nome:p.nome}; });
+  out.push({id:'_edit', nome:'Editavel'});
+  return out;
+}
 
 /* ---- INSTALL ---- */
 /* ---- INSTALL ---- */
@@ -12120,11 +12149,14 @@ function _cardColetaSetor(setor, cl, forn){
     +'<div class="pbd" style="display:block;padding:16px 14px" id="body-'+k+'">'
 
     +'<div class="cg"><span class="cl">Item coletado</span>'
-    +'<select id="sel-'+k+'" onchange="_onSelecionarItem(\''+setor+'\')" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#fff">'
+    +'<div style="display:flex;gap:8px;align-items:center">'
+    +'<select id="sel-'+k+'" onchange="_onSelecionarItem(\''+setor+'\')" style="flex:1;min-width:0;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#fff">'
     +'<option value="">— Escolha um item —</option>'
     +opts
     +'<option value="__novo__" style="color:#1a6b2a;font-weight:700">+ Cadastrar item novo</option>'
     +'</select>'
+    +'<button id="del-cat-'+k+'" onclick="_confirmarRemoverCatalogo(\''+setor+'\',\''+k+'\')" title="Remover item do menu" style="display:none;width:38px;height:38px;flex-shrink:0;border-radius:6px;background:#fde8e8;border:1px solid #f5c6c6;color:#a03030;font-size:16px;cursor:pointer">🗑</button>'
+    +'</div>'
     +'</div>'
 
     +(setor==='estoque' ?
@@ -12176,12 +12208,14 @@ function _onSelecionarItem(setor){
   var nomeEl = document.getElementById('enome-'+k);
   var nomeVisEl = document.getElementById('nomevis-'+k);
   var unidWrap = document.getElementById('unid-wrap-'+k);
+  var btnDel = document.getElementById('del-cat-'+k);
   if(!sel) return;
   var val = sel.value;
   if(val === '__novo__'){
     // Cadastro de item novo — so pede nome, unidade e observacao do PRODUTO (sem quantidade, nao eh coleta)
     wrapNovo.style.display = 'block';
     wrapColeta.style.display = 'none';
+    if(btnDel) btnDel.style.display = 'none';
     nomeEl.value = ''; if(nomeVisEl) nomeVisEl.value='';
     var novaUnidEl = document.getElementById('novaunid-'+k); if(novaUnidEl) novaUnidEl.value='';
     var obsNovoEl = document.getElementById('obsnovo-'+k); if(obsNovoEl) obsNovoEl.value='';
@@ -12190,6 +12224,7 @@ function _onSelecionarItem(setor){
     // Item existente — mostra a(s) unidade(s) ja cadastradas + quantidade, para registrar a coleta
     wrapNovo.style.display = 'none';
     wrapColeta.style.display = 'block';
+    if(btnDel) btnDel.style.display = '';
     nomeEl.value = val;
     var unidades = _catalogoUnidadesPara(setor, val);
     if(unidades.length > 1){
@@ -12202,6 +12237,7 @@ function _onSelecionarItem(setor){
   } else {
     wrapNovo.style.display = 'none';
     wrapColeta.style.display = 'none';
+    if(btnDel) btnDel.style.display = 'none';
     nomeEl.value = '';
   }
 }
@@ -12234,6 +12270,26 @@ function _cadastrarItemCatalogo(setor){
     sel.value = nome;
     _onSelecionarItem(setor);
   }
+}
+
+/* Remove um item do catalogo (menu) desta aba — apenas App Admin. Pede
+   confirmacao porque afeta o menu de TODOS os coletores, e nao remove nem
+   altera nenhuma coleta ja registrada com esse item (historico preservado). */
+function _confirmarRemoverCatalogo(setor, k){
+  var sel = document.getElementById('sel-'+k);
+  var nome = sel ? sel.value : '';
+  if(!nome || nome==='__novo__') return;
+  if(!confirm('Remover "'+nome+'" do menu de '+(SETORES[setor]?SETORES[setor].label:setor)+'?\n\nEle deixará de aparecer para novos registros, mas o histórico já lançado com esse item é mantido.')) return;
+  _catalogoRemover(setor, nome);
+  _toast('🗑 '+nome+' removido do menu.');
+
+  var nomes = _catalogoNomesUnicos(setor);
+  var opts = nomes.map(function(n){ return '<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/</g,'&lt;')+'</option>'; }).join('');
+  if(sel){
+    sel.innerHTML = '<option value="">— Escolha um item —</option>'+opts+'<option value="__novo__" style="color:#1a6b2a;font-weight:700">+ Cadastrar item novo</option>';
+    sel.value = '';
+  }
+  _onSelecionarItem(setor);
 }
 
 function _adicionarItemSessao(setor){
@@ -12829,7 +12885,7 @@ function _gerarPayloadPedido(conc, numPed, cliente, dataVenda){
     data: dataVenda,
     ts: Date.now(),
     itens: conc.map(function(it){
-      var p = PROD_VENDA.filter(function(x){ return x.id===it.prodId; })[0]||{nome:it.prodId};
+      var p = _prodVenda().filter(function(x){ return x.id===it.prodId; })[0]||{nome:it.prodId};
       return {
         nome: p.nome,
         unidade: it.unidade||'',
@@ -12998,6 +13054,12 @@ function _atualizarSugestoesClientes(){
   if(!dl) return;
   var hist = _carregarHist();
   var vistos = {}, nomes = [];
+  // Clientes cadastrados em Cadastros → Clientes entram primeiro na lista
+  (_cadDados.clientes||[]).forEach(function(c){
+    var nome = (c.nome||'').trim();
+    if(nome && !vistos[nome.toLowerCase()]){ vistos[nome.toLowerCase()]=true; nomes.push(nome); }
+  });
+  // Clientes que ja apareceram em pedidos anteriores (mesmo sem estar cadastrados)
   hist.forEach(function(p){
     var nome = (p.cliente||'').trim();
     if(nome && !vistos[nome.toLowerCase()]){ vistos[nome.toLowerCase()]=true; nomes.push(nome); }
@@ -13050,7 +13112,7 @@ function addItemVenda(){
 }
 
 function _optsVenda(selId){
-  return PROD_VENDA.map(function(p){
+  return _prodVenda().map(function(p){
     return '<option value="'+p.id+'"'+(p.id===selId?' selected':'')+'>'+p.nome+'</option>';
   }).join('');
 }
@@ -13076,7 +13138,7 @@ function _renderVItens(){
         : '';
       // Se o item tiver unidades ja cadastradas (em qualquer setor de coleta),
       // mostra como lista de opcoes em vez de texto livre.
-      var nomeAtual = isEdit ? (it._editNome||'') : ((PROD_VENDA.filter(function(x){ return x.id===it.prodId; })[0]||{}).nome||'');
+      var nomeAtual = isEdit ? (it._editNome||'') : ((_prodVenda().filter(function(x){ return x.id===it.prodId; })[0]||{}).nome||'');
       var unidadesCat = nomeAtual ? _catalogoUnidadesParaNomeGlobal(nomeAtual) : [];
       var campoUnidade;
       if(unidadesCat.length){
@@ -13113,7 +13175,17 @@ function _renderVItens(){
   _atualizarTotalV();
 }
 
-function setProdV(i,v){ _vItens[i].prodId=v; _vItens[i].unidade=''; }
+function setProdV(i,v){
+  _vItens[i].prodId=v; _vItens[i].unidade='';
+  // Preenche automaticamente unidade e preco a partir do Cadastro, se houver
+  if(v && v!=='_edit'){
+    var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===v; });
+    if(prod && prod.unid) _vItens[i].unidade = prod.unid;
+    var nomeProd = prod ? prod.nome : '';
+    var pr = nomeProd ? (_cadDados.precos||[]).find(function(x){ return x.prodNome===nomeProd; }) : null;
+    if(pr && pr.preco){ _vItens[i].preco = pr.preco; _calcSubV(i); }
+  }
+}
 function setUnidV(i,v){ _vItens[i].unidade=v; }
 function setDataV(i,v){ _vItens[i].data=v; }
 function setQtdV(i,v){
@@ -13143,7 +13215,7 @@ function conclVItem(i){
   if(it.prodId==='_edit'){
     it._nome = it._editNome;
   } else {
-    var p = PROD_VENDA.filter(function(x){ return x.id===it.prodId; })[0]||{nome:it.prodId};
+    var p = _prodVenda().filter(function(x){ return x.id===it.prodId; })[0]||{nome:it.prodId};
     it._nome = p.nome;
   }
   it._data = dtFmt; it.concluido=true;
@@ -16067,7 +16139,22 @@ function _acSelecionar(inputId, item, tipo){
 /* Carrega os cadastros ao iniciar o app */
 async function _cadInit(){
   await _cadCarregar();
+  // Migracao unica: se ainda nao ha produtos cadastrados (app nunca usou
+  // esta tela), semeia com os produtos que ja eram usados no Talao de
+  // Pedidos (PROD_VENDA), para que o pedido continue funcionando exatamente
+  // como antes — agora com esses mesmos produtos editaveis/removiveis
+  // pela tela Cadastros. Roda so uma vez: depois que houver ao menos um
+  // produto cadastrado (mesmo que o admin apague todos manualmente depois),
+  // esta semeadura nunca mais roda de novo.
+  if(!_cadDados.produtos.length && !localStorage.getItem('ca_cad_seed_v1')){
+    _cadDados.produtos = PROD_VENDA.filter(function(p){ return p.id!=='_edit'; }).map(function(p){
+      return {id:'p_'+p.id, setor:'Vendas', nome:p.nome, unid:''};
+    });
+    await _cadSalvar();
+    try{ localStorage.setItem('ca_cad_seed_v1','1'); }catch(e){}
+  }
   _cadAtualizarSetores();
+  _atualizarSugestoesClientes();
 }
 
 
