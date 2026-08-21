@@ -5,15 +5,15 @@
     "itens": [
       {
         "setor": "Aviario",
-        "nome": "Galinha",
+        "nome": "Ovos de Capoeira",
         "unid": "unid",
-        "qtd": 1,
+        "qtd": 45,
         "obs": "",
         "forn": "",
         "tipo": ""
       }
     ],
-    "ts": 1787312768599
+    "ts": 1787347778548
   },
   {
     "data": "2026-08-21",
