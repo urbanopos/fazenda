@@ -1,5 +1,53 @@
 [
   {
+    "data": "2026-08-21",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Galinha",
+        "unid": "unid",
+        "qtd": 1,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1787312768599
+  },
+  {
+    "data": "2026-08-21",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Perda",
+        "nome": "Galinha",
+        "unid": "unid",
+        "qtd": 1,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1787312867389
+  },
+  {
+    "data": "2026-08-21",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Perda",
+        "nome": "Galinha",
+        "unid": "unid",
+        "qtd": 1,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1787312867389
+  },
+  {
     "data": "2026-08-20",
     "coletor": "Menininha",
     "itens": [
