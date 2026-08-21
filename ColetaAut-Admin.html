@@ -895,8 +895,11 @@ textarea{resize:none;height:72px;font-size:14px}
     <div class="talao-num" id="talao-num">Pedido <strong>PED-0001</strong></div>
     <div class="cg" style="margin-bottom:12px">
       <span class="cl">Nome do Cliente</span>
-      <input type="text" id="venda-cliente" list="dl-clientes-pedido" placeholder="Nome do cliente..." autocomplete="off" style="font-size:15px">
-      <datalist id="dl-clientes-pedido"></datalist>
+      <select id="venda-cliente-sel" onchange="_onSelecionarClienteVenda()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#fff;margin-bottom:8px">
+        <option value="">— Escolha um cliente —</option>
+        <option value="_novo" style="color:#1a6b2a;font-weight:700">+ Cliente novo / avulso</option>
+      </select>
+      <input type="text" id="venda-cliente" placeholder="Nome do cliente..." autocomplete="off" style="font-size:15px;display:none">
     </div>
     <div id="vendas-itens"></div>
     <button class="btn-add" onclick="addItemVenda()">+ Adicionar item</button>
@@ -13061,8 +13064,8 @@ function _initVendas(){
 }
 
 function _atualizarSugestoesClientes(){
-  var dl = document.getElementById('dl-clientes-pedido');
-  if(!dl) return;
+  var sel = document.getElementById('venda-cliente-sel');
+  if(!sel) return;
   var hist = _carregarHist();
   var vistos = {}, nomes = [];
   // Clientes cadastrados em Cadastros → Clientes entram primeiro na lista
@@ -13076,7 +13079,36 @@ function _atualizarSugestoesClientes(){
     if(nome && !vistos[nome.toLowerCase()]){ vistos[nome.toLowerCase()]=true; nomes.push(nome); }
   });
   nomes.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
-  dl.innerHTML = nomes.map(function(n){ return '<option value="'+n.replace(/"/g,'&quot;')+'">'; }).join('');
+  var valorAtual = sel.value;
+  sel.innerHTML = '<option value="">— Escolha um cliente —</option>'
+    + nomes.map(function(n){ return '<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/</g,'&lt;')+'</option>'; }).join('')
+    + '<option value="_novo" style="color:#1a6b2a;font-weight:700">+ Cliente novo / avulso</option>';
+  // Preserva selecao atual, se ainda existir na lista
+  if(valorAtual && [].slice.call(sel.options).some(function(o){ return o.value===valorAtual; })){
+    sel.value = valorAtual;
+  }
+}
+
+/* Alterna entre escolher um cliente ja cadastrado e digitar um nome avulso.
+   O input escondido #venda-cliente continua sendo a fonte real usada pelo
+   resto do fluxo de Vendas (enviarPedido, geracao da imagem, etc.) — nada
+   mais precisou mudar. */
+function _onSelecionarClienteVenda(){
+  var sel = document.getElementById('venda-cliente-sel');
+  var inp = document.getElementById('venda-cliente');
+  if(!sel || !inp) return;
+  var val = sel.value;
+  if(val === '_novo'){
+    inp.value = '';
+    inp.style.display = '';
+    setTimeout(function(){ inp.focus(); }, 30);
+  } else if(val){
+    inp.value = val;
+    inp.style.display = 'none';
+  } else {
+    inp.value = '';
+    inp.style.display = 'none';
+  }
 }
 
 function _aplicarVendas(ativa){
@@ -13261,6 +13293,9 @@ async function enviarPedido(){
   var total = conc.reduce(function(s,it){ return s+it.sub; },0);
   // GRAVA no historico
   await _salvarPedido({num:numPed, cliente:cliente, data:dataVenda, itens:linhas, total:total, ts:Date.now()});
+  // Cliente usado numa venda real passa a fazer parte do Cadastro automaticamente
+  // (assim a lista de selecao de clientes fica sempre atualizada com quem ja compra)
+  await _cadGarantirCliente(cliente);
 
   // Gera link de importacao para o granja
   var payload = _gerarPayloadPedido(conc, numPed, cliente, dataVenda);
@@ -13280,7 +13315,8 @@ async function enviarPedido(){
   }, cliente);
   setTimeout(function(){
     _vItens=[]; _vIdx=0;
-    var cl=document.getElementById('venda-cliente'); if(cl) cl.value='';
+    var cl=document.getElementById('venda-cliente'); if(cl){ cl.value=''; cl.style.display='none'; }
+    var clSel=document.getElementById('venda-cliente-sel'); if(clSel) clSel.value='';
     _renderVItens(); _renderTalaoNum();
   },2000);
 }
@@ -15820,6 +15856,23 @@ async function _cadSalvar(){
   try{ localStorage.setItem('ca_cad', json); }catch(e){}
 }
 
+/* Garante que um nome de cliente exista em Cadastros → Clientes, sem
+   duplicar (comparacao sem diferenciar maiusculas/acentuacao de caixa).
+   Usado apos cada venda concluida, para que a lista de selecao de clientes
+   do Talao de Pedidos fique sempre alinhada com quem realmente compra —
+   sem exigir que o admin cadastre manualmente antes de vender. */
+async function _cadGarantirCliente(nome){
+  nome = (nome||'').trim();
+  if(!nome) return;
+  var existe = (_cadDados.clientes||[]).some(function(c){
+    return (c.nome||'').trim().toLowerCase() === nome.toLowerCase();
+  });
+  if(existe) return;
+  _cadDados.clientes.push({ id:'c_'+Date.now(), nome:nome, contato:'', obs:'' });
+  await _cadSalvar();
+  _atualizarSugestoesClientes();
+}
+
 /* NOTA: o botão "Exportar" foi removido — a exportação de listas em .listas
    gerava um arquivo sem nenhum destino real (o Coletor nunca teve como
    importar esse formato). Se a sincronização de Cadastros com o Coletor for
@@ -16136,6 +16189,26 @@ async function _cadInit(){
     });
     await _cadSalvar();
     try{ localStorage.setItem('ca_cad_seed_v1','1'); }catch(e){}
+  }
+  // Migracao unica: traz para Cadastros → Clientes todos os nomes ja usados
+  // em pedidos anteriores, para que a lista de selecao de clientes do Talao
+  // de Pedidos nasca completa (sem exigir recadastro manual de quem ja
+  // compra). Roda so uma vez; depois disso, novos clientes entram um a um
+  // conforme sao usados em vendas (ver _cadGarantirCliente), e o que o admin
+  // apagar manualmente do Cadastro fica apagado.
+  if(!localStorage.getItem('ca_cli_seed_v1')){
+    var histPed = _carregarHist();
+    var vistos = {};
+    (_cadDados.clientes||[]).forEach(function(c){ vistos[(c.nome||'').trim().toLowerCase()]=true; });
+    histPed.forEach(function(p){
+      var nome = (p.cliente||'').trim();
+      if(nome && !vistos[nome.toLowerCase()]){
+        vistos[nome.toLowerCase()] = true;
+        _cadDados.clientes.push({ id:'c_'+Date.now()+'_'+Math.floor(Math.random()*1000), nome:nome, contato:'', obs:'' });
+      }
+    });
+    await _cadSalvar();
+    try{ localStorage.setItem('ca_cli_seed_v1','1'); }catch(e){}
   }
   _cadAtualizarSetores();
   _atualizarSugestoesClientes();
