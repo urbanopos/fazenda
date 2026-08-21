@@ -199,10 +199,10 @@ textarea{resize:none;height:72px;font-size:14px}
 #modal-ped{display:none;position:fixed;inset:0;z-index:9990;background:rgba(0,0,0,.78);align-items:flex-end}
 #modal-ped.vis{display:flex}
 .mp-box{background:var(--cr);width:100%;max-height:88vh;border-radius:20px 20px 0 0;overflow-y:auto}
-.mp-hd{background:#7a3a00;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-radius:20px 20px 0 0;position:sticky;top:0;z-index:1}
-.mp-hd-t{font-family:'DM Serif Display',serif;font-size:16px;color:#ffd49a}
-.mp-hd-s{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,212,154,.6);margin-top:2px}
-.mp-x{background:none;border:none;color:rgba(255,212,154,.6);font-size:20px;cursor:pointer;line-height:1;padding:0}
+.mp-hd{background:#7a3a00;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;border-radius:20px 20px 0 0;position:sticky;top:0;z-index:1}
+.mp-hd-t{font-family:'DM Serif Display',serif;font-size:22px;color:#ffd49a}
+.mp-hd-s{font-family:'DM Mono',monospace;font-size:14px;color:rgba(255,212,154,.75);margin-top:3px}
+.mp-x{background:none;border:none;color:rgba(255,212,154,.6);font-size:24px;cursor:pointer;line-height:1;padding:0}
 .mp-body{padding:16px}
 .mp-meta{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--ce)}
 .mp-meta-item{display:flex;flex-direction:column;gap:2px}
@@ -274,8 +274,14 @@ textarea{resize:none;height:72px;font-size:14px}
 .mp-edit-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);width:56px;flex-shrink:0}
 .mp-edit-inp{flex:1;padding:7px 10px;border:1.5px solid var(--ce);border-radius:6px;font-family:'DM Mono',monospace;font-size:13px;color:var(--tx);background:#fff;outline:none}
 .mp-edit-inp:focus{border-color:#7a3a00}
-.mp-item-edit-row{display:flex;gap:6px;padding:7px 0;border-bottom:1px solid var(--ce);align-items:center}
-.mp-item-edit-row:last-child{border:none}
+.mp-edit-row-2col{display:flex;gap:10px;margin-bottom:10px}
+.mp-edit-row-2col>div{flex:1;min-width:0}
+.mp-edit-row-2col .mp-edit-lbl{width:auto;display:block;margin-bottom:3px}
+.mp-item-edit-card{border:1.5px solid var(--ce);border-radius:8px;padding:9px 10px;margin-bottom:8px;background:#faf8f3}
+.mp-item-edit-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px}
+.mp-item-edit-row{display:flex;gap:6px;padding:4px 0;align-items:center}
+.mp-item-edit-dlbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--mu);flex-shrink:0}
+.mp-item-edit-sub{flex:1;text-align:right;font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:#7a3a00}
 .mp-edit-save{width:100%;margin-top:10px;padding:10px;background:#27ae60;border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
 .mp-edit-cancel{width:100%;margin-top:6px;padding:8px;background:none;border:1px solid var(--ce);border-radius:6px;color:var(--mu);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer}
 .hcol-tab-toggle{display:flex;gap:6px;margin-bottom:14px}
@@ -15168,22 +15174,20 @@ function _abrirEditPedido(){
     var unid = it.unidade || ((it.col3||'').split(' ').slice(1).join(' '))||'';
     var preco = it.preco || 0;
     var nome = it.nome||it.col2||'';
-    return '<div class="mp-item-edit-row">'
-      +'<input class="mp-edit-inp" style="flex:2;min-width:0" placeholder="Produto" value="'+_esc(nome)+'" id="mpe-nome-'+ii+'">'
-      +'<input class="mp-edit-inp" style="width:50px;flex:none" type="number" min="0" step="0.5" placeholder="Qtd" value="'+qtd+'" id="mpe-qtd-'+ii+'">'
-      +'<input class="mp-edit-inp" style="width:52px;flex:none" placeholder="Unid" value="'+_esc(unid)+'" id="mpe-unid-'+ii+'">'
-      +'<input class="mp-edit-inp" style="width:64px;flex:none" type="number" min="0" step="0.01" placeholder="R$" value="'+preco+'" id="mpe-preco-'+ii+'">'
-      +'<button class="hcol-del-item" onclick="_delItemEditPed('+ii+')" title="Remover">\u00d7</button>'
-      +'</div>';
+    var dataIso = _brParaIso(it.data||it.col1||'') || p.data || '';
+    var sub = Math.round(qtd*preco*100)/100;
+    return _mpItemEditCardHtml(ii, nome, unid, qtd, preco, dataIso, sub);
   }).join('');
 
   ef.innerHTML =
-    '<div class="mp-edit-row"><span class="mp-edit-lbl">Data</span>'
+    '<div class="mp-edit-row-2col">'
+    +'<div style="flex:0.8"><span class="mp-edit-lbl">Data</span>'
     +'<input class="mp-edit-inp" type="date" id="mpe-data" value="'+(p.data||'')+'"></div>'
-    +'<div class="mp-edit-row"><span class="mp-edit-lbl">Cliente</span>'
+    +'<div style="flex:1.4"><span class="mp-edit-lbl">Cliente</span>'
     +'<input class="mp-edit-inp" id="mpe-cliente" value="'+_esc(p.cliente||'')+'"></div>'
+    +'</div>'
     +'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;'
-    +'color:var(--mu);margin:8px 0 4px">Itens</div>'
+    +'color:var(--mu);margin:8px 0 4px">Itens · cada item pode ter sua propria data</div>'
     +'<div id="mpe-itens">'+itensHtml+'</div>'
     +'<button style="width:100%;margin-top:8px;padding:7px;background:rgba(122,58,0,.1);border:1px dashed #7a3a00;'
     +'border-radius:6px;color:#7a3a00;font-family:DM Mono,monospace;font-size:11px;cursor:pointer" '
@@ -15194,17 +15198,127 @@ function _abrirEditPedido(){
   ef.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
+/* Converte "DD/MM/AAAA" (formato salvo por item) para "AAAA-MM-DD" (formato
+   exigido por <input type="date">). Retorna '' se nao reconhecer o formato. */
+function _brParaIso(str){
+  var m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(str||'');
+  return m ? (m[3]+'-'+m[2]+'-'+m[1]) : '';
+}
+
+/* Lista as unidades/apresentacoes ja conhecidas para um nome de produto,
+   olhando tanto Cadastros → Produtos quanto Cadastros → Precos (um produto
+   pode ter mais de uma apresentacao cadastrada: "Bandeja c/30 ovos",
+   "Duzia de ovos", etc). Usado para popular a lista de selecao de unidade
+   na edicao de pedido. */
+function _unidadesParaProdutoNome(nome){
+  nome = (nome||'').trim().toLowerCase();
+  if(!nome) return [];
+  var unids = [], vistos = {};
+  (_cadDados.produtos||[]).forEach(function(p){
+    if((p.nome||'').trim().toLowerCase()===nome && p.unid && !vistos[p.unid.toLowerCase()]){
+      vistos[p.unid.toLowerCase()]=true; unids.push(p.unid);
+    }
+  });
+  (_cadDados.precos||[]).forEach(function(pr){
+    if((pr.prodNome||'').trim().toLowerCase()===nome && pr.unid && !vistos[pr.unid.toLowerCase()]){
+      vistos[pr.unid.toLowerCase()]=true; unids.push(pr.unid);
+    }
+  });
+  return unids;
+}
+
+/* Monta o <select> de unidade para a linha "ii", com as apresentacoes
+   conhecidas para o nome atual do item + a unidade ja salva (mesmo que nao
+   esteja mais no cadastro) + opcao "Outra..." para digitar livremente. */
+function _unidSelectHtml(ii, nome, unidAtual){
+  var opts = _unidadesParaProdutoNome(nome);
+  if(unidAtual && !opts.some(function(u){ return u.toLowerCase()===unidAtual.toLowerCase(); })){
+    opts.unshift(unidAtual);
+  }
+  if(!opts.length) opts.push('unid');
+  var html = opts.map(function(u){
+    return '<option value="'+u.replace(/"/g,'&quot;')+'"'+(u===unidAtual?' selected':'')+'>'+u.replace(/</g,'&lt;')+'</option>';
+  }).join('');
+  html += '<option value="__outra__">+ Outra...</option>';
+  return '<select class="mp-edit-inp" style="width:96px;flex:none" id="mpe-unid-'+ii+'" onchange="_onUnidSelChange('+ii+')">'+html+'</select>';
+}
+
+/* Quando o nome do item muda, refaz a lista de unidades disponiveis
+   (produtos diferentes podem ter apresentacoes diferentes). */
+function _atualizarUnidEditPed(ii){
+  var nomeEl = document.getElementById('mpe-nome-'+ii);
+  var unidEl = document.getElementById('mpe-unid-'+ii);
+  if(!nomeEl || !unidEl) return;
+  var unidAtual = unidEl.value;
+  var tmp = document.createElement('div');
+  tmp.innerHTML = _unidSelectHtml(ii, nomeEl.value, unidAtual);
+  unidEl.parentNode.replaceChild(tmp.firstChild, unidEl);
+}
+
+/* "+ Outra..." troca o <select> por um campo de texto livre com o MESMO id,
+   entao o restante do codigo (leitura ao salvar) nao precisa saber qual dos
+   dois esta ativo. */
+function _onUnidSelChange(ii){
+  var sel = document.getElementById('mpe-unid-'+ii);
+  if(sel && sel.tagName==='SELECT' && sel.value==='__outra__'){
+    var inp = document.createElement('input');
+    inp.type='text'; inp.className='mp-edit-inp'; inp.id='mpe-unid-'+ii;
+    inp.placeholder='Unidade'; inp.style.cssText='width:96px;flex:none';
+    sel.parentNode.replaceChild(inp, sel);
+    inp.focus();
+  }
+}
+
+/* Monta o "cartao" de edicao de um item: Data | Item + Unidade | Qtd + Preco
+   unit. + Subtotal (calculado, somente leitura) — mais o botao de remover. */
+function _mpItemEditCardHtml(ii, nome, unid, qtd, preco, dataIso, sub){
+  return '<div class="mp-item-edit-card" id="mpe-card-'+ii+'">'
+    +'<div class="mp-item-edit-hd"><span>Item '+(ii+1)+'</span>'
+    +'<button class="hcol-del-item" onclick="_delItemEditPed('+ii+')" title="Remover item">\u00d7</button></div>'
+    +'<div class="mp-item-edit-row">'
+    +'<span class="mp-item-edit-dlbl">Data</span>'
+    +'<input class="mp-edit-inp" type="date" style="flex:none;width:150px" value="'+(dataIso||'')+'" id="mpe-data-'+ii+'">'
+    +'</div>'
+    +'<div class="mp-item-edit-row">'
+    +'<input class="mp-edit-inp" style="flex:1.4;min-width:0" placeholder="Item" value="'+_esc(nome)+'" id="mpe-nome-'+ii+'" oninput="_atualizarUnidEditPed('+ii+')">'
+    +_unidSelectHtml(ii, nome, unid)
+    +'</div>'
+    +'<div class="mp-item-edit-row">'
+    +'<input class="mp-edit-inp" style="width:60px;flex:none" type="number" min="0" step="0.5" placeholder="Qtd" value="'+qtd+'" id="mpe-qtd-'+ii+'" oninput="_recalcSubEditPed('+ii+')">'
+    +'<input class="mp-edit-inp" style="width:76px;flex:none" type="number" min="0" step="0.01" placeholder="Preco un." value="'+preco+'" id="mpe-preco-'+ii+'" oninput="_recalcSubEditPed('+ii+')">'
+    +'<span class="mp-item-edit-sub" id="mpe-sub-'+ii+'">R$ '+_fmt(sub)+'</span>'
+    +'</div>'
+    +'</div>';
+}
+
+function _recalcSubEditPed(ii){
+  var qtd   = parseFloat((document.getElementById('mpe-qtd-'+ii)||{value:0}).value)||0;
+  var preco = parseFloat((document.getElementById('mpe-preco-'+ii)||{value:0}).value)||0;
+  var el = document.getElementById('mpe-sub-'+ii);
+  if(el) el.textContent = 'R$ '+_fmt(Math.round(qtd*preco*100)/100);
+}
+
 function _delItemEditPed(ii){
   var wrap = document.getElementById('mpe-itens');
   if(!wrap) return;
-  var rows = wrap.querySelectorAll('.mp-item-edit-row');
-  if(rows[ii]) rows[ii].remove();
-  // Renumera ids
-  wrap.querySelectorAll('.mp-item-edit-row').forEach(function(row, ni){
-    row.querySelectorAll('input,button').forEach(function(el){
-      if(el.id) el.id = el.id.replace(/-\d+$/, '-'+ni);
-      var oc = el.getAttribute('onclick');
-      if(oc) el.setAttribute('onclick', oc.replace(/\d+\)$/, ni+')'));
+  var cards = wrap.querySelectorAll('.mp-item-edit-card');
+  if(cards[ii]) cards[ii].remove();
+  // Renumera ids, onclick/oninput e o rotulo "Item N" de todos os cartoes restantes
+  wrap.querySelectorAll('.mp-item-edit-card').forEach(function(card, ni){
+    card.id = 'mpe-card-'+ni;
+    var lbl = card.querySelector('.mp-item-edit-hd span');
+    if(lbl) lbl.textContent = 'Item '+(ni+1);
+    card.querySelectorAll('[id]').forEach(function(el){
+      el.id = el.id.replace(/-\d+$/, '-'+ni);
+    });
+    card.querySelectorAll('[onclick]').forEach(function(el){
+      el.setAttribute('onclick', el.getAttribute('onclick').replace(/\(\d+\)/, '('+ni+')'));
+    });
+    card.querySelectorAll('[oninput]').forEach(function(el){
+      el.setAttribute('oninput', el.getAttribute('oninput').replace(/\(\d+\)/, '('+ni+')'));
+    });
+    card.querySelectorAll('[onchange]').forEach(function(el){
+      el.setAttribute('onchange', el.getAttribute('onchange').replace(/\(\d+\)/, '('+ni+')'));
     });
   });
 }
@@ -15212,16 +15326,12 @@ function _delItemEditPed(ii){
 function _addItemEditPed(){
   var wrap = document.getElementById('mpe-itens');
   if(!wrap) return;
-  var ii = wrap.querySelectorAll('.mp-item-edit-row').length;
-  var row = document.createElement('div');
-  row.className = 'mp-item-edit-row';
-  row.innerHTML =
-    '<input class="mp-edit-inp" style="flex:2;min-width:0" placeholder="Produto" id="mpe-nome-'+ii+'">'
-    +'<input class="mp-edit-inp" style="width:50px;flex:none" type="number" min="0" step="0.5" placeholder="Qtd" id="mpe-qtd-'+ii+'">'
-    +'<input class="mp-edit-inp" style="width:52px;flex:none" placeholder="Unid" id="mpe-unid-'+ii+'">'
-    +'<input class="mp-edit-inp" style="width:64px;flex:none" type="number" min="0" step="0.01" placeholder="R$" id="mpe-preco-'+ii+'">'
-    +'<button class="hcol-del-item" onclick="_delItemEditPed('+ii+')" title="Remover">\u00d7</button>';
-  wrap.appendChild(row);
+  var ii = wrap.querySelectorAll('.mp-item-edit-card').length;
+  // Nova linha comeca com a data do pedido como padrao (editavel em seguida)
+  var dataPedido = (document.getElementById('mpe-data')||{value:''}).value || '';
+  var card = document.createElement('div');
+  card.innerHTML = _mpItemEditCardHtml(ii, '', '', '', '', dataPedido, 0);
+  wrap.appendChild(card.firstChild);
 }
 
 async function _salvarEditPedido(){
@@ -15231,19 +15341,24 @@ async function _salvarEditPedido(){
   var wrap = document.getElementById('mpe-itens');
   var novosItens = [];
   if(wrap){
-    wrap.querySelectorAll('.mp-item-edit-row').forEach(function(row,ii){
+    wrap.querySelectorAll('.mp-item-edit-card').forEach(function(card,ii){
       var nome  = (document.getElementById('mpe-nome-'+ii)||{value:''}).value.trim();
       var qtd   = parseFloat((document.getElementById('mpe-qtd-'+ii)||{value:0}).value)||0;
       var unid  = (document.getElementById('mpe-unid-'+ii)||{value:''}).value.trim();
       var preco = parseFloat((document.getElementById('mpe-preco-'+ii)||{value:0}).value)||0;
+      // Cada item mantem sua PROPRIA data (permite um pedido de fechamento
+      // mensal, com itens de datas diferentes) — cai na data do pedido so
+      // se o campo do item ficar vazio.
+      var dataItemIso = (document.getElementById('mpe-data-'+ii)||{value:''}).value || novaData;
+      var dataItemFmt = dataItemIso ? new Date(dataItemIso+'T12:00').toLocaleDateString('pt-BR') : '';
       var sub   = Math.round(qtd*preco*100)/100;
       if(nome) novosItens.push({
         nome:nome, col2:nome,
-        col1: novaData ? new Date(novaData+'T12:00').toLocaleDateString('pt-BR') : '',
+        col1: dataItemFmt,
         col3:qtd+' '+unid, col4:'R$ '+_fmt(preco)+' x '+qtd,
         col5:'R$ '+_fmt(sub),
         qtd:qtd, unidade:unid, preco:preco, sub:sub,
-        data: novaData ? new Date(novaData+'T12:00').toLocaleDateString('pt-BR') : ''
+        data: dataItemFmt
       });
     });
   }
