@@ -15181,8 +15181,8 @@ function _abrirEditPedido(){
 
   ef.innerHTML =
     '<div class="mp-edit-row-2col">'
-    +'<div style="flex:0.8"><span class="mp-edit-lbl">Data</span>'
-    +'<input class="mp-edit-inp" type="date" id="mpe-data" value="'+(p.data||'')+'"></div>'
+    +'<div style="flex:0.8"><span class="mp-edit-lbl">Data de abertura</span>'
+    +'<input class="mp-edit-inp" type="date" id="mpe-data" value="'+(p.data||'')+'" disabled title="A data de abertura do pedido nao pode ser alterada aqui — edite a data de cada item abaixo." style="opacity:.65;background:#f0ede6;cursor:not-allowed"></div>'
     +'<div style="flex:1.4"><span class="mp-edit-lbl">Cliente</span>'
     +'<input class="mp-edit-inp" id="mpe-cliente" value="'+_esc(p.cliente||'')+'"></div>'
     +'</div>'
