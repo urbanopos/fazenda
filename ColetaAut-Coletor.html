@@ -387,7 +387,7 @@ textarea{resize:none;height:72px;font-size:14px}
 <div id="modal-hcol" onclick="fecharHistColeta()">
   <div class="hcol-box" onclick="event.stopPropagation()">
     <div class="hcol-hd">
-      <div><div class="hcol-hd-t">Historico de Coletas</div><div class="hcol-hd-s" id="hcol-hd-sub">Ultimos 7 dias</div></div>
+      <div><div class="hcol-hd-t">Historico de Coletas<span id="hcol-hd-setor" style="color:rgba(255,212,154,.85)"></span></div><div class="hcol-hd-s" id="hcol-hd-sub">Ultimos 7 dias</div></div>
       <button class="hcol-x" onclick="fecharHistColeta()">✕</button>
     </div>
     <div class="hcol-filtros">
@@ -2226,6 +2226,7 @@ async function abrirHistColeta(restrito, setorInicial){
 function _atualizarBtnHistColetaTodos(){
   var input = document.getElementById('hcol-setor');
   var btn = document.getElementById('hcol-todos-btn');
+  var tSetor = document.getElementById('hcol-hd-setor');
   if(!input || !btn) return;
   if(input.value){
     btn.textContent = 'Todos';
@@ -2233,6 +2234,13 @@ function _atualizarBtnHistColetaTodos(){
   } else {
     btn.textContent = '✓ Vendo Todos';
     btn.style.background = '#1a6b2a'; btn.style.color = '#fff';
+  }
+  // Nome do setor ao lado do titulo do modal — ex: "Historico de Coletas - AVIARIO".
+  // So aparece quando o filtro esta restrito a uma aba especifica; some quando
+  // "Todos" esta selecionado.
+  if(tSetor){
+    var NOMES_SETOR_TITULO = {Aviario:'AVIARIO', Perda:'PERDA', Campo:'CAMPO', Estoque:'ESTOQUE'};
+    tSetor.textContent = input.value ? (' - '+(NOMES_SETOR_TITULO[input.value] || input.value.toUpperCase())) : '';
   }
 }
 
