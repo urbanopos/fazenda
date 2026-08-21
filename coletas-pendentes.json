@@ -4,6 +4,24 @@
     "coletor": "Menininha",
     "itens": [
       {
+        "setor": "Perda",
+        "nome": "Galinha",
+        "unid": "unid",
+        "qtd": 1,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1787312867389,
+    "status": "pendente",
+    "enviadoEm": "2026-08-21T11:47:48.037Z"
+  },
+  {
+    "data": "2026-08-21",
+    "coletor": "Menininha",
+    "itens": [
+      {
         "setor": "Aviario",
         "nome": "Galinha",
         "unid": "unid",
