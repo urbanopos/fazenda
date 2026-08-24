@@ -1,37 +1,17 @@
 [
   {
-    "data": "2026-08-24",
-    "coletor": "Menininha",
+    "data": "2026-08-23",
+    "coletor": "Júnior",
     "itens": [
       {
-        "setor": "Estoque",
-        "nome": "Crescimento",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": "",
-        "tipo": "Saida"
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Farelo de Trigo",
-        "unid": "sc 40kg",
-        "qtd": 1,
-        "obs": "",
-        "forn": "",
-        "tipo": "Saida"
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Postura",
-        "unid": "sc 40kg",
-        "qtd": 3,
-        "obs": "",
-        "forn": "",
-        "tipo": "Saida"
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "qtd": 60,
+        "unid": "unid",
+        "tipo": ""
       }
     ],
-    "ts": 1787567374187
+    "ts": 1787575370452
   },
   {
     "data": "2026-08-24",
