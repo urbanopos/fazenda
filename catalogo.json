@@ -123,6 +123,12 @@
       "nome": "Manga",
       "unid": "Caixa",
       "passo": 1
+    },
+    {
+      "id": "banana_comprida_cacho",
+      "nome": "Banana Comprida",
+      "unid": "Cacho",
+      "passo": 1
     }
   ],
   "estoque": [
