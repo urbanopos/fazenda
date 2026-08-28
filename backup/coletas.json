@@ -16,16 +16,14 @@
     "ts": 1787742047724
   },
   {
-    "data": "2026-08-27",
+    "data": "2026-08-26",
     "coletor": "Menininha",
     "itens": [
       {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
+        "qtd": 60,
         "unid": "unid",
-        "qtd": 50,
-        "obs": "",
-        "forn": "",
         "tipo": ""
       }
     ],
