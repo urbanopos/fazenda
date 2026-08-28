@@ -11375,7 +11375,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '2594beb0f8c3';
+  var FP = 'bb91304cc2b8';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -14579,7 +14579,9 @@ function _renderHistColetaTotal(body, registros, ano, mes, setorFiltro){
     'Aviario':'#1c2e22','Campo':'#3b5e2a',
     'Perda':'#7f1d1d','Estoque':'#1e3a5f'
   };
-  // Agrupa por setor → produto → {qtd total, lista de registros individuais}
+  // Agrupa por setor → produto → {entrada, saida, lista de registros individuais}
+  // Para itens com "tipo" (Entrada/Saida — usado no Estoque), a totalização
+  // considera o balanço (Entrada - Saida) em vez de somar tudo junto.
   var totais = {};
   var MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   registros.forEach(function(r){
@@ -14592,9 +14594,18 @@ function _renderHistColetaTotal(body, registros, ano, mes, setorFiltro){
       var s = it.setor||'Outros';
       if(!totais[s]) totais[s] = {};
       var k = it.nome;
-      if(!totais[s][k]) totais[s][k] = {qtd:0, unid:it.unid||'', registros:[]};
-      totais[s][k].qtd += Number(it.qtd)||0;
-      totais[s][k].registros.push({data:dtFmt, coletor:r.coletor||'', qtd:it.qtd, unid:it.unid||''});
+      if(!totais[s][k]) totais[s][k] = {entrada:0, saida:0, temTipo:false, unid:it.unid||'', registros:[]};
+      var qtdNum = Number(it.qtd)||0;
+      if(it.tipo === 'Saida'){
+        totais[s][k].saida += qtdNum;
+        totais[s][k].temTipo = true;
+      } else if(it.tipo === 'Entrada'){
+        totais[s][k].entrada += qtdNum;
+        totais[s][k].temTipo = true;
+      } else {
+        totais[s][k].entrada += qtdNum; // sem tipo (Aviario/Perda/Campo) — soma normalmente
+      }
+      totais[s][k].registros.push({data:dtFmt, coletor:r.coletor||'', qtd:it.qtd, unid:it.unid||'', tipo:it.tipo||''});
     });
   });
 
@@ -14613,9 +14624,23 @@ function _renderHistColetaTotal(body, registros, ano, mes, setorFiltro){
     html += '<div class="hcol-secao"><span class="hcol-secao-titulo" style="background:'+cor+'">'+setor+'</span>';
     Object.keys(totais[setor]).forEach(function(nome){
       var it = totais[setor][nome];
-      var qtdFmt = Number(it.qtd).toLocaleString('pt-BR',{maximumFractionDigits:2});
       var idx = _detalheIdx.length;
       _detalheIdx.push(it.registros);
+      var qtdDireita;
+      if(it.temTipo){
+        var saldo = it.entrada - it.saida;
+        var saldoFmt = Number(saldo).toLocaleString('pt-BR',{maximumFractionDigits:2});
+        var entradaFmt = Number(it.entrada).toLocaleString('pt-BR',{maximumFractionDigits:2});
+        var saidaFmt = Number(it.saida).toLocaleString('pt-BR',{maximumFractionDigits:2});
+        qtdDireita = '<div style="font-size:10px;margin-bottom:2px">'
+          +'<span style="color:#1e5fbf;font-weight:700">E: '+entradaFmt+'</span>'
+          +'&nbsp;&nbsp;<span style="color:#c0392b;font-weight:700">S: '+saidaFmt+'</span>'
+          +'</div>'
+          +'<div class="hcol-item-qtd" style="color:'+(saldo<0?'#c0392b':'inherit')+'">'+saldoFmt+'</div>';
+      } else {
+        var qtdFmt = Number(it.entrada).toLocaleString('pt-BR',{maximumFractionDigits:2});
+        qtdDireita = '<div class="hcol-item-qtd">'+qtdFmt+'</div>';
+      }
       // Linha totalizadora vira botao que expande os registros
       html += '<div class="hcol-item" style="flex-direction:column;align-items:stretch;padding:0;overflow:hidden">'
         +'<button onclick="_toggleDetalheItem(this,'+idx+')" style="'
@@ -14623,7 +14648,7 @@ function _renderHistColetaTotal(body, registros, ano, mes, setorFiltro){
         +'background:none;border:none;padding:10px 12px;cursor:pointer;text-align:left">'
         +'<div><div class="hcol-item-nome">'+nome+'</div></div>'
         +'<div style="display:flex;align-items:center;gap:10px">'
-        +'<div style="text-align:right"><div class="hcol-item-qtd">'+qtdFmt+'</div>'
+        +'<div style="text-align:right">'+qtdDireita
         +'<div class="hcol-item-unid">'+it.unid+'</div></div>'
         +'<span style="font-size:16px;color:var(--mu);transition:transform .2s" class="hcol-chevron">▸</span>'
         +'</div></button>'
@@ -14653,13 +14678,17 @@ function _toggleDetalheItem(btn, idx){
     if(!lista.innerHTML){
       var h = '';
       regs.forEach(function(r){
+        var corValor = r.tipo === 'Saida' ? '#c0392b' : (r.tipo === 'Entrada' ? '#1e5fbf' : 'var(--vc)');
         h += '<div style="display:flex;justify-content:space-between;align-items:center;'
           +'padding:8px 14px;border-bottom:1px solid var(--ce);font-family:DM Mono,monospace;font-size:11px">'
           +'<div>'
           +'<div style="font-weight:700;color:var(--vd)">'+r.data+'</div>'
           +(r.coletor?'<div style="color:var(--mu);margin-top:2px">'+r.coletor+'</div>':'')
           +'</div>'
-          +'<div style="font-weight:700;color:var(--vc)">'+r.qtd+' '+r.unid+'</div>'
+          +'<div style="text-align:right">'
+          +(r.tipo?'<div style="font-size:9px;font-weight:700;color:'+corValor+'">'+(r.tipo==='Saida'?'SAÍDA':'ENTRADA')+'</div>':'')
+          +'<div style="font-weight:700;color:'+corValor+'">'+r.qtd+' '+r.unid+'</div>'
+          +'</div>'
           +'</div>';
       });
       lista.innerHTML = h;
