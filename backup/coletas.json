@@ -1,19 +1,19 @@
 [
   {
     "data": "2026-08-28",
-    "coletor": "Menininha",
+    "coletor": "Júnior",
     "itens": [
       {
-        "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 57,
-        "obs": "",
-        "forn": "",
-        "tipo": ""
+        "setor": "Estoque",
+        "nome": "Ração de peixe",
+        "unid": "Sc 25kg",
+        "qtd": 1,
+        "obs": "Tilemax 32",
+        "forn": "Irca",
+        "tipo": "Saida"
       }
     ],
-    "ts": 1787949410193
+    "ts": 1787967529060
   },
   {
     "data": "2026-08-28",
