@@ -1,5 +1,29 @@
 [
   {
+    "num": "PED-0076",
+    "cliente": "Luiza Gomes",
+    "data": "2026-08-29",
+    "itens": [
+      {
+        "col1": "29/08/2026",
+        "col2": "Ovos de Capoeira",
+        "col3": "2 Bandeja c/30 ovos",
+        "col4": "R$ 30,00 x 2",
+        "col5": "R$ 60,00",
+        "val": 60,
+        "prodId": "p_ovo",
+        "nome": "Ovos de Capoeira",
+        "unidade": "Bandeja c/30 ovos",
+        "qtd": 2,
+        "preco": 30,
+        "sub": 60,
+        "data": "29/08/2026"
+      }
+    ],
+    "total": 60,
+    "ts": 1788031380104
+  },
+  {
     "num": "PED-0075",
     "cliente": "Luiza Gomes",
     "data": "2026-08-28",
