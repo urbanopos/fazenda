@@ -4,6 +4,52 @@
     "coletor": "Menininha",
     "itens": [
       {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "unid": "unid",
+        "qtd": 56,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1788210270030
+  },
+  {
+    "data": "2026-08-31",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Perda",
+        "nome": "Pintainha",
+        "unid": "unid",
+        "qtd": 1,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1788210149953
+  },
+  {
+    "data": "2026-08-30",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "qtd": 55,
+        "unid": "unid",
+        "tipo": ""
+      }
+    ],
+    "ts": 1788209796084
+  },
+  {
+    "data": "2026-08-31",
+    "coletor": "Menininha",
+    "itens": [
+      {
         "setor": "Estoque",
         "nome": "Engorda",
         "unid": "sc 40kg",
