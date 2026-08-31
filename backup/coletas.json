@@ -1,5 +1,33 @@
 [
   {
+    "data": "2026-08-28",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Perda",
+        "nome": "Pinto",
+        "qtd": 1,
+        "unid": "unid",
+        "tipo": ""
+      }
+    ],
+    "ts": 1788071045172
+  },
+  {
+    "data": "2026-08-24",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Perda",
+        "nome": "Galinha",
+        "qtd": 1,
+        "unid": "unid",
+        "tipo": ""
+      }
+    ],
+    "ts": 1788070998642
+  },
+  {
     "data": "2026-08-29",
     "coletor": "Menininha",
     "itens": [
@@ -46,22 +74,6 @@
       }
     ],
     "ts": 1787949410193
-  },
-  {
-    "data": "2026-08-26",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Perda",
-        "nome": "Pinto",
-        "unid": "unid",
-        "qtd": 1,
-        "obs": "",
-        "forn": "",
-        "tipo": ""
-      }
-    ],
-    "ts": 1787742047724
   },
   {
     "data": "2026-08-26",
