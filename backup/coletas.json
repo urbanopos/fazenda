@@ -1,6 +1,69 @@
 [
   {
     "data": "2026-08-31",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Engorda",
+        "qtd": 38,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Postura",
+        "qtd": 18,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Crescimento",
+        "qtd": 14,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Inicial",
+        "qtd": 0,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Pre-Inicial",
+        "qtd": 0,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Milho",
+        "qtd": 5,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Ração de peixe",
+        "qtd": 4,
+        "unid": "Sc 25kg",
+        "tipo": "Saida"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Farelo de Trigo",
+        "qtd": 0,
+        "unid": "sc 40kg",
+        "tipo": "Entrada"
+      }
+    ],
+    "ts": 1788215323792
+  },
+  {
+    "data": "2026-08-31",
     "coletor": "Menininha",
     "itens": [
       {
@@ -1892,9 +1955,9 @@
     "itens": [
       {
         "setor": "Estoque",
-        "nome": "Tilamax TRX-35",
+        "nome": "Ração de peixe",
         "qtd": 1,
-        "unid": "sc 25kg",
+        "unid": "Sc 25kg",
         "tipo": "Saida"
       }
     ],
@@ -2032,7 +2095,7 @@
       },
       {
         "setor": "Estoque",
-        "nome": "Tilamax TRX-35",
+        "nome": "Ração de peixe",
         "qtd": 1,
         "unid": "Sc 25kg",
         "tipo": "Saida"
