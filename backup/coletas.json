@@ -1,6 +1,22 @@
 [
   {
-    "data": "2026-08-31",
+    "data": "2026-09-01",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Perda",
+        "nome": "Ovos de Capoeira",
+        "unid": "unid",
+        "qtd": 20,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1788291341932
+  },
+  {
+    "data": "2026-05-01",
     "coletor": "Júnior",
     "itens": [
       {
@@ -48,16 +64,16 @@
       {
         "setor": "Estoque",
         "nome": "Ração de peixe",
-        "qtd": 4,
+        "qtd": 0,
         "unid": "Sc 25kg",
-        "tipo": "Saida"
+        "tipo": "Entrada"
       },
       {
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
-        "qtd": 0,
+        "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Entrada"
+        "tipo": "Saida"
       }
     ],
     "ts": 1788215323792
@@ -1771,9 +1787,9 @@
       },
       {
         "setor": "Estoque",
-        "nome": "Farelo da vaca",
+        "nome": "Farelo de Trigo",
         "qtd": 1,
-        "unid": "Sc 30kg",
+        "unid": "sc 40kg",
         "tipo": "Saida"
       }
     ],
