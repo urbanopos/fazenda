@@ -96,7 +96,7 @@
       {
         "setor": "Estoque",
         "nome": "Ração de peixe",
-        "qtd": 0,
+        "qtd": 8,
         "unid": "Sc 25kg",
         "tipo": "Entrada"
       },
@@ -105,6 +105,13 @@
         "nome": "Farelo de Trigo",
         "qtd": 2,
         "unid": "sc 40kg",
+        "tipo": "Saida"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Ração de peixe",
+        "qtd": 12,
+        "unid": "Sc 25kg",
         "tipo": "Saida"
       }
     ],
@@ -155,40 +162,6 @@
       }
     ],
     "ts": 1788209796084
-  },
-  {
-    "data": "2026-08-31",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Estoque",
-        "nome": "Engorda",
-        "unid": "sc 40kg",
-        "qtd": 3,
-        "obs": "",
-        "forn": "",
-        "tipo": "Saida"
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Postura",
-        "unid": "sc 40kg",
-        "qtd": 3,
-        "obs": "",
-        "forn": "",
-        "tipo": "Saida"
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Crescimento",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "obs": "",
-        "forn": "",
-        "tipo": "Saida"
-      }
-    ],
-    "ts": 1788186625161
   },
   {
     "data": "2026-08-31",
@@ -445,37 +418,36 @@
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": "",
+        "unid": "sc 40kg",
         "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "unid": "sc 40kg",
         "qtd": 2,
-        "obs": "",
-        "forn": "",
+        "unid": "sc 40kg",
         "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
-        "unid": "sc 40kg",
         "qtd": 1,
-        "obs": "",
-        "forn": "",
+        "unid": "sc 40kg",
         "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "unid": "sc 40kg",
         "qtd": 3,
-        "obs": "",
-        "forn": "",
+        "unid": "sc 40kg",
+        "tipo": "Saida"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Ração de peixe",
+        "qtd": 1,
+        "unid": "Sc 25kg",
         "tipo": "Saida"
       }
     ],
