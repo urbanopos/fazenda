@@ -227,9 +227,22 @@
         "preco": 50,
         "sub": 450,
         "data": "02/09/2026"
+      },
+      {
+        "nome": "Ovos de Capoeira",
+        "col2": "Ovos de Capoeira",
+        "col1": "26/08/2026",
+        "col3": "3 Bandeja c/30 ovos",
+        "col4": "R$ 30,00 x 3",
+        "col5": "R$ 90,00",
+        "qtd": 3,
+        "unidade": "Bandeja c/30 ovos",
+        "preco": 30,
+        "sub": 90,
+        "data": "26/08/2026"
       }
     ],
-    "total": 550,
+    "total": 640,
     "ts": 1787767902611
   },
   {
