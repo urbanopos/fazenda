@@ -29,9 +29,22 @@
         "preco": 15,
         "sub": 210,
         "data": "04/09/2026"
+      },
+      {
+        "nome": "Ovos de Capoeira",
+        "col2": "Ovos de Capoeira",
+        "col1": "03/09/2026",
+        "col3": "2 unid",
+        "col4": "R$ 30,00 x 2",
+        "col5": "R$ 60,00",
+        "qtd": 2,
+        "unidade": "unid",
+        "preco": 30,
+        "sub": 60,
+        "data": "03/09/2026"
       }
     ],
-    "total": 300,
+    "total": 360,
     "ts": 1788440425698
   },
   {
