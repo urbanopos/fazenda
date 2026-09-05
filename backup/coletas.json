@@ -1,5 +1,37 @@
 [
   {
+    "data": "2026-09-03",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "unid": "unid",
+        "qtd": 47,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1788464693615
+  },
+  {
+    "data": "2026-09-04",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "unid": "unid",
+        "qtd": 49,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1788557866266
+  },
+  {
     "data": "2026-09-01",
     "coletor": "Menininha",
     "itens": [
