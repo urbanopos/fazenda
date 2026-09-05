@@ -79,6 +79,12 @@
       "nome": "Ovos de Capoeira",
       "unid": "Bandeja c/30 ovos",
       "passo": 1
+    },
+    {
+      "id": "pintos_unid",
+      "nome": "Pintos",
+      "unid": "Unid.",
+      "passo": 1
     }
   ],
   "campo": [
