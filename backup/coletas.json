@@ -4,32 +4,30 @@
     "coletor": "Menininha",
     "itens": [
       {
-        "setor": "Aviario",
+        "setor": "Perda",
         "nome": "Ovos de Capoeira",
         "unid": "unid",
-        "qtd": 45,
+        "qtd": 10,
         "obs": "",
         "forn": "",
         "tipo": ""
       }
     ],
-    "ts": 1788636484366
+    "ts": 1788636569026
   },
   {
-    "data": "2026-09-05",
+    "data": "2026-09-02",
     "coletor": "Menininha",
     "itens": [
       {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
+        "qtd": 45,
         "unid": "unid",
-        "qtd": 49,
-        "obs": "",
-        "forn": "",
         "tipo": ""
       }
     ],
-    "ts": 1788636444634
+    "ts": 1788636484366
   },
   {
     "data": "2026-09-05",
