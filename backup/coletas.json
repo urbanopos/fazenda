@@ -1,6 +1,22 @@
 [
   {
     "data": "2026-09-05",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Perda",
+        "nome": "Pintos",
+        "unid": "Unid.",
+        "qtd": 3,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1788636968490
+  },
+  {
+    "data": "2026-09-05",
     "coletor": "Menininha",
     "itens": [
       {
@@ -16,16 +32,14 @@
     "ts": 1788636794025
   },
   {
-    "data": "2026-09-05",
+    "data": "2026-09-04",
     "coletor": "Menininha",
     "itens": [
       {
         "setor": "Perda",
-        "nome": "Pinto",
-        "unid": "unid",
+        "nome": "Pintos",
         "qtd": 3,
-        "obs": "",
-        "forn": "",
+        "unid": "Unid.",
         "tipo": ""
       }
     ],
