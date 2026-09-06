@@ -512,7 +512,11 @@ textarea{resize:none;height:72px;font-size:14px}
    como antes. Aqui só ajustamos como o mesmo conteúdo é ENQUADRADO
    e ESPAÇADO numa tela de computador — nenhuma função foi alterada. */
 @media (min-width: 900px){
-  html{ background:#0b1a2e; }
+  html{ background:#173f6e; }
+  :root{
+    --vd:#0e2d5c;   /* fundo escuro principal (cabecalho, telas de bloqueio/setup, paineis) */
+    --vm:#1e457a;   /* tom intermediario, usado em gradientes e variacoes */
+  }
   body{
     max-width:1040px;
     margin:0 auto;
@@ -568,6 +572,14 @@ textarea{resize:none;height:72px;font-size:14px}
 
   /* Itens de Vendas: aproveita a largura extra em 3 colunas em vez de 2 */
   .vi-row2{ grid-template-columns:1fr 1fr 1fr; }
+  /* Telas cheias especiais (splash, primeiro acesso, bloqueio) também
+     ganham o mesmo enquadramento central, em vez de esticar a tela toda */
+  .ca-tela, #tela-bloqueio{
+    left:50%; right:auto;
+    width:100%; max-width:1040px;
+    transform:translateX(-50%);
+    box-shadow:0 0 0 1px rgba(0,0,0,.08), 0 24px 70px rgba(0,0,0,.45);
+  }
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -11438,7 +11450,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = 'bb91304cc2b8';
+  var FP = 'ef6735bb4901';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -11682,7 +11694,7 @@ function _caDesinstalar(){
   _caOpfsApagar();
   _caChave=null;
   document.getElementById('ca-conf').classList.remove('vis');
-  document.body.innerHTML='<div style="min-height:100vh;background:#1c2e22;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;gap:16px;text-align:center">'
+  document.body.innerHTML='<div style="min-height:100vh;background:#0e2d5c;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;gap:16px;text-align:center">'
     +'<div style="font-size:56px">✅</div>'
     +'<div style="font-family:DM Mono,monospace;font-size:20px;font-weight:700;color:#fff">Desinstalado</div>'
     +'<div style="font-size:14px;color:rgba(255,255,255,.6);line-height:1.7;max-width:300px">Todos os dados foram apagados.<br><br>Para remover o ícone:<br><b style="color:#b8943f">Segure o ícone → Desinstalar</b></div>'
@@ -12184,7 +12196,7 @@ function sairColeta(){
     : 'Deseja sair do aplicativo agora?';
   var overlay = document.createElement('div');
   overlay.id = 'tela-sair-confirmar';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;background:#0e1f16;color:#cfead9;font-family:sans-serif';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;background:#0e2d5c;color:#cfead9;font-family:sans-serif';
   overlay.innerHTML = '<div style="font-size:40px;margin-bottom:16px">'+(pend?'⚠️':'👋')+'</div>'
     +'<div style="font-size:16px;line-height:1.5;margin-bottom:28px;max-width:320px">'+msg+'</div>'
     +'<button id="btn-sair-confirmar" style="background:#c0392b;color:#fff;border:none;padding:13px 28px;border-radius:8px;font-size:15px;font-weight:700;margin-bottom:10px;cursor:pointer;width:240px">'+(pend?'Sim, sair e apagar':'Sim, sair')+'</button>'
@@ -13014,7 +13026,7 @@ function _mostrarConfirmacaoEnvio(blob, nomeArquivo, numeroWpp){
   var url = URL.createObjectURL(blob);
   var overlay = document.createElement('div');
   overlay.id = 'tela-confirmacao-envio';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:rgba(14,31,22,.97);overflow:auto';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:rgba(14,45,92,.97);overflow:auto';
   overlay.innerHTML = '<div style="color:#cfead9;font-family:sans-serif;text-align:center;margin-bottom:14px">'
     +'<div style="font-size:36px">✅</div>'
     +'<div style="font-size:16px;font-weight:700">Coleta registrada com sucesso!</div>'
@@ -15723,6 +15735,87 @@ function _bkpSetStatus(msg, cls){
   el.innerHTML = msg;
   el.className = 'bkp-status'+(cls?' '+cls:'');
 }
+
+/* ── Sincronização automática entre dispositivos (Desktop ⇄ Celular) ──
+   Diferente do backup manual (que SUBSTITUI os dados locais), esta rotina
+   MESCLA: junta os registros novos de qualquer um dos dois lados, sem
+   apagar nada. Roda sozinha em segundo plano a cada 60s (se o token do
+   GitHub estiver configurado), then republica o resultado combinado para
+   que o outro dispositivo também convirja para o mesmo conjunto. */
+function _mesclarRegistros(local, remoto){
+  var vistos = {};
+  var combinado = [];
+  (local||[]).forEach(function(r){
+    var chave = String(r.ts||JSON.stringify(r));
+    if(!vistos[chave]){ vistos[chave]=true; combinado.push(r); }
+  });
+  (remoto||[]).forEach(function(r){
+    var chave = String(r.ts||JSON.stringify(r));
+    if(!vistos[chave]){
+      vistos[chave]=true; combinado.push(r);
+    } else {
+      // Ja existe dos dois lados (mesmo ts) — se um dos dois marca como
+      // pago e o outro nao, mantem PAGO (uma vez quitado, nunca "desquita"
+      // sozinho numa mesclagem — evita perder uma confirmacao de pagamento).
+      var idx = combinado.findIndex(function(x){ return String(x.ts||JSON.stringify(x))===chave; });
+      if(idx>-1 && r.pago && !combinado[idx].pago) combinado[idx] = r;
+    }
+  });
+  combinado.sort(function(a,b){
+    if((a.data||'') !== (b.data||'')) return (a.data||'') < (b.data||'') ? 1 : -1;
+    return (b.ts||0) - (a.ts||0);
+  });
+  return combinado;
+}
+
+var _sincronizandoRegistros = false;
+async function _sincronizarRegistrosGitHub(){
+  if(!_ghToken() || _sincronizandoRegistros) return;
+  _sincronizandoRegistros = true;
+  try{
+    var houveMudanca = false;
+
+    var coletasLocal = _carregarHistColeta();
+    var coletasRemoto = await _ghLer(GH_BCK_COLETAS);
+    if(coletasRemoto){
+      var coletasMerge = _mesclarRegistros(coletasLocal, coletasRemoto);
+      if(coletasMerge.length !== coletasLocal.length){
+        var jc = JSON.stringify(coletasMerge);
+        try{ localStorage.setItem(CK, jc); }catch(e){}
+        if(_caOpfs) await _caOpfsSalvar(FSJ_COLETAS, jc);
+        if(typeof renderHistColeta==='function') renderHistColeta();
+        houveMudanca = true;
+        await _ghGravar(GH_BCK_COLETAS, coletasMerge, 'Sincronizacao automatica (coletas)');
+      }
+    }
+
+    var pedidosLocal = _carregarHist();
+    var pedidosRemoto = await _ghLer(GH_BCK_PEDIDOS);
+    if(pedidosRemoto){
+      var pedidosMerge = _mesclarRegistros(pedidosLocal, pedidosRemoto);
+      var mudouConteudo = JSON.stringify(pedidosMerge) !== JSON.stringify(pedidosLocal);
+      if(mudouConteudo){
+        var jp = JSON.stringify(pedidosMerge);
+        try{ localStorage.setItem(HK, jp); }catch(e){}
+        if(_caOpfs) await _caOpfsSalvar(FSJ_PEDIDOS, jp);
+        _renderHist();
+        houveMudanca = true;
+        await _ghGravar(GH_BCK_PEDIDOS, pedidosMerge, 'Sincronizacao automatica (pedidos)');
+      }
+    }
+
+    if(houveMudanca) _toast('🔄 Novos registros sincronizados de outro dispositivo.');
+  }catch(e){
+    console.warn('_sincronizarRegistrosGitHub:', e.message);
+  } finally {
+    _sincronizandoRegistros = false;
+  }
+}
+
+setTimeout(function(){
+  _sincronizarRegistrosGitHub();
+  setInterval(_sincronizarRegistrosGitHub, 60000);
+}, 8000);
 
 async function _fazerBackup(manual){
   if(!_ghToken()){
