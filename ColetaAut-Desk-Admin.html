@@ -828,7 +828,8 @@ textarea{resize:none;height:72px;font-size:14px}
           <div class="ad-iw" style="margin-bottom:0"><input class="ad-inp" type="password" id="ad-gh-token-inp" placeholder="ghp_..." autocomplete="off"></div>
         </div>
         <div class="ad-row"><button class="ad-ok" onclick="_salvarGhToken()" style="background:#1a6b2a;color:#fff">Salvar token</button></div>
-        <div class="ad-row" style="margin-top:6px"><button class="ad-ok" onclick="_enviarTokenParaColetor()" style="background:#1e3a5f;color:#93c5fd">🔗 Enviar/atualizar token por link (sem mexer no aparelho)</button></div>
+        <div class="ad-row" style="margin-top:6px"><button class="ad-ok" onclick="_enviarTokenParaColetor()" style="background:#1e3a5f;color:#93c5fd">🔗 Enviar/atualizar token para o Coletor</button></div>
+        <div class="ad-row" style="margin-top:6px"><button class="ad-ok" onclick="_enviarTokenParaMobile()" style="background:#1e3a5f;color:#93c5fd">📱 Enviar/atualizar token para o Admin do Celular</button></div>
         <div class="ad-div"></div>
         <span class="ad-lbl">Backup no GitHub</span>
         <div class="bkp-status" id="bkp-status">Último backup: nunca</div>
@@ -11450,7 +11451,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = 'ef6735bb4901';
+  var FP = '5a4919c3aaa4';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -11469,7 +11470,26 @@ function _caInjetarMenuBtn(){
   .catch(function(){}); // offline ou erro — continua normalmente
 })();
 
+/* Le um token de GitHub enviado por link (#cfg=BASE64({tk:token})) —
+   mesmo mecanismo ja usado para configurar o Coletor a distancia, agora
+   tambem funciona para configurar OUTRO Admin (ex: o celular) sem precisar
+   digitar o token na mao. */
+function _aplicarConfigDoLink(){
+  try{
+    var hash = location.hash || '';
+    var m = hash.match(/#cfg=([^&]+)/);
+    if(!m) return;
+    var cfg = JSON.parse(decodeURIComponent(escape(atob(m[1]))));
+    if(cfg && cfg.tk){
+      localStorage.setItem(GH_TOKEN_KEY, cfg.tk);
+      _toast('✅ Token do GitHub configurado neste aparelho!');
+    }
+    history.replaceState(null, '', location.pathname + location.search);
+  }catch(e){ console.warn('_aplicarConfigDoLink:', e.message); }
+}
+
 window.addEventListener('load',function(){
+  _aplicarConfigDoLink();
   _caGerarIcone();
   _cadInit();
   /* Sentinela inicial: instalado APÓS o app carregar
@@ -15885,6 +15905,10 @@ async function _restaurarBackup(){
 
 /* Exibe data do último backup ao abrir o painel */
 function _atualizarStatusBackup(){
+  if(!_ghToken()){
+    _bkpSetStatus('⚠️ <span class="bkp-err">Token do GitHub não configurado neste aparelho — backup e sincronização automática desligados.</span>');
+    return;
+  }
   var ts = localStorage.getItem(BKP_TS_KEY);
   _bkpSetStatus(ts ? '☁️ <span class="bkp-ok">Último backup: '+ts+'</span>' : 'Último backup: nunca');
 }
@@ -16092,6 +16116,18 @@ function _enviarTokenParaColetor(){
   var msg = 'Fazenda Sao Jose\n\nToque neste link para ativar o envio das suas coletas:\n'+url
     +'\n\nEle so precisa ser aberto uma vez. Depois, pode apagar esta mensagem.';
   if(navigator.share){ navigator.share({title:'Ativar coletas',text:msg,url:url}).catch(function(){ window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank'); }); }
+  else { window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank'); }
+}
+
+function _enviarTokenParaMobile(){
+  var token = _ghToken();
+  if(!token){ _toast('Salve o token aqui no Admin primeiro.'); return; }
+  var url = 'https://urbanopos.github.io/fazenda/ColetaAut-Admin.html';
+  var cfg = btoa(unescape(encodeURIComponent(JSON.stringify({tk:token}))));
+  url += '#cfg=' + cfg;
+  var msg = 'Fazenda Sao Jose\n\nAbra este link no CELULAR para configurar o token de sincronizacao la tambem:\n'+url
+    +'\n\nEle so precisa ser aberto uma vez nesse aparelho. Depois, pode apagar esta mensagem.';
+  if(navigator.share){ navigator.share({title:'Configurar Admin do celular',text:msg,url:url}).catch(function(){ window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank'); }); }
   else { window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank'); }
 }
 
