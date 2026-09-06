@@ -11390,7 +11390,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '5223963c5560';
+  var FP = '889082faf060';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -11421,6 +11421,8 @@ function _aplicarConfigDoLink(){
     var cfg = JSON.parse(decodeURIComponent(escape(atob(m[1]))));
     if(cfg && cfg.tk){
       localStorage.setItem(GH_TOKEN_KEY, cfg.tk);
+      if(typeof _atualizarExibicaoToken==='function') _atualizarExibicaoToken();
+      if(typeof _atualizarStatusBackup==='function') _atualizarStatusBackup();
       _toast('✅ Token do GitHub configurado neste aparelho!');
     }
     history.replaceState(null, '', location.pathname + location.search);
@@ -16073,7 +16075,7 @@ function _enviarTokenParaDesktop(){
 function _copiarToken(){
   var token = _ghToken();
   if(!token){ _toast('Nenhum token salvo neste aparelho ainda.'); return; }
-  function avisar(ok){ _toast(ok ? '✅ Token copiado! Cole no outro aparelho.' : '⚠️ Não foi possível copiar. Copie manualmente pelo GitHub.'); }
+  function avisar(ok){ _toast(ok ? '✅ Token copiado! Cole no outro aparelho.' : '⚠️ Não foi possível copiar automaticamente — use o campo abaixo.'); }
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(token).then(function(){ avisar(true); }).catch(function(){ avisar(false); });
   } else {
@@ -16089,6 +16091,9 @@ function _copiarToken(){
       avisar(ok);
     }catch(e){ avisar(false); }
   }
+  // Mostra o token por extenso, num campo já selecionado — assim dá para
+  // conferir visualmente e, se precisar, copiar manualmente com Ctrl+C.
+  prompt('Token do GitHub (já copiado — cole no outro aparelho):', token);
 }
 
 function compartilharLink(){
