@@ -517,6 +517,14 @@ input[type="password"]:-webkit-autofill{
   background:#e6f4ea;color:#1a6b2a;font-size:9px;font-weight:700;
   font-family:DM Mono,monospace;letter-spacing:1px;margin-left:6px;
 }
+/* Paleta azul do ColetaAut Desktop — sempre ativa neste arquivo (não
+   depende da largura da tela), para deixar bem clara a diferença visual
+   em relação ao ColetaAut Admin (celular), mesmo em pré-visualizações
+   estreitas. */
+:root{
+  --vd:#0e2d5c;   /* fundo escuro principal (cabecalho, telas de bloqueio/setup, paineis) */
+  --vm:#1e457a;   /* tom intermediario, usado em gradientes e variacoes */
+}
 /* ══════════════════════════════════════════════════════════════════
    VERSÃO DESKTOP — aplica-se só a partir de 900px de largura.
    Em telas menores (celular), nada muda: o app continua exatamente
@@ -524,10 +532,6 @@ input[type="password"]:-webkit-autofill{
    e ESPAÇADO numa tela de computador — nenhuma função foi alterada. */
 @media (min-width: 900px){
   html{ background:#173f6e; }
-  :root{
-    --vd:#0e2d5c;   /* fundo escuro principal (cabecalho, telas de bloqueio/setup, paineis) */
-    --vm:#1e457a;   /* tom intermediario, usado em gradientes e variacoes */
-  }
   body{
     max-width:1040px;
     margin:0 auto;
@@ -543,9 +547,20 @@ input[type="password"]:-webkit-autofill{
   .abas{ overflow-x:visible; flex-wrap:wrap; gap:10px; margin-bottom:26px; }
   .aba{ padding:10px 22px; font-size:12px; }
 
-  /* Formulário de coleta: card central, não esticado a tela toda */
-  .pgrid{ max-width:640px; margin-left:auto; margin-right:auto; }
+  /* Formulário de coleta: card central, mais compacto (sem vazio exagerado) */
+  .pgrid{ max-width:480px; margin-left:auto; margin-right:auto; }
   .cg{ margin-top:16px; }
+
+  /* Botões de ação abaixo do formulário: tamanho proporcional, não
+     esticados a largura toda do card — ficam centralizados e com um
+     limite de largura confortável, como botões de desktop de verdade. */
+  #linha-cp-btns, #wrap-pendentes-btn{
+    max-width:340px; margin-left:auto; margin-right:auto;
+  }
+  .btn-wpp{
+    max-width:340px; margin-left:auto; margin-right:auto; display:block;
+  }
+  .cont{ text-align:center; }
 
   /* Modais que abriam "colados" na tela toda (celular) passam a ser
      janelas centralizadas, com cantos arredondados nos quatro lados
@@ -1055,11 +1070,11 @@ input[type="password"]:-webkit-autofill{
   </div>
 </div>
   <div class="div"></div>
-  <div style="display:flex;gap:8px;margin-bottom:8px">
+  <div id="linha-cp-btns" style="display:flex;gap:8px;margin-bottom:8px">
     <button onclick="abrirHistColeta()" style="flex:1;padding:11px 0;border:1.5px solid var(--ce);border-radius:var(--r);background:#fff;color:#1e3a5f;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer">📊 Coletas</button>
     <button id="btn-consulta-pedidos" onclick="abrirHistPedidos()" style="flex:1;padding:11px 0;border:1.5px solid var(--ce);border-radius:var(--r);background:#fff;color:#7a3a00;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer">📄 Pedidos</button>
   </div>
-  <div style="margin-bottom:8px">
+  <div id="wrap-pendentes-btn" style="margin-bottom:8px">
     <button onclick="abrirPendentes()" style="width:100%;padding:12px 0;border:2px solid #1a6b2a;border-radius:var(--r);background:rgba(26,107,42,.08);color:#1a6b2a;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer">
       📥 Coletas Pendentes <span id="badge-pendentes" style="display:none;background:#1a6b2a;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;margin-left:4px"></span>
     </button>
@@ -11465,7 +11480,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = 'f7016ef0058b';
+  var FP = 'e664d8f7a41e';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
