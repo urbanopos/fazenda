@@ -541,14 +541,18 @@ input[type="password"]:-webkit-autofill{
 
   /* Cabeçalho e corpo ganham mais respiro nas laterais */
   .topo{ padding:20px 40px 16px; }
-  .corpo{ padding:28px 40px 120px; }
+  .corpo{ padding:28px 40px 40px; }
 
   /* Abas: não precisam mais rolar horizontalmente, ficam bem distribuídas */
   .abas{ overflow-x:visible; flex-wrap:wrap; gap:10px; margin-bottom:26px; }
   .aba{ padding:10px 22px; font-size:12px; }
 
-  /* Formulário de coleta: card central, mais compacto (sem vazio exagerado) */
-  .pgrid{ max-width:480px; margin-left:auto; margin-right:auto; }
+  /* Formulário de coleta: card + lista de itens lado a lado, em vez de
+     empilhados — aproveita a largura extra e evita rolagem vertical */
+  .pgrid{
+    display:grid; grid-template-columns:1fr 1fr; gap:24px;
+    align-items:start; max-width:900px; margin-left:auto; margin-right:auto;
+  }
   .cg{ margin-top:16px; }
 
   /* Botões de ação abaixo do formulário: tamanho proporcional, não
@@ -11480,7 +11484,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = 'e664d8f7a41e';
+  var FP = 'a9117c2ed19e';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
