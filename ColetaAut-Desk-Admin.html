@@ -382,6 +382,17 @@ textarea{resize:none;height:72px;font-size:14px}
 .ca-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:18px;margin-bottom:14px}
 .ca-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:8px}
 .ca-inp-wrap{position:relative}
+/* Campos de senha: texto sempre em azul, para ficar visível mesmo se o
+   navegador forçar um fundo claro (autopreenchimento) ou o fundo do campo
+   for muito parecido com a cor do texto padrão. */
+input[type="password"]{
+  color:#1e5fbf !important;
+  caret-color:#1e5fbf;
+}
+input[type="password"]:-webkit-autofill{
+  -webkit-text-fill-color:#1e5fbf !important;
+  transition:background-color 9999s ease-in-out 0s;
+}
 .ca-inp{width:100%;padding:12px 44px 12px 14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:var(--r);color:#fff;font-family:'DM Mono',monospace;font-size:16px;outline:none}
 .ca-inp::placeholder{color:rgba(255,255,255,.3)}
 .ca-inp:focus{border-color:var(--ac)}
@@ -11451,7 +11462,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '5a4919c3aaa4';
+  var FP = 'dfc8b9bf97e5';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
