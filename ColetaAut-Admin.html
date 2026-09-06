@@ -11375,7 +11375,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = 'bb91304cc2b8';
+  var FP = '2e5e211d963a';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -15660,6 +15660,87 @@ function _bkpSetStatus(msg, cls){
   el.innerHTML = msg;
   el.className = 'bkp-status'+(cls?' '+cls:'');
 }
+
+/* ── Sincronização automática entre dispositivos (Desktop ⇄ Celular) ──
+   Diferente do backup manual (que SUBSTITUI os dados locais), esta rotina
+   MESCLA: junta os registros novos de qualquer um dos dois lados, sem
+   apagar nada. Roda sozinha em segundo plano a cada 60s (se o token do
+   GitHub estiver configurado), então republica o resultado combinado para
+   que o outro dispositivo também convirja para o mesmo conjunto. */
+function _mesclarRegistros(local, remoto){
+  var vistos = {};
+  var combinado = [];
+  (local||[]).forEach(function(r){
+    var chave = String(r.ts||JSON.stringify(r));
+    if(!vistos[chave]){ vistos[chave]=true; combinado.push(r); }
+  });
+  (remoto||[]).forEach(function(r){
+    var chave = String(r.ts||JSON.stringify(r));
+    if(!vistos[chave]){
+      vistos[chave]=true; combinado.push(r);
+    } else {
+      // Já existe dos dois lados (mesmo ts) — se um dos dois marca como
+      // pago e o outro não, mantém PAGO (uma vez quitado, nunca "desquita"
+      // sozinho numa mesclagem — evita perder uma confirmação de pagamento).
+      var idx = combinado.findIndex(function(x){ return String(x.ts||JSON.stringify(x))===chave; });
+      if(idx>-1 && r.pago && !combinado[idx].pago) combinado[idx] = r;
+    }
+  });
+  combinado.sort(function(a,b){
+    if((a.data||'') !== (b.data||'')) return (a.data||'') < (b.data||'') ? 1 : -1;
+    return (b.ts||0) - (a.ts||0);
+  });
+  return combinado;
+}
+
+var _sincronizandoRegistros = false;
+async function _sincronizarRegistrosGitHub(){
+  if(!_ghToken() || _sincronizandoRegistros) return;
+  _sincronizandoRegistros = true;
+  try{
+    var houveMudanca = false;
+
+    var coletasLocal = _carregarHistColeta();
+    var coletasRemoto = await _ghLer(GH_BCK_COLETAS);
+    if(coletasRemoto){
+      var coletasMerge = _mesclarRegistros(coletasLocal, coletasRemoto);
+      if(coletasMerge.length !== coletasLocal.length){
+        var jc = JSON.stringify(coletasMerge);
+        try{ localStorage.setItem(CK, jc); }catch(e){}
+        if(_caOpfs) await _caOpfsSalvar(FSJ_COLETAS, jc);
+        if(typeof renderHistColeta==='function') renderHistColeta();
+        houveMudanca = true;
+        await _ghGravar(GH_BCK_COLETAS, coletasMerge, 'Sincronizacao automatica (coletas)');
+      }
+    }
+
+    var pedidosLocal = _carregarHist();
+    var pedidosRemoto = await _ghLer(GH_BCK_PEDIDOS);
+    if(pedidosRemoto){
+      var pedidosMerge = _mesclarRegistros(pedidosLocal, pedidosRemoto);
+      var mudouConteudo = JSON.stringify(pedidosMerge) !== JSON.stringify(pedidosLocal);
+      if(mudouConteudo){
+        var jp = JSON.stringify(pedidosMerge);
+        try{ localStorage.setItem(HK, jp); }catch(e){}
+        if(_caOpfs) await _caOpfsSalvar(FSJ_PEDIDOS, jp);
+        _renderHist();
+        houveMudanca = true;
+        await _ghGravar(GH_BCK_PEDIDOS, pedidosMerge, 'Sincronizacao automatica (pedidos)');
+      }
+    }
+
+    if(houveMudanca) _toast('🔄 Novos registros sincronizados de outro dispositivo.');
+  }catch(e){
+    console.warn('_sincronizarRegistrosGitHub:', e.message);
+  } finally {
+    _sincronizandoRegistros = false;
+  }
+}
+
+setTimeout(function(){
+  _sincronizarRegistrosGitHub();
+  setInterval(_sincronizarRegistrosGitHub, 60000);
+}, 8000);
 
 async function _fazerBackup(manual){
   if(!_ghToken()){
