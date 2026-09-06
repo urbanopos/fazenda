@@ -759,7 +759,10 @@ input[type="password"]:-webkit-autofill{
         <div class="ad-row"><button class="ad-ok" onclick="salvarSenha()" style="background:#2d4a38;color:var(--ac)">Salvar senha</button></div>
         <div class="ad-div"></div>
         <span class="ad-lbl">Token GitHub (Coletas Pendentes)</span>
-        <div class="ad-val"><span id="ad-gh-token-sp">Não configurado</span></div>
+        <div class="ad-val" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+          <span id="ad-gh-token-sp">Não configurado</span>
+          <button onclick="_copiarToken()" style="background:none;border:1px solid rgba(255,255,255,.2);color:var(--ac);border-radius:6px;padding:4px 10px;font-size:11px;font-family:'DM Mono',monospace;cursor:pointer;white-space:nowrap">📋 Copiar</button>
+        </div>
         <div style="margin-top:10px"><span class="ad-lbl">Cole o token ghp_... gerado no GitHub</span>
           <div class="ad-iw" style="margin-bottom:0"><input class="ad-inp" type="password" id="ad-gh-token-inp" placeholder="ghp_..." autocomplete="off"></div>
         </div>
@@ -11387,7 +11390,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '217d6f4df69d';
+  var FP = '5223963c5560';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -16065,6 +16068,27 @@ function _enviarTokenParaDesktop(){
     +'\n\nEle so precisa ser aberto uma vez nesse computador. Depois, pode apagar esta mensagem.';
   if(navigator.share){ navigator.share({title:'Configurar Desktop',text:msg,url:url}).catch(function(){ window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank'); }); }
   else { window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank'); }
+}
+
+function _copiarToken(){
+  var token = _ghToken();
+  if(!token){ _toast('Nenhum token salvo neste aparelho ainda.'); return; }
+  function avisar(ok){ _toast(ok ? '✅ Token copiado! Cole no outro aparelho.' : '⚠️ Não foi possível copiar. Copie manualmente pelo GitHub.'); }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(token).then(function(){ avisar(true); }).catch(function(){ avisar(false); });
+  } else {
+    // Fallback para navegadores sem suporte a Clipboard API
+    try{
+      var tmp = document.createElement('textarea');
+      tmp.value = token;
+      tmp.style.position = 'fixed'; tmp.style.opacity = '0';
+      document.body.appendChild(tmp);
+      tmp.focus(); tmp.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(tmp);
+      avisar(ok);
+    }catch(e){ avisar(false); }
+  }
 }
 
 function compartilharLink(){
