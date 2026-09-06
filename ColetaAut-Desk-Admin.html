@@ -541,7 +541,7 @@ input[type="password"]:-webkit-autofill{
 
   /* Cabeçalho e corpo ganham mais respiro nas laterais */
   .topo{ padding:20px 40px 16px; }
-  .corpo{ padding:28px 40px 40px; }
+  .corpo{ padding:28px 40px 40px; min-height:calc(100vh - 74px - 38px); border-radius:20px; }
 
   /* Abas: não precisam mais rolar horizontalmente, ficam bem distribuídas */
   .abas{ overflow-x:visible; flex-wrap:wrap; gap:10px; margin-bottom:26px; }
@@ -11484,7 +11484,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = 'a9117c2ed19e';
+  var FP = 'f87a3927fb69';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
