@@ -152,7 +152,6 @@ textarea{resize:none;height:72px;font-size:14px}
 /* Botões de Coleta (Coletas / Coletas Pendentes / Enviar coleta) não têm
    relação com Pedidos — ficam escondidos quando essa aba está ativa.
    Regra funcional, vale em qualquer tamanho de tela. */
-body:has(#sec-vendas.at) #linha-cp-btns,
 body:has(#sec-vendas.at) #wrap-pendentes-btn,
 body:has(#sec-vendas.at) #btn-enviar-coleta-global,
 body:has(#sec-vendas.at) #contador{
@@ -989,10 +988,6 @@ input[type="password"]:-webkit-autofill{
   </div>
 </div>
   <div class="div"></div>
-  <div id="linha-cp-btns" style="display:flex;gap:8px;margin-bottom:8px">
-    <button onclick="abrirHistColeta()" style="flex:1;padding:11px 0;border:1.5px solid var(--ce);border-radius:var(--r);background:#fff;color:#1e3a5f;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer">📊 Coletas</button>
-    <button id="btn-consulta-pedidos" onclick="abrirHistPedidos()" style="flex:1;padding:11px 0;border:1.5px solid var(--ce);border-radius:var(--r);background:#fff;color:#7a3a00;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer">📄 Pedidos</button>
-  </div>
   <div id="wrap-pendentes-btn" style="margin-bottom:8px">
     <button onclick="abrirPendentes()" style="width:100%;padding:12px 0;border:2px solid #1a6b2a;border-radius:var(--r);background:rgba(26,107,42,.08);color:#1a6b2a;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer">
       📥 Coletas Pendentes <span id="badge-pendentes" style="display:none;background:#1a6b2a;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;margin-left:4px"></span>
@@ -11399,7 +11394,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = 'bb487d992b6e';
+  var FP = '3c57e779bb8c';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -13230,18 +13225,18 @@ function _renderVItens(){
         ? '<span class="vi-lbl">Nome do item</span>'
           +'<input class="vi-inp pc-edit-nome" type="text" id="vedit-nome-'+it.idx+'" placeholder="Descreva o item..." value="'+(it._editNome||'')+'" oninput="_vItens['+i+']._editNome=this.value" style="margin-bottom:10px;border:2px solid #b8943f">'
         : '';
-      // Se o item tiver unidades ja cadastradas (em qualquer setor de coleta),
-      // mostra como lista de opcoes em vez de texto livre.
-      var nomeAtual = isEdit ? (it._editNome||'') : ((_prodVenda().filter(function(x){ return x.id===it.prodId; })[0]||{}).nome||'');
-      var unidadesCat = nomeAtual ? _catalogoUnidadesParaNomeGlobal(nomeAtual) : [];
+      // Se o produto tiver apresentações cadastradas (unidade+preço), mostra
+      // como lista de opções — trocar a unidade também atualiza o preço.
+      var prodSel = isEdit ? null : (_cadDados.produtos||[]).find(function(p){ return p.id===it.prodId; });
+      var apresentacoes = (prodSel && prodSel.apresentacoes && prodSel.apresentacoes.length) ? prodSel.apresentacoes : [];
       var campoUnidade;
-      if(unidadesCat.length){
-        if(!it.unidade || unidadesCat.indexOf(it.unidade)===-1) it.unidade = unidadesCat[0];
-        var optsUnid = unidadesCat.map(function(u){
-          return '<option value="'+u.replace(/"/g,'&quot;')+'"'+(it.unidade===u?' selected':'')+'>'+u.replace(/</g,'&lt;')+'</option>';
+      if(apresentacoes.length){
+        if(!it.unidade || !apresentacoes.some(function(a){ return a.unid===it.unidade; })) it.unidade = apresentacoes[0].unid;
+        var optsUnid = apresentacoes.map(function(a){
+          return '<option value="'+a.unid.replace(/"/g,'&quot;')+'"'+(it.unidade===a.unid?' selected':'')+'>'+a.unid.replace(/</g,'&lt;')+'</option>';
         }).join('');
         campoUnidade = '<span class="vi-lbl">Unidade</span>'
-          +'<select class="vi-sel" onchange="setUnidV('+i+',this.value)" style="margin-bottom:12px">'+optsUnid+'</select>';
+          +'<select class="vi-sel" onchange="setUnidV('+i+',this.value);_renderVItens()" style="margin-bottom:12px">'+optsUnid+'</select>';
       } else {
         campoUnidade = '<span class="vi-lbl">Unidade (ex: bandeja, kg, duzia...)</span>'
           +'<input class="vi-inp" type="text" placeholder="Digite a unidade..." value="'+it.unidade+'" oninput="setUnidV('+i+',this.value)" style="margin-bottom:12px">';
@@ -13270,17 +13265,32 @@ function _renderVItens(){
 }
 
 function setProdV(i,v){
-  _vItens[i].prodId=v; _vItens[i].unidade='';
-  // Preenche automaticamente unidade e preco a partir do Cadastro, se houver
+  _vItens[i].prodId=v; _vItens[i].unidade=''; _vItens[i].preco=0;
+  // Preenche automaticamente unidade e preço a partir do cadastro unificado de produtos
   if(v && v!=='_edit'){
     var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===v; });
-    if(prod && prod.unid) _vItens[i].unidade = prod.unid;
-    var nomeProd = prod ? prod.nome : '';
-    var pr = nomeProd ? (_cadDados.precos||[]).find(function(x){ return x.prodNome===nomeProd; }) : null;
-    if(pr && pr.preco){ _vItens[i].preco = pr.preco; _calcSubV(i); }
+    if(prod && prod.apresentacoes && prod.apresentacoes.length){
+      _vItens[i].unidade = prod.apresentacoes[0].unid;
+      _vItens[i].preco = prod.apresentacoes[0].preco||0;
+    } else if(prod && prod.unid){
+      // Compatibilidade com cadastro antigo (ainda nao migrado para apresentações)
+      _vItens[i].unidade = prod.unid;
+      var nomeProd = prod.nome;
+      var pr = nomeProd ? (_cadDados.precos||[]).find(function(x){ return x.prodNome===nomeProd; }) : null;
+      if(pr && pr.preco) _vItens[i].preco = pr.preco;
+    }
+    _calcSubV(i);
   }
 }
-function setUnidV(i,v){ _vItens[i].unidade=v; }
+function setUnidV(i,v){
+  _vItens[i].unidade=v;
+  // Se essa unidade tiver preço cadastrado para o produto, atualiza o preço também
+  var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===_vItens[i].prodId; });
+  if(prod && prod.apresentacoes){
+    var ap = prod.apresentacoes.find(function(a){ return a.unid===v; });
+    if(ap){ _vItens[i].preco = ap.preco||0; _calcSubV(i); }
+  }
+}
 function setDataV(i,v){ _vItens[i].data=v; }
 function setQtdV(i,v){
   _vItens[i].qtd=parseFloat(v)||0; _calcSubV(i);
@@ -13393,8 +13403,11 @@ async function _gravarHist(hist){
   setTimeout(function(){ _fazerBackup(false); }, 2000);
 }
 
-function _carregarHist(){
+function _carregarHistRaw(){
   try{ return JSON.parse(localStorage.getItem(HK)||'[]'); }catch(e){ return []; }
+}
+function _carregarHist(){
+  return _carregarHistRaw().filter(function(p){ return !p._excluido; });
 }
 async function _carregarHistOPFS(){
   if(_caOpfs){
@@ -13722,9 +13735,12 @@ function _salvarColeta(reg){
   if(_caOpfs) _caOpfsSalvar(FSJ_COLETAS, json);
 }
 
-function _carregarHistColeta(){
+function _carregarHistColetaRaw(){
   // Tenta ler do OPFS; fallback para localStorage
   try{ return JSON.parse(localStorage.getItem(CK)||'[]'); }catch(e){ return []; }
+}
+function _carregarHistColeta(){
+  return _carregarHistColetaRaw().filter(function(r){ return !r._excluido; });
 }
 async function _carregarHistColetaOPFS(){
   if(_caOpfs){
@@ -15223,9 +15239,12 @@ function _gerarImagemComPago(p){
 async function _excluirPedido(){
   if(!_pedAtual) return;
   if(!confirm('Excluir o pedido '+_pedAtual.num+'?\n\nEsta acao nao pode ser desfeita.')) return;
-  var hist = _carregarHist();
+  // Marca como excluído (nao apaga de verdade) — assim a sincronizacao entre
+  // aparelhos sabe que foi uma remocao intencional e nao traz o registro de
+  // volta achando que é algo novo vindo do outro lado.
+  var hist = _carregarHistRaw();
   var idx = hist.findIndex(function(p){ return p.ts === _pedAtual.ts; });
-  if(idx >= 0) hist.splice(idx,1);
+  if(idx >= 0){ hist[idx]._excluido = true; hist[idx]._excluidoEm = Date.now(); }
   await _gravarHist(hist);
   fecharModalPed();
   _renderHist();
@@ -15475,9 +15494,12 @@ function _excluirColeta(ri){
   var r = regs[ri];
   var dtLabel = r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : 'este registro';
   if(!confirm('Excluir a coleta de '+dtLabel+(r.coletor?' ('+r.coletor+')':'')+'?\n\nEsta acao nao pode ser desfeita.')) return;
-  var hist = _carregarHistColeta();
+  // Marca como excluído (nao apaga de verdade) — assim a sincronizacao entre
+  // aparelhos sabe que foi uma remocao intencional e nao traz o registro de
+  // volta achando que é algo novo vindo do outro lado.
+  var hist = _carregarHistColetaRaw();
   var idx = hist.findIndex(function(x){ return x.ts === r.ts; });
-  if(idx >= 0) hist.splice(idx,1);
+  if(idx >= 0){ hist[idx]._excluido = true; hist[idx]._excluidoEm = Date.now(); }
   var json = JSON.stringify(hist);
   try{ localStorage.setItem(CK, json); }catch(e){}
   if(_caOpfs) _caOpfsSalvar(FSJ_COLETAS, json); // grava a exclusão na pasta real (OPFS/servidor local)
@@ -15724,11 +15746,20 @@ function _mesclarRegistros(local, remoto){
     if(!vistos[chave]){
       vistos[chave]=true; combinado.push(r);
     } else {
-      // Já existe dos dois lados (mesmo ts) — se um dos dois marca como
-      // pago e o outro não, mantém PAGO (uma vez quitado, nunca "desquita"
-      // sozinho numa mesclagem — evita perder uma confirmação de pagamento).
       var idx = combinado.findIndex(function(x){ return String(x.ts||JSON.stringify(x))===chave; });
-      if(idx>-1 && r.pago && !combinado[idx].pago) combinado[idx] = r;
+      if(idx>-1){
+        // Se qualquer um dos dois lados marcou como excluído, o resultado
+        // fica excluído — uma exclusão intencional nunca "ressuscita" numa
+        // mesclagem, não importa de qual aparelho ela veio.
+        if(r._excluido && !combinado[idx]._excluido){
+          combinado[idx]._excluido = true;
+          combinado[idx]._excluidoEm = r._excluidoEm || Date.now();
+        }
+        // Se um dos dois marca como pago e o outro nao, mantem PAGO (uma vez
+        // quitado, nunca "desquita" sozinho numa mesclagem — evita perder
+        // uma confirmacao de pagamento).
+        if(r.pago && !combinado[idx].pago) combinado[idx] = Object.assign({}, r, {_excluido: combinado[idx]._excluido||r._excluido});
+      }
     }
   });
   combinado.sort(function(a,b){
@@ -15745,11 +15776,14 @@ async function _sincronizarRegistrosGitHub(){
   try{
     var houveMudanca = false;
 
-    var coletasLocal = _carregarHistColeta();
+    // Usa as versões CRUAS (incluindo tombstones de itens excluídos) — se
+    // usássemos a versão filtrada aqui, um registro excluído localmente
+    // pareceria "novo, vindo do outro lado" e voltaria sozinho.
+    var coletasLocal = _carregarHistColetaRaw();
     var coletasRemoto = await _ghLer(GH_BCK_COLETAS);
     if(coletasRemoto){
       var coletasMerge = _mesclarRegistros(coletasLocal, coletasRemoto);
-      if(coletasMerge.length !== coletasLocal.length){
+      if(JSON.stringify(coletasMerge) !== JSON.stringify(coletasLocal)){
         var jc = JSON.stringify(coletasMerge);
         try{ localStorage.setItem(CK, jc); }catch(e){}
         if(_caOpfs) await _caOpfsSalvar(FSJ_COLETAS, jc);
@@ -15759,7 +15793,7 @@ async function _sincronizarRegistrosGitHub(){
       }
     }
 
-    var pedidosLocal = _carregarHist();
+    var pedidosLocal = _carregarHistRaw();
     var pedidosRemoto = await _ghLer(GH_BCK_PEDIDOS);
     if(pedidosRemoto){
       var pedidosMerge = _mesclarRegistros(pedidosLocal, pedidosRemoto);
@@ -15796,10 +15830,10 @@ async function _fazerBackup(manual){
   _bkpSetStatus('<span class="bkp-spin">⏳</span> Fazendo backup...','');
   try{
     /* Coletas */
-    var coletas = _carregarHistColeta();
+    var coletas = _carregarHistColetaRaw();
     await _ghGravar(GH_BCK_COLETAS, coletas, 'Backup coletas — '+ts);
     /* Pedidos */
-    var pedidos = _carregarHist();
+    var pedidos = _carregarHistRaw();
     await _ghGravar(GH_BCK_PEDIDOS, pedidos, 'Backup pedidos — '+ts);
     /* Cadastros */
     var cads = {};
@@ -16255,8 +16289,13 @@ function _cadRenderAba(aba){
   }
   lista.innerHTML = itens.map(function(it,idx){
     var det = '';
-    if(aba==='produtos')    det = (it.setor||'')+(it.unid?' · '+it.unid:'');
-    if(aba==='clientes')    det = it.contato||it.obs||'';
+if(aba==='produtos'){
+      var resumoApres = (it.apresentacoes||[]).map(function(a){
+        return a.unid+(a.preco?' (R$ '+Number(a.preco).toFixed(2).replace('.',',')+')':'');
+      }).join(' · ');
+      det = (it.setor||'')+(resumoApres?' · '+resumoApres:(it.unid?' · '+it.unid:''));
+    }
+        if(aba==='clientes')    det = it.contato||it.obs||'';
     if(aba==='fornecedores')det = it.contato||it.obs||'';
     if(aba==='precos')      det = (it.prodNome||'')+(it.unid?' · '+it.unid:'')+(it.preco?' · R$ '+Number(it.preco).toFixed(2).replace('.',','):'');
     return '<div class="cad-item">'
@@ -16290,6 +16329,9 @@ function _cadMostrarForm(aba, dados){
   var d = dados || {};
   var campos = '';
   if(aba==='produtos'){
+    _formApresentacoes = (d.apresentacoes && d.apresentacoes.length)
+      ? JSON.parse(JSON.stringify(d.apresentacoes))
+      : [{unid:d.unid||'', preco:0}];
     campos =
       '<div><label class="cad-inp-lbl">Setor</label>'
       +'<input class="cad-inp" id="cf-setor" placeholder="ex: Aviário" value="'+_escH(d.setor||'')+'" list="cad-setores-list"></div>'
@@ -16298,9 +16340,9 @@ function _cadMostrarForm(aba, dados){
       +'</datalist>'
       +'<div><label class="cad-inp-lbl">Nome do produto</label>'
       +'<input class="cad-inp" id="cf-nome" placeholder="ex: Ovos de Capoeira" value="'+_escH(d.nome||'')+'"></div>'
-      +'<div style="display:flex;gap:8px">'
-      +'<div style="flex:1"><label class="cad-inp-lbl">Unidade</label>'
-      +'<input class="cad-inp" id="cf-unid" placeholder="ex: unid, kg, sc 40kg" value="'+_escH(d.unid||'')+'"></div>'
+      +'<div><label class="cad-inp-lbl">Apresentações (unidade + preço) — um produto pode ter mais de uma</label>'
+      +'<div id="cad-apresentacoes-lista"></div>'
+      +'<button type="button" class="cad-form-cancel" style="margin-top:6px" onclick="_cadAdicionarApresentacao()">+ Adicionar apresentação</button>'
       +'</div>';
   } else if(aba==='clientes'){
     campos =
@@ -16342,8 +16384,176 @@ function _cadMostrarForm(aba, dados){
     +'<button class="cad-form-cancel" onclick="_cadEdicaoLimpar()">Cancelar</button>'
     +'</div></div>';
   container.style.display='block';
+  if(aba==='produtos') _cadRenderApresentacoes();
   var first = container.querySelector('input');
   if(first) setTimeout(function(){ first.focus(); },50);
+}
+
+var _formApresentacoes = [];
+function _cadRenderApresentacoes(){
+  var cont = document.getElementById('cad-apresentacoes-lista');
+  if(!cont) return;
+  cont.innerHTML = _formApresentacoes.map(function(a, i){
+    return '<div style="display:flex;gap:8px;margin-bottom:6px;align-items:center">'
+      +'<input class="cad-inp" style="flex:1" placeholder="unid, kg, sc 40kg..." value="'+_escH(a.unid||'')+'" oninput="_formApresentacoes['+i+'].unid=this.value">'
+      +'<input class="cad-inp" style="width:110px" type="number" min="0" step="0.01" placeholder="Preço R$" value="'+(a.preco||'')+'" oninput="_formApresentacoes['+i+'].preco=parseFloat(this.value)||0">'
+      +(_formApresentacoes.length>1 ? '<button type="button" onclick="_cadRemoverApresentacao('+i+')" style="background:none;border:none;color:#c0392b;font-size:18px;cursor:pointer;padding:0 4px">×</button>' : '<span style="width:26px"></span>')
+      +'</div>';
+  }).join('');
+}
+function _cadAdicionarApresentacao(){
+  _formApresentacoes.push({unid:'', preco:0});
+  _cadRenderApresentacoes();
+}
+function _cadRemoverApresentacao(i){
+  _formApresentacoes.splice(i,1);
+  _cadRenderApresentacoes();
+}
+
+/* ── Revisão manual: traz itens do catálogo de coleta (Aviário/Perda/
+   Campo/Estoque) para o cadastro único de produtos — um por um, só
+   quando o admin decide, nunca automaticamente. ── */
+function _cadAbrirRevisaoCatalogo(){
+  var cont = document.getElementById('cad-revisao-catalogo');
+  var formCont = document.getElementById('cad-form-produtos');
+  if(formCont) formCont.style.display = 'none';
+  _cadEditIdx = -1;
+
+  var catalogo = _catalogoCarregar();
+  var candidatos = [];
+  Object.keys(SETORES).forEach(function(setorKey){
+    var label = SETORES[setorKey].label;
+    (catalogo[setorKey]||[]).forEach(function(it){
+      var nomeNorm = (it.nome||'').trim().toLowerCase();
+      var unidNorm = (it.unid||'').trim().toLowerCase();
+      var prodExistente = (_cadDados.produtos||[]).find(function(p){ return (p.nome||'').trim().toLowerCase()===nomeNorm; });
+      var jaTemEssaUnidade = prodExistente && (prodExistente.apresentacoes||[]).some(function(a){ return (a.unid||'').trim().toLowerCase()===unidNorm; });
+      if(!jaTemEssaUnidade){
+        candidatos.push({ setor:label, nome:it.nome, unid:it.unid, existeProduto:!!prodExistente });
+      }
+    });
+  });
+
+  if(!candidatos.length){
+    cont.style.display = 'block';
+    cont.innerHTML = '<div class="cad-vazia" style="margin-top:12px">✅ Todos os itens do catálogo de coleta já estão no cadastro unificado.</div>';
+    return;
+  }
+
+  cont.style.display = 'block';
+  cont.innerHTML = '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--ce)">'
+    +'<div style="font-family:DM Mono,monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:10px">'
+    +candidatos.length+' item(ns) do catálogo de coleta ainda não estão no cadastro — revise e adicione um a um:</div>'
+    +candidatos.map(function(c, i){
+      return '<div class="cad-item" style="align-items:center">'
+        +'<div class="cad-item-info">'
+        +'<div class="cad-item-nm">'+_escH(c.nome)+(c.existeProduto?' <span style="font-weight:400;color:#1a6b2a;font-size:11px">(produto já existe — nova apresentação)</span>':'')+'</div>'
+        +'<div class="cad-item-det">'+_escH(c.setor)+' · '+_escH(c.unid)+'</div>'
+        +'</div>'
+        +'<input type="number" min="0" step="0.01" placeholder="Preço R$" id="revpreco-'+i+'" style="width:80px;padding:6px;border:1px solid #ddd;border-radius:6px;font-size:13px;margin-right:6px">'
+        +'<button class="cad-btn-ed" onclick="_cadAdicionarCandidatoRevisao('+i+')" title="Adicionar ao cadastro">+ Adicionar</button>'
+        +'</div>';
+    }).join('');
+  cont._candidatos = candidatos;
+}
+
+async function _cadAdicionarCandidatoRevisao(i){
+  var cont = document.getElementById('cad-revisao-catalogo');
+  var c = cont._candidatos && cont._candidatos[i];
+  if(!c) return;
+  var precoEl = document.getElementById('revpreco-'+i);
+  var preco = precoEl ? (parseFloat(precoEl.value)||0) : 0;
+
+  var nomeNorm = (c.nome||'').trim().toLowerCase();
+  var prod = (_cadDados.produtos||[]).find(function(p){ return (p.nome||'').trim().toLowerCase()===nomeNorm; });
+  if(prod){
+    if(!prod.apresentacoes) prod.apresentacoes = [];
+    prod.apresentacoes.push({ unid:c.unid, preco:preco });
+  } else {
+    _cadDados.produtos.push({
+      id: 'p'+Date.now()+'_'+i,
+      setor: c.setor,
+      nome: c.nome,
+      apresentacoes: [{ unid:c.unid, preco:preco }]
+    });
+  }
+  await _cadSalvar();
+  _toast('✅ '+c.nome+' ('+c.unid+') adicionado ao cadastro!');
+  _cadRenderAba('produtos');
+  _cadAbrirRevisaoCatalogo(); // atualiza a lista, removendo o item ja adicionado
+}
+
+/* ── Revisão manual: traz itens do catálogo de coleta (Aviário/Perda/
+   Campo/Estoque) para o cadastro único de produtos — um por um, só
+   quando o admin decide, nunca automaticamente. ── */
+function _cadAbrirRevisaoCatalogo(){
+  var cont = document.getElementById('cad-revisao-catalogo');
+  var formCont = document.getElementById('cad-form-produtos');
+  if(formCont) formCont.style.display = 'none';
+  _cadEditIdx = -1;
+
+  var catalogo = _catalogoCarregar();
+  var candidatos = [];
+  Object.keys(SETORES).forEach(function(setorKey){
+    var label = SETORES[setorKey].label;
+    (catalogo[setorKey]||[]).forEach(function(it){
+      var nomeNorm = (it.nome||'').trim().toLowerCase();
+      var unidNorm = (it.unid||'').trim().toLowerCase();
+      var prodExistente = (_cadDados.produtos||[]).find(function(p){ return (p.nome||'').trim().toLowerCase()===nomeNorm; });
+      var jaTemEssaUnidade = prodExistente && (prodExistente.apresentacoes||[]).some(function(a){ return (a.unid||'').trim().toLowerCase()===unidNorm; });
+      if(!jaTemEssaUnidade){
+        candidatos.push({ setor:label, nome:it.nome, unid:it.unid, existeProduto:!!prodExistente });
+      }
+    });
+  });
+
+  if(!candidatos.length){
+    cont.style.display = 'block';
+    cont.innerHTML = '<div class="cad-vazia" style="margin-top:12px">✅ Todos os itens do catálogo de coleta já estão no cadastro unificado.</div>';
+    return;
+  }
+
+  cont.style.display = 'block';
+  cont.innerHTML = '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--ce)">'
+    +'<div style="font-family:DM Mono,monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:10px">'
+    +candidatos.length+' item(ns) do catálogo de coleta ainda não estão no cadastro — revise e adicione um a um:</div>'
+    +candidatos.map(function(c, i){
+      return '<div class="cad-item" style="align-items:center">'
+        +'<div class="cad-item-info">'
+        +'<div class="cad-item-nm">'+_escH(c.nome)+(c.existeProduto?' <span style="font-weight:400;color:#1a6b2a;font-size:11px">(produto já existe — nova apresentação)</span>':'')+'</div>'
+        +'<div class="cad-item-det">'+_escH(c.setor)+' · '+_escH(c.unid)+'</div>'
+        +'</div>'
+        +'<input type="number" min="0" step="0.01" placeholder="Preço R$" id="revpreco-'+i+'" style="width:80px;padding:6px;border:1px solid #ddd;border-radius:6px;font-size:13px;margin-right:6px">'
+        +'<button class="cad-btn-ed" onclick="_cadAdicionarCandidatoRevisao('+i+')" title="Adicionar ao cadastro">+ Adicionar</button>'
+        +'</div>';
+    }).join('');
+  cont._candidatos = candidatos;
+}
+
+async function _cadAdicionarCandidatoRevisao(i){
+  var cont = document.getElementById('cad-revisao-catalogo');
+  var c = cont._candidatos && cont._candidatos[i];
+  if(!c) return;
+  var precoEl = document.getElementById('revpreco-'+i);
+  var preco = precoEl ? (parseFloat(precoEl.value)||0) : 0;
+
+  var nomeNorm = (c.nome||'').trim().toLowerCase();
+  var prod = (_cadDados.produtos||[]).find(function(p){ return (p.nome||'').trim().toLowerCase()===nomeNorm; });
+  if(prod){
+    if(!prod.apresentacoes) prod.apresentacoes = [];
+    prod.apresentacoes.push({ unid:c.unid, preco:preco });
+  } else {
+    _cadDados.produtos.push({
+      id: 'p'+Date.now()+'_'+i,
+      setor: c.setor,
+      nome: c.nome,
+      apresentacoes: [{ unid:c.unid, preco:preco }]
+    });
+  }
+  await _cadSalvar();
+  _toast('✅ '+c.nome+' ('+c.unid+') adicionado ao cadastro!');
+  _cadRenderAba('produtos');
+  _cadAbrirRevisaoCatalogo(); // atualiza a lista, removendo o item ja adicionado
 }
 
 function _cadPrecoProdChange(){
@@ -16373,13 +16583,16 @@ async function _cadSalvarItem(aba){
   var nome = (document.getElementById('cf-nome')||{value:''}).value.trim();
   var prodNome = (document.getElementById('cf-prodnome')||{value:''}).value.trim();
   if(aba==='produtos'){
+    var apresentacoesValidas = (_formApresentacoes||[]).filter(function(a){ return (a.unid||'').trim(); })
+      .map(function(a){ return {unid:a.unid.trim(), preco:parseFloat(a.preco)||0}; });
     item = {
       id:   'p'+Date.now(),
       setor:(document.getElementById('cf-setor')||{value:''}).value.trim(),
       nome: nome,
-      unid: (document.getElementById('cf-unid')||{value:''}).value.trim()
+      apresentacoes: apresentacoesValidas
     };
     if(!item.nome){ _toast('\u26a0\ufe0f Informe o nome do produto'); return; }
+    if(!item.apresentacoes.length){ _toast('\u26a0\ufe0f Informe ao menos uma unidade'); return; }
   } else if(aba==='clientes'){
     item = {
       id:      'c'+Date.now(),
@@ -16508,6 +16721,24 @@ async function _cadInit(){
     await _cadSalvar();
     try{ localStorage.setItem('ca_cad_seed_v1','1'); }catch(e){}
   }
+  // Migracao unica: cada produto passa a ter uma LISTA de apresentacoes
+  // (unidade + preco), em vez de uma unica unidade e um preco separado em
+  // outra lista. Preserva tudo que ja existia — nao apaga nada, so
+  // reorganiza os mesmos dados no novo formato.
+  if(!localStorage.getItem('ca_cad_apresentacoes_v1')){
+    (_cadDados.produtos||[]).forEach(function(p){
+      if(!p.apresentacoes){
+        p.apresentacoes = [];
+        if(p.unid){
+          var precoExist = (_cadDados.precos||[]).find(function(x){ return x.prodNome===p.nome; });
+          p.apresentacoes.push({ unid: p.unid, preco: precoExist ? (parseFloat(precoExist.preco)||0) : 0 });
+        }
+      }
+    });
+    await _cadSalvar();
+    try{ localStorage.setItem('ca_cad_apresentacoes_v1','1'); }catch(e){}
+  }
+
   // Migracao unica: traz para Cadastros → Clientes todos os nomes ja usados
   // em pedidos anteriores, para que a lista de selecao de clientes do Talao
   // de Pedidos nasca completa (sem exigir recadastro manual de quem ja
@@ -16558,12 +16789,14 @@ async function _cadInit(){
     <button class="cad-aba" onclick="_cadTrocaAba('precos',this)">Preços</button>
   </div>
   <!-- Produtos -->
-  <div class="cad-painel vis" id="cad-p-produtos">
+<div class="cad-painel vis" id="cad-p-produtos">
     <div class="cad-lista" id="cad-lista-produtos"></div>
     <div id="cad-form-produtos" style="display:none"></div>
-    <div class="cad-rodape">
+    <div class="cad-rodape" style="flex-direction:column;gap:8px;align-items:stretch">
       <button class="cad-btn-add" onclick="_cadNovoForm('produtos')">+ Novo produto</button>
+      <button class="cad-btn-add" style="background:#1e3a5f" onclick="_cadAbrirRevisaoCatalogo()">🔀 Revisar itens do catálogo de coleta</button>
     </div>
+    <div id="cad-revisao-catalogo" style="display:none"></div>
   </div>
   <!-- Clientes -->
   <div class="cad-painel" id="cad-p-clientes">
