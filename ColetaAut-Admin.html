@@ -149,6 +149,15 @@ textarea{resize:none;height:72px;font-size:14px}
 .ph-btn-apa{width:30px;height:30px;padding:0;border:1px solid #fde8e8;border-radius:6px;background:#fde8e8;color:#a03030;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 /* BOTOES PRINCIPAIS */
 .btn-wpp{width:100%;padding:16px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 4px 16px rgba(37,211,102,.3);margin-top:8px}
+/* Botões de Coleta (Coletas / Coletas Pendentes / Enviar coleta) não têm
+   relação com Pedidos — ficam escondidos quando essa aba está ativa.
+   Regra funcional, vale em qualquer tamanho de tela. */
+body:has(#sec-vendas.at) #linha-cp-btns,
+body:has(#sec-vendas.at) #wrap-pendentes-btn,
+body:has(#sec-vendas.at) #btn-enviar-coleta-global,
+body:has(#sec-vendas.at) #contador{
+  display:none;
+}
 .btn-wpp:active{opacity:.85}
 /* CONT */
 .cont{font-family:'DM Mono',monospace;font-size:11px;color:var(--mu);text-align:center;margin-bottom:16px;letter-spacing:1px}
@@ -929,7 +938,7 @@ input[type="password"]:-webkit-autofill{
       <div class="vt-val" id="vt-val">R$ 0,00</div>
     </div>
     <div style="margin-top:12px">
-      <button class="btn-wpp" onclick="enviarPedido()" style="background:linear-gradient(135deg,#7a3a00,#b85a00)">
+      <button class="btn-wpp" onclick="enviarPedido()">
         Enviar Pedido
       </button>
     </div>
@@ -980,17 +989,17 @@ input[type="password"]:-webkit-autofill{
   </div>
 </div>
   <div class="div"></div>
-  <div style="display:flex;gap:8px;margin-bottom:8px">
+  <div id="linha-cp-btns" style="display:flex;gap:8px;margin-bottom:8px">
     <button onclick="abrirHistColeta()" style="flex:1;padding:11px 0;border:1.5px solid var(--ce);border-radius:var(--r);background:#fff;color:#1e3a5f;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer">📊 Coletas</button>
     <button id="btn-consulta-pedidos" onclick="abrirHistPedidos()" style="flex:1;padding:11px 0;border:1.5px solid var(--ce);border-radius:var(--r);background:#fff;color:#7a3a00;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer">📄 Pedidos</button>
   </div>
-  <div style="margin-bottom:8px">
+  <div id="wrap-pendentes-btn" style="margin-bottom:8px">
     <button onclick="abrirPendentes()" style="width:100%;padding:12px 0;border:2px solid #1a6b2a;border-radius:var(--r);background:rgba(26,107,42,.08);color:#1a6b2a;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer">
       📥 Coletas Pendentes <span id="badge-pendentes" style="display:none;background:#1a6b2a;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;margin-left:4px"></span>
     </button>
   </div>
   <div class="cont" id="contador">Nenhum item preenchido</div>
-  <button class="btn-wpp" onclick="enviarTudo()">💬 Enviar coleta</button>
+  <button class="btn-wpp" id="btn-enviar-coleta-global" onclick="enviarTudo()">💬 Enviar coleta</button>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -11390,7 +11399,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '889082faf060';
+  var FP = 'bb487d992b6e';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
