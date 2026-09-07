@@ -602,6 +602,32 @@ input[type="password"]:-webkit-autofill{
 
   /* Itens de Vendas: aproveita a largura extra em 3 colunas em vez de 2 */
   .vi-row2{ grid-template-columns:1fr 1fr 1fr; }
+
+  /* Aba Pedidos: formulário compacto e centralizado, no mesmo espírito
+     das demais abas — "Pedido" e "Total do pedido" ficam lado a lado
+     na mesma linha, em vez de blocos separados um embaixo do outro. */
+  #painel-novo{
+    max-width:520px; margin-left:auto; margin-right:auto;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    grid-template-areas:
+      "pedido  total"
+      "cliente cliente"
+      "itens   itens"
+      "add     add"
+      "enviar  enviar";
+    column-gap:14px; row-gap:10px; align-items:start;
+  }
+  #talao-num{ grid-area:pedido; margin-bottom:0 !important; }
+  #vt-total-pedido{ grid-area:total; margin:0 !important; }
+  #cg-cliente-venda{ grid-area:cliente; margin-bottom:0 !important; }
+  #vendas-itens{ grid-area:itens; }
+  #painel-novo > .btn-add{ grid-area:add; }
+  #wrap-enviar-pedido{ grid-area:enviar; margin-top:4px !important; }
+
+  #filtros-pedidos{ max-width:520px; margin-left:auto !important; margin-right:auto !important; }
+  #painel-hist{ max-width:520px; margin-left:auto; margin-right:auto; max-height:60vh; overflow-y:auto; }
+
   /* Telas cheias especiais (splash, primeiro acesso, bloqueio) também
      ganham o mesmo enquadramento central, em vez de esticar a tela toda */
   .ca-tela, #tela-bloqueio{
@@ -1008,7 +1034,7 @@ input[type="password"]:-webkit-autofill{
   <!-- PAINEL NOVO PEDIDO -->
   <div class="hist-panel vis" id="painel-novo">
     <div class="talao-num" id="talao-num">Pedido <strong>PED-0001</strong></div>
-    <div class="cg" style="margin-bottom:12px">
+    <div class="cg" id="cg-cliente-venda" style="margin-bottom:12px">
       <span class="cl">Nome do Cliente</span>
       <select id="venda-cliente-sel" onchange="_onSelecionarClienteVenda()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#fff;margin-bottom:8px">
         <option value="">— Escolha um cliente —</option>
@@ -1018,18 +1044,18 @@ input[type="password"]:-webkit-autofill{
     </div>
     <div id="vendas-itens"></div>
     <button class="btn-add" onclick="addItemVenda()">+ Adicionar item</button>
-    <div class="vt">
+    <div class="vt" id="vt-total-pedido">
       <div><div class="vt-lbl">Total do pedido</div></div>
       <div class="vt-val" id="vt-val">R$ 0,00</div>
     </div>
-    <div style="margin-top:12px">
+    <div style="margin-top:12px" id="wrap-enviar-pedido">
       <button class="btn-wpp" onclick="enviarPedido()" style="background:linear-gradient(135deg,#7a3a00,#b85a00)">
         Enviar Pedido
       </button>
     </div>
   </div>
   <!-- Filtros de pedidos — mesmo layout do historico de coletas -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;background:#f5f0e8;border-bottom:1px solid var(--ce);margin:0 -16px 14px;padding:10px 16px">
+  <div id="filtros-pedidos" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;background:#f5f0e8;border-bottom:1px solid var(--ce);margin:0 -16px 14px;padding:10px 16px">
     <div>
       <div class="hcol-lbl">Ano</div>
       <select class="hcol-sel" id="hped-ano" onchange="_renderHist()"></select>
@@ -11484,7 +11510,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = 'f87a3927fb69';
+  var FP = '41f628c0503d';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
