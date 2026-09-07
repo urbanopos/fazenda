@@ -1,5 +1,56 @@
 [
   {
+    "data": "2026-09-07",
+    "coletor": "JÃºnior",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "unid": "unid",
+        "qtd": 55,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1788812231069
+  },
+  {
+    "data": "2026-09-07",
+    "coletor": "JÃºnior",
+    "itens": [
+      {
+        "setor": "Perda",
+        "nome": "Pintainha",
+        "qtd": 1,
+        "unid": "unid",
+        "tipo": ""
+      },
+      {
+        "setor": "Perda",
+        "nome": "Pintos",
+        "qtd": 1,
+        "unid": "Unid.",
+        "tipo": ""
+      }
+    ],
+    "ts": 1788802408782
+  },
+  {
+    "data": "2026-09-06",
+    "coletor": "JÃºnior",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "qtd": 50,
+        "unid": "unid",
+        "tipo": ""
+      }
+    ],
+    "ts": 1788812339769
+  },
+  {
     "data": "2026-09-05",
     "coletor": "JÃºnior",
     "itens": [
