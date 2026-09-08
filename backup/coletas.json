@@ -1,21 +1,7 @@
 [
   {
     "data": "2026-09-07",
-    "coletor": "Júnior",
-    "itens": [
-      {
-        "setor": "Estoque",
-        "nome": "Ração de peixe",
-        "qtd": 1,
-        "unid": "Sc 25kg",
-        "tipo": "Saida"
-      }
-    ],
-    "ts": 1788849931047
-  },
-  {
-    "data": "2026-09-07",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -31,7 +17,7 @@
   },
   {
     "data": "2026-09-07",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Perda",
@@ -52,7 +38,7 @@
   },
   {
     "data": "2026-09-06",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -66,7 +52,7 @@
   },
   {
     "data": "2026-09-05",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Perda",
@@ -94,7 +80,9 @@
         "tipo": ""
       }
     ],
-    "ts": 1788636794025
+    "ts": 1788636794025,
+    "_excluido": true,
+    "_excluidoEm": 1788821338159
   },
   {
     "data": "2026-09-05",
@@ -254,7 +242,7 @@
   },
   {
     "data": "2026-08-31",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Perda",
@@ -304,7 +292,7 @@
   },
   {
     "data": "2026-08-30",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -334,7 +322,7 @@
   },
   {
     "data": "2026-08-28",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Perda",
@@ -348,11 +336,11 @@
   },
   {
     "data": "2026-08-28",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Estoque",
-        "nome": "Ração de peixe",
+        "nome": "RaÃ§Ã£o de peixe",
         "unid": "Sc 25kg",
         "qtd": 1,
         "obs": "Tilemax 32",
@@ -458,7 +446,7 @@
   },
   {
     "data": "2026-08-24",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Perda",
@@ -520,7 +508,7 @@
       },
       {
         "setor": "Estoque",
-        "nome": "Ração de peixe",
+        "nome": "RaÃ§Ã£o de peixe",
         "qtd": 1,
         "unid": "Sc 25kg",
         "tipo": "Saida"
@@ -530,7 +518,7 @@
   },
   {
     "data": "2026-08-23",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Campo",
@@ -544,7 +532,7 @@
   },
   {
     "data": "2026-08-23",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -666,7 +654,7 @@
   },
   {
     "data": "2026-08-19",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Perda",
@@ -691,7 +679,7 @@
   },
   {
     "data": "2026-08-19",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Perda",
@@ -788,7 +776,7 @@
   },
   {
     "data": "2026-08-15",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -801,7 +789,7 @@
   },
   {
     "data": "2026-08-14",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -843,11 +831,11 @@
   },
   {
     "data": "2026-08-12",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Estoque",
-        "nome": "Ração de peixe",
+        "nome": "RaÃ§Ã£o de peixe",
         "qtd": 10,
         "unid": "Sc 25kg",
         "tipo": "Entrada"
@@ -875,7 +863,7 @@
       },
       {
         "setor": "Estoque",
-        "nome": "Ração de Gado",
+        "nome": "RaÃ§Ã£o de Gado",
         "qtd": 10,
         "unid": "Sc 40kg",
         "tipo": "Entrada"
@@ -900,7 +888,7 @@
   },
   {
     "data": "2026-08-11",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Perda",
@@ -930,7 +918,7 @@
   },
   {
     "data": "2026-08-10",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Perda",
@@ -995,7 +983,7 @@
   },
   {
     "data": "2026-08-09",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Perda",
@@ -1008,7 +996,7 @@
   },
   {
     "data": "2026-08-09",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1051,7 +1039,7 @@
   },
   {
     "data": "2026-08-06",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1081,11 +1069,11 @@
   },
   {
     "data": "2026-08-05",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Estoque",
-        "nome": "Ração de peixe",
+        "nome": "RaÃ§Ã£o de peixe",
         "qtd": 1,
         "unid": "Sc 25kg",
         "tipo": "Entrada"
@@ -1102,7 +1090,7 @@
   },
   {
     "data": "2026-08-05",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1165,7 +1153,7 @@
   },
   {
     "data": "2026-08-03",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1238,7 +1226,7 @@
   },
   {
     "data": "2026-08-02",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1281,11 +1269,11 @@
   },
   {
     "data": "2026-07-30",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Estoque",
-        "nome": "Ração de peixe",
+        "nome": "RaÃ§Ã£o de peixe",
         "qtd": 3,
         "unid": "Sc 25kg",
         "tipo": "Entrada"
@@ -1383,7 +1371,7 @@
   },
   {
     "data": "2026-07-26",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1475,7 +1463,7 @@
       },
       {
         "setor": "Estoque",
-        "nome": "Ração de peixe",
+        "nome": "RaÃ§Ã£o de peixe",
         "qtd": 1,
         "unid": "Sc 25kg",
         "tipo": "Saida"
@@ -1513,7 +1501,7 @@
   },
   {
     "data": "2026-07-20",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1526,7 +1514,7 @@
   },
   {
     "data": "2026-07-19",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1554,14 +1542,14 @@
   },
   {
     "data": "2026-07-18",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Campo",
         "nome": "Coco Seco",
         "unid": "unid",
         "qtd": 327,
-        "obs": "Irmão",
+        "obs": "IrmÃ£o",
         "forn": ""
       }
     ],
@@ -1643,7 +1631,7 @@
   },
   {
     "data": "2026-07-14",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1656,7 +1644,7 @@
   },
   {
     "data": "2026-07-13",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1669,7 +1657,7 @@
   },
   {
     "data": "2026-07-13",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1684,7 +1672,7 @@
   },
   {
     "data": "2026-07-12",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1699,7 +1687,7 @@
   },
   {
     "data": "2026-07-11",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1784,7 +1772,7 @@
   },
   {
     "data": "2026-07-08",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1799,7 +1787,7 @@
   },
   {
     "data": "2026-07-07",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1814,7 +1802,7 @@
   },
   {
     "data": "2026-07-06",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -1856,7 +1844,7 @@
   },
   {
     "data": "2026-07-06",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1869,7 +1857,7 @@
   },
   {
     "data": "2026-07-05",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1882,7 +1870,7 @@
   },
   {
     "data": "2026-07-04",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1895,7 +1883,7 @@
   },
   {
     "data": "2026-07-03",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1908,7 +1896,7 @@
   },
   {
     "data": "2026-07-03",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -1936,7 +1924,7 @@
   },
   {
     "data": "2026-07-02",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1949,7 +1937,7 @@
   },
   {
     "data": "2026-07-01",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Campo",
@@ -1964,11 +1952,11 @@
   },
   {
     "data": "2026-07-01",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Estoque",
-        "nome": "Ração de peixe",
+        "nome": "RaÃ§Ã£o de peixe",
         "qtd": 1,
         "unid": "Sc 25kg",
         "tipo": "Saida"
@@ -1978,7 +1966,7 @@
   },
   {
     "data": "2026-07-01",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Aviario",
@@ -1991,7 +1979,7 @@
   },
   {
     "data": "2026-06-27",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -2026,7 +2014,7 @@
   },
   {
     "data": "2026-06-22",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Campo",
@@ -2041,7 +2029,7 @@
   },
   {
     "data": "2026-06-22",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Perda",
@@ -2056,7 +2044,7 @@
   },
   {
     "data": "2026-06-22",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Perda",
@@ -2071,7 +2059,7 @@
   },
   {
     "data": "2026-06-17",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -2103,7 +2091,7 @@
       },
       {
         "setor": "Estoque",
-        "nome": "Ração de peixe",
+        "nome": "RaÃ§Ã£o de peixe",
         "qtd": 1,
         "unid": "Sc 25kg",
         "tipo": "Saida"
@@ -2113,7 +2101,7 @@
   },
   {
     "data": "2026-06-15",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Campo",
@@ -2126,7 +2114,7 @@
   },
   {
     "data": "2026-06-10",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -2161,7 +2149,7 @@
   },
   {
     "data": "2026-06-05",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -2175,7 +2163,7 @@
   },
   {
     "data": "2026-06-02",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -2200,7 +2188,7 @@
       },
       {
         "setor": "Estoque",
-        "nome": "Ração de peixe",
+        "nome": "RaÃ§Ã£o de peixe",
         "qtd": 3,
         "unid": "Sc 25kg",
         "tipo": "Entrada"
@@ -2210,7 +2198,7 @@
   },
   {
     "data": "2026-06-02",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -2245,7 +2233,7 @@
   },
   {
     "data": "2026-05-01",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Estoque",
@@ -2291,7 +2279,7 @@
       },
       {
         "setor": "Estoque",
-        "nome": "Ração de peixe",
+        "nome": "RaÃ§Ã£o de peixe",
         "qtd": 8,
         "unid": "Sc 25kg",
         "tipo": "Entrada"
@@ -2305,7 +2293,7 @@
       },
       {
         "setor": "Estoque",
-        "nome": "Ração de peixe",
+        "nome": "RaÃ§Ã£o de peixe",
         "qtd": 12,
         "unid": "Sc 25kg",
         "tipo": "Saida"
