@@ -1,1 +1,301 @@
-{}
+{
+  "produtos": [
+    {
+      "id": "p_ovo",
+      "setor": "Vendas",
+      "nome": "Ovos de Capoeira",
+      "unid": "Bandeja c/30 ovos",
+      "apresentacoes": [
+        {
+          "unid": "Bandeja c/30 ovos",
+          "preco": 30
+        }
+      ]
+    },
+    {
+      "id": "p_galinha",
+      "setor": "Vendas",
+      "nome": "Galinha Abatida",
+      "unid": "Unid.",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 60
+        }
+      ]
+    },
+    {
+      "id": "p_frango",
+      "setor": "Vendas",
+      "nome": "Frango Abatido",
+      "unid": "Unid.",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 50
+        }
+      ]
+    },
+    {
+      "id": "p_pinto",
+      "setor": "Vendas",
+      "nome": "Pintos",
+      "unid": "Unid.",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 30
+        }
+      ]
+    },
+    {
+      "id": "p_pintainha",
+      "setor": "Vendas",
+      "nome": "Pintainha",
+      "unid": "Unid.",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p_esterco",
+      "setor": "Vendas",
+      "nome": "Esterco",
+      "unid": "Sc.",
+      "apresentacoes": [
+        {
+          "unid": "Sc.",
+          "preco": 15
+        }
+      ]
+    },
+    {
+      "id": "p_coco",
+      "setor": "Vendas",
+      "nome": "Coco Seco",
+      "unid": "Unid.",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 2
+        }
+      ]
+    },
+    {
+      "id": "p_manga",
+      "setor": "Vendas",
+      "nome": "Manga",
+      "unid": "Caixa",
+      "apresentacoes": [
+        {
+          "unid": "Caixa",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p_abacate",
+      "setor": "Vendas",
+      "nome": "Abacate",
+      "unid": "Caixa",
+      "apresentacoes": [
+        {
+          "unid": "Caixa",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1787993055897",
+      "setor": "Vendas",
+      "nome": "Galinha Viva",
+      "unid": "Unid.",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 50
+        }
+      ]
+    },
+    {
+      "id": "p1787993157009",
+      "setor": "Vendas",
+      "nome": "Frango Vivo",
+      "unid": "Unid.",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 50
+        }
+      ]
+    }
+  ],
+  "clientes": [
+    {
+      "id": "c_1787276555930_303",
+      "nome": "Léo Alencar",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_51",
+      "nome": "Raiane de Oliveira",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_608",
+      "nome": "Fátima",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_905",
+      "nome": "Wagner Vivaldo",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_841",
+      "nome": "Ariandne",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_52",
+      "nome": "Ana Porpino",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_232",
+      "nome": "Buiu (Casa Amarela)",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_100",
+      "nome": "Luiza Gomes",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_382",
+      "nome": "Jaime Baía de Guanabara",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_766",
+      "nome": "Josafá (Casa Amarela)",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_398",
+      "nome": "Carlos Alberto",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_794",
+      "nome": "João Brasiliano",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_511",
+      "nome": "Gilvando",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_924",
+      "nome": "Son Albuquerque",
+      "contato": "",
+      "obs": ""
+    }
+  ],
+  "fornecedores": [
+    {
+      "id": "f1787994057987",
+      "nome": "IRCA",
+      "contato": "",
+      "obs": "Ração"
+    },
+    {
+      "id": "f1787994091935",
+      "nome": "Mauricéia",
+      "contato": "",
+      "obs": "Ração"
+    }
+  ],
+  "precos": [
+    {
+      "id": "r1787937435455",
+      "prodNome": "Ovos de Capoeira",
+      "preco": 30,
+      "unid": "Bandeja c/30 ovos",
+      "nome": "Ovos de Capoeira"
+    },
+    {
+      "id": "r1787937476404",
+      "prodNome": "Galinha Abatida",
+      "preco": 60,
+      "unid": "Unid.",
+      "nome": "Galinha Abatida"
+    },
+    {
+      "id": "r1787937504276",
+      "prodNome": "Galinha Viva",
+      "preco": 50,
+      "unid": "Unid.",
+      "nome": "Galinha Viva"
+    },
+    {
+      "id": "r1787937536104",
+      "prodNome": "Frango Abatido",
+      "preco": 50,
+      "unid": "Unid.",
+      "nome": "Frango Abatido"
+    },
+    {
+      "id": "r1787937561124",
+      "prodNome": "Pintos",
+      "preco": 30,
+      "unid": "Unid.",
+      "nome": "Pintos"
+    },
+    {
+      "id": "r1787937576401",
+      "prodNome": "Esterco",
+      "preco": 15,
+      "unid": "Sc.",
+      "nome": "Esterco"
+    },
+    {
+      "id": "r1787937595107",
+      "prodNome": "Coco Seco",
+      "preco": 2,
+      "unid": "Unid.",
+      "nome": "Coco Seco"
+    },
+    {
+      "id": "r1787937643264",
+      "prodNome": "Coco Seco",
+      "preco": 2.5,
+      "unid": "Unid.",
+      "nome": "Coco Seco"
+    },
+    {
+      "id": "r1787994271450",
+      "prodNome": "Frango Vivo",
+      "preco": 50,
+      "unid": "Unid.",
+      "nome": "Frango Vivo"
+    }
+  ]
+}
