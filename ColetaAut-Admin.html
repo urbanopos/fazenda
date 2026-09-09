@@ -11394,7 +11394,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '978887bc57f5';
+  var FP = '7f8ff6b38442';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -13387,7 +13387,7 @@ var HK = 'fsj_hist_pedidos';
 var _pedAtual = null; // pedido aberto no modal
 
 async function _salvarPedido(ped){
-  var hist = _carregarHist();
+  var hist = _carregarHistRaw();
   hist.unshift(ped);
   if(hist.length > 100) hist = hist.slice(0,100);
   await _gravarHist(hist);
@@ -13727,7 +13727,7 @@ function fecharModalPed(){
 var CK = 'fsj_hist_coletas';
 
 function _salvarColeta(reg){
-  var hist = _carregarHistColeta();
+  var hist = _carregarHistColetaRaw();
   hist.unshift(reg);
   if(hist.length > 500) hist = hist.slice(0,500);
   var json = JSON.stringify(hist);
@@ -14690,7 +14690,7 @@ function _renderHistColetaTotal(body, registros, ano, mes, setorFiltro){
         totalSacos += it.temTipo ? (it.entrada - it.saida) : it.entrada;
       });
       var totalFmt = Number(totalSacos).toLocaleString('pt-BR',{maximumFractionDigits:2});
-      totalizacaoExtra = '<span style="font-family:\'DM Mono\',monospace;font-size:11px;font-weight:700;background:rgba(255,255,255,.18);color:#fff;padding:5px 12px;border-radius:12px;margin-left:8px;vertical-align:middle">Total: '+totalFmt+' sacos</span>';
+      totalizacaoExtra = '<span style="font-family:\'DM Mono\',monospace;font-size:11px;font-weight:700;background:'+cor+';color:#fff;padding:5px 12px;border-radius:12px;margin-left:8px;vertical-align:middle">Total: '+totalFmt+' sacos</span>';
     }
     html += '<div class="hcol-secao"><span class="hcol-secao-titulo" style="background:'+cor+'">'+setor+'</span>'+totalizacaoExtra;
     Object.keys(totais[setor]).forEach(function(nome){
@@ -15009,8 +15009,9 @@ function _salvarEditColeta(ri){
   regs[ri].itens   = novosItens;
   regs[ri].ts      = regs[ri].ts || Date.now();
 
-  // Persiste: recarrega todo o historico, encontra pelo ts e substitui
-  var hist = _carregarHistColeta();
+  // Persiste: recarrega TODO o historico (incluindo excluidos, para nao
+  // perder tombstones ainda nao sincronizados), encontra pelo ts e substitui
+  var hist = _carregarHistColetaRaw();
   var ts = regs[ri].ts;
   var found = false;
   for(var i=0; i<hist.length; i++){
@@ -15087,7 +15088,7 @@ function _mrqConfirmar(){
 }
 
 async function _executarReversaoIdx(i){
-  var hist = _carregarHist();
+  var hist = _carregarHistRaw();
   var filtrado = _filtrarHist(hist);
   var p = filtrado[i];
   if(!p) return;
@@ -15101,7 +15102,7 @@ async function _executarReversaoIdx(i){
 
 async function _executarReversaoModal(){
   if(!_pedAtual) return;
-  var hist = _carregarHist();
+  var hist = _carregarHistRaw();
   var idx  = hist.findIndex(function(p){ return p.ts === _pedAtual.ts; });
   if(idx < 0) return;
   hist[idx].pago = false;
@@ -15150,7 +15151,7 @@ async function _mcqConfirmarQuit(){
 }
 
 async function _executarQuitacaoIdx(i){
-  var hist = _carregarHist();
+  var hist = _carregarHistRaw();
   var filtrado = _filtrarHist(hist);
   var p = filtrado[i];
   if(!p) return;
@@ -15166,7 +15167,7 @@ async function _executarQuitacaoIdx(i){
 
 async function _executarQuitacaoModal(){
   if(!_pedAtual) return;
-  var hist = _carregarHist();
+  var hist = _carregarHistRaw();
   var idx  = hist.findIndex(function(p){ return p.ts === _pedAtual.ts; });
   if(idx < 0) return;
   hist[idx].pago = true;
@@ -15476,7 +15477,7 @@ async function _salvarEditPedido(){
   var novoTotal = novosItens.reduce(function(s,it){ return s+it.sub; },0);
 
   // Atualiza no localStorage
-  var hist = _carregarHist();
+  var hist = _carregarHistRaw();
   var idx = hist.findIndex(function(p){ return p.ts === _pedAtual.ts; });
   if(idx >= 0){
     hist[idx].data    = novaData;
@@ -15646,7 +15647,7 @@ async function _aprovarColeta(idx){
   var reg = (window._mpdLista||[])[idx];
   if(!reg){ _toast('Erro: coleta não encontrada.'); return; }
   /* Importa para o histórico local */
-  var hist = _carregarHistColeta();
+  var hist = _carregarHistColetaRaw();
   var novo = Object.assign({},reg);
   delete novo.status; delete novo.enviadoEm;
   hist.unshift(novo);
