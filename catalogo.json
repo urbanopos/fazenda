@@ -129,6 +129,12 @@
       "nome": "Banana Comprida",
       "unid": "Cacho",
       "passo": 1
+    },
+    {
+      "id": "estacas_de_sabia_unid",
+      "nome": "Estacas de sabiá",
+      "unid": "Unid.",
+      "passo": 1
     }
   ],
   "estoque": [
