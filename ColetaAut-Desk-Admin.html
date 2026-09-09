@@ -11515,7 +11515,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '5a5869790d84';
+var _caFP = 'c0f24caee7bb';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -16195,7 +16195,7 @@ async function _sincronizarRegistrosGitHub(manual){
         _cadDados.fornecedores = cadMerge.fornecedores;
         _cadDados.precos       = cadMerge.precos;
         await _cadSalvar();
-        if(typeof _cadRenderLista==='function' && typeof _cadAbaAtual!=='undefined') _cadRenderLista(_cadAbaAtual);
+        if(typeof _cadRenderAba==='function' && typeof _cadAbaAtual!=='undefined') _cadRenderAba(_cadAbaAtual);
         houveMudanca = true;
         await _ghGravar(GH_BCK_CADASTROS, cadMerge, 'Sincronizacao automatica (cadastros)');
       }
@@ -16232,7 +16232,7 @@ async function _fazerBackup(manual){
     await _ghGravar(GH_BCK_PEDIDOS, pedidos, 'Backup pedidos — '+ts);
     /* Cadastros */
     var cads = {};
-    try{ cads = JSON.parse(localStorage.getItem('fsj_cad')||'{}'); }catch(e){}
+    try{ cads = JSON.parse(localStorage.getItem('ca_cad')||'{}'); }catch(e){}
     await _ghGravar(GH_BCK_CADASTROS, cads, 'Backup cadastros — '+ts);
 
     localStorage.setItem(BKP_TS_KEY, ts);
@@ -16267,7 +16267,13 @@ async function _restaurarBackup(){
     /* Cadastros */
     var cads = await _ghLer(GH_BCK_CADASTROS);
     if(cads){
-      try{ localStorage.setItem('fsj_cad', JSON.stringify(cads)); }catch(e){}
+      try{ localStorage.setItem('ca_cad', JSON.stringify(cads)); }catch(e){}
+      if(_caOpfs) await _caOpfsSalvar(FSJ_CAD, JSON.stringify(cads));
+      if(cads.produtos)     _cadDados.produtos     = cads.produtos;
+      if(cads.clientes)     _cadDados.clientes     = cads.clientes;
+      if(cads.fornecedores) _cadDados.fornecedores = cads.fornecedores;
+      if(cads.precos)       _cadDados.precos       = cads.precos;
+      if(typeof _cadRenderAba==='function' && typeof _cadAbaAtual!=='undefined') _cadRenderAba(_cadAbaAtual);
     } else erros.push('cadastros não encontrados');
 
     var ts = new Date().toLocaleString('pt-BR');
@@ -16411,7 +16417,7 @@ async function executarReset(){
   // Reset cadastros em memória
   try{
     _cadDados = {produtos:[],clientes:[],fornecedores:[],precos:[]};
-    _cadRenderLista(_cadAbaAtual);
+    _cadRenderAba(_cadAbaAtual);
   }catch(e){}
   cancelarReset();
   s2.textContent = '✅ Registros apagados. App reiniciado.';
