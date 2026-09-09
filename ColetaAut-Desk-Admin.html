@@ -11514,7 +11514,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '5143682bc890';
+  var FP = '0eea98cc0a40';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -14802,7 +14802,17 @@ function _renderHistColetaTotal(body, registros, ano, mes, setorFiltro){
 
   Object.keys(totais).forEach(function(setor){
     var cor = CORES[setor]||'#555';
-    html += '<div class="hcol-secao"><span class="hcol-secao-titulo" style="background:'+cor+'">'+setor+'</span>';
+    var totalizacaoExtra = '';
+    if(setor === 'Estoque'){
+      var totalSacos = 0;
+      Object.keys(totais[setor]).forEach(function(nome){
+        var it = totais[setor][nome];
+        totalSacos += it.temTipo ? (it.entrada - it.saida) : it.entrada;
+      });
+      var totalFmt = Number(totalSacos).toLocaleString('pt-BR',{maximumFractionDigits:2});
+      totalizacaoExtra = '<span style="font-family:\'DM Mono\',monospace;font-size:11px;font-weight:700;background:rgba(255,255,255,.18);color:#fff;padding:5px 12px;border-radius:12px;margin-left:8px;vertical-align:middle">Total: '+totalFmt+' sacos</span>';
+    }
+    html += '<div class="hcol-secao"><span class="hcol-secao-titulo" style="background:'+cor+'">'+setor+'</span>'+totalizacaoExtra;
     Object.keys(totais[setor]).forEach(function(nome){
       var it = totais[setor][nome];
       var idx = _detalheIdx.length;
@@ -16804,6 +16814,68 @@ async function _cadInit(){
     });
     await _cadSalvar();
     try{ localStorage.setItem('ca_cli_seed_v1','1'); }catch(e){}
+  }
+  // Migracao unica: corrige nomes de itens que foram salvos com problema de
+  // codificacao (ex: "RaÃ§Ã£o" em vez de "Ração") — acontece quando o texto
+  // digitado passa por uma conversao de acentuacao errada em algum momento.
+  // Varre catalogo de coleta, historico de coletas e pedidos, corrigindo
+  // qualquer nome que contenha o sinal tipico desse problema ("Ã").
+  if(!localStorage.getItem('ca_fix_mojibake_v1')){
+    function _corrigirMojibake(str){
+      if(!str || typeof str !== 'string' || str.indexOf('\u00c3') === -1) return str;
+      try{ return decodeURIComponent(escape(str)); }catch(e){ return str; }
+    }
+    var houveCorrecao = false;
+
+    // Catálogo de coleta (Aviário/Perda/Campo/Estoque)
+    var cat = _catalogoCarregar();
+    Object.keys(cat).forEach(function(setorKey){
+      (cat[setorKey]||[]).forEach(function(it){
+        var corrigido = _corrigirMojibake(it.nome);
+        if(corrigido !== it.nome){ it.nome = corrigido; houveCorrecao = true; }
+      });
+    });
+    if(houveCorrecao) _catalogoSalvar(cat);
+
+    // Histórico de coletas (nomes dos itens dentro de cada registro)
+    var histColeta = _carregarHistColetaRaw();
+    var mudouColeta = false;
+    histColeta.forEach(function(r){
+      (r.itens||[]).forEach(function(it){
+        var corrigido = _corrigirMojibake(it.nome);
+        if(corrigido !== it.nome){ it.nome = corrigido; mudouColeta = true; }
+      });
+    });
+    if(mudouColeta){
+      var jc = JSON.stringify(histColeta);
+      try{ localStorage.setItem(CK, jc); }catch(e){}
+      if(_caOpfs) await _caOpfsSalvar(FSJ_COLETAS, jc);
+    }
+
+    // Histórico de pedidos (nomes dos itens vendidos)
+    var histPedRaw = _carregarHistRaw();
+    var mudouPed = false;
+    histPedRaw.forEach(function(p){
+      (p.itens||[]).forEach(function(it){
+        var c1 = _corrigirMojibake(it.nome); if(c1 !== it.nome){ it.nome = c1; mudouPed = true; }
+        var c2 = _corrigirMojibake(it._nome); if(it._nome && c2 !== it._nome){ it._nome = c2; mudouPed = true; }
+      });
+    });
+    if(mudouPed){
+      var jp = JSON.stringify(histPedRaw);
+      try{ localStorage.setItem(HK, jp); }catch(e){}
+      if(_caOpfs) await _caOpfsSalvar(FSJ_PEDIDOS, jp);
+    }
+
+    // Cadastro único de produtos
+    var mudouProd = false;
+    (_cadDados.produtos||[]).forEach(function(p){
+      var corrigido = _corrigirMojibake(p.nome);
+      if(corrigido !== p.nome){ p.nome = corrigido; mudouProd = true; }
+    });
+    if(mudouProd) await _cadSalvar();
+
+    try{ localStorage.setItem('ca_fix_mojibake_v1','1'); }catch(e){}
   }
   _cadAtualizarSetores();
   _atualizarSugestoesClientes();
