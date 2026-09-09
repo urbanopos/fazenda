@@ -11514,7 +11514,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '7e3fc0cf14f3';
+  var FP = '09f043bc5d68';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -15042,11 +15042,11 @@ function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtua
       +'</div>';
   }
   return '<div class="hcol-item-edit-wrap">'
-    +'<div class="hcol-item-edit-row">'
+    +'<div class="hcol-item-edit-row" style="flex-wrap:wrap">'
     +'<input type="hidden" value="'+_esc(setor)+'" id="hcol-ei-setor-'+ri+'-'+ii+'">'
-    +'<select class="hcol-edit-inp" style="flex:2" id="hcol-ei-nome-'+ri+'-'+ii+'" onchange="_onMudarNomeEditColeta('+ri+','+ii+')">'+optsNome+'</select>'
-    +'<input class="hcol-edit-inp" style="width:52px;flex:none" type="number" min="0" step="0.5" placeholder="Qtd" value="'+qtd+'" id="hcol-ei-qtd-'+ri+'-'+ii+'">'
-    +'<select class="hcol-edit-inp" style="width:70px;flex:none" id="hcol-ei-unid-'+ri+'-'+ii+'">'+optsUnid+'</select>'
+    +'<select class="hcol-edit-inp" style="flex:1 1 100%;width:100%" id="hcol-ei-nome-'+ri+'-'+ii+'" onchange="_onMudarNomeEditColeta('+ri+','+ii+')">'+optsNome+'</select>'
+    +'<input class="hcol-edit-inp" style="width:70px;min-width:70px;flex:none" type="number" min="0" step="0.5" placeholder="Qtd" value="'+qtd+'" id="hcol-ei-qtd-'+ri+'-'+ii+'">'
+    +'<select class="hcol-edit-inp" style="width:90px;min-width:90px;flex:none" id="hcol-ei-unid-'+ri+'-'+ii+'">'+optsUnid+'</select>'
     +'<button class="hcol-del-item" onclick="_delItemEditColeta('+ri+','+ii+')" title="Remover item">\u00d7</button>'
     +'</div>'
     +linhaTipo
@@ -16821,7 +16821,7 @@ async function _cadInit(){
   // digitado passa por uma conversao de acentuacao errada em algum momento.
   // Varre catalogo de coleta, historico de coletas e pedidos, corrigindo
   // qualquer nome que contenha o sinal tipico desse problema ("Ã").
-  if(!localStorage.getItem('ca_fix_mojibake_v1')){
+  if(!localStorage.getItem('ca_fix_mojibake_v2')){
     function _corrigirMojibake(str){
       if(!str || typeof str !== 'string' || str.indexOf('\u00c3') === -1) return str;
       try{ return decodeURIComponent(escape(str)); }catch(e){ return str; }
@@ -16838,13 +16838,17 @@ async function _cadInit(){
     });
     if(houveCorrecao) _catalogoSalvar(cat);
 
-    // Histórico de coletas (nomes dos itens dentro de cada registro)
+    // Histórico de coletas (nomes dos itens, coletor e observação)
     var histColeta = _carregarHistColetaRaw();
     var mudouColeta = false;
     histColeta.forEach(function(r){
+      var cCol = _corrigirMojibake(r.coletor);
+      if(r.coletor && cCol !== r.coletor){ r.coletor = cCol; mudouColeta = true; }
       (r.itens||[]).forEach(function(it){
         var corrigido = _corrigirMojibake(it.nome);
         if(corrigido !== it.nome){ it.nome = corrigido; mudouColeta = true; }
+        var cObs = _corrigirMojibake(it.obs);
+        if(it.obs && cObs !== it.obs){ it.obs = cObs; mudouColeta = true; }
       });
     });
     if(mudouColeta){
@@ -16853,13 +16857,18 @@ async function _cadInit(){
       if(_caOpfs) await _caOpfsSalvar(FSJ_COLETAS, jc);
     }
 
-    // Histórico de pedidos (nomes dos itens vendidos)
+    // Histórico de pedidos (nomes dos itens, coletor, cliente e observação)
     var histPedRaw = _carregarHistRaw();
     var mudouPed = false;
     histPedRaw.forEach(function(p){
+      var cCol = _corrigirMojibake(p.coletor);
+      if(p.coletor && cCol !== p.coletor){ p.coletor = cCol; mudouPed = true; }
+      var cCli = _corrigirMojibake(p.cliente);
+      if(p.cliente && cCli !== p.cliente){ p.cliente = cCli; mudouPed = true; }
       (p.itens||[]).forEach(function(it){
         var c1 = _corrigirMojibake(it.nome); if(c1 !== it.nome){ it.nome = c1; mudouPed = true; }
         var c2 = _corrigirMojibake(it._nome); if(it._nome && c2 !== it._nome){ it._nome = c2; mudouPed = true; }
+        var c3 = _corrigirMojibake(it.obs); if(it.obs && c3 !== it.obs){ it.obs = c3; mudouPed = true; }
       });
     });
     if(mudouPed){
@@ -16876,7 +16885,7 @@ async function _cadInit(){
     });
     if(mudouProd) await _cadSalvar();
 
-    try{ localStorage.setItem('ca_fix_mojibake_v1','1'); }catch(e){}
+    try{ localStorage.setItem('ca_fix_mojibake_v2','1'); }catch(e){}
   }
   _cadAtualizarSetores();
   _atualizarSugestoesClientes();
