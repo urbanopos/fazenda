@@ -11514,7 +11514,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '2160b250939e';
+var _caFP = '142084ad0fdb';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -13675,19 +13675,30 @@ function _renderHist(){
 }
 
 function _renderHPedTotal(lista, pedidos, ano, mes){
-  // Totaliza por produto → soma qtd e valor
-  var totais = {}; // {nome: {qtd, unid, total}}
+  // Totaliza por produto → soma qtd e valor.
+  // Agrupa preferencialmente pelo prodId (referência estável ao cadastro
+  // único de produtos) — assim, mesmo que o texto do nome tenha sido
+  // digitado/editado de forma diferente em pedidos antigos, tudo que
+  // aponta pro MESMO produto cadastrado cai junto, sob o nome atual do
+  // cadastro. Itens sem prodId válido (digitados livremente, "_edit", ou
+  // registros bem antigos) continuam agrupados pelo texto do nome, como
+  // já funcionava — nada muda para eles.
+  var totais = {}; // {chave: {nomeExibicao, qtd, unid, total}}
   pedidos.forEach(function(p){
     (p.itens||[]).forEach(function(it){
-      var k = it.nome||it.col2||'—';
-      if(!totais[k]) totais[k]={qtd:0, unid:'', total:0};
+      var prod = (it.prodId && it.prodId!=='_edit')
+        ? (_cadDados.produtos||[]).find(function(x){ return x.id===it.prodId; })
+        : null;
+      var chave = prod ? ('p:'+prod.id) : ('n:'+(it.nome||it.col2||'—'));
+      var nomeExibicao = prod ? prod.nome : (it.nome||it.col2||'—');
+      if(!totais[chave]) totais[chave]={nomeExibicao:nomeExibicao, qtd:0, unid:'', total:0};
       // qtd: campo col3 tem formato "2 Unid" ou campo qtd direto
       var partes = (it.col3||'').split(' ');
       var qtd = parseFloat(partes[0])||Number(it.qtd)||0;
       var unid = partes.slice(1).join(' ')||it.unidade||it.unid||'';
-      totais[k].qtd   += qtd;
-      if(!totais[k].unid && unid) totais[k].unid = unid;
-      totais[k].total += Number(it.sub||it.val||0);
+      totais[chave].qtd   += qtd;
+      if(!totais[chave].unid && unid) totais[chave].unid = unid;
+      totais[chave].total += Number(it.sub||it.val||0);
     });
   });
 
@@ -13701,12 +13712,12 @@ function _renderHPedTotal(lista, pedidos, ano, mes){
 
   // Uma linha por produto — igual ao layout de coletas
   html += '<div class="hcol-secao"><span class="hcol-secao-titulo" style="background:#7a3a00">Pedidos</span>';
-  Object.keys(totais).forEach(function(nome){
-    var it = totais[nome];
+  Object.keys(totais).sort(function(a,b){ return totais[a].nomeExibicao.localeCompare(totais[b].nomeExibicao,'pt-BR'); }).forEach(function(chave){
+    var it = totais[chave];
     var qtdFmt = Number(it.qtd).toLocaleString('pt-BR',{maximumFractionDigits:2});
     var valFmt = 'R$ '+_fmt(it.total);
     html += '<div class="hcol-item">'
-      +'<div><div class="hcol-item-nome">'+nome+'</div>'
+      +'<div><div class="hcol-item-nome">'+it.nomeExibicao+'</div>'
       +'<div class="hcol-item-det">'+valFmt+'</div></div>'
       +'<div style="text-align:right">'
       +'<div class="hcol-item-qtd">'+qtdFmt+'</div>'
