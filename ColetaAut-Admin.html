@@ -11131,6 +11131,7 @@ var CA_SALT      = 'ca_salt';
 var CA_VHASH     = 'ca_vhash';
 var FSJ_DIR      = 'FSJ';
 var FSJ_ADMIN    = 'admin.caut';
+var FSJ_TOKEN    = 'gh_token.txt';
 var FSJ_HIST     = 'historico.json';
 var SK_DADOS_CA  = 'ca_dados';  // fallback localStorage para dados admin
 
@@ -11394,7 +11395,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = 'a2e8850f3177';
+var _caFP = '205b93465093';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -11438,6 +11439,7 @@ function _aplicarConfigDoLink(){
     var cfg = JSON.parse(decodeURIComponent(escape(atob(m[1]))));
     if(cfg && cfg.tk){
       localStorage.setItem(GH_TOKEN_KEY, cfg.tk);
+      if(typeof _caOpfs!=='undefined' && _caOpfs) _caOpfsSalvar(FSJ_TOKEN, cfg.tk);
       if(typeof _atualizarExibicaoToken==='function') _atualizarExibicaoToken();
       if(typeof _atualizarStatusBackup==='function') _atualizarStatusBackup();
       _toast('✅ Token do GitHub configurado neste aparelho!');
@@ -15734,6 +15736,7 @@ function _salvarGhToken(){
     _toast('Token inválido — deve começar com ghp_'); return;
   }
   localStorage.setItem(GH_TOKEN_KEY, val);
+  if(_caOpfs) _caOpfsSalvar(FSJ_TOKEN, val); // backup mais resistente que localStorage sozinho
   inp.value = '';
   _atualizarExibicaoToken();
   _toast('✅ Token salvo no dispositivo!');
@@ -16906,6 +16909,19 @@ function _acSelecionar(inputId, item, tipo){
 
 /* Carrega os cadastros ao iniciar o app */
 async function _cadInit(){
+  // Restaura o token do GitHub a partir do OPFS, caso ele tenha
+  // desaparecido do localStorage (mais suscetível a ser limpo por
+  // configurações de privacidade do navegador do que o OPFS).
+  if(_caOpfs && !localStorage.getItem(GH_TOKEN_KEY)){
+    try{
+      var tokenBackup = await _caOpfsLer(FSJ_TOKEN);
+      if(tokenBackup){
+        localStorage.setItem(GH_TOKEN_KEY, tokenBackup.trim());
+        if(typeof _atualizarExibicaoToken==='function') _atualizarExibicaoToken();
+        if(typeof _atualizarStatusBackup==='function') _atualizarStatusBackup();
+      }
+    }catch(e){}
+  }
   await _cadCarregar();
   // Migracao unica: se ainda nao ha produtos cadastrados (app nunca usou
   // esta tela), semeia com os produtos que ja eram usados no Talao de
