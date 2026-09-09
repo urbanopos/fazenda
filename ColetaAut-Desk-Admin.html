@@ -11515,7 +11515,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = 'b07a27269b86';
+var _caFP = 'f3155ee112b0';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -13534,8 +13534,10 @@ async function _gravarHist(hist){
   try{ localStorage.setItem(HK, json); }catch(e){}
   if(_caOpfs) await _caOpfsSalvar(FSJ_PEDIDOS, json);
   _atualizarSugestoesClientes();
-  /* Backup automático assíncrono — não bloqueia o fluxo */
-  setTimeout(function(){ _fazerBackup(false); }, 2000);
+  /* Toda gravação já dispara sincronização com o GitHub — primeiro traz o
+     que houver de novo de outro aparelho e mescla, depois garante que o
+     resultado final fica salvo lá. Assíncrono, não bloqueia o fluxo. */
+  setTimeout(function(){ _sincronizarRegistrosGitHub().then(function(){ _fazerBackup(false); }); }, 800);
 }
 
 function _carregarHistRaw(){
@@ -13879,6 +13881,10 @@ function _salvarColeta(reg){
   var json = JSON.stringify(hist);
   try{ localStorage.setItem(CK, json); }catch(e){}
   if(_caOpfs) _caOpfsSalvar(FSJ_COLETAS, json);
+  /* Toda gravação já dispara sincronização com o GitHub — primeiro traz o
+     que houver de novo de outro aparelho e mescla, depois garante que o
+     resultado final fica salvo lá. Assíncrono, não bloqueia o fluxo. */
+  setTimeout(function(){ _sincronizarRegistrosGitHub().then(function(){ _fazerBackup(false); }); }, 800);
 }
 
 function _carregarHistColetaRaw(){
@@ -15332,6 +15338,7 @@ function _salvarEditColeta(ri){
   var jsonEdit = JSON.stringify(hist);
   try{ localStorage.setItem(CK, jsonEdit); }catch(e){}
   if(_caOpfs) _caOpfsSalvar(FSJ_COLETAS, jsonEdit); // grava a edição na pasta real (OPFS/servidor local)
+  setTimeout(function(){ _sincronizarRegistrosGitHub().then(function(){ _fazerBackup(false); }); }, 800);
 
   _toast('\u2705 Registro atualizado!');
   // Fecha form e re-renderiza
@@ -15825,6 +15832,7 @@ function _excluirColeta(ri){
   var json = JSON.stringify(hist);
   try{ localStorage.setItem(CK, json); }catch(e){}
   if(_caOpfs) _caOpfsSalvar(FSJ_COLETAS, json); // grava a exclusão na pasta real (OPFS/servidor local)
+  setTimeout(function(){ _sincronizarRegistrosGitHub().then(function(){ _fazerBackup(false); }); }, 800);
   _toast('✅ Coleta excluida.');
   renderHistColeta();
 }
@@ -15969,7 +15977,7 @@ async function _aprovarColeta(idx){
   reg.status = 'aprovada';
   await _salvarPendentesGitHub(window._mpdTodos);
   _toast('✅ Coleta aprovada e importada!');
-  setTimeout(function(){ _fazerBackup(false); }, 2000);
+  setTimeout(function(){ _sincronizarRegistrosGitHub().then(function(){ _fazerBackup(false); }); }, 800);
   abrirPendentes();
 }
 
@@ -16093,9 +16101,17 @@ function _mesclarRegistros(local, remoto){
 }
 
 var _sincronizandoRegistros = false;
-async function _sincronizarRegistrosGitHub(){
-  if(!_ghToken() || _sincronizandoRegistros) return;
+async function _sincronizarRegistrosGitHub(manual){
+  if(!_ghToken()){
+    if(manual) _toast('⚠️ Token do GitHub não configurado — não é possível sincronizar.');
+    return;
+  }
+  if(_sincronizandoRegistros){
+    if(manual) _toast('🔃 Já existe uma sincronização em andamento...');
+    return;
+  }
   _sincronizandoRegistros = true;
+  if(manual) _toast('🔃 Sincronizando com o GitHub...');
   try{
     var houveMudanca = false;
 
@@ -16132,8 +16148,10 @@ async function _sincronizarRegistrosGitHub(){
     }
 
     if(houveMudanca) _toast('🔄 Novos registros sincronizados de outro dispositivo.');
+    else if(manual) _toast('✅ Tudo já estava sincronizado.');
   }catch(e){
     console.warn('_sincronizarRegistrosGitHub:', e.message);
+    if(manual) _toast('⚠️ Erro ao sincronizar: '+e.message);
   } finally {
     _sincronizandoRegistros = false;
   }
