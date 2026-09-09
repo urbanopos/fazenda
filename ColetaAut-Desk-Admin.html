@@ -11515,7 +11515,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '3fb64e3a8a63';
+var _caFP = 'b07a27269b86';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -16370,6 +16370,13 @@ function fecharAdmin(){
 function toggleAdVis(){
   var i=document.getElementById('ad-senha');
   i.type=i.type==='password'?'text':'password';
+}
+function _atualizarBtnDesbloquear(){
+  // Garante que o status do token e do backup fiquem corretos assim que
+  // o Administrador desbloqueia o painel — antes, essa função não existia
+  // (gerava um erro que interrompia a execução bem nesse ponto).
+  if(typeof _atualizarExibicaoToken==='function') _atualizarExibicaoToken();
+  if(typeof _atualizarStatusBackup==='function') _atualizarStatusBackup();
 }
 function verificarAdmin(){
   var d=document.getElementById('ad-senha').value;
