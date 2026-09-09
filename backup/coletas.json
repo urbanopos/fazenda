@@ -17,11 +17,11 @@
   },
   {
     "data": "2026-09-09",
-    "coletor": "Júnior",
+    "coletor": "JÃºnior",
     "itens": [
       {
         "setor": "Campo",
-        "nome": "Estacas de sabiá",
+        "nome": "Estacas de sabiÃ¡",
         "unid": "Unid.",
         "qtd": 35,
         "obs": "",
@@ -2375,21 +2375,21 @@
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "qtd": 38,
+        "qtd": 35,
         "unid": "sc 40kg",
         "tipo": "Entrada"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "qtd": 18,
+        "qtd": 15,
         "unid": "sc 40kg",
         "tipo": "Entrada"
       },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "qtd": 14,
+        "qtd": 12,
         "unid": "sc 40kg",
         "tipo": "Entrada"
       },
