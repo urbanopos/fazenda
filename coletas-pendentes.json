@@ -70,24 +70,6 @@
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
         "unid": "unid",
-        "qtd": 50,
-        "obs": "",
-        "forn": "",
-        "tipo": ""
-      }
-    ],
-    "ts": 1788894367498,
-    "status": "pendente",
-    "enviadoEm": "2026-09-08T19:06:08.196Z"
-  },
-  {
-    "data": "2026-09-08",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
-        "unid": "unid",
         "qtd": 53,
         "obs": "",
         "forn": "",
