@@ -11394,7 +11394,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '072d9a4f39eb';
+  var FP = '726eb422b5f4';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -13811,8 +13811,11 @@ function _gerarPDFEspelhoTela(){
   y += 6;
   doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(120);
   doc.text(periodoLabel+' \u00b7 '+(visao==='total'?'Totalizacao por item':'Registros detalhados'), margin, y);
+  y += 5;
+  doc.setFontSize(8);
+  doc.text('Gerado em '+new Date().toLocaleString('pt-BR'), margin, y);
   doc.setTextColor(0);
-  y += 9;
+  y += 8;
 
   function novaPaginaSeNecessario(minimo){
     if(y > pageH - (minimo||20)){ doc.addPage(); y = 18; return true; }
@@ -13866,20 +13869,10 @@ function _gerarPDFEspelhoTela(){
         var it = totais[setor][nome];
         doc.setFontSize(9);
         doc.text(nome, margin, y);
-        if(it.temTipo){
-          var saldo = it.entrada - it.saida;
-          doc.setTextColor(30,95,191);
-          doc.text('E: '+it.entrada, pageW-margin-62, y, {align:'right'});
-          doc.setTextColor(192,57,43);
-          doc.text('S: '+it.saida, pageW-margin-38, y, {align:'right'});
-          doc.setFont('helvetica','bold'); doc.setTextColor(saldo<0?192:0,0,0);
-          doc.text(String(saldo)+' '+it.unid, pageW-margin, y, {align:'right'});
-          doc.setFont('helvetica','normal'); doc.setTextColor(0);
-        } else {
-          doc.setFont('helvetica','bold');
-          doc.text(String(it.entrada)+' '+it.unid, pageW-margin, y, {align:'right'});
-          doc.setFont('helvetica','normal');
-        }
+        var qtdEstoque = it.temTipo ? (it.entrada - it.saida) : it.entrada;
+        doc.setFont('helvetica','bold'); doc.setTextColor(qtdEstoque<0?192:0,0,0);
+        doc.text(String(qtdEstoque)+' '+it.unid, pageW-margin, y, {align:'right'});
+        doc.setFont('helvetica','normal'); doc.setTextColor(0);
         y += 6;
       });
       y += 4;
@@ -14099,6 +14092,7 @@ function _gerarRelatorioProducaoMensal(){
     if(!chavesDoMes.length) return;
 
     if(!primeiraSecao){ doc.addPage(); y = 18; }
+    var ehPrimeiraSecaoAbsoluta = primeiraSecao;
     primeiraSecao = false;
     var mesIdx = mesesComMovimento.length;
     mesesComMovimento.push(mInfo);
@@ -14109,6 +14103,12 @@ function _gerarRelatorioProducaoMensal(){
     doc.text('(toque em "Entrada"/"Saida" p/ ver dia a dia)', margin+58, y);
     doc.setTextColor(0);
     y += 8;
+    if(ehPrimeiraSecaoAbsoluta){
+      doc.setFontSize(7.5); doc.setTextColor(140);
+      doc.text('Gerado em '+new Date().toLocaleString('pt-BR'), margin, y);
+      doc.setTextColor(0); doc.setFontSize(8);
+      y += 5;
+    }
     cabecalhoTabela();
 
     var totalEntradaMes = 0, totalSaidaMes = 0;
@@ -14384,6 +14384,7 @@ function _gerarRelatorioEstoqueMensal(){
     if(!chavesDoMes.length) return; // pula mes sem nenhuma movimentacao
 
     if(!primeiraSecao){ doc.addPage(); y = 18; }
+    var ehPrimeiraSecaoAbsoluta = primeiraSecao;
     primeiraSecao = false;
     var mesIdx = mesesComMovimento.length;
     mesesComMovimento.push(mInfo);
@@ -14394,6 +14395,12 @@ function _gerarRelatorioEstoqueMensal(){
     doc.text('(toque em "Entrada" ou "Saida" para ver a movimentacao dia a dia)', margin+62, y);
     doc.setTextColor(0);
     y += 9;
+    if(ehPrimeiraSecaoAbsoluta){
+      doc.setFontSize(8); doc.setTextColor(140);
+      doc.text('Gerado em '+new Date().toLocaleString('pt-BR'), margin, y);
+      doc.setTextColor(0);
+      y += 5;
+    }
     cabecalhoTabela();
 
     var totalEntradaMes = 0, totalSaidaMes = 0, totalSaldoMes = 0;
