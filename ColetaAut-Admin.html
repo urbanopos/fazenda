@@ -775,6 +775,7 @@ input[type="password"]:-webkit-autofill{
           <div class="ad-iw" style="margin-bottom:0"><input class="ad-inp" type="password" id="ad-gh-token-inp" placeholder="ghp_..." autocomplete="off"></div>
         </div>
         <div class="ad-row"><button class="ad-ok" onclick="_salvarGhToken()" style="background:#1a6b2a;color:#fff">Salvar token</button></div>
+        <div class="ad-row" style="margin-top:6px"><button class="ad-ok" onclick="_caVerificarAtualizacao(true)" style="background:#1a6b2a;color:#a8e6b8">🔄 Verificar atualização agora</button></div>
         <div class="ad-row" style="margin-top:6px"><button class="ad-ok" onclick="_enviarTokenParaColetor()" style="background:#1e3a5f;color:#93c5fd">🔗 Enviar/atualizar token para o Coletor</button></div>
         <div class="ad-row" style="margin-top:6px"><button class="ad-ok" onclick="_enviarTokenParaDesktop()" style="background:#1e3a5f;color:#93c5fd">🖥️ Enviar/atualizar token para o Desktop</button></div>
         <div class="ad-div"></div>
@@ -11393,24 +11394,36 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-(function _caAutoUpdate(){
-  var FP = '726eb422b5f4';
+var _caFP = 'e3402050498f';
+function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
-  // Só verifica se estiver hospedado (não em arquivo local)
-  if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
+  if(url.indexOf('://') === -1 || url.startsWith('file:')) {
+    if(manual) _toast('App aberto localmente — verificação de atualização não se aplica.');
+    return;
+  }
+  if(manual) _toast('🔍 Verificando atualizações...');
   fetch(url + '?_ca=' + Date.now(), {
     cache: 'no-store',
     headers: {'Cache-Control': 'no-cache'}
   })
   .then(function(r){ return r.text(); })
   .then(function(html){
-    var m = html.match(/var FP = '([a-f0-9]+)'/);
-    if(m && m[1] && m[1] !== FP){
-      // Nova versão detectada — recarrega bypassando cache
-      location.replace(url + '?_upd=' + Date.now());
+    var m = html.match(/var _caFP = '([a-f0-9]+)'/) || html.match(/var FP = '([a-f0-9]+)'/);
+    if(m && m[1] && m[1] !== _caFP){
+      _toast('🔄 Nova versão encontrada! Atualizando...');
+      setTimeout(function(){ location.replace(url + '?_upd=' + Date.now()); }, 1200);
+    } else if(manual){
+      _toast('✅ Você já está na versão mais recente.');
     }
   })
-  .catch(function(){}); // offline ou erro — continua normalmente
+  .catch(function(){ if(manual) _toast('⚠️ Não foi possível verificar agora (sem conexão?).'); });
+}
+(function _caAutoUpdate(){
+  _caVerificarAtualizacao(false);
+  // Verifica de novo periodicamente — cobre o caso de a rede do GitHub
+  // (CDN) ainda estar servindo uma cópia antiga na primeira checagem,
+  // logo após uma publicação recente.
+  setInterval(function(){ _caVerificarAtualizacao(false); }, 3*60*1000);
 })();
 
 /* Le um token de GitHub enviado por link (#cfg=BASE64({tk:token})) —
