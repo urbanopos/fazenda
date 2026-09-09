@@ -4,6 +4,49 @@
     "coletor": "Menininha",
     "itens": [
       {
+        "setor": "Estoque",
+        "nome": "Crescimento",
+        "unid": "sc 40kg",
+        "qtd": 3,
+        "obs": "",
+        "forn": "",
+        "tipo": "Saida"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Engorda",
+        "unid": "sc 40kg",
+        "qtd": 3,
+        "obs": "",
+        "forn": "",
+        "tipo": "Saida"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Postura",
+        "unid": "sc 40kg",
+        "qtd": 3,
+        "obs": "",
+        "forn": "",
+        "tipo": "Saida"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Pre-Inicial",
+        "unid": "sc 40kg",
+        "qtd": 1,
+        "obs": "",
+        "forn": "",
+        "tipo": "Saida"
+      }
+    ],
+    "ts": 1788895476507
+  },
+  {
+    "data": "2026-09-08",
+    "coletor": "Menininha",
+    "itens": [
+      {
         "setor": "Perda",
         "nome": "Ovos de Capoeira",
         "unid": "unid",
