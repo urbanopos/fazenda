@@ -11395,7 +11395,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '12cdf9b3eeb4';
+var _caFP = '30e8e9325d00';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -15945,6 +15945,41 @@ function _bkpSetStatus(msg, cls){
    apagar nada. Roda sozinha em segundo plano a cada 60s (se o token do
    GitHub estiver configurado), então republica o resultado combinado para
    que o outro dispositivo também convirja para o mesmo conjunto. */
+/* Mescla os 4 tipos de cadastro (Produtos/Clientes/Fornecedores/Preços) por
+   id — item novo de qualquer lado entra, nada é apagado. Para Produtos,
+   mescla também as apresentações (unidade+preço) de cada lado entre si,
+   sem duplicar a mesma unidade. */
+function _mesclarCadastros(local, remoto){
+  var resultado = {produtos:[], clientes:[], fornecedores:[], precos:[]};
+  ['produtos','clientes','fornecedores','precos'].forEach(function(categoria){
+    var vistos = {};
+    var combinado = [];
+    (local[categoria]||[]).forEach(function(item){
+      var chave = String(item.id||JSON.stringify(item));
+      if(!vistos[chave]){ vistos[chave]=true; combinado.push(item); }
+    });
+    (remoto[categoria]||[]).forEach(function(item){
+      var chave = String(item.id||JSON.stringify(item));
+      if(!vistos[chave]){
+        vistos[chave]=true; combinado.push(item);
+      } else if(categoria==='produtos' && item.apresentacoes){
+        var idx = combinado.findIndex(function(x){ return String(x.id||JSON.stringify(x))===chave; });
+        if(idx>-1){
+          if(!combinado[idx].apresentacoes) combinado[idx].apresentacoes = [];
+          var unidsExistentes = combinado[idx].apresentacoes.map(function(a){ return (a.unid||'').trim().toLowerCase(); });
+          item.apresentacoes.forEach(function(a){
+            if(unidsExistentes.indexOf((a.unid||'').trim().toLowerCase())===-1){
+              combinado[idx].apresentacoes.push(a);
+            }
+          });
+        }
+      }
+    });
+    resultado[categoria] = combinado;
+  });
+  return resultado;
+}
+
 function _mesclarRegistros(local, remoto){
   var vistos = {};
   var combinado = [];
@@ -16024,6 +16059,25 @@ async function _sincronizarRegistrosGitHub(manual){
         _renderHist();
         houveMudanca = true;
         await _ghGravar(GH_BCK_PEDIDOS, pedidosMerge, 'Sincronizacao automatica (pedidos)');
+      }
+    }
+
+    // Cadastros (Produtos, Clientes, Fornecedores, Preços) — mescla por id,
+    // sem apagar o que o outro aparelho cadastrou. Para Produtos, mescla
+    // também as apresentações (unidade+preço) de cada lado, sem duplicar.
+    var cadLocal = JSON.parse(JSON.stringify(_cadDados));
+    var cadRemoto = await _ghLer(GH_BCK_CADASTROS);
+    if(cadRemoto){
+      var cadMerge = _mesclarCadastros(cadLocal, cadRemoto);
+      if(JSON.stringify(cadMerge) !== JSON.stringify(cadLocal)){
+        _cadDados.produtos     = cadMerge.produtos;
+        _cadDados.clientes     = cadMerge.clientes;
+        _cadDados.fornecedores = cadMerge.fornecedores;
+        _cadDados.precos       = cadMerge.precos;
+        await _cadSalvar();
+        if(typeof _cadRenderLista==='function' && typeof _cadAbaAtual!=='undefined') _cadRenderLista(_cadAbaAtual);
+        houveMudanca = true;
+        await _ghGravar(GH_BCK_CADASTROS, cadMerge, 'Sincronizacao automatica (cadastros)');
       }
     }
 
@@ -16434,6 +16488,10 @@ async function _cadSalvar(){
   var json = JSON.stringify(_cadDados);
   if(_caOpfs) await _caOpfsSalvar(FSJ_CAD, json);
   try{ localStorage.setItem('ca_cad', json); }catch(e){}
+  /* Toda gravação já dispara sincronização com o GitHub — primeiro traz o
+     que houver de novo de outro aparelho e mescla, depois garante que o
+     resultado final fica salvo lá. Assíncrono, não bloqueia o fluxo. */
+  setTimeout(function(){ _sincronizarRegistrosGitHub().then(function(){ _fazerBackup(false); }); }, 800);
 }
 
 /* Garante que um nome de cliente exista em Cadastros → Clientes, sem
