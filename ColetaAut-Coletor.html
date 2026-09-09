@@ -336,6 +336,9 @@ textarea{resize:none;height:72px;font-size:14px}
         </div>
         <div class="ad-row"><button class="ad-ok" onclick="_salvarGhToken()" style="background:#1a6b2a;color:#fff">Salvar token</button></div>
         <div class="ad-div"></div>
+        <span class="ad-lbl">Atualizacoes</span>
+        <div class="ad-row"><button class="ad-ok" onclick="_caVerificarAtualizacao(true)" style="background:#1a6b2a;color:#a8e6b8">🔄 Verificar atualização agora</button></div>
+        <div class="ad-div"></div>
         <span class="ad-lbl">Enviar app para novo coletor</span>
         <div class="ad-row"><button class="ad-ok" onclick="compartilharLink()" style="background:linear-gradient(135deg,#25d366,#128c7e);color:#fff">Enviar link pelo WhatsApp</button></div>
         <div class="ad-div"></div>
@@ -1010,6 +1013,65 @@ function _iniciar(){
   setHoje(); _relogio(); setInterval(_relogio, 30000);
   _sessaoInit();
   _sessaoRestaurarLocal();
+
+  // Migracao unica: corrige nomes/coletor/observacao salvos com problema
+  // de codificacao (ex: "RaÃ§Ã£o" em vez de "Ração"). Mesma correção já
+  // aplicada no Admin — roda uma única vez neste aparelho.
+  if(!localStorage.getItem('ca_fix_mojibake_v1')){
+    (function(){
+      function _corrigirMojibake(str){
+        if(!str || typeof str !== 'string' || str.indexOf('\u00c3') === -1) return str;
+        try{ return decodeURIComponent(escape(str)); }catch(e){ return str; }
+      }
+      // Nome do coletor
+      var nomeAtual = localStorage.getItem('wpp_nome');
+      var nomeCorrigido = _corrigirMojibake(nomeAtual);
+      if(nomeAtual && nomeCorrigido !== nomeAtual){ try{ localStorage.setItem('wpp_nome', nomeCorrigido); }catch(e){} }
+
+      // Catálogo local (nomes dos itens)
+      var cat = _catalogoCarregar();
+      var mudouCat = false;
+      Object.keys(cat).forEach(function(setorKey){
+        (cat[setorKey]||[]).forEach(function(it){
+          var c = _corrigirMojibake(it.nome);
+          if(c !== it.nome){ it.nome = c; mudouCat = true; }
+        });
+      });
+      if(mudouCat) _catalogoSalvar();
+
+      // Coletas pendentes locais (nome dos itens, coletor, observação)
+      var histColeta = _carregarHistColeta();
+      var mudouColeta = false;
+      histColeta.forEach(function(r){
+        var cCol = _corrigirMojibake(r.coletor);
+        if(r.coletor && cCol !== r.coletor){ r.coletor = cCol; mudouColeta = true; }
+        (r.itens||[]).forEach(function(it){
+          var cNome = _corrigirMojibake(it.nome);
+          if(cNome !== it.nome){ it.nome = cNome; mudouColeta = true; }
+          var cObs = _corrigirMojibake(it.obs);
+          if(it.obs && cObs !== it.obs){ it.obs = cObs; mudouColeta = true; }
+        });
+      });
+      if(mudouColeta){ try{ localStorage.setItem(CK, JSON.stringify(histColeta)); }catch(e){} }
+
+      // Pedidos locais (nome dos itens, cliente, observação)
+      var histPed = _carregarHist();
+      var mudouPed = false;
+      histPed.forEach(function(p){
+        var cCli = _corrigirMojibake(p.cliente);
+        if(p.cliente && cCli !== p.cliente){ p.cliente = cCli; mudouPed = true; }
+        (p.itens||[]).forEach(function(it){
+          var c1 = _corrigirMojibake(it.nome); if(c1 !== it.nome){ it.nome = c1; mudouPed = true; }
+          var c2 = _corrigirMojibake(it._nome); if(it._nome && c2 !== it._nome){ it._nome = c2; mudouPed = true; }
+          var c3 = _corrigirMojibake(it.obs); if(it.obs && c3 !== it.obs){ it.obs = c3; mudouPed = true; }
+        });
+      });
+      if(mudouPed){ try{ localStorage.setItem(HK, JSON.stringify(histPed)); }catch(e){} }
+
+      try{ localStorage.setItem('ca_fix_mojibake_v1','1'); }catch(e){}
+    })();
+  }
+
   Object.keys(SETORES).forEach(function(s){
     var cfg = SETORES[s];
     var g = document.getElementById('grid-'+s);
@@ -1031,24 +1093,36 @@ function _iniciar(){
    nada salvo no aparelho — token, catálogo e coletas pendentes continuam
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
-(function _caAutoUpdate(){
-  var FP = 'f7a0de5661dc';
+var _caFP = '83b68bcc4986';
+function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
-  // Só verifica se estiver hospedado (não em arquivo local)
-  if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
+  if(url.indexOf('://') === -1 || url.startsWith('file:')) {
+    if(manual) _toast('App aberto localmente — verificação de atualização não se aplica.');
+    return;
+  }
+  if(manual) _toast('🔍 Verificando atualizações...');
   fetch(url + '?_ca=' + Date.now(), {
     cache: 'no-store',
     headers: {'Cache-Control': 'no-cache'}
   })
   .then(function(r){ return r.text(); })
   .then(function(html){
-    var m = html.match(/var FP = '([a-f0-9]+)'/);
-    if(m && m[1] && m[1] !== FP){
-      // Nova versão detectada — recarrega bypassando cache
-      location.replace(url + '?_upd=' + Date.now());
+    var m = html.match(/var _caFP = '([a-f0-9]+)'/) || html.match(/var FP = '([a-f0-9]+)'/);
+    if(m && m[1] && m[1] !== _caFP){
+      _toast('🔄 Nova versão encontrada! Atualizando...');
+      setTimeout(function(){ location.replace(url + '?_upd=' + Date.now()); }, 1200);
+    } else if(manual){
+      _toast('✅ Você já está na versão mais recente.');
     }
   })
-  .catch(function(){}); // offline ou erro — continua normalmente
+  .catch(function(){ if(manual) _toast('⚠️ Não foi possível verificar agora (sem conexão?).'); });
+}
+(function _caAutoUpdate(){
+  _caVerificarAtualizacao(false);
+  // Verifica de novo periodicamente — cobre o caso de a rede do GitHub
+  // (CDN) ainda estar servindo uma cópia antiga na primeira checagem,
+  // logo após uma publicação recente.
+  setInterval(function(){ _caVerificarAtualizacao(false); }, 3*60*1000);
 })();
 
 document.addEventListener('DOMContentLoaded', function(){
