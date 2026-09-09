@@ -1,5 +1,35 @@
 [
   {
+    "data": "2026-09-08",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "unid": "unid",
+        "qtd": 50,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1788894367498
+  },
+  {
+    "data": "2026-09-07",
+    "coletor": "JÃºnior",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "RaÃ§Ã£o de peixe",
+        "qtd": 1,
+        "unid": "Sc 25kg",
+        "tipo": "Saida"
+      }
+    ],
+    "ts": 1788849931047
+  },
+  {
     "data": "2026-09-07",
     "coletor": "JÃºnior",
     "itens": [
@@ -65,24 +95,6 @@
       }
     ],
     "ts": 1788636968490
-  },
-  {
-    "data": "2026-09-05",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Aviario",
-        "nome": "Pinto",
-        "unid": "unid",
-        "qtd": 3,
-        "obs": "",
-        "forn": "",
-        "tipo": ""
-      }
-    ],
-    "ts": 1788636794025,
-    "_excluido": true,
-    "_excluidoEm": 1788821338159
   },
   {
     "data": "2026-09-05",
