@@ -11395,7 +11395,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = 'f7f593c53fc5';
+var _caFP = '3fa93bcc5477';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -17069,7 +17069,7 @@ async function _cadInit(){
   // digitado passa por uma conversao de acentuacao errada em algum momento.
   // Varre catalogo de coleta, historico de coletas e pedidos, corrigindo
   // qualquer nome que contenha o sinal tipico desse problema ("Ã").
-  if(!localStorage.getItem('ca_fix_mojibake_v2')){
+  if(!localStorage.getItem('ca_fix_mojibake_v3')){
     function _corrigirMojibake(str){
       if(!str || typeof str !== 'string' || str.indexOf('\u00c3') === -1) return str;
       try{ return decodeURIComponent(escape(str)); }catch(e){ return str; }
@@ -17130,10 +17130,44 @@ async function _cadInit(){
     (_cadDados.produtos||[]).forEach(function(p){
       var corrigido = _corrigirMojibake(p.nome);
       if(corrigido !== p.nome){ p.nome = corrigido; mudouProd = true; }
+      (p.apresentacoes||[]).forEach(function(a){
+        var cUnid = _corrigirMojibake(a.unid);
+        if(a.unid && cUnid !== a.unid){ a.unid = cUnid; mudouProd = true; }
+      });
     });
-    if(mudouProd) await _cadSalvar();
 
-    try{ localStorage.setItem('ca_fix_mojibake_v2','1'); }catch(e){}
+    // Clientes
+    var mudouCli = false;
+    (_cadDados.clientes||[]).forEach(function(c){
+      var cNome = _corrigirMojibake(c.nome);
+      if(c.nome && cNome !== c.nome){ c.nome = cNome; mudouCli = true; }
+      var cContato = _corrigirMojibake(c.contato);
+      if(c.contato && cContato !== c.contato){ c.contato = cContato; mudouCli = true; }
+      var cObs = _corrigirMojibake(c.obs);
+      if(c.obs && cObs !== c.obs){ c.obs = cObs; mudouCli = true; }
+    });
+
+    // Fornecedores
+    var mudouForn = false;
+    (_cadDados.fornecedores||[]).forEach(function(f){
+      var fNome = _corrigirMojibake(f.nome);
+      if(f.nome && fNome !== f.nome){ f.nome = fNome; mudouForn = true; }
+      var fContato = _corrigirMojibake(f.contato);
+      if(f.contato && fContato !== f.contato){ f.contato = fContato; mudouForn = true; }
+      var fObs = _corrigirMojibake(f.obs);
+      if(f.obs && fObs !== f.obs){ f.obs = fObs; mudouForn = true; }
+    });
+
+    // Preços (cadastro antigo, ainda usado como referência em alguns casos)
+    var mudouPreco = false;
+    (_cadDados.precos||[]).forEach(function(pr){
+      var cProdNome = _corrigirMojibake(pr.prodNome);
+      if(pr.prodNome && cProdNome !== pr.prodNome){ pr.prodNome = cProdNome; mudouPreco = true; }
+    });
+
+    if(mudouProd || mudouCli || mudouForn || mudouPreco) await _cadSalvar();
+
+    try{ localStorage.setItem('ca_fix_mojibake_v3','1'); }catch(e){}
   }
   _cadAtualizarSetores();
   _atualizarSugestoesClientes();
