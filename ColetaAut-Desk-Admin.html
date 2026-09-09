@@ -11514,7 +11514,7 @@ function _caInjetarMenuBtn(){
 })();
 
 (function _caAutoUpdate(){
-  var FP = '09f043bc5d68';
+  var FP = 'e4da8e32993e';
   var url = location.href.split('?')[0];
   // Só verifica se estiver hospedado (não em arquivo local)
   if(url.indexOf('://') === -1 || url.startsWith('file:')) return;
@@ -13881,15 +13881,173 @@ async function _carregarHistColetaOPFS(){
 var _MES_NOMES = ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
 function _gerarRelatorioPDFFiltroAtual(){
-  var setor = (document.getElementById('hcol-setor')||{}).value||'';
-  if(setor === 'Estoque'){
-    _gerarRelatorioEstoqueMensal();
+  _gerarPDFEspelhoTela();
+}
+
+/* ── PDF que espelha exatamente o que está na tela do Histórico ────────
+   Usa a mesma lógica de agrupamento das funções que renderizam a tela
+   (_renderHistColetaDetalhe e _renderHistColetaTotal), para que o PDF
+   gerado corresponda fielmente à Visão escolhida (Registros detalhados
+   ou Totalização por item), no setor e período filtrados. Vale para
+   todas as abas onde o botão "Gerar PDF" existe. */
+function _gerarPDFEspelhoTela(){
+  if(typeof window.jspdf === 'undefined'){
+    _toast('Carregando gerador de PDF, tente novamente em alguns segundos...');
     return;
   }
-  // Usa exatamente os filtros que estao aplicados no momento no modal de Historico
-  var ano   = (document.getElementById('hcol-ano')||{}).value||'';
-  var mes   = (document.getElementById('hcol-mes')||{}).value||'';
-  _gerarRelatorioPDF(setor, ano, mes);
+  var ano        = (document.getElementById('hcol-ano')||{}).value||'';
+  var mes        = (document.getElementById('hcol-mes')||{}).value||'';
+  var visao      = (document.getElementById('hcol-visao')||{}).value||'detalhe';
+  var setorFiltro = (document.getElementById('hcol-setor')||{}).value||'';
+
+  var hist = _carregarHistColeta();
+  var registros = hist.filter(function(r){
+    if(!r.data) return false;
+    if(ano && r.data.slice(0,4)!==ano) return false;
+    if(mes && r.data.slice(5,7)!==mes) return false;
+    return true;
+  });
+  registros.sort(function(a,b){
+    if(a.data !== b.data) return a.data < b.data ? 1 : -1;
+    return (b.ts||0) - (a.ts||0);
+  });
+
+  if(!registros.length){ _toast('Nenhum registro no período selecionado.'); return; }
+
+  var jsPDFCtor = window.jspdf.jsPDF;
+  var doc = new jsPDFCtor({unit:'mm', format:'a4'});
+  var pageW = doc.internal.pageSize.getWidth();
+  var pageH = doc.internal.pageSize.getHeight();
+  var margin = 14;
+  var y = 18;
+
+  var periodoLabel = mes
+    ? ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][parseInt(mes,10)-1]+' '+ano
+    : (ano ? 'Ano '+ano : 'Todos os períodos');
+  var setorTitulo = setorFiltro || 'Todos os setores';
+
+  doc.setFont('helvetica','bold'); doc.setFontSize(14);
+  doc.text('Historico de Coletas - '+setorTitulo, margin, y);
+  y += 6;
+  doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(120);
+  doc.text(periodoLabel+' \u00b7 '+(visao==='total'?'Totalizacao por item':'Registros detalhados'), margin, y);
+  doc.setTextColor(0);
+  y += 9;
+
+  function novaPaginaSeNecessario(minimo){
+    if(y > pageH - (minimo||20)){ doc.addPage(); y = 18; return true; }
+    return false;
+  }
+
+  var CORES_PDF = {Aviario:[28,46,34], Campo:[59,94,42], Perda:[127,29,29], Estoque:[30,58,95]};
+
+  if(visao === 'total'){
+    // Mesmo agrupamento usado na tela "Totalização por item"
+    var totais = {};
+    registros.forEach(function(r){
+      var itensUsar = setorFiltro ? (r.itens||[]).filter(function(it){ return (it.setor||'')===setorFiltro; }) : (r.itens||[]);
+      itensUsar.forEach(function(it){
+        var s = it.setor||'Outros';
+        if(!totais[s]) totais[s] = {};
+        var k = it.nome;
+        if(!totais[s][k]) totais[s][k] = {entrada:0, saida:0, temTipo:false, unid:it.unid||''};
+        var qtdNum = Number(it.qtd)||0;
+        if(it.tipo === 'Saida'){ totais[s][k].saida += qtdNum; totais[s][k].temTipo = true; }
+        else if(it.tipo === 'Entrada'){ totais[s][k].entrada += qtdNum; totais[s][k].temTipo = true; }
+        else { totais[s][k].entrada += qtdNum; }
+      });
+    });
+
+    Object.keys(totais).forEach(function(setor){
+      novaPaginaSeNecessario(30);
+      var cor = CORES_PDF[setor]||[80,80,80];
+      doc.setFont('helvetica','bold'); doc.setFontSize(9);
+      var larguraSetor = doc.getTextWidth(setor.toUpperCase())+10;
+      doc.setFillColor(cor[0],cor[1],cor[2]);
+      doc.roundedRect(margin, y-4.8, larguraSetor, 7, 1.5, 1.5, 'F');
+      doc.setTextColor(255,255,255);
+      doc.text(setor.toUpperCase(), margin+5, y);
+
+      if(setor === 'Estoque'){
+        var totalSacos = 0;
+        Object.keys(totais[setor]).forEach(function(nome){ var it=totais[setor][nome]; totalSacos += it.temTipo?(it.entrada-it.saida):it.entrada; });
+        var totalFmt = Number(totalSacos).toLocaleString('pt-BR',{maximumFractionDigits:2});
+        var txtTotal = 'Total: '+totalFmt+' sacos';
+        var larguraTotal = doc.getTextWidth(txtTotal)+8;
+        doc.setFillColor(cor[0],cor[1],cor[2]);
+        doc.roundedRect(margin+larguraSetor+4, y-4.8, larguraTotal, 7, 1.5, 1.5, 'F');
+        doc.text(txtTotal, margin+larguraSetor+8, y);
+      }
+      doc.setTextColor(0); doc.setFont('helvetica','normal');
+      y += 9;
+
+      Object.keys(totais[setor]).sort(function(a,b){ return a.localeCompare(b,'pt-BR'); }).forEach(function(nome){
+        novaPaginaSeNecessario(14);
+        var it = totais[setor][nome];
+        doc.setFontSize(9);
+        doc.text(nome, margin, y);
+        if(it.temTipo){
+          var saldo = it.entrada - it.saida;
+          doc.setTextColor(30,95,191);
+          doc.text('E: '+it.entrada, pageW-margin-62, y, {align:'right'});
+          doc.setTextColor(192,57,43);
+          doc.text('S: '+it.saida, pageW-margin-38, y, {align:'right'});
+          doc.setFont('helvetica','bold'); doc.setTextColor(saldo<0?192:0,0,0);
+          doc.text(String(saldo)+' '+it.unid, pageW-margin, y, {align:'right'});
+          doc.setFont('helvetica','normal'); doc.setTextColor(0);
+        } else {
+          doc.setFont('helvetica','bold');
+          doc.text(String(it.entrada)+' '+it.unid, pageW-margin, y, {align:'right'});
+          doc.setFont('helvetica','normal');
+        }
+        y += 6;
+      });
+      y += 4;
+    });
+  } else {
+    // Mesmo agrupamento usado na tela "Registros detalhados"
+    var MESES_ABR = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    registros.forEach(function(r){
+      var itensVisiveis = setorFiltro ? (r.itens||[]).filter(function(it){ return (it.setor||'')===setorFiltro; }) : (r.itens||[]);
+      if(!itensVisiveis.length) return;
+      novaPaginaSeNecessario(14 + itensVisiveis.length*5.5);
+
+      var dt = r.data ? new Date(r.data+'T12:00') : null;
+      var dtFmt = dt ? dt.getDate().toString().padStart(2,'0')+' '+MESES_ABR[dt.getMonth()]+' '+dt.getFullYear() : '-';
+      var tiposPresentes = itensVisiveis.map(function(it){ return it.tipo; }).filter(Boolean);
+      var tipoUnico = tiposPresentes.length && tiposPresentes.every(function(t){ return t===tiposPresentes[0]; }) ? tiposPresentes[0] : null;
+
+      doc.setFont('helvetica','bold'); doc.setFontSize(10);
+      doc.text(dtFmt, margin, y);
+      if(tipoUnico){
+        var larguraData = doc.getTextWidth(dtFmt);
+        doc.setTextColor(tipoUnico==='Saida'?192:30, tipoUnico==='Saida'?57:95, tipoUnico==='Saida'?43:191);
+        doc.text(tipoUnico==='Saida'?'Saida':'Entrada', margin+larguraData+4, y);
+      }
+      doc.setTextColor(0); doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(120);
+      doc.text(r.coletor||'', pageW-margin, y, {align:'right'});
+      doc.setTextColor(0);
+      y += 3.5;
+      doc.setDrawColor(220); doc.line(margin, y, pageW-margin, y);
+      y += 4.5;
+
+      itensVisiveis.forEach(function(it){
+        novaPaginaSeNecessario(10);
+        var cor = CORES_PDF[it.setor] || [0,0,0];
+        var nomeExib = setorFiltro ? it.nome : it.setor+' - '+it.nome;
+        doc.setFontSize(9); doc.setTextColor(0);
+        doc.text(nomeExib, margin+2, y);
+        doc.setFont('helvetica','bold'); doc.setTextColor(cor[0],cor[1],cor[2]);
+        doc.text(String(it.qtd)+' '+it.unid, pageW-margin, y, {align:'right'});
+        doc.setFont('helvetica','normal'); doc.setTextColor(0);
+        y += 5.5;
+      });
+      y += 3;
+    });
+  }
+
+  doc.save('historico-'+setorTitulo.toLowerCase().replace(/\s+/g,'-')+'-'+_dataLocalHoje()+'.pdf');
+  _toast('✅ PDF gerado!');
 }
 
 /* ── Relatório mensal de Estoque (kardex simplificado) ─────────────────
