@@ -335,6 +335,17 @@
           "preco": 0
         }
       ]
+    },
+    {
+      "id": "p1789066579200_0",
+      "setor": "Estoque",
+      "nome": "Ração de Gado",
+      "apresentacoes": [
+        {
+          "unid": "Sc 40kg",
+          "preco": 0
+        }
+      ]
     }
   ],
   "clientes": [
