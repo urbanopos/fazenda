@@ -642,7 +642,7 @@ input[type="password"]:-webkit-autofill{
     </button>
     <button class="ca-menu-item" onclick="_cadAbrir();_caFecharMenu()">
       <div class="ca-menu-ico" style="background:#e8f4e0">📚</div>
-      <div><div class="ca-menu-nm">Cadastros</div><div class="ca-menu-sub">Produtos, clientes, fornecedores, preços</div></div>
+      <div><div class="ca-menu-nm">Cadastros</div><div class="ca-menu-sub">Produtos, clientes, fornecedores, apresentação</div></div>
     </button>
     <button class="ca-menu-item" id="ca-menu-bkp" onclick="_caMenuBackup()" style="display:none">
       <div class="ca-menu-ico" style="background:#e8f4e8">💾</div>
@@ -11395,7 +11395,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '8a16d7e7d7fb';
+var _caFP = 'c46933a6e5bc';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -11826,22 +11826,50 @@ function _catalogoBuscarExato(setor, nome, unid){
   return cat.find(function(it){ return it.nome.trim().toLowerCase()===an && it.unid.trim().toLowerCase()===au; });
 }
 function _catalogoNomesUnicos(setor){
+  // Busca primeiro na tabela única de Produtos (filtrando pelo setor) —
+  // e complementa com o catálogo antigo, para itens que o admin ainda não
+  // migrou via "Revisar itens do catálogo de coleta". O preço nunca é
+  // lido aqui, então nunca chega nesta tela de coleta.
+  var label = (SETORES[setor]||{}).label || setor;
+  var doProdutos = (_cadDados.produtos||[])
+    .filter(function(p){ return p.setor===label; })
+    .map(function(p){ return p.nome; });
   var cat = _catalogoCarregar()[setor]||[];
+  var doCatalogoAntigo = [];
+  (function(){
+    var v = {};
+    cat.forEach(function(it){
+      var chave = it.nome.trim().toLowerCase();
+      if(!v[chave]){ v[chave]=true; doCatalogoAntigo.push(it.nome); }
+    });
+  })();
   var vistos = {}, out = [];
-  cat.forEach(function(it){
-    var chave = it.nome.trim().toLowerCase();
-    if(!vistos[chave]){ vistos[chave]=true; out.push(it.nome); }
+  doProdutos.concat(doCatalogoAntigo).forEach(function(n){
+    var chave = n.trim().toLowerCase();
+    if(!vistos[chave]){ vistos[chave]=true; out.push(n); }
   });
   return out.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
 }
 function _catalogoUnidadesPara(setor, nome){
-  var cat = _catalogoCarregar()[setor]||[];
+  // Mesma lógica: apresentações da tabela única de Produtos primeiro,
+  // complementadas pelas unidades do catálogo antigo (itens ainda não
+  // migrados). Nunca lê/usa preço aqui.
+  var label = (SETORES[setor]||{}).label || setor;
   var alvo = String(nome).trim().toLowerCase();
   var vistos = {}, out = [];
+  (_cadDados.produtos||[]).forEach(function(p){
+    if(p.setor===label && p.nome.trim().toLowerCase()===alvo){
+      (p.apresentacoes||[]).forEach(function(a){
+        var u = (a.unid||'').trim();
+        if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
+      });
+    }
+  });
+  var cat = _catalogoCarregar()[setor]||[];
   cat.forEach(function(it){
     if(it.nome.trim().toLowerCase()===alvo){
       var u = it.unid.trim();
-      if(!vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
+      if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
     }
   });
   return out;
@@ -17345,7 +17373,7 @@ async function _cadInit(){
     <button class="cad-aba sel" onclick="_cadTrocaAba('produtos',this)">Produtos</button>
     <button class="cad-aba" onclick="_cadTrocaAba('clientes',this)">Clientes</button>
     <button class="cad-aba" onclick="_cadTrocaAba('fornecedores',this)">Fornecedores</button>
-    <button class="cad-aba" onclick="_cadTrocaAba('precos',this)">Preços</button>
+    <button class="cad-aba" onclick="_cadTrocaAba('precos',this)">Apresentação</button>
   </div>
   <!-- Produtos -->
 <div class="cad-painel vis" id="cad-p-produtos">
@@ -17383,7 +17411,7 @@ async function _cadInit(){
     <div class="cad-lista" id="cad-lista-precos"></div>
     <div id="cad-form-precos" style="display:none"></div>
     <div class="cad-rodape">
-      <button class="cad-btn-add" onclick="_cadNovoForm('precos')">+ Novo preço</button>
+      <button class="cad-btn-add" onclick="_cadNovoForm('precos')">+ Nova apresentação</button>
     </div>
   </div>
 </div>
