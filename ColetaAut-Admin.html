@@ -489,7 +489,7 @@ input[type="password"]:-webkit-autofill{
 .cad-btn-add{flex:1;padding:13px;background:var(--vd);border:none;border-radius:var(--r);color:var(--ac);font-family:'DM Mono',monospace;font-size:13px;font-weight:700;cursor:pointer}
 .cad-btn-exp{padding:13px 16px;background:rgba(184,148,63,.1);border:1.5px solid var(--ac);border-radius:var(--r);color:var(--ac);font-size:13px;cursor:pointer}
 /* Form inline */
-.cad-form{background:#f8f6f1;border-radius:12px;border:1.5px solid var(--ac);padding:14px;margin:0 12px 12px}
+.cad-form{background:#f8f6f1;border-radius:12px;border:1.5px solid var(--ac);padding:18px;margin:0;max-width:480px;width:100%;max-height:86vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.4)}
 .cad-form-t{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:10px}
 .cad-row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
 .cad-inp{flex:1;min-width:100px;padding:9px 11px;border:1.5px solid var(--ce);border-radius:7px;font-size:13px;color:var(--tx);background:#fff;outline:none;font-family:'DM Mono',monospace}
@@ -11396,7 +11396,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '70edad3e13ac';
+var _caFP = '7b2347c08b63';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -16938,14 +16938,18 @@ function _cadMostrarForm(aba, dados){
     setTimeout(function(){ _cadPrecoMontarApresentacoes(d); }, 0);
   }
   container.innerHTML =
-    '<div class="cad-form">'
+    '<div class="cad-form" onclick="event.stopPropagation()">'
     +'<div class="cad-form-t">'+(_cadEditIdx>=0?'Editar':'Novo')+' '+{produtos:'produto',clientes:'cliente',fornecedores:'fornecedor',precos:'preço'}[aba]+'</div>'
     +'<div class="cad-row" style="flex-direction:column;gap:8px">'+campos+'</div>'
     +'<div class="cad-form-btns">'
     +'<button class="cad-form-ok" onclick="_cadSalvarItem(\''+aba+'\')">Salvar</button>'
     +'<button class="cad-form-cancel" onclick="_cadEdicaoLimpar()">Cancelar</button>'
     +'</div></div>';
-  container.style.display='block';
+  // Modal: fundo escurecido cobrindo a tela, com a caixa do formulário
+  // centralizada — em vez de aparecer "colado" abaixo da listagem.
+  // Clicar no fundo escurecido (fora da caixa) também fecha o formulário.
+  container.style.cssText = 'display:flex;position:fixed;inset:0;z-index:9600;background:rgba(0,0,0,.55);align-items:center;justify-content:center;padding:20px;overflow-y:auto';
+  container.onclick = function(){ _cadEdicaoLimpar(); };
   if(aba==='produtos') _cadRenderApresentacoes();
   var first = container.querySelector('input');
   if(first) setTimeout(function(){ first.focus(); },50);
