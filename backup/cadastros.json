@@ -9,6 +9,10 @@
         {
           "unid": "Bandeja c/30 ovos",
           "preco": 30
+        },
+        {
+          "unid": "Unid.",
+          "preco": 0
         }
       ]
     },
