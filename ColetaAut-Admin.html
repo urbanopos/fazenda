@@ -11396,7 +11396,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '4dca091b5fb1';
+var _caFP = 'da283b53fe87';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -11861,6 +11861,9 @@ function _catalogoUnidadesPara(setor, nome){
   (_cadDados.produtos||[]).forEach(function(p){
     if(p.setor===label && p.nome.trim().toLowerCase()===alvo){
       (p.apresentacoes||[]).forEach(function(a){
+        // Se a apresentação tiver abas restritas, só entra se este setor
+        // estiver na lista; sem restrição (campo ausente), aparece sempre.
+        if(Array.isArray(a.abas) && a.abas.indexOf(label)===-1) return;
         var u = (a.unid||'').trim();
         if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
       });
@@ -13281,7 +13284,9 @@ function _renderVItens(){
       // Se o produto tiver apresentações cadastradas (unidade+preço), mostra
       // como lista de opções — trocar a unidade também atualiza o preço.
       var prodSel = isEdit ? null : (_cadDados.produtos||[]).find(function(p){ return p.id===it.prodId; });
-      var apresentacoes = (prodSel && prodSel.apresentacoes && prodSel.apresentacoes.length) ? prodSel.apresentacoes : [];
+      var apresentacoes = (prodSel && prodSel.apresentacoes && prodSel.apresentacoes.length)
+        ? prodSel.apresentacoes.filter(function(a){ return !Array.isArray(a.abas) || a.abas.indexOf('Vendas')>-1; })
+        : [];
       var campoUnidade;
       if(apresentacoes.length){
         if(!it.unidade || !apresentacoes.some(function(a){ return a.unid===it.unidade; })) it.unidade = apresentacoes[0].unid;
@@ -13325,9 +13330,12 @@ function setProdV(i,v){
   // Preenche automaticamente unidade e preço a partir do cadastro unificado de produtos
   if(v && v!=='_edit'){
     var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===v; });
-    if(prod && prod.apresentacoes && prod.apresentacoes.length){
-      _vItens[i].unidade = prod.apresentacoes[0].unid;
-      _vItens[i].preco = prod.apresentacoes[0].preco||0;
+    var apresVendas = (prod && prod.apresentacoes)
+      ? prod.apresentacoes.filter(function(a){ return !Array.isArray(a.abas) || a.abas.indexOf('Vendas')>-1; })
+      : [];
+    if(apresVendas.length){
+      _vItens[i].unidade = apresVendas[0].unid;
+      _vItens[i].preco = apresVendas[0].preco||0;
     } else if(prod && prod.unid){
       // Compatibilidade com cadastro antigo (ainda nao migrado para apresentações)
       _vItens[i].unidade = prod.unid;
@@ -17129,6 +17137,11 @@ function _cadPrecoMontarApresentacoes(dPre){
     + (prod.apresentacoes||[]).map(function(a,i){
         return '<option value="'+i+'"'+(dPre && dPre._apresIdx===i?' selected':'')+'>'+_escH(a.unid)+(a.preco?' — R$ '+Number(a.preco).toFixed(2).replace('.',','):'')+'</option>';
       }).join('');
+  var ABAS_APRES = ['Aviario','Perda','Campo','Estoque','Vendas'];
+  var abasCheckboxes = ABAS_APRES.map(function(ab){
+    return '<label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">'
+      +'<input type="checkbox" class="cf-aba-chk" value="'+ab+'" checked style="width:16px;height:16px">'+ab+'</label>';
+  }).join('');
   wrap.innerHTML =
     '<div><label class="cad-inp-lbl">Apresentação</label>'
     +'<select class="cad-inp" id="cf-apres-select" onchange="_cadPrecoApresChange()">'+apresOpts+'</select></div>'
@@ -17137,7 +17150,9 @@ function _cadPrecoMontarApresentacoes(dPre){
     +'<input class="cad-inp" id="cf-unid-nova" placeholder="Unidade, Bandeja, Kg..."></div>'
     +'<div style="flex:1"><label class="cad-inp-lbl">Preço (R$)</label>'
     +'<input class="cad-inp" id="cf-preco" type="number" min="0" step="0.01" placeholder="0,00"></div>'
-    +'</div>';
+    +'</div>'
+    +'<div style="margin-top:10px"><label class="cad-inp-lbl">Aparece nas abas</label>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">'+abasCheckboxes+'</div></div>';
   // Se estiver editando um item de preco existente, ja seleciona a apresentacao certa
   if(dPre && typeof dPre._apresIdx === 'number'){
     document.getElementById('cf-apres-select').value = String(dPre._apresIdx);
@@ -17150,7 +17165,8 @@ function _cadPrecoProdutoChange(){
 }
 
 /* Ao escolher uma apresentação já existente, preenche o preço atual dela
-   para edição; ao escolher "+ Nova apresentação", limpa os campos. */
+   e marca as abas já salvas; ao escolher "+ Nova apresentação", limpa os
+   campos e marca todas as abas (comportamento padrão: aparece em tudo). */
 function _cadPrecoApresChange(){
   var selProd = document.getElementById('cf-prod-select');
   var selApres = document.getElementById('cf-apres-select');
@@ -17158,14 +17174,21 @@ function _cadPrecoApresChange(){
   var precoInp = document.getElementById('cf-preco');
   if(!selProd || !selApres) return;
   var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===selProd.value; });
+  var chks = document.querySelectorAll('.cf-aba-chk');
   if(selApres.value === '_nova'){
     if(unidNovaWrap) unidNovaWrap.style.display = 'block';
     document.getElementById('cf-unid-nova').value = '';
     precoInp.value = '';
+    chks.forEach(function(c){ c.checked = true; }); // padrão: aparece em todas as abas
   } else {
     var apres = prod && prod.apresentacoes && prod.apresentacoes[parseInt(selApres.value,10)];
     if(unidNovaWrap) unidNovaWrap.style.display = 'none';
     precoInp.value = apres ? (apres.preco||'') : '';
+    // Se a apresentação já tem abas salvas, marca só essas; se nunca teve
+    // essa informação (apresentação antiga), marca todas — mantendo o
+    // comportamento de sempre aparecer em qualquer lugar.
+    var abasSalvas = (apres && Array.isArray(apres.abas)) ? apres.abas : null;
+    chks.forEach(function(c){ c.checked = abasSalvas ? (abasSalvas.indexOf(c.value)>-1) : true; });
   }
 }
 
@@ -17213,16 +17236,25 @@ async function _cadSalvarItem(aba){
     if(!prod){ _toast('\u26a0\ufe0f Escolha um produto'); return; }
     var selApres = document.getElementById('cf-apres-select');
     var precoVal = parseFloat((document.getElementById('cf-preco')||{value:0}).value)||0;
+    var TODAS_ABAS = ['Aviario','Perda','Campo','Estoque','Vendas'];
+    var chksMarcados = Array.prototype.slice.call(document.querySelectorAll('.cf-aba-chk:checked')).map(function(c){ return c.value; });
+    var abasEscolhidas = (chksMarcados.length===TODAS_ABAS.length) ? undefined : chksMarcados;
     if(!prod.apresentacoes) prod.apresentacoes = [];
     if(selApres && selApres.value !== '_nova'){
-      // Editando o preço de uma apresentação já existente do produto
+      // Editando o preço/abas de uma apresentação já existente do produto
       var idxA = parseInt(selApres.value,10);
-      if(prod.apresentacoes[idxA]) prod.apresentacoes[idxA].preco = precoVal;
+      if(prod.apresentacoes[idxA]){
+        prod.apresentacoes[idxA].preco = precoVal;
+        if(abasEscolhidas) prod.apresentacoes[idxA].abas = abasEscolhidas;
+        else delete prod.apresentacoes[idxA].abas;
+      }
     } else {
       // Nova apresentação (Unidade, Bandeja, Caixa, Kg, Sacos...)
       var unidNova = (document.getElementById('cf-unid-nova')||{value:''}).value.trim();
       if(!unidNova){ _toast('\u26a0\ufe0f Informe a unidade/apresentação'); return; }
-      prod.apresentacoes.push({unid:unidNova, preco:precoVal});
+      var novaApres = {unid:unidNova, preco:precoVal};
+      if(abasEscolhidas) novaApres.abas = abasEscolhidas;
+      prod.apresentacoes.push(novaApres);
     }
     await _cadSalvar();
     _cadEdicaoLimpar();
