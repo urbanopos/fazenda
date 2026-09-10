@@ -65,6 +65,10 @@
         {
           "unid": "Unid.",
           "preco": 0
+        },
+        {
+          "unid": "unid",
+          "preco": 0
         }
       ]
     },
@@ -77,6 +81,10 @@
         {
           "unid": "Sc.",
           "preco": 15
+        },
+        {
+          "unid": "sacos",
+          "preco": 0
         }
       ]
     },
@@ -89,6 +97,10 @@
         {
           "unid": "Unid.",
           "preco": 2
+        },
+        {
+          "unid": "unid",
+          "preco": 0
         }
       ]
     },
@@ -137,6 +149,50 @@
         {
           "unid": "Unid.",
           "preco": 50
+        }
+      ]
+    },
+    {
+      "id": "p1789066561642_0",
+      "setor": "Aviario",
+      "nome": "Galinha",
+      "apresentacoes": [
+        {
+          "unid": "unid",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066562691_0",
+      "setor": "Aviario",
+      "nome": "Frango",
+      "apresentacoes": [
+        {
+          "unid": "unid",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066563591_0",
+      "setor": "Aviario",
+      "nome": "Pinto",
+      "apresentacoes": [
+        {
+          "unid": "unid",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066565373_0",
+      "setor": "Aviario",
+      "nome": "Peru",
+      "apresentacoes": [
+        {
+          "unid": "Jovem",
+          "preco": 0
         }
       ]
     }
