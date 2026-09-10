@@ -113,6 +113,10 @@
         {
           "unid": "Caixa",
           "preco": 0
+        },
+        {
+          "unid": "unid",
+          "preco": 0
         }
       ]
     },
@@ -124,6 +128,10 @@
       "apresentacoes": [
         {
           "unid": "Caixa",
+          "preco": 0
+        },
+        {
+          "unid": "unid",
           "preco": 0
         }
       ]
@@ -192,6 +200,138 @@
       "apresentacoes": [
         {
           "unid": "Jovem",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066568948_0",
+      "setor": "Campo",
+      "nome": "Banana",
+      "apresentacoes": [
+        {
+          "unid": "cac.",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066569449_0",
+      "setor": "Campo",
+      "nome": "Pitomba",
+      "apresentacoes": [
+        {
+          "unid": "kg",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066569771_0",
+      "setor": "Campo",
+      "nome": "Banana Comprida",
+      "apresentacoes": [
+        {
+          "unid": "Cacho",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066570054_0",
+      "setor": "Campo",
+      "nome": "Estacas de sabiá",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066570296_0",
+      "setor": "Estoque",
+      "nome": "Postura",
+      "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066570580_0",
+      "setor": "Estoque",
+      "nome": "Inicial",
+      "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066570829_0",
+      "setor": "Estoque",
+      "nome": "Pre-Inicial",
+      "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066571054_0",
+      "setor": "Estoque",
+      "nome": "Crescimento",
+      "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066572352_0",
+      "setor": "Estoque",
+      "nome": "Engorda",
+      "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066573418_0",
+      "setor": "Estoque",
+      "nome": "Milho",
+      "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066574484_0",
+      "setor": "Estoque",
+      "nome": "Farelo de Trigo",
+      "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066575376_0",
+      "setor": "Estoque",
+      "nome": "Ração de peixe",
+      "apresentacoes": [
+        {
+          "unid": "Sc 25kg",
           "preco": 0
         }
       ]
