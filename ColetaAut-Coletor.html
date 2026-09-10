@@ -533,6 +533,7 @@ var GH_FILE  = 'coletas-pendentes.json';
 var GH_TOKEN_KEY = 'fsj_gh_token';
 var GH_API   = 'https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE;
 var GH_BCK_COLETAS = 'backup/coletas.json';
+var GH_BCK_CADASTROS = 'backup/cadastros.json';
 var GH_CATALOGO_PUB = 'https://urbanopos.github.io/fazenda/catalogo.json'; // leitura publica, sem token
 function _ghToken(){ return localStorage.getItem(GH_TOKEN_KEY)||''; }
 
@@ -660,22 +661,49 @@ function _catalogoBuscarExato(setor, nome, unid){
   return cat.find(function(it){ return it.nome.trim().toLowerCase()===an && it.unid.trim().toLowerCase()===au; });
 }
 function _catalogoNomesUnicos(setor){
+  // Busca primeiro na tabela única de Produtos do Admin (já buscada do
+  // GitHub, só leitura) — filtrando pelo setor — e complementa com o
+  // catálogo antigo, para itens ainda não migrados. Preço nunca é lido
+  // aqui, então nunca chega nesta tela de coleta.
+  var label = (SETORES[setor]||{}).label || setor;
+  var cadRemoto = _produtosCadastro || _produtosCadastroLocal();
+  var doProdutos = (cadRemoto||[])
+    .filter(function(p){ return p.setor===label; })
+    .map(function(p){ return p.nome; });
   var cat = _catalogoCarregar()[setor]||[];
+  var doCatalogoAntigo = [];
+  (function(){
+    var v = {};
+    cat.forEach(function(it){
+      var chave = it.nome.trim().toLowerCase();
+      if(!v[chave]){ v[chave]=true; doCatalogoAntigo.push(it.nome); }
+    });
+  })();
   var vistos = {}, out = [];
-  cat.forEach(function(it){
-    var chave = it.nome.trim().toLowerCase();
-    if(!vistos[chave]){ vistos[chave]=true; out.push(it.nome); }
+  doProdutos.concat(doCatalogoAntigo).forEach(function(n){
+    var chave = n.trim().toLowerCase();
+    if(!vistos[chave]){ vistos[chave]=true; out.push(n); }
   });
   return out.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
 }
 function _catalogoUnidadesPara(setor, nome){
-  var cat = _catalogoCarregar()[setor]||[];
+  var label = (SETORES[setor]||{}).label || setor;
   var alvo = String(nome).trim().toLowerCase();
   var vistos = {}, out = [];
+  var cadRemoto = _produtosCadastro || _produtosCadastroLocal();
+  (cadRemoto||[]).forEach(function(p){
+    if(p.setor===label && p.nome.trim().toLowerCase()===alvo){
+      (p.apresentacoes||[]).forEach(function(a){
+        var u = (a.unid||'').trim();
+        if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
+      });
+    }
+  });
+  var cat = _catalogoCarregar()[setor]||[];
   cat.forEach(function(it){
     if(it.nome.trim().toLowerCase()===alvo){
       var u = it.unid.trim();
-      if(!vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
+      if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
     }
   });
   return out;
@@ -1014,6 +1042,13 @@ function _iniciar(){
   _sessaoInit();
   _sessaoRestaurarLocal();
 
+  // Busca o cadastro único de produtos (Admin) assim que possível — usado
+  // na tela de Vendas para saber as apresentações certas de cada item,
+  // sem nunca expor o preço ao coletor. Repete periodicamente pra pegar
+  // produtos/preços novos que o Admin cadastrar depois.
+  _buscarProdutosCadastro();
+  setInterval(_buscarProdutosCadastro, 3*60*1000);
+
   // Migracao unica: corrige nomes/coletor/observacao salvos com problema
   // de codificacao (ex: "RaÃ§Ã£o" em vez de "Ração"). Mesma correção já
   // aplicada no Admin — roda uma única vez neste aparelho.
@@ -1093,7 +1128,7 @@ function _iniciar(){
    nada salvo no aparelho — token, catálogo e coletas pendentes continuam
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
-var _caFP = '4261859f0fe1';
+var _caFP = '8a48302da2ef';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -1574,7 +1609,7 @@ function _gerarPayloadPedido(conc, numPed, cliente, dataVenda){
     data: dataVenda,
     ts: Date.now(),
     itens: conc.map(function(it){
-      var p = PROD_VENDA.filter(function(x){ return x.id===it.prodId; })[0]||{nome:it.prodId};
+      var p = _listaProdutosVenda().find(function(x){ return x.id===it.prodId; })||{nome:it.prodId};
       return {
         nome: p.nome,
         unidade: it.unidade||'',
@@ -1755,13 +1790,78 @@ function _nextPedNum(){
 function addItemVenda(){
   var idx = _vIdx++;
   var hoje = _dataLocalHoje();
-  _vItens.push({idx:idx, prodId:'ovo', unidade:'', data:hoje, qtd:0, preco:0, sub:0, concluido:false});
+  _vItens.push({idx:idx, prodId:'', apresIdx:null, unidade:'', data:hoje, qtd:0, preco:0, sub:0, concluido:false});
   _renderVItens();
 }
 
+/* ── Cadastro único de Produtos (só leitura no Coletor) ──────────────────
+   O Coletor nunca edita o cadastro — só lê o que o Admin já configurou,
+   pra saber a apresentação (unidade) certa de cada produto e calcular o
+   preço internamente, sem nunca mostrar esse preço pro coletor. */
+var _produtosCadastro = null;
+var CACHE_PRODUTOS_KEY = 'fsj_produtos_cache';
+
+async function _buscarProdutosCadastro(){
+  if(!_ghToken()) return _produtosCadastroLocal();
+  try{
+    var headers = {
+      'Authorization': 'token '+_ghToken(),
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28'
+    };
+    var resp = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_BCK_CADASTROS+'?t='+Date.now(),
+      {headers:headers, cache:'no-store'});
+    if(!resp.ok) return _produtosCadastroLocal();
+    var meta = await resp.json();
+    var dados = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g,'')))));
+    var produtos = (dados && Array.isArray(dados.produtos)) ? dados.produtos : [];
+    _produtosCadastro = produtos;
+    try{ localStorage.setItem(CACHE_PRODUTOS_KEY, JSON.stringify(produtos)); }catch(e){}
+    return produtos;
+  }catch(e){
+    console.warn('Busca cadastro de produtos:', e.message);
+    return _produtosCadastroLocal();
+  }
+}
+
+function _produtosCadastroLocal(){
+  if(_produtosCadastro) return _produtosCadastro;
+  try{
+    var raw = localStorage.getItem(CACHE_PRODUTOS_KEY);
+    if(raw){ _produtosCadastro = JSON.parse(raw); return _produtosCadastro; }
+  }catch(e){}
+  return null;
+}
+
+/* Lista de produtos pra montar o <select> — usa o cadastro único quando
+   disponível; se nunca conseguiu buscar (ex: primeiro uso sem internet),
+   cai de volta na lista antiga PROD_VENDA, pra nunca travar o coletor. */
+function _listaProdutosVenda(){
+  var cad = _produtosCadastro || _produtosCadastroLocal();
+  if(cad && cad.length) return cad;
+  return PROD_VENDA.filter(function(p){ return p.id!=='_edit'; }).map(function(p){
+    return {id:p.id, nome:p.nome, apresentacoes:[]};
+  });
+}
+
 function _optsVenda(selId){
-  return PROD_VENDA.map(function(p){
+  var opts = _listaProdutosVenda().map(function(p){
     return '<option value="'+p.id+'"'+(p.id===selId?' selected':'')+'>'+p.nome+'</option>';
+  }).join('');
+  return opts + '<option value="_edit"'+(selId==='_edit'?' selected':'')+'>+ Item avulso (não cadastrado)</option>';
+}
+
+/* Apresentações (Unidade, Bandeja, Caixa, Kg, Sacos...) do produto
+   escolhido — o preço de cada uma existe no cadastro, mas nunca aparece
+   pro coletor: é usado só internamente para calcular o subtotal. */
+function _optsApresentacao(prodId, selIdx){
+  var prod = _listaProdutosVenda().find(function(p){ return p.id===prodId; });
+  var apres = (prod && prod.apresentacoes) ? prod.apresentacoes : [];
+  if(!apres.length){
+    return '<option value="">— nenhuma apresentação cadastrada —</option>';
+  }
+  return apres.map(function(a,i){
+    return '<option value="'+i+'"'+(i===selIdx?' selected':'')+'>'+a.unid+'</option>';
   }).join('');
 }
 
@@ -1773,7 +1873,7 @@ function _renderVItens(){
     if(it.concluido){
       html += '<div class="vi con">'
         +'<div style="font-weight:700;margin-bottom:6px">'+it._nome+'</div>'
-        +'<div class="vi-res">'+it.qtd+' '+it.unidade+' x R$ '+_fmt(it.preco)+' = <strong>R$ '+_fmt(it.sub)+'</strong> ('+it._data+')</div>'
+        +'<div class="vi-res">'+it.qtd+' '+it.unidade+' = <strong>R$ '+_fmt(it.sub)+'</strong> ('+it._data+')</div>'
         +'<div style="display:flex;gap:8px;margin-top:8px">'
         +'<button class="vi-edit" onclick="editVItem('+i+')">Alterar</button>'
         +'<button class="vi-del" onclick="delVItem('+i+')">X</button>'
@@ -1784,21 +1884,24 @@ function _renderVItens(){
         ? '<span class="vi-lbl">Nome do item</span>'
           +'<input class="vi-inp pc-edit-nome" type="text" id="vedit-nome-'+it.idx+'" placeholder="Descreva o item..." value="'+(it._editNome||'')+'" oninput="_vItens['+i+']._editNome=this.value" style="margin-bottom:10px;border:2px solid #b8943f">'
         : '';
+      // Apresentação (unidade) vem do cadastro do produto — o preço de
+      // cada uma existe lá, mas nunca é mostrado nem editável aqui.
+      var campoApresentacao = isEdit
+        ? '<span class="vi-lbl">Unidade (ex: bandeja, kg, duzia...)</span>'
+          +'<input class="vi-inp" type="text" placeholder="Digite a unidade..." value="'+(it.unidade||'')+'" oninput="setUnidV('+i+',this.value)" style="margin-bottom:12px">'
+        : '<span class="vi-lbl">Apresentação</span>'
+          +'<select class="vi-sel" onchange="setApresV('+i+',this.value)" style="margin-bottom:12px">'+_optsApresentacao(it.prodId, it.apresIdx)+'</select>';
       html += '<div class="vi" id="vi-'+it.idx+'">'
         +'<span class="vi-lbl">Produto</span>'
         +'<select class="vi-sel" onchange="setProdV('+i+',this.value);_renderVItens()">'+_optsVenda(it.prodId)+'</select>'
         +nomeEditField
-        +'<span class="vi-lbl">Unidade (ex: bandeja, kg, duzia...)</span>'
-        +'<input class="vi-inp" type="text" placeholder="Digite a unidade..." value="'+it.unidade+'" oninput="setUnidV('+i+',this.value)" style="margin-bottom:12px">'
+        +campoApresentacao
         +'<div class="vi-row2">'
         +'<div class="vi-campo"><span class="vi-lbl">Data</span><input class="vi-inp" type="date" value="'+it.data+'" oninput="setDataV('+i+',this.value)"></div>'
         +'<div class="vi-campo"><span class="vi-lbl">Quantidade</span><input class="vi-inp" type="number" min="0" step="0.5" inputmode="decimal" placeholder="0" value="'+(it.qtd||'')+'" oninput="setQtdV('+i+',this.value)"></div>'
         +'</div>'
-        +'<div class="vi-row2" style="margin-top:10px">'
-        +'<div class="vi-campo"><span class="vi-lbl">Preco Unit. (R$)</span><input class="vi-inp" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00" value="'+(it.preco||'')+'" oninput="setPrecoV('+i+',this.value)"></div>'
-        +'<div class="vi-campo"><span class="vi-lbl">Subtotal</span><div class="vi-sub-box">R$ <span id="vsub-'+it.idx+'">'+_fmt(it.sub)+'</span></div></div>'
-        +'</div>'
-        +'<div class="vi-btns">'
+        +(isEdit?'':'<div class="vi-campo" style="margin-top:10px"><span class="vi-lbl">Subtotal a cobrar</span><div class="vi-sub-box">R$ <span id="vsub-'+it.idx+'">'+_fmt(it.sub)+'</span></div></div>')
+        +'<div class="vi-btns" style="margin-top:10px">'
         +'<button class="vi-ok" onclick="conclVItem('+i+')">Confirmar item</button>'
         +'<button class="vi-del" onclick="delVItem('+i+')">X</button>'
         +'</div></div>';
@@ -1808,16 +1911,28 @@ function _renderVItens(){
   _atualizarTotalV();
 }
 
-function setProdV(i,v){ _vItens[i].prodId=v; }
+function setProdV(i,v){
+  _vItens[i].prodId=v;
+  _vItens[i].apresIdx=null;
+  _vItens[i].unidade='';
+  _vItens[i].preco=0;
+  _calcSubV(i);
+}
+function setApresV(i,v){
+  var it = _vItens[i];
+  it.apresIdx = (v==='' ? null : parseInt(v,10));
+  var prod = _listaProdutosVenda().find(function(p){ return p.id===it.prodId; });
+  var apres = (prod && it.apresIdx!==null) ? prod.apresentacoes[it.apresIdx] : null;
+  it.unidade = apres ? apres.unid : '';
+  it.preco   = apres ? (Number(apres.preco)||0) : 0; // nunca exibido ao coletor
+  _calcSubV(i);
+  var el = document.getElementById('vsub-'+it.idx); if(el) el.textContent=_fmt(it.sub);
+  _atualizarTotalV();
+}
 function setUnidV(i,v){ _vItens[i].unidade=v; }
 function setDataV(i,v){ _vItens[i].data=v; }
 function setQtdV(i,v){
   _vItens[i].qtd=parseFloat(v)||0; _calcSubV(i);
-  var el=document.getElementById('vsub-'+_vItens[i].idx); if(el) el.textContent=_fmt(_vItens[i].sub);
-  _atualizarTotalV();
-}
-function setPrecoV(i,v){
-  _vItens[i].preco=parseFloat(v)||0; _calcSubV(i);
   var el=document.getElementById('vsub-'+_vItens[i].idx); if(el) el.textContent=_fmt(_vItens[i].sub);
   _atualizarTotalV();
 }
@@ -1830,15 +1945,18 @@ function conclVItem(i){
     var nomeVal = (nomeEl ? nomeEl.value : it._editNome||'').trim();
     if(!nomeVal){ _toast('Informe o nome do item.'); nomeEl&&nomeEl.focus(); return; }
     it._editNome = nomeVal;
+  } else if(!it.prodId){
+    _toast('Escolha um produto.'); return;
+  } else if(it.apresIdx===null || it.apresIdx===undefined){
+    _toast('Escolha a apresentação (unidade).'); return;
   }
   if(it.qtd<=0){ _toast('Informe a quantidade.'); return; }
-  if(it.preco<=0){ _toast('Informe o preco unitario.'); return; }
   _calcSubV(i);
   var dtFmt = it.data ? new Date(it.data+'T12:00').toLocaleDateString('pt-BR') : '';
   if(it.prodId==='_edit'){
     it._nome = it._editNome;
   } else {
-    var p = PROD_VENDA.filter(function(x){ return x.id===it.prodId; })[0]||{nome:it.prodId};
+    var p = _listaProdutosVenda().find(function(x){ return x.id===it.prodId; })||{nome:it.prodId};
     it._nome = p.nome;
   }
   it._data = dtFmt; it.concluido=true;
@@ -2003,7 +2121,7 @@ function _renderHPedTotal(lista, pedidos, ano, mes){
   pedidos.forEach(function(p){
     (p.itens||[]).forEach(function(it){
       var prod = (it.prodId && it.prodId!=='_edit')
-        ? PROD_VENDA.filter(function(x){ return x.id===it.prodId; })[0]
+        ? _listaProdutosVenda().find(function(x){ return x.id===it.prodId; })
         : null;
       var chave = prod ? ('p:'+prod.id) : ('n:'+(it.nome||it.col2||'—'));
       var nomeExibicao = prod ? prod.nome : (it.nome||it.col2||'—');
