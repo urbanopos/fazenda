@@ -4,7 +4,7 @@
       "id": "p_ovo",
       "setor": "Vendas",
       "nome": "Ovos de Capoeira",
-      "unid": "",
+      "unid": "Bandeja c/30 ovos",
       "apresentacoes": [
         {
           "unid": "Bandeja c/30 ovos",
@@ -13,14 +13,18 @@
         {
           "unid": "Unid.",
           "preco": 1
+        },
+        {
+          "unid": "unid",
+          "preco": 0
         }
       ]
     },
     {
       "id": "p_galinha",
       "setor": "Vendas",
-      "nome": "Galinha",
-      "unid": "",
+      "nome": "Galinha Abatida",
+      "unid": "Unid.",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -31,8 +35,8 @@
     {
       "id": "p_frango",
       "setor": "Vendas",
-      "nome": "Frango",
-      "unid": "",
+      "nome": "Frango Abatido",
+      "unid": "Unid.",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -43,8 +47,8 @@
     {
       "id": "p_pinto",
       "setor": "Vendas",
-      "nome": "Pinto",
-      "unid": "",
+      "nome": "Pintos",
+      "unid": "Unid.",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -56,7 +60,7 @@
       "id": "p_pintainha",
       "setor": "Vendas",
       "nome": "Pintainha",
-      "unid": "",
+      "unid": "Unid.",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -68,7 +72,7 @@
       "id": "p_esterco",
       "setor": "Vendas",
       "nome": "Esterco",
-      "unid": "",
+      "unid": "Sc.",
       "apresentacoes": [
         {
           "unid": "Sc.",
@@ -80,15 +84,11 @@
       "id": "p_coco",
       "setor": "Vendas",
       "nome": "Coco Seco",
-      "unid": "",
+      "unid": "Unid.",
       "apresentacoes": [
         {
           "unid": "Unid.",
           "preco": 2
-        },
-        {
-          "unid": "Unid.",
-          "preco": 2.5
         }
       ]
     },
@@ -96,7 +96,7 @@
       "id": "p_manga",
       "setor": "Vendas",
       "nome": "Manga",
-      "unid": "",
+      "unid": "Caixa",
       "apresentacoes": [
         {
           "unid": "Caixa",
@@ -108,7 +108,7 @@
       "id": "p_abacate",
       "setor": "Vendas",
       "nome": "Abacate",
-      "unid": "",
+      "unid": "Caixa",
       "apresentacoes": [
         {
           "unid": "Caixa",
