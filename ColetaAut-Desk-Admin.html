@@ -577,19 +577,18 @@ input[type="password"]:-webkit-autofill{
   /* Modais que abriam "colados" na tela toda (celular) passam a ser
      janelas centralizadas, com cantos arredondados nos quatro lados
      e uma largura confortável de leitura. */
-  #guia-ios, #modal-ped, #modal-hcol, #ca-menu{
+  #guia-ios, #modal-ped, #modal-hcol{
     align-items:center;
     justify-content:center;
     padding:32px;
   }
-  .mp-box, .hcol-box, .ca-menu-box{
+  .mp-box, .hcol-box{
     width:100%;
     max-width:760px;
     max-height:86vh;
     border-radius:20px;
     box-shadow:0 30px 80px rgba(0,0,0,.5);
   }
-  .ca-menu-box{ max-width:440px; overflow-y:auto; }
 
   /* Filtros do Histórico: em vez de empilhar, distribui em linha */
   .hcol-filtros{ display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end; }
@@ -608,17 +607,6 @@ input[type="password"]:-webkit-autofill{
   /* Telas de cadastro/configuração em página cheia (não modal) —
      conteúdo central, como um formulário de desktop de verdade */
   .cad-tela > div{ max-width:720px; margin-left:auto; margin-right:auto; }
-  /* A tela de Cadastros usa position:fixed com inset:0, o que a fazia
-     cobrir a janela do navegador toda — inclusive a moldura azul que
-     normalmente aparece nas laterais do "cartão" central (como nas
-     abas normais). Reposiciona para ficar alinhada com essa mesma
-     moldura, em vez de vazar por cima dela. Mesmo problema e mesma
-     correção para as telas de bloqueio, configuração inicial e scanner. */
-  .cad-tela, #tela-bloqueio, #ca-setup, #ca-lock, #ca-scanner{
-    left:50%; right:auto; transform:translateX(-50%);
-    width:100%; max-width:1040px;
-    box-shadow:0 0 0 1px rgba(0,0,0,.08);
-  }
 
   /* Itens de Vendas: aproveita a largura extra em 3 colunas em vez de 2 */
   .vi-row2{ grid-template-columns:1fr 1fr 1fr; }
@@ -774,7 +762,7 @@ input[type="password"]:-webkit-autofill{
     </button>
     <button class="ca-menu-item" onclick="_cadAbrir();_caFecharMenu()">
       <div class="ca-menu-ico" style="background:#e8f4e0">📚</div>
-      <div><div class="ca-menu-nm">Cadastros</div><div class="ca-menu-sub">Produtos, clientes, fornecedores, apresentação</div></div>
+      <div><div class="ca-menu-nm">Cadastros</div><div class="ca-menu-sub">Produtos, clientes, fornecedores, preços</div></div>
     </button>
     <button class="ca-menu-item" id="ca-menu-bkp" onclick="_caMenuBackup()" style="display:none">
       <div class="ca-menu-ico" style="background:#e8f4e8">💾</div>
@@ -1062,7 +1050,6 @@ input[type="password"]:-webkit-autofill{
         <option value="_novo" style="color:#1a6b2a;font-weight:700">+ Cliente novo / avulso</option>
       </select>
       <input type="text" id="venda-cliente" placeholder="Nome do cliente..." autocomplete="off" style="font-size:15px;display:none">
-      <input type="hidden" id="venda-cliente-id" value="">
     </div>
     <div id="vendas-itens"></div>
     <button class="btn-add" onclick="addItemVenda()">+ Adicionar item</button>
@@ -11528,7 +11515,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1c433f762100';
+var _caFP = 'f3155ee112b0';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -11959,53 +11946,22 @@ function _catalogoBuscarExato(setor, nome, unid){
   return cat.find(function(it){ return it.nome.trim().toLowerCase()===an && it.unid.trim().toLowerCase()===au; });
 }
 function _catalogoNomesUnicos(setor){
-  // Busca primeiro na tabela única de Produtos (filtrando pelo setor) —
-  // e complementa com o catálogo antigo, para itens que o admin ainda não
-  // migrou via "Revisar itens do catálogo de coleta". O preço nunca é
-  // lido aqui, então nunca chega nesta tela de coleta.
-  var label = (SETORES[setor]||{}).label || setor;
-  var doProdutos = (_cadDados.produtos||[])
-    .filter(function(p){ return p.setor===label; })
-    .map(function(p){ return p.nome; });
   var cat = _catalogoCarregar()[setor]||[];
-  var doCatalogoAntigo = [];
-  (function(){
-    var v = {};
-    cat.forEach(function(it){
-      var chave = it.nome.trim().toLowerCase();
-      if(!v[chave]){ v[chave]=true; doCatalogoAntigo.push(it.nome); }
-    });
-  })();
   var vistos = {}, out = [];
-  doProdutos.concat(doCatalogoAntigo).forEach(function(n){
-    var chave = n.trim().toLowerCase();
-    if(!vistos[chave]){ vistos[chave]=true; out.push(n); }
+  cat.forEach(function(it){
+    var chave = it.nome.trim().toLowerCase();
+    if(!vistos[chave]){ vistos[chave]=true; out.push(it.nome); }
   });
   return out.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
 }
 function _catalogoUnidadesPara(setor, nome){
-  // Mesma lógica: apresentações da tabela única de Produtos primeiro,
-  // complementadas pelas unidades do catálogo antigo (itens ainda não
-  // migrados). Nunca lê/usa preço aqui.
-  var label = (SETORES[setor]||{}).label || setor;
+  var cat = _catalogoCarregar()[setor]||[];
   var alvo = String(nome).trim().toLowerCase();
   var vistos = {}, out = [];
-  (_cadDados.produtos||[]).forEach(function(p){
-    if(p.setor===label && p.nome.trim().toLowerCase()===alvo){
-      (p.apresentacoes||[]).forEach(function(a){
-        // Se a apresentação tiver abas restritas, só entra se este setor
-        // estiver na lista; sem restrição (campo ausente), aparece sempre.
-        if(Array.isArray(a.abas) && a.abas.indexOf(label)===-1) return;
-        var u = (a.unid||'').trim();
-        if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
-      });
-    }
-  });
-  var cat = _catalogoCarregar()[setor]||[];
   cat.forEach(function(it){
     if(it.nome.trim().toLowerCase()===alvo){
       var u = it.unid.trim();
-      if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
+      if(!vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
     }
   });
   return out;
@@ -13130,7 +13086,6 @@ function _gerarPayloadPedido(conc, numPed, cliente, dataVenda){
         unidade: it.unidade||'',
         qtd: it.qtd,
         preco: it.preco,
-        desconto: it.desconto||0,
         sub: it.sub,
         data: it._data||dataVenda
       };
@@ -13293,26 +13248,23 @@ function _atualizarSugestoesClientes(){
   var sel = document.getElementById('venda-cliente-sel');
   if(!sel) return;
   var hist = _carregarHist();
-  var vistos = {}, opcoes = [];
-  // Clientes cadastrados em Cadastros → Clientes entram primeiro na lista,
-  // com o id estável como valor (não o texto do nome).
+  var vistos = {}, nomes = [];
+  // Clientes cadastrados em Cadastros → Clientes entram primeiro na lista
   (_cadDados.clientes||[]).forEach(function(c){
     var nome = (c.nome||'').trim();
-    var chave = nome.toLowerCase();
-    if(nome && !vistos[chave]){ vistos[chave]=true; opcoes.push({id:c.id, nome:nome}); }
+    if(nome && !vistos[nome.toLowerCase()]){ vistos[nome.toLowerCase()]=true; nomes.push(nome); }
   });
-  // Clientes que já apareceram em pedidos anteriores mas não têm cadastro
-  // (avulsos) — usam o próprio nome como "id" por não terem outro
+  // Clientes que ja apareceram em pedidos anteriores (mesmo sem estar cadastrados)
   hist.forEach(function(p){
     var nome = (p.cliente||'').trim();
-    var chave = nome.toLowerCase();
-    if(nome && !vistos[chave]){ vistos[chave]=true; opcoes.push({id:'n:'+nome, nome:nome}); }
+    if(nome && !vistos[nome.toLowerCase()]){ vistos[nome.toLowerCase()]=true; nomes.push(nome); }
   });
-  opcoes.sort(function(a,b){ return a.nome.localeCompare(b.nome,'pt-BR'); });
+  nomes.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
   var valorAtual = sel.value;
   sel.innerHTML = '<option value="">— Escolha um cliente —</option>'
-    + opcoes.map(function(o){ return '<option value="'+_escH(o.id)+'" data-nome="'+_escH(o.nome)+'">'+_escH(o.nome)+'</option>'; }).join('')
+    + nomes.map(function(n){ return '<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/</g,'&lt;')+'</option>'; }).join('')
     + '<option value="_novo" style="color:#1a6b2a;font-weight:700">+ Cliente novo / avulso</option>';
+  // Preserva selecao atual, se ainda existir na lista
   if(valorAtual && [].slice.call(sel.options).some(function(o){ return o.value===valorAtual; })){
     sel.value = valorAtual;
   }
@@ -13325,23 +13277,18 @@ function _atualizarSugestoesClientes(){
 function _onSelecionarClienteVenda(){
   var sel = document.getElementById('venda-cliente-sel');
   var inp = document.getElementById('venda-cliente');
-  var inpId = document.getElementById('venda-cliente-id');
   if(!sel || !inp) return;
   var val = sel.value;
   if(val === '_novo'){
     inp.value = '';
     inp.style.display = '';
-    if(inpId) inpId.value = '';
     setTimeout(function(){ inp.focus(); }, 30);
   } else if(val){
-    var opt = sel.options[sel.selectedIndex];
-    inp.value = opt ? (opt.getAttribute('data-nome')||val) : val;
+    inp.value = val;
     inp.style.display = 'none';
-    if(inpId) inpId.value = val;
   } else {
     inp.value = '';
     inp.style.display = 'none';
-    if(inpId) inpId.value = '';
   }
 }
 
@@ -13384,7 +13331,7 @@ function _nextPedNum(){
 function addItemVenda(){
   var idx = _vIdx++;
   var hoje = _dataLocalHoje();
-  _vItens.push({idx:idx, prodId:'ovo', unidade:'', data:hoje, qtd:0, preco:0, desconto:0, sub:0, concluido:false});
+  _vItens.push({idx:idx, prodId:'ovo', unidade:'', data:hoje, qtd:0, preco:0, sub:0, concluido:false});
   _renderVItens();
 }
 
@@ -13402,7 +13349,7 @@ function _renderVItens(){
     if(it.concluido){
       html += '<div class="vi con">'
         +'<div style="font-weight:700;margin-bottom:6px">'+it._nome+'</div>'
-        +'<div class="vi-res">'+it.qtd+' '+it.unidade+' x R$ '+_fmt(it.preco)+(it.desconto?' (desconto R$ '+_fmt(it.desconto)+')':'')+' = <strong>R$ '+_fmt(it.sub)+'</strong> ('+it._data+')</div>'
+        +'<div class="vi-res">'+it.qtd+' '+it.unidade+' x R$ '+_fmt(it.preco)+' = <strong>R$ '+_fmt(it.sub)+'</strong> ('+it._data+')</div>'
         +'<div style="display:flex;gap:8px;margin-top:8px">'
         +'<button class="vi-edit" onclick="editVItem('+i+')">Alterar</button>'
         +'<button class="vi-del" onclick="delVItem('+i+')">X</button>'
@@ -13416,9 +13363,7 @@ function _renderVItens(){
       // Se o produto tiver apresentações cadastradas (unidade+preço), mostra
       // como lista de opções — trocar a unidade também atualiza o preço.
       var prodSel = isEdit ? null : (_cadDados.produtos||[]).find(function(p){ return p.id===it.prodId; });
-      var apresentacoes = (prodSel && prodSel.apresentacoes && prodSel.apresentacoes.length)
-        ? prodSel.apresentacoes.filter(function(a){ return !Array.isArray(a.abas) || a.abas.indexOf('Vendas')>-1; })
-        : [];
+      var apresentacoes = (prodSel && prodSel.apresentacoes && prodSel.apresentacoes.length) ? prodSel.apresentacoes : [];
       var campoUnidade;
       if(apresentacoes.length){
         if(!it.unidade || !apresentacoes.some(function(a){ return a.unid===it.unidade; })) it.unidade = apresentacoes[0].unid;
@@ -13442,9 +13387,6 @@ function _renderVItens(){
         +'</div>'
         +'<div class="vi-row2" style="margin-top:10px">'
         +'<div class="vi-campo"><span class="vi-lbl">Preco Unit. (R$)</span><input class="vi-inp" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00" value="'+(it.preco||'')+'" oninput="setPrecoV('+i+',this.value)"></div>'
-        +'<div class="vi-campo"><span class="vi-lbl">Desconto (R$)</span><input class="vi-inp" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00" value="'+(it.desconto||'')+'" oninput="setDescontoV('+i+',this.value)"></div>'
-        +'</div>'
-        +'<div class="vi-row2" style="margin-top:10px">'
         +'<div class="vi-campo"><span class="vi-lbl">Subtotal</span><div class="vi-sub-box">R$ <span id="vsub-'+it.idx+'">'+_fmt(it.sub)+'</span></div></div>'
         +'</div>'
         +'<div class="vi-btns">'
@@ -13462,12 +13404,9 @@ function setProdV(i,v){
   // Preenche automaticamente unidade e preço a partir do cadastro unificado de produtos
   if(v && v!=='_edit'){
     var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===v; });
-    var apresVendas = (prod && prod.apresentacoes)
-      ? prod.apresentacoes.filter(function(a){ return !Array.isArray(a.abas) || a.abas.indexOf('Vendas')>-1; })
-      : [];
-    if(apresVendas.length){
-      _vItens[i].unidade = apresVendas[0].unid;
-      _vItens[i].preco = apresVendas[0].preco||0;
+    if(prod && prod.apresentacoes && prod.apresentacoes.length){
+      _vItens[i].unidade = prod.apresentacoes[0].unid;
+      _vItens[i].preco = prod.apresentacoes[0].preco||0;
     } else if(prod && prod.unid){
       // Compatibilidade com cadastro antigo (ainda nao migrado para apresentações)
       _vItens[i].unidade = prod.unid;
@@ -13498,17 +13437,7 @@ function setPrecoV(i,v){
   var el=document.getElementById('vsub-'+_vItens[i].idx); if(el) el.textContent=_fmt(_vItens[i].sub);
   _atualizarTotalV();
 }
-function setDescontoV(i,v){
-  _vItens[i].desconto=parseFloat(v)||0; _calcSubV(i);
-  var el=document.getElementById('vsub-'+_vItens[i].idx); if(el) el.textContent=_fmt(_vItens[i].sub);
-  _atualizarTotalV();
-}
-function _calcSubV(i){
-  var it = _vItens[i];
-  var bruto = Math.round(it.qtd*it.preco*100)/100;
-  var desc = Math.min(it.desconto||0, bruto); // desconto nunca deixa o subtotal negativo
-  it.sub = Math.round((bruto-desc)*100)/100;
-}
+function _calcSubV(i){ _vItens[i].sub=Math.round(_vItens[i].qtd*_vItens[i].preco*100)/100; }
 
 function conclVItem(i){
   var it=_vItens[i];
@@ -13548,23 +13477,21 @@ async function enviarPedido(){
   var numPed = _nextPedNum();
   var cliente = (document.getElementById('venda-cliente')||{value:''}).value||'';
   var dataVenda = document.getElementById('data-global').value||_dataLocalHoje();
-  // Recalcula subtotais antes de montar as linhas (garante valores atualizados, já considerando o desconto)
-  conc.forEach(function(it, idx){ _calcSubV(_vItens.indexOf(it)); });
+  // Recalcula subtotais antes de montar as linhas (garante valores atualizados)
+  conc.forEach(function(it){ it.sub = Math.round(it.qtd * it.preco * 100) / 100; });
   var linhas = conc.map(function(it){
     var subFmt = 'R$ '+_fmt(it.sub);
-    var precoFmt = 'R$ '+_fmt(it.preco)+' x '+it.qtd+(it.desconto?' (desc. R$ '+_fmt(it.desconto)+')':'');
+    var precoFmt = 'R$ '+_fmt(it.preco)+' x '+it.qtd;
     return {col1:it._data, col2:it._nome, col3:it.qtd+' '+it.unidade,
             col4:precoFmt, col5:subFmt, val:it.sub,
-            prodId:it.prodId, nome:it._nome, unidade:it.unidade, qtd:it.qtd, preco:it.preco, desconto:(it.desconto||0), sub:it.sub, data:it._data};
+            prodId:it.prodId, nome:it._nome, unidade:it.unidade, qtd:it.qtd, preco:it.preco, sub:it.sub, data:it._data};
   });
   var total = conc.reduce(function(s,it){ return s+it.sub; },0);
+  // GRAVA no historico
+  await _salvarPedido({num:numPed, cliente:cliente, data:dataVenda, itens:linhas, total:total, ts:Date.now()});
   // Cliente usado numa venda real passa a fazer parte do Cadastro automaticamente
   // (assim a lista de selecao de clientes fica sempre atualizada com quem ja compra)
-  // — e o id retornado é o que grava no pedido, garantindo referência estável
-  // mesmo que o nome tenha sido digitado de forma levemente diferente.
-  var clienteId = await _cadGarantirCliente(cliente);
-  // GRAVA no historico
-  await _salvarPedido({num:numPed, cliente:cliente, clienteId:clienteId, data:dataVenda, itens:linhas, total:total, ts:Date.now()});
+  await _cadGarantirCliente(cliente);
 
   // Gera link de importacao para o granja
   var payload = _gerarPayloadPedido(conc, numPed, cliente, dataVenda);
@@ -13585,7 +13512,6 @@ async function enviarPedido(){
   setTimeout(function(){
     _vItens=[]; _vIdx=0;
     var cl=document.getElementById('venda-cliente'); if(cl){ cl.value=''; cl.style.display='none'; }
-    var clId=document.getElementById('venda-cliente-id'); if(clId) clId.value='';
     var clSel=document.getElementById('venda-cliente-sel'); if(clSel) clSel.value='';
     _renderVItens(); _renderTalaoNum();
   },2000);
@@ -13714,37 +13640,23 @@ function _renderHist(){
     return true;
   });
 
-  // Popula select de clientes com os existentes no período — agrupa por
-  // clienteId quando disponível (referência estável ao cadastro), para que
-  // pedidos com o nome digitado de forma levemente diferente, mas do mesmo
-  // cliente cadastrado, caiam juntos no mesmo filtro. Registros antigos sem
-  // clienteId continuam agrupados pelo texto do nome, como já funcionava.
+  // Popula select de clientes com os existentes no período
   var selCli = document.getElementById('hped-cli');
   if(selCli){
-    var vistosCli = {}, opcoesCli = [];
-    filtradoAnoMes.forEach(function(p){
-      if(!p.cliente) return;
-      var cadastro = p.clienteId ? (_cadDados.clientes||[]).find(function(c){ return c.id===p.clienteId; }) : null;
-      var chave = cadastro ? ('id:'+cadastro.id) : ('n:'+p.cliente);
-      var nomeExib = cadastro ? cadastro.nome : p.cliente;
-      if(!vistosCli[chave]){ vistosCli[chave]=true; opcoesCli.push({chave:chave, nome:nomeExib}); }
-    });
-    opcoesCli.sort(function(a,b){ return a.nome.localeCompare(b.nome,'pt-BR'); });
+    var clientes = {};
+    filtradoAnoMes.forEach(function(p){ if(p.cliente) clientes[p.cliente]=1; });
+    var cliOpts = Object.keys(clientes).sort();
     var cliAtual = selCli.value; // preserva seleção atual
     selCli.innerHTML = '<option value="">Todos</option>'
-      + opcoesCli.map(function(o){
-          return '<option value="'+_escH(o.chave)+'"'+(o.chave===cliAtual?' selected':'')+'>'+_escH(o.nome)+'</option>';
+      + cliOpts.map(function(c){
+          return '<option value="'+c+'"'+(c===cliAtual?' selected':'')+'>'+c+'</option>';
         }).join('');
     cli = selCli.value; // reler após rebuild
   }
 
   // Aplica filtro de cliente e status (Em aberto)
   var filtrado = filtradoAnoMes.filter(function(p){
-    if(cli){
-      var cadastroP = p.clienteId ? (_cadDados.clientes||[]).find(function(c){ return c.id===p.clienteId; }) : null;
-      var chaveP = cadastroP ? ('id:'+cadastroP.id) : ('n:'+(p.cliente||''));
-      if(chaveP !== cli) return false;
-    }
+    if(cli && (p.cliente||'') !== cli) return false;
     if(_filtroAbertoAtivo && p.pago) return false;
     return true;
   });
@@ -16153,41 +16065,6 @@ function _bkpSetStatus(msg, cls){
    apagar nada. Roda sozinha em segundo plano a cada 60s (se o token do
    GitHub estiver configurado), then republica o resultado combinado para
    que o outro dispositivo também convirja para o mesmo conjunto. */
-/* Mescla os 4 tipos de cadastro (Produtos/Clientes/Fornecedores/Preços) por
-   id — item novo de qualquer lado entra, nada é apagado. Para Produtos,
-   mescla também as apresentações (unidade+preço) de cada lado entre si,
-   sem duplicar a mesma unidade. */
-function _mesclarCadastros(local, remoto){
-  var resultado = {produtos:[], clientes:[], fornecedores:[], precos:[]};
-  ['produtos','clientes','fornecedores','precos'].forEach(function(categoria){
-    var vistos = {};
-    var combinado = [];
-    (local[categoria]||[]).forEach(function(item){
-      var chave = String(item.id||JSON.stringify(item));
-      if(!vistos[chave]){ vistos[chave]=true; combinado.push(item); }
-    });
-    (remoto[categoria]||[]).forEach(function(item){
-      var chave = String(item.id||JSON.stringify(item));
-      if(!vistos[chave]){
-        vistos[chave]=true; combinado.push(item);
-      } else if(categoria==='produtos' && item.apresentacoes){
-        var idx = combinado.findIndex(function(x){ return String(x.id||JSON.stringify(x))===chave; });
-        if(idx>-1){
-          if(!combinado[idx].apresentacoes) combinado[idx].apresentacoes = [];
-          var unidsExistentes = combinado[idx].apresentacoes.map(function(a){ return (a.unid||'').trim().toLowerCase(); });
-          item.apresentacoes.forEach(function(a){
-            if(unidsExistentes.indexOf((a.unid||'').trim().toLowerCase())===-1){
-              combinado[idx].apresentacoes.push(a);
-            }
-          });
-        }
-      }
-    });
-    resultado[categoria] = combinado;
-  });
-  return resultado;
-}
-
 function _mesclarRegistros(local, remoto){
   var vistos = {};
   var combinado = [];
@@ -16270,25 +16147,6 @@ async function _sincronizarRegistrosGitHub(manual){
       }
     }
 
-    // Cadastros (Produtos, Clientes, Fornecedores, Preços) — mescla por id,
-    // sem apagar o que o outro aparelho cadastrou. Para Produtos, mescla
-    // também as apresentações (unidade+preço) de cada lado, sem duplicar.
-    var cadLocal = JSON.parse(JSON.stringify(_cadDados));
-    var cadRemoto = await _ghLer(GH_BCK_CADASTROS);
-    if(cadRemoto){
-      var cadMerge = _mesclarCadastros(cadLocal, cadRemoto);
-      if(JSON.stringify(cadMerge) !== JSON.stringify(cadLocal)){
-        _cadDados.produtos     = cadMerge.produtos;
-        _cadDados.clientes     = cadMerge.clientes;
-        _cadDados.fornecedores = cadMerge.fornecedores;
-        _cadDados.precos       = cadMerge.precos;
-        await _cadSalvar();
-        if(typeof _cadRenderAba==='function' && typeof _cadAbaAtual!=='undefined') _cadRenderAba(_cadAbaAtual);
-        houveMudanca = true;
-        await _ghGravar(GH_BCK_CADASTROS, cadMerge, 'Sincronizacao automatica (cadastros)');
-      }
-    }
-
     if(houveMudanca) _toast('🔄 Novos registros sincronizados de outro dispositivo.');
     else if(manual) _toast('✅ Tudo já estava sincronizado.');
   }catch(e){
@@ -16320,7 +16178,7 @@ async function _fazerBackup(manual){
     await _ghGravar(GH_BCK_PEDIDOS, pedidos, 'Backup pedidos — '+ts);
     /* Cadastros */
     var cads = {};
-    try{ cads = JSON.parse(localStorage.getItem('ca_cad')||'{}'); }catch(e){}
+    try{ cads = JSON.parse(localStorage.getItem('fsj_cad')||'{}'); }catch(e){}
     await _ghGravar(GH_BCK_CADASTROS, cads, 'Backup cadastros — '+ts);
 
     localStorage.setItem(BKP_TS_KEY, ts);
@@ -16355,13 +16213,7 @@ async function _restaurarBackup(){
     /* Cadastros */
     var cads = await _ghLer(GH_BCK_CADASTROS);
     if(cads){
-      try{ localStorage.setItem('ca_cad', JSON.stringify(cads)); }catch(e){}
-      if(_caOpfs) await _caOpfsSalvar(FSJ_CAD, JSON.stringify(cads));
-      if(cads.produtos)     _cadDados.produtos     = cads.produtos;
-      if(cads.clientes)     _cadDados.clientes     = cads.clientes;
-      if(cads.fornecedores) _cadDados.fornecedores = cads.fornecedores;
-      if(cads.precos)       _cadDados.precos       = cads.precos;
-      if(typeof _cadRenderAba==='function' && typeof _cadAbaAtual!=='undefined') _cadRenderAba(_cadAbaAtual);
+      try{ localStorage.setItem('fsj_cad', JSON.stringify(cads)); }catch(e){}
     } else erros.push('cadastros não encontrados');
 
     var ts = new Date().toLocaleString('pt-BR');
@@ -16505,7 +16357,7 @@ async function executarReset(){
   // Reset cadastros em memória
   try{
     _cadDados = {produtos:[],clientes:[],fornecedores:[],precos:[]};
-    _cadRenderAba(_cadAbaAtual);
+    _cadRenderLista(_cadAbaAtual);
   }catch(e){}
   cancelarReset();
   s2.textContent = '✅ Registros apagados. App reiniciado.';
@@ -16702,10 +16554,6 @@ async function _cadSalvar(){
   var json = JSON.stringify(_cadDados);
   if(_caOpfs) await _caOpfsSalvar(FSJ_CAD, json);
   try{ localStorage.setItem('ca_cad', json); }catch(e){}
-  /* Toda gravação já dispara sincronização com o GitHub — primeiro traz o
-     que houver de novo de outro aparelho e mescla, depois garante que o
-     resultado final fica salvo lá. Assíncrono, não bloqueia o fluxo. */
-  setTimeout(function(){ _sincronizarRegistrosGitHub().then(function(){ _fazerBackup(false); }); }, 800);
 }
 
 /* Garante que um nome de cliente exista em Cadastros → Clientes, sem
@@ -16715,16 +16563,14 @@ async function _cadSalvar(){
    sem exigir que o admin cadastre manualmente antes de vender. */
 async function _cadGarantirCliente(nome){
   nome = (nome||'').trim();
-  if(!nome) return null;
-  var existente = (_cadDados.clientes||[]).find(function(c){
+  if(!nome) return;
+  var existe = (_cadDados.clientes||[]).some(function(c){
     return (c.nome||'').trim().toLowerCase() === nome.toLowerCase();
   });
-  if(existente) return existente.id;
-  var novoId = 'c_'+Date.now();
-  _cadDados.clientes.push({ id:novoId, nome:nome, contato:'', obs:'' });
+  if(existe) return;
+  _cadDados.clientes.push({ id:'c_'+Date.now(), nome:nome, contato:'', obs:'' });
   await _cadSalvar();
   _atualizarSugestoesClientes();
-  return novoId;
 }
 
 /* NOTA: o botão "Exportar" foi removido — a exportação de listas em .listas
@@ -16782,181 +16628,14 @@ function _cadTrocaAba(aba, btn){
 }
 
 /* ── Renderiza lista de cada aba ── */
-var _cadModoUnificacao = false;
-var _cadAbaUnificacao = 'produtos';
-var _cadSelecionadosUnificacao = [];
-
-function _cadToggleUnificacao(aba){
-  aba = aba || _cadAbaUnificacao || 'produtos';
-  _cadAbaUnificacao = aba;
-  _cadModoUnificacao = !_cadModoUnificacao;
-  _cadSelecionadosUnificacao = [];
-  var barra = document.getElementById('cad-unificacao-barra-'+aba);
-  if(barra) barra.style.display = _cadModoUnificacao ? 'block' : 'none';
-  var btn = document.getElementById('btn-toggle-unificacao-'+aba);
-  var rotulo = aba==='produtos' ? 'produtos' : 'clientes';
-  if(btn) btn.textContent = _cadModoUnificacao ? '✕ Cancelar unificação' : '🔗 Unificar '+rotulo+' duplicados';
-  var formCont = document.getElementById('cad-form-'+aba);
-  if(formCont) formCont.style.display = 'none';
-  var revCont = document.getElementById('cad-revisao-catalogo');
-  if(revCont) revCont.style.display = 'none';
-  _cadRenderAba(aba);
-}
-
-function _cadMarcarUnificacao(idx, marcado){
-  if(marcado){
-    if(_cadSelecionadosUnificacao.indexOf(idx)===-1) _cadSelecionadosUnificacao.push(idx);
-  } else {
-    _cadSelecionadosUnificacao = _cadSelecionadosUnificacao.filter(function(i){ return i!==idx; });
-  }
-  var aba = _cadAbaUnificacao;
-  var status = document.getElementById('cad-unificacao-status-'+aba);
-  var btn = document.getElementById('btn-unificar-confirmar-'+aba);
-  if(!status || !btn) return;
-  if(_cadSelecionadosUnificacao.length >= 2){
-    var nomes = _cadSelecionadosUnificacao.map(function(i){ return _cadDados[aba][i].nome; });
-    status.textContent = nomes.length+' selecionados: '+nomes.join(', ');
-    btn.disabled = false;
-  } else {
-    var rotulo = aba==='produtos' ? 'produtos' : 'clientes';
-    status.textContent = 'Selecione 2 ou mais '+rotulo+' que sejam a mesma coisa ('+_cadSelecionadosUnificacao.length+' selecionado)';
-    btn.disabled = true;
-  }
-}
-
-async function _cadUnificarSelecionados(){
-  if(_cadSelecionadosUnificacao.length < 2) return;
-  var aba = _cadAbaUnificacao;
-  var selecionados = _cadSelecionadosUnificacao.map(function(i){ return _cadDados[aba][i]; });
-  var nomes = selecionados.map(function(p){ return p.nome; });
-  var sobrevivente = selecionados[0];
-  var idsRemovidos = selecionados.slice(1).map(function(p){ return p.id; });
-
-  if(aba==='produtos'){
-    if(!confirm('Unificar estes produtos num só?\n\n'+nomes.join('\n')+'\n\nVai manter o nome "'+sobrevivente.nome+'" e juntar todas as apresentações (unidade+preço). Pedidos já registrados com os outros produtos serão atualizados para apontar para este. Esta ação não pode ser desfeita.')) return;
-
-    // Junta as apresentações de todos, sem duplicar a mesma unidade
-    if(!sobrevivente.apresentacoes) sobrevivente.apresentacoes = [];
-    var unidsExistentes = sobrevivente.apresentacoes.map(function(a){ return (a.unid||'').trim().toLowerCase(); });
-    selecionados.slice(1).forEach(function(p){
-      (p.apresentacoes||[]).forEach(function(a){
-        if(unidsExistentes.indexOf((a.unid||'').trim().toLowerCase())===-1){
-          sobrevivente.apresentacoes.push(a);
-          unidsExistentes.push((a.unid||'').trim().toLowerCase());
-        }
-      });
-    });
-
-    _cadDados.produtos = _cadDados.produtos.filter(function(p){ return idsRemovidos.indexOf(p.id)===-1; });
-
-    // Atualiza pedidos já registrados: qualquer item que apontava para um dos
-    // produtos removidos passa a apontar para o sobrevivente
-    var hist = _carregarHistRaw();
-    var mudouPedidos = false;
-    hist.forEach(function(ped){
-      (ped.itens||[]).forEach(function(it){
-        if(idsRemovidos.indexOf(it.prodId)>-1){
-          it.prodId = sobrevivente.id;
-          it.nome = sobrevivente.nome;
-          mudouPedidos = true;
-        }
-      });
-    });
-    if(mudouPedidos){
-      var jp = JSON.stringify(hist);
-      try{ localStorage.setItem(HK, jp); }catch(e){}
-      if(_caOpfs) await _caOpfsSalvar(FSJ_PEDIDOS, jp);
-      _renderHist();
-    }
-    await _cadSalvar();
-    _toast('✅ Produtos unificados em "'+sobrevivente.nome+'"!');
-  } else {
-    // Clientes
-    if(!confirm('Unificar estes clientes num só?\n\n'+nomes.join('\n')+'\n\nVai manter o nome "'+sobrevivente.nome+'". Pedidos já registrados com os outros cadastros serão atualizados para apontar para este. Esta ação não pode ser desfeita.')) return;
-
-    // Preenche contato/observação vazios do sobrevivente com o que houver
-    // nos outros, sem sobrescrever o que ele já tiver preenchido
-    selecionados.slice(1).forEach(function(c){
-      if(!sobrevivente.contato && c.contato) sobrevivente.contato = c.contato;
-      if(!sobrevivente.obs && c.obs) sobrevivente.obs = c.obs;
-    });
-
-    _cadDados.clientes = _cadDados.clientes.filter(function(c){ return idsRemovidos.indexOf(c.id)===-1; });
-
-    // Atualiza pedidos já registrados: qualquer um que apontava pra um dos
-    // clientes removidos passa a apontar pro sobrevivente
-    var hist2 = _carregarHistRaw();
-    var mudouPedidos2 = false;
-    hist2.forEach(function(ped){
-      if(idsRemovidos.indexOf(ped.clienteId)>-1){
-        ped.clienteId = sobrevivente.id;
-        ped.cliente = sobrevivente.nome;
-        mudouPedidos2 = true;
-      }
-    });
-    if(mudouPedidos2){
-      var jp2 = JSON.stringify(hist2);
-      try{ localStorage.setItem(HK, jp2); }catch(e){}
-      if(_caOpfs) await _caOpfsSalvar(FSJ_PEDIDOS, jp2);
-      _renderHist();
-    }
-    await _cadSalvar();
-    _toast('✅ Clientes unificados em "'+sobrevivente.nome+'"!');
-  }
-
-  _cadToggleUnificacao(aba); // sai do modo de seleção e re-renderiza
-}
-
 function _cadRenderAba(aba){
-  var lista = document.getElementById('cad-lista-'+aba);
-
-  // "Preços" não é mais uma tabela própria — é uma visão de todas as
-  // apresentações (unidade+preço) já cadastradas dentro de Produtos.
-  // Ordenada por produto, depois por unidade, sempre em ordem alfabética.
-  if(aba==='precos'){
-    var linhas = [];
-    (_cadDados.produtos||[]).forEach(function(p){
-      (p.apresentacoes||[]).forEach(function(a, ai){
-        linhas.push({prodId:p.id, prodNome:p.nome, apresIdx:ai, unid:a.unid, preco:a.preco});
-      });
-    });
-    linhas.sort(function(x,y){
-      var c = (x.prodNome||'').localeCompare(y.prodNome||'','pt-BR');
-      return c!==0 ? c : (x.unid||'').localeCompare(y.unid||'','pt-BR');
-    });
-    if(!linhas.length){
-      lista.innerHTML = '<div class="cad-vazia">Nenhuma apresentação com preço cadastrada ainda.<br>Toque em + para adicionar (buscando o produto na tabela única).</div>';
-      return;
-    }
-    lista.innerHTML = linhas.map(function(l){
-      var det = l.unid+(l.preco?' · R$ '+Number(l.preco).toFixed(2).replace('.',','):' · sem preço definido');
-      return '<div class="cad-item">'
-        +'<div class="cad-item-info">'
-        +'<div class="cad-item-nm">'+_escH(l.prodNome)+'</div>'
-        +'<div class="cad-item-det">'+_escH(det)+'</div>'
-        +'</div>'
-        +'<div class="cad-item-btns">'
-        +'<button class="cad-btn-ed" onclick="_cadEditarPreco(\''+l.prodId+'\','+l.apresIdx+')" title="Editar">\u270e</button>'
-        +'<button class="cad-btn-rm" onclick="_cadRemoverPreco(\''+l.prodId+'\','+l.apresIdx+')" title="Remover">\u00d7</button>'
-        +'</div></div>';
-    }).join('');
-    return;
-  }
-
+  var lista   = document.getElementById('cad-lista-'+aba);
   var itens   = _cadDados[aba] || [];
   if(!itens.length){
     lista.innerHTML = '<div class="cad-vazia">Nenhum item cadastrado.<br>Toque em + para adicionar.</div>';
     return;
   }
-  // Ordena por nome para exibição, mas preserva o índice ORIGINAL de cada
-  // item — editar/remover/unificar dependem desse índice para saber qual
-  // item do array real (não da lista ordenada) está sendo referenciado.
-  var itensComIdx = itens.map(function(it, idx){ return {it:it, idx:idx}; });
-  itensComIdx.sort(function(a,b){
-    return (a.it.nome||a.it.prodNome||'').localeCompare((b.it.nome||b.it.prodNome||''),'pt-BR');
-  });
-  lista.innerHTML = itensComIdx.map(function(par){
-    var it = par.it, idx = par.idx;
+  lista.innerHTML = itens.map(function(it,idx){
     var det = '';
     if(aba==='produtos'){
       var resumoApres = (it.apresentacoes||[]).map(function(a){
@@ -16966,18 +16645,7 @@ function _cadRenderAba(aba){
     }
     if(aba==='clientes')    det = it.contato||it.obs||'';
     if(aba==='fornecedores')det = it.contato||it.obs||'';
-
-    if((aba==='produtos' || aba==='clientes') && _cadModoUnificacao && _cadAbaUnificacao===aba){
-      var marcado = _cadSelecionadosUnificacao.indexOf(idx)>-1;
-      return '<div class="cad-item" style="'+(marcado?'background:#fff3d6;':'')+'">'
-        +'<label style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer">'
-        +'<input type="checkbox" '+(marcado?'checked':'')+' onchange="_cadMarcarUnificacao('+idx+',this.checked)" style="width:20px;height:20px">'
-        +'<div class="cad-item-info">'
-        +'<div class="cad-item-nm">'+_escH(it.nome||'—')+'</div>'
-        +(det?'<div class="cad-item-det">'+_escH(det)+'</div>':'')
-        +'</div></label></div>';
-    }
-
+    if(aba==='precos')      det = (it.prodNome||'')+(it.unid?' · '+it.unid:'')+(it.preco?' · R$ '+Number(it.preco).toFixed(2).replace('.',','):'');
     return '<div class="cad-item">'
       +'<div class="cad-item-info">'
       +'<div class="cad-item-nm">'+_escH(it.nome||it.prodNome||'—')+'</div>'
@@ -17001,24 +16669,6 @@ function _cadNovoForm(aba){
 function _cadEditar(aba, idx){
   _cadEditIdx = idx;
   _cadMostrarForm(aba, (_cadDados[aba]||[])[idx]);
-}
-
-/* Preços agora vive dentro de cada Produto (apresentacoes) — editar/remover
-   um "preço" na prática edita/remove uma apresentação específica daquele
-   produto, não um registro numa tabela separada. */
-function _cadEditarPreco(prodId, apresIdx){
-  _cadEditIdx = 0; // só para o formulário saber que é edição, não usado como índice aqui
-  _cadMostrarForm('precos', {_prodId:prodId, _apresIdx:apresIdx});
-}
-
-async function _cadRemoverPreco(prodId, apresIdx){
-  if(!confirm('Remover esta apresentação/preço?')) return;
-  var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===prodId; });
-  if(!prod || !prod.apresentacoes) return;
-  prod.apresentacoes.splice(apresIdx,1);
-  await _cadSalvar();
-  _cadRenderAba('precos');
-  _toast('✅ Removido');
 }
 
 function _cadMostrarForm(aba, dados){
@@ -17059,15 +16709,19 @@ function _cadMostrarForm(aba, dados){
       +'<div><label class="cad-inp-lbl">Observação (opcional)</label>'
       +'<input class="cad-inp" id="cf-obs" placeholder="Produtos fornecidos..." value="'+_escH(d.obs||'')+'"></div>';
   } else if(aba==='precos'){
-    var prodSelOpts = '<option value="">— Escolha um produto —</option>'
-      + (_cadDados.produtos||[]).map(function(p){
-          return '<option value="'+_escH(p.id)+'"'+(d._prodId===p.id?' selected':'')+'>'+_escH(p.nome)+'</option>';
-        }).join('');
+    var prodOpts = (_cadDados.produtos||[]).map(function(p){
+      return '<option value="'+_escH(p.nome)+'" data-unid="'+_escH(p.unid||'')+'">';
+    }).join('');
     campos =
-      '<div><label class="cad-inp-lbl">Produto (da tabela única de Produtos)</label>'
-      +'<select class="cad-inp" id="cf-prod-select" onchange="_cadPrecoProdutoChange()">'+prodSelOpts+'</select></div>'
-      +'<div id="cf-apres-wrap"></div>';
-    setTimeout(function(){ _cadPrecoMontarApresentacoes(d); }, 0);
+      '<div><label class="cad-inp-lbl">Produto</label>'
+      +'<input class="cad-inp" id="cf-prodnome" placeholder="Nome do produto" value="'+_escH(d.prodNome||'')+'" list="cad-prod-list" oninput="_cadPrecoProdChange()">'
+      +'<datalist id="cad-prod-list">'+prodOpts+'</datalist></div>'
+      +'<div style="display:flex;gap:8px">'
+      +'<div style="flex:1"><label class="cad-inp-lbl">Preço (R$)</label>'
+      +'<input class="cad-inp" id="cf-preco" type="number" min="0" step="0.01" placeholder="0,00" value="'+(d.preco||'')+'"></div>'
+      +'<div style="flex:1"><label class="cad-inp-lbl">Unidade</label>'
+      +'<input class="cad-inp" id="cf-unid" placeholder="unid" value="'+_escH(d.unid||'')+'"></div>'
+      +'</div>';
   }
   container.innerHTML =
     '<div class="cad-form">'
@@ -17177,75 +16831,18 @@ async function _cadAdicionarCandidatoRevisao(i){
   _cadAbrirRevisaoCatalogo(); // atualiza a lista, removendo o item ja adicionado
 }
 
-/* Monta a área de "Apresentação" assim que um produto é escolhido no
-   formulário de Preços — mostra as apresentações já existentes desse
-   produto (pra editar o preço de uma delas) e a opção de adicionar uma
-   nova (Unidade, Bandeja, Caixa, Kg, Sacos etc). */
-function _cadPrecoMontarApresentacoes(dPre){
-  var sel = document.getElementById('cf-prod-select');
-  var wrap = document.getElementById('cf-apres-wrap');
-  if(!sel || !wrap) return;
-  var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===sel.value; });
-  if(!prod){
-    wrap.innerHTML = '<div style="font-size:12px;color:var(--mu);padding:8px 0">Escolha um produto para ver ou adicionar uma apresentação.</div>';
-    return;
-  }
-  var apresOpts = '<option value="_nova">+ Nova apresentação</option>'
-    + (prod.apresentacoes||[]).map(function(a,i){
-        return '<option value="'+i+'"'+(dPre && dPre._apresIdx===i?' selected':'')+'>'+_escH(a.unid)+(a.preco?' — R$ '+Number(a.preco).toFixed(2).replace('.',','):'')+'</option>';
-      }).join('');
-  var ABAS_APRES = ['Aviario','Perda','Campo','Estoque','Vendas'];
-  var abasCheckboxes = ABAS_APRES.map(function(ab){
-    return '<label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">'
-      +'<input type="checkbox" class="cf-aba-chk" value="'+ab+'" checked style="width:16px;height:16px">'+ab+'</label>';
-  }).join('');
-  wrap.innerHTML =
-    '<div><label class="cad-inp-lbl">Apresentação</label>'
-    +'<select class="cad-inp" id="cf-apres-select" onchange="_cadPrecoApresChange()">'+apresOpts+'</select></div>'
-    +'<div style="display:flex;gap:8px;margin-top:8px">'
-    +'<div style="flex:1" id="cf-unid-nova-wrap"><label class="cad-inp-lbl">Unidade (ex: Bandeja, Caixa, Kg, Sacos...)</label>'
-    +'<input class="cad-inp" id="cf-unid-nova" placeholder="Unidade, Bandeja, Kg..."></div>'
-    +'<div style="flex:1"><label class="cad-inp-lbl">Preço (R$)</label>'
-    +'<input class="cad-inp" id="cf-preco" type="number" min="0" step="0.01" placeholder="0,00"></div>'
-    +'</div>'
-    +'<div style="margin-top:10px"><label class="cad-inp-lbl">Aparece nas abas</label>'
-    +'<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">'+abasCheckboxes+'</div></div>';
-  // Se estiver editando um item de preco existente, ja seleciona a apresentacao certa
-  if(dPre && typeof dPre._apresIdx === 'number'){
-    document.getElementById('cf-apres-select').value = String(dPre._apresIdx);
-    _cadPrecoApresChange();
-  }
-}
-
-function _cadPrecoProdutoChange(){
-  _cadPrecoMontarApresentacoes(null);
-}
-
-/* Ao escolher uma apresentação já existente, preenche o preço atual dela
-   e marca as abas já salvas; ao escolher "+ Nova apresentação", limpa os
-   campos e marca todas as abas (comportamento padrão: aparece em tudo). */
-function _cadPrecoApresChange(){
-  var selProd = document.getElementById('cf-prod-select');
-  var selApres = document.getElementById('cf-apres-select');
-  var unidNovaWrap = document.getElementById('cf-unid-nova-wrap');
-  var precoInp = document.getElementById('cf-preco');
-  if(!selProd || !selApres) return;
-  var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===selProd.value; });
-  var chks = document.querySelectorAll('.cf-aba-chk');
-  if(selApres.value === '_nova'){
-    if(unidNovaWrap) unidNovaWrap.style.display = 'block';
-    document.getElementById('cf-unid-nova').value = '';
-    precoInp.value = '';
-    chks.forEach(function(c){ c.checked = true; }); // padrão: aparece em todas as abas
-  } else {
-    var apres = prod && prod.apresentacoes && prod.apresentacoes[parseInt(selApres.value,10)];
-    if(unidNovaWrap) unidNovaWrap.style.display = 'none';
-    precoInp.value = apres ? (apres.preco||'') : '';
-    // Se a apresentação já tem abas salvas, marca só essas; se nunca teve
-    // essa informação (apresentação antiga), marca todas — mantendo o
-    // comportamento de sempre aparecer em qualquer lugar.
-    var abasSalvas = (apres && Array.isArray(apres.abas)) ? apres.abas : null;
-    chks.forEach(function(c){ c.checked = abasSalvas ? (abasSalvas.indexOf(c.value)>-1) : true; });
+function _cadPrecoProdChange(){
+  var inp = document.getElementById('cf-prodnome');
+  if(!inp) return;
+  var nome = inp.value;
+  var prod = (_cadDados.produtos||[]).find(function(p){ return p.nome===nome; });
+  if(prod){
+    var pu = document.getElementById('cf-unid');
+    var pp = document.getElementById('cf-preco');
+    if(pu && !pu.value) pu.value = prod.unid||'';
+    // Preenche preço existente se houver
+    var prExist = (_cadDados.precos||[]).find(function(p){ return p.prodNome===nome; });
+    if(prExist && pp && !pp.value) pp.value = prExist.preco||'';
   }
 }
 
@@ -17288,38 +16885,14 @@ async function _cadSalvarItem(aba){
     };
     if(!item.nome){ _toast('\u26a0\ufe0f Informe o nome do fornecedor'); return; }
   } else if(aba==='precos'){
-    var prodId = (document.getElementById('cf-prod-select')||{value:''}).value;
-    var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===prodId; });
-    if(!prod){ _toast('\u26a0\ufe0f Escolha um produto'); return; }
-    var selApres = document.getElementById('cf-apres-select');
-    var precoVal = parseFloat((document.getElementById('cf-preco')||{value:0}).value)||0;
-    // Abas marcadas — se TODAS estiverem marcadas, não grava restrição
-    // nenhuma (comportamento padrão: aparece em qualquer lugar).
-    var TODAS_ABAS = ['Aviario','Perda','Campo','Estoque','Vendas'];
-    var chksMarcados = Array.prototype.slice.call(document.querySelectorAll('.cf-aba-chk:checked')).map(function(c){ return c.value; });
-    var abasEscolhidas = (chksMarcados.length===TODAS_ABAS.length) ? undefined : chksMarcados;
-    if(!prod.apresentacoes) prod.apresentacoes = [];
-    if(selApres && selApres.value !== '_nova'){
-      // Editando o preço/abas de uma apresentação já existente do produto
-      var idxA = parseInt(selApres.value,10);
-      if(prod.apresentacoes[idxA]){
-        prod.apresentacoes[idxA].preco = precoVal;
-        if(abasEscolhidas) prod.apresentacoes[idxA].abas = abasEscolhidas;
-        else delete prod.apresentacoes[idxA].abas;
-      }
-    } else {
-      // Nova apresentação (Unidade, Bandeja, Caixa, Kg, Sacos...)
-      var unidNova = (document.getElementById('cf-unid-nova')||{value:''}).value.trim();
-      if(!unidNova){ _toast('\u26a0\ufe0f Informe a unidade/apresentação'); return; }
-      var novaApres = {unid:unidNova, preco:precoVal};
-      if(abasEscolhidas) novaApres.abas = abasEscolhidas;
-      prod.apresentacoes.push(novaApres);
-    }
-    await _cadSalvar();
-    _cadEdicaoLimpar();
-    _cadRenderAba('precos');
-    _toast('\u2705 Preço salvo!');
-    return;
+    item = {
+      id:      'r'+Date.now(),
+      prodNome:prodNome,
+      preco:   parseFloat((document.getElementById('cf-preco')||{value:0}).value)||0,
+      unid:    (document.getElementById('cf-unid')||{value:''}).value.trim(),
+      nome:    prodNome  // para exibição
+    };
+    if(!item.prodNome){ _toast('\u26a0\ufe0f Informe o produto'); return; }
   }
   if(_cadEditIdx >= 0){
     item.id = (_cadDados[aba][_cadEditIdx]||{}).id || item.id;
@@ -17478,7 +17051,7 @@ async function _cadInit(){
   // digitado passa por uma conversao de acentuacao errada em algum momento.
   // Varre catalogo de coleta, historico de coletas e pedidos, corrigindo
   // qualquer nome que contenha o sinal tipico desse problema ("Ã").
-  if(!localStorage.getItem('ca_fix_mojibake_v3')){
+  if(!localStorage.getItem('ca_fix_mojibake_v2')){
     function _corrigirMojibake(str){
       if(!str || typeof str !== 'string' || str.indexOf('\u00c3') === -1) return str;
       try{ return decodeURIComponent(escape(str)); }catch(e){ return str; }
@@ -17539,44 +17112,10 @@ async function _cadInit(){
     (_cadDados.produtos||[]).forEach(function(p){
       var corrigido = _corrigirMojibake(p.nome);
       if(corrigido !== p.nome){ p.nome = corrigido; mudouProd = true; }
-      (p.apresentacoes||[]).forEach(function(a){
-        var cUnid = _corrigirMojibake(a.unid);
-        if(a.unid && cUnid !== a.unid){ a.unid = cUnid; mudouProd = true; }
-      });
     });
+    if(mudouProd) await _cadSalvar();
 
-    // Clientes
-    var mudouCli = false;
-    (_cadDados.clientes||[]).forEach(function(c){
-      var cNome = _corrigirMojibake(c.nome);
-      if(c.nome && cNome !== c.nome){ c.nome = cNome; mudouCli = true; }
-      var cContato = _corrigirMojibake(c.contato);
-      if(c.contato && cContato !== c.contato){ c.contato = cContato; mudouCli = true; }
-      var cObs = _corrigirMojibake(c.obs);
-      if(c.obs && cObs !== c.obs){ c.obs = cObs; mudouCli = true; }
-    });
-
-    // Fornecedores
-    var mudouForn = false;
-    (_cadDados.fornecedores||[]).forEach(function(f){
-      var fNome = _corrigirMojibake(f.nome);
-      if(f.nome && fNome !== f.nome){ f.nome = fNome; mudouForn = true; }
-      var fContato = _corrigirMojibake(f.contato);
-      if(f.contato && fContato !== f.contato){ f.contato = fContato; mudouForn = true; }
-      var fObs = _corrigirMojibake(f.obs);
-      if(f.obs && fObs !== f.obs){ f.obs = fObs; mudouForn = true; }
-    });
-
-    // Preços (cadastro antigo, ainda usado como referência em alguns casos)
-    var mudouPreco = false;
-    (_cadDados.precos||[]).forEach(function(pr){
-      var cProdNome = _corrigirMojibake(pr.prodNome);
-      if(pr.prodNome && cProdNome !== pr.prodNome){ pr.prodNome = cProdNome; mudouPreco = true; }
-    });
-
-    if(mudouProd || mudouCli || mudouForn || mudouPreco) await _cadSalvar();
-
-    try{ localStorage.setItem('ca_fix_mojibake_v3','1'); }catch(e){}
+    try{ localStorage.setItem('ca_fix_mojibake_v2','1'); }catch(e){}
   }
   _cadAtualizarSetores();
   _atualizarSugestoesClientes();
@@ -17605,7 +17144,7 @@ async function _cadInit(){
     <button class="cad-aba sel" onclick="_cadTrocaAba('produtos',this)">Produtos</button>
     <button class="cad-aba" onclick="_cadTrocaAba('clientes',this)">Clientes</button>
     <button class="cad-aba" onclick="_cadTrocaAba('fornecedores',this)">Fornecedores</button>
-    <button class="cad-aba" onclick="_cadTrocaAba('precos',this)">Apresentação</button>
+    <button class="cad-aba" onclick="_cadTrocaAba('precos',this)">Preços</button>
   </div>
   <!-- Produtos -->
   <div class="cad-painel vis" id="cad-p-produtos">
@@ -17614,25 +17153,15 @@ async function _cadInit(){
     <div class="cad-rodape" style="flex-direction:column;gap:8px;align-items:stretch">
       <button class="cad-btn-add" onclick="_cadNovoForm('produtos')">+ Novo produto</button>
       <button class="cad-btn-add" style="background:#1e3a5f" onclick="_cadAbrirRevisaoCatalogo()">🔀 Revisar itens do catálogo de coleta</button>
-      <button class="cad-btn-add" style="background:#7a3a00" onclick="_cadToggleUnificacao('produtos')" id="btn-toggle-unificacao-produtos">🔗 Unificar produtos duplicados</button>
     </div>
     <div id="cad-revisao-catalogo" style="display:none"></div>
-    <div id="cad-unificacao-barra-produtos" style="display:none;position:sticky;bottom:0;background:#fff;border-top:2px solid #7a3a00;padding:10px;margin-top:8px">
-      <div style="font-size:11px;color:var(--mu);margin-bottom:6px" id="cad-unificacao-status-produtos">Selecione 2 ou mais produtos que sejam a mesma coisa</div>
-      <button class="cad-btn-add" style="background:#7a3a00" onclick="_cadUnificarSelecionados()" id="btn-unificar-confirmar-produtos" disabled>Unificar selecionados</button>
-    </div>
   </div>
   <!-- Clientes -->
   <div class="cad-painel" id="cad-p-clientes">
     <div class="cad-lista" id="cad-lista-clientes"></div>
     <div id="cad-form-clientes" style="display:none"></div>
-    <div class="cad-rodape" style="flex-direction:column;gap:8px;align-items:stretch">
+    <div class="cad-rodape">
       <button class="cad-btn-add" onclick="_cadNovoForm('clientes')">+ Novo cliente</button>
-      <button class="cad-btn-add" style="background:#7a3a00" onclick="_cadToggleUnificacao('clientes')" id="btn-toggle-unificacao-clientes">🔗 Unificar clientes duplicados</button>
-    </div>
-    <div id="cad-unificacao-barra-clientes" style="display:none;position:sticky;bottom:0;background:#fff;border-top:2px solid #7a3a00;padding:10px;margin-top:8px">
-      <div style="font-size:11px;color:var(--mu);margin-bottom:6px" id="cad-unificacao-status-clientes">Selecione 2 ou mais clientes que sejam a mesma pessoa</div>
-      <button class="cad-btn-add" style="background:#7a3a00" onclick="_cadUnificarSelecionados()" id="btn-unificar-confirmar-clientes" disabled>Unificar selecionados</button>
     </div>
   </div>
   <!-- Fornecedores -->
@@ -17648,7 +17177,7 @@ async function _cadInit(){
     <div class="cad-lista" id="cad-lista-precos"></div>
     <div id="cad-form-precos" style="display:none"></div>
     <div class="cad-rodape">
-      <button class="cad-btn-add" onclick="_cadNovoForm('precos')">+ Nova apresentação</button>
+      <button class="cad-btn-add" onclick="_cadNovoForm('precos')">+ Novo preço</button>
     </div>
   </div>
 </div>
