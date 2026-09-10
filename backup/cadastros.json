@@ -4,7 +4,7 @@
       "id": "p_ovo",
       "setor": "Vendas",
       "nome": "Ovos de Capoeira",
-      "unid": "Bandeja c/30 ovos",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Bandeja c/30 ovos",
@@ -12,15 +12,15 @@
         },
         {
           "unid": "Unid.",
-          "preco": 1
+          "preco": 0
         }
       ]
     },
     {
       "id": "p_galinha",
       "setor": "Vendas",
-      "nome": "Galinha Abatida",
-      "unid": "Unid.",
+      "nome": "Galinha",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -31,8 +31,8 @@
     {
       "id": "p_frango",
       "setor": "Vendas",
-      "nome": "Frango Abatido",
-      "unid": "Unid.",
+      "nome": "Frango",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -43,8 +43,8 @@
     {
       "id": "p_pinto",
       "setor": "Vendas",
-      "nome": "Pintos",
-      "unid": "Unid.",
+      "nome": "Pinto",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -56,7 +56,7 @@
       "id": "p_pintainha",
       "setor": "Vendas",
       "nome": "Pintainha",
-      "unid": "Unid.",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -68,7 +68,7 @@
       "id": "p_esterco",
       "setor": "Vendas",
       "nome": "Esterco",
-      "unid": "Sc.",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Sc.",
@@ -80,7 +80,7 @@
       "id": "p_coco",
       "setor": "Vendas",
       "nome": "Coco Seco",
-      "unid": "Unid.",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -92,7 +92,7 @@
       "id": "p_manga",
       "setor": "Vendas",
       "nome": "Manga",
-      "unid": "Caixa",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Caixa",
@@ -104,7 +104,7 @@
       "id": "p_abacate",
       "setor": "Vendas",
       "nome": "Abacate",
-      "unid": "Caixa",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Caixa",
