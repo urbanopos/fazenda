@@ -11396,7 +11396,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = 'da283b53fe87';
+var _caFP = '70edad3e13ac';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -16780,12 +16780,17 @@ function _cadRenderAba(aba){
 
   // "Preços" não é mais uma tabela própria — é uma visão de todas as
   // apresentações (unidade+preço) já cadastradas dentro de Produtos.
+  // Ordenada por produto, depois por unidade, sempre em ordem alfabética.
   if(aba==='precos'){
     var linhas = [];
     (_cadDados.produtos||[]).forEach(function(p){
       (p.apresentacoes||[]).forEach(function(a, ai){
         linhas.push({prodId:p.id, prodNome:p.nome, apresIdx:ai, unid:a.unid, preco:a.preco});
       });
+    });
+    linhas.sort(function(x,y){
+      var c = (x.prodNome||'').localeCompare(y.prodNome||'','pt-BR');
+      return c!==0 ? c : (x.unid||'').localeCompare(y.unid||'','pt-BR');
     });
     if(!linhas.length){
       lista.innerHTML = '<div class="cad-vazia">Nenhuma apresentação com preço cadastrada ainda.<br>Toque em + para adicionar (buscando o produto na tabela única).</div>';
@@ -16811,7 +16816,15 @@ function _cadRenderAba(aba){
     lista.innerHTML = '<div class="cad-vazia">Nenhum item cadastrado.<br>Toque em + para adicionar.</div>';
     return;
   }
-  lista.innerHTML = itens.map(function(it,idx){
+  // Ordena por nome para exibição, mas preserva o índice ORIGINAL de cada
+  // item — editar/remover/unificar dependem desse índice para saber qual
+  // item do array real (não da lista ordenada) está sendo referenciado.
+  var itensComIdx = itens.map(function(it, idx){ return {it:it, idx:idx}; });
+  itensComIdx.sort(function(a,b){
+    return (a.it.nome||a.it.prodNome||'').localeCompare((b.it.nome||b.it.prodNome||''),'pt-BR');
+  });
+  lista.innerHTML = itensComIdx.map(function(par){
+    var it = par.it, idx = par.idx;
     var det = '';
     if(aba==='produtos'){
       var resumoApres = (it.apresentacoes||[]).map(function(a){
