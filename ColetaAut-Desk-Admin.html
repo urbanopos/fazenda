@@ -608,6 +608,17 @@ input[type="password"]:-webkit-autofill{
   /* Telas de cadastro/configuração em página cheia (não modal) —
      conteúdo central, como um formulário de desktop de verdade */
   .cad-tela > div{ max-width:720px; margin-left:auto; margin-right:auto; }
+  /* A tela de Cadastros usa position:fixed com inset:0, o que a fazia
+     cobrir a janela do navegador toda — inclusive a moldura azul que
+     normalmente aparece nas laterais do "cartão" central (como nas
+     abas normais). Reposiciona para ficar alinhada com essa mesma
+     moldura, em vez de vazar por cima dela. Mesmo problema e mesma
+     correção para as telas de bloqueio, configuração inicial e scanner. */
+  .cad-tela, #tela-bloqueio, #ca-setup, #ca-lock, #ca-scanner{
+    left:50%; right:auto; transform:translateX(-50%);
+    width:100%; max-width:1040px;
+    box-shadow:0 0 0 1px rgba(0,0,0,.08);
+  }
 
   /* Itens de Vendas: aproveita a largura extra em 3 colunas em vez de 2 */
   .vi-row2{ grid-template-columns:1fr 1fr 1fr; }
@@ -11517,7 +11528,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '2b4e77f116c9';
+var _caFP = '1c433f762100';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
