@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Publicar arquivo - ColetaAut</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:#173f6e;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .box{background:#f5efe0;border-radius:20px;padding:32px;max-width:460px;width:100%;box-shadow:0 24px 70px rgba(0,0,0,.45)}
+  h1{font-size:18px;color:#0e2d5c;margin-bottom:4px}
+  .sub{font-size:12px;color:#8a7a5c;margin-bottom:24px;font-family:'DM Mono',monospace}
+  label{display:block;font-size:11px;color:#8a7a5c;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;margin-top:16px}
+  input[type=password], input[type=text]{width:100%;padding:12px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;font-family:monospace}
+  input[type=file]{width:100%;padding:10px;border:1.5px dashed #b8943f;border-radius:8px;font-size:13px;background:#fffef8}
+  button{width:100%;padding:14px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;margin-top:20px}
+  #btn-publicar{background:linear-gradient(135deg,#1a8f4a,#0e6b35);color:#fff}
+  #btn-publicar:disabled{background:#ccc;cursor:not-allowed}
+  #status{margin-top:16px;padding:12px;border-radius:8px;font-size:13px;display:none}
+  #status.ok{background:#e0f4e8;color:#1a6b3a;display:block}
+  #status.err{background:#fde8e8;color:#a03030;display:block}
+  #status.wait{background:#e8f0f4;color:#1a4a8a;display:block}
+  #alvo-info{margin-top:14px;padding:10px 12px;border-radius:8px;background:#fff3d6;border:1px solid #d4a94a;font-size:12px;color:#6b4f1a;display:none}
+  .info{font-size:11px;color:#8a7a5c;margin-top:16px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>🚀 Publicar arquivo</h1>
+  <div class="sub">Fazenda São José · urbanopos/fazenda</div>
+
+  <label>Arquivo (o que a Claude te entregou)</label>
+  <input type="file" id="arquivo" accept=".html">
+  <div id="alvo-info"></div>
+
+  <label>Token do GitHub</label>
+  <input type="password" id="token" placeholder="ghp_...">
+
+  <button id="btn-publicar" onclick="publicar()" disabled>Publicar</button>
+
+  <div id="status"></div>
+
+  <div class="info">Esta ferramenta lê o nome do arquivo escolhido (ex: "ColetaAut-Desk-Admin.html") e substitui exatamente esse arquivo no repositório — não mexe em nenhum outro. O token fica salvo neste navegador para a próxima vez.</div>
+</div>
+
+<script>
+var REPO = "urbanopos/fazenda";
+var TOKEN_KEY = "ghpub_token_generico";
+var ARQUIVOS_VALIDOS = ["ColetaAut-Admin-corrigido.html","ColetaAut-Admin.html","ColetaAut-Desk-Admin.html","ColetaAut-Coletor.html","ColetaAut-Coletor-corrigido.html"];
+var _conteudoArquivo = null;
+var _nomeArquivoAlvo = null;
+
+window.addEventListener("load", function(){
+  try{
+    var salvo = localStorage.getItem(TOKEN_KEY);
+    if(salvo) document.getElementById("token").value = salvo;
+  }catch(e){}
+});
+
+document.getElementById("arquivo").addEventListener("change", function(e){
+  var f = e.target.files[0];
+  var info = document.getElementById("alvo-info");
+  var btn = document.getElementById("btn-publicar");
+  if(!f){ info.style.display="none"; btn.disabled=true; return; }
+
+  // Se o nome do arquivo escolhido bater com um dos arquivos conhecidos do
+  // projeto, usa esse mesmo nome como destino no repositório. Caso o nome
+  // seja outro (ex: renomeado), publica com esse mesmo nome — nunca em
+  // nome diferente do que foi escolhido, para nunca haver confusão.
+  _nomeArquivoAlvo = f.name;
+  var conhecido = ARQUIVOS_VALIDOS.indexOf(f.name) > -1;
+
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    _conteudoArquivo = ev.target.result; // já vem como texto
+    info.textContent = (conhecido ? "✅" : "⚠️") + " Vai substituir: " + _nomeArquivoAlvo + (conhecido ? "" : " (nome não reconhecido — confirme se é isso mesmo antes de publicar)");
+    info.style.display = "block";
+    btn.disabled = false;
+  };
+  reader.readAsText(f, "UTF-8");
+});
+
+function setStatus(msg, tipo){
+  var el = document.getElementById("status");
+  el.textContent = msg;
+  el.className = tipo;
+}
+
+async function publicar(){
+  var token = document.getElementById("token").value.trim();
+  if(!token){ setStatus("Cole o token do GitHub antes de publicar.", "err"); return; }
+  if(!_conteudoArquivo || !_nomeArquivoAlvo){ setStatus("Escolha um arquivo antes de publicar.", "err"); return; }
+
+  var btn = document.getElementById("btn-publicar");
+  btn.disabled = true;
+  setStatus("Enviando " + _nomeArquivoAlvo + " para o GitHub...", "wait");
+
+  try{
+    var headers = {
+      "Authorization": "token " + token,
+      "Accept": "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28"
+    };
+
+    var respGet = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + _nomeArquivoAlvo, { headers: headers });
+    if(!respGet.ok){
+      if(respGet.status === 401) throw new Error("Token inválido ou sem permissão.");
+      if(respGet.status === 404) throw new Error("Não existe nenhum arquivo \"" + _nomeArquivoAlvo + "\" no repositório ainda — confira o nome.");
+      throw new Error("Erro ao consultar o arquivo atual (HTTP " + respGet.status + ")");
+    }
+    var infoAtual = await respGet.json();
+    var shaAtual = infoAtual.sha;
+
+    // Codifica o conteúdo (texto) em base64, tratando corretamente acentos/UTF-8
+    var conteudoB64 = btoa(unescape(encodeURIComponent(_conteudoArquivo)));
+
+    var respPut = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + _nomeArquivoAlvo, {
+      method: "PUT",
+      headers: headers,
+      body: JSON.stringify({
+        message: "Publicar nova versao de " + _nomeArquivoAlvo + " - " + new Date().toLocaleString("pt-BR"),
+        content: conteudoB64,
+        sha: shaAtual
+      })
+    });
+    if(!respPut.ok){
+      var erroTxt = await respPut.text();
+      throw new Error("Erro ao publicar (HTTP " + respPut.status + "): " + erroTxt.substring(0,200));
+    }
+
+    try{ localStorage.setItem(TOKEN_KEY, token); }catch(e){}
+    setStatus("✅ " + _nomeArquivoAlvo + " publicado com sucesso! A nova versão já está no ar.", "ok");
+  }catch(err){
+    setStatus("⚠️ " + err.message, "err");
+  }finally{
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
