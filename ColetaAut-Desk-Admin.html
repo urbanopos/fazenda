@@ -11515,7 +11515,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '685f6cf86e3d';
+var _caFP = 'c614d1be3a50';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -16692,8 +16692,119 @@ function _cadTrocaAba(aba, btn){
 }
 
 /* ── Renderiza lista de cada aba ── */
+var _cadModoUnificacao = false;
+var _cadSelecionadosUnificacao = [];
+
+function _cadToggleUnificacao(){
+  _cadModoUnificacao = !_cadModoUnificacao;
+  _cadSelecionadosUnificacao = [];
+  document.getElementById('cad-unificacao-barra').style.display = _cadModoUnificacao ? 'block' : 'none';
+  document.getElementById('btn-toggle-unificacao').textContent = _cadModoUnificacao ? '✕ Cancelar unificação' : '🔗 Unificar produtos duplicados';
+  var formCont = document.getElementById('cad-form-produtos');
+  if(formCont) formCont.style.display = 'none';
+  var revCont = document.getElementById('cad-revisao-catalogo');
+  if(revCont) revCont.style.display = 'none';
+  _cadRenderAba('produtos');
+}
+
+function _cadMarcarUnificacao(idx, marcado){
+  if(marcado){
+    if(_cadSelecionadosUnificacao.indexOf(idx)===-1) _cadSelecionadosUnificacao.push(idx);
+  } else {
+    _cadSelecionadosUnificacao = _cadSelecionadosUnificacao.filter(function(i){ return i!==idx; });
+  }
+  var status = document.getElementById('cad-unificacao-status');
+  var btn = document.getElementById('btn-unificar-confirmar');
+  if(_cadSelecionadosUnificacao.length >= 2){
+    var nomes = _cadSelecionadosUnificacao.map(function(i){ return _cadDados.produtos[i].nome; });
+    status.textContent = nomes.length+' selecionados: '+nomes.join(', ');
+    btn.disabled = false;
+  } else {
+    status.textContent = 'Selecione 2 ou mais produtos que sejam a mesma coisa ('+_cadSelecionadosUnificacao.length+' selecionado)';
+    btn.disabled = true;
+  }
+}
+
+async function _cadUnificarSelecionados(){
+  if(_cadSelecionadosUnificacao.length < 2) return;
+  var selecionados = _cadSelecionadosUnificacao.map(function(i){ return _cadDados.produtos[i]; });
+  var nomes = selecionados.map(function(p){ return p.nome; });
+  var sobrevivente = selecionados[0];
+  if(!confirm('Unificar estes produtos num só?\n\n'+nomes.join('\n')+'\n\nVai manter o nome "'+sobrevivente.nome+'" e juntar todas as apresentações (unidade+preço). Pedidos já registrados com os outros produtos serão atualizados para apontar para este. Esta ação não pode ser desfeita.')) return;
+
+  var idsRemovidos = selecionados.slice(1).map(function(p){ return p.id; });
+
+  // Junta as apresentações de todos, sem duplicar a mesma unidade
+  if(!sobrevivente.apresentacoes) sobrevivente.apresentacoes = [];
+  var unidsExistentes = sobrevivente.apresentacoes.map(function(a){ return (a.unid||'').trim().toLowerCase(); });
+  selecionados.slice(1).forEach(function(p){
+    (p.apresentacoes||[]).forEach(function(a){
+      if(unidsExistentes.indexOf((a.unid||'').trim().toLowerCase())===-1){
+        sobrevivente.apresentacoes.push(a);
+        unidsExistentes.push((a.unid||'').trim().toLowerCase());
+      }
+    });
+  });
+
+  // Remove os produtos unificados do cadastro
+  _cadDados.produtos = _cadDados.produtos.filter(function(p){ return idsRemovidos.indexOf(p.id)===-1; });
+
+  // Atualiza pedidos já registrados: qualquer item que apontava para um dos
+  // produtos removidos passa a apontar para o sobrevivente
+  var hist = _carregarHistRaw();
+  var mudouPedidos = false;
+  hist.forEach(function(ped){
+    (ped.itens||[]).forEach(function(it){
+      if(idsRemovidos.indexOf(it.prodId)>-1){
+        it.prodId = sobrevivente.id;
+        it.nome = sobrevivente.nome;
+        mudouPedidos = true;
+      }
+    });
+  });
+  if(mudouPedidos){
+    var jp = JSON.stringify(hist);
+    try{ localStorage.setItem(HK, jp); }catch(e){}
+    if(_caOpfs) await _caOpfsSalvar(FSJ_PEDIDOS, jp);
+    _renderHist();
+  }
+
+  await _cadSalvar();
+  _toast('✅ Produtos unificados em "'+sobrevivente.nome+'"!');
+  _cadToggleUnificacao(); // sai do modo de seleção e re-renderiza
+}
+
 function _cadRenderAba(aba){
-  var lista   = document.getElementById('cad-lista-'+aba);
+  var lista = document.getElementById('cad-lista-'+aba);
+
+  // "Preços" não é mais uma tabela própria — é uma visão de todas as
+  // apresentações (unidade+preço) já cadastradas dentro de Produtos.
+  if(aba==='precos'){
+    var linhas = [];
+    (_cadDados.produtos||[]).forEach(function(p){
+      (p.apresentacoes||[]).forEach(function(a, ai){
+        linhas.push({prodId:p.id, prodNome:p.nome, apresIdx:ai, unid:a.unid, preco:a.preco});
+      });
+    });
+    if(!linhas.length){
+      lista.innerHTML = '<div class="cad-vazia">Nenhuma apresentação com preço cadastrada ainda.<br>Toque em + para adicionar (buscando o produto na tabela única).</div>';
+      return;
+    }
+    lista.innerHTML = linhas.map(function(l){
+      var det = l.unid+(l.preco?' · R$ '+Number(l.preco).toFixed(2).replace('.',','):' · sem preço definido');
+      return '<div class="cad-item">'
+        +'<div class="cad-item-info">'
+        +'<div class="cad-item-nm">'+_escH(l.prodNome)+'</div>'
+        +'<div class="cad-item-det">'+_escH(det)+'</div>'
+        +'</div>'
+        +'<div class="cad-item-btns">'
+        +'<button class="cad-btn-ed" onclick="_cadEditarPreco(\''+l.prodId+'\','+l.apresIdx+')" title="Editar">\u270e</button>'
+        +'<button class="cad-btn-rm" onclick="_cadRemoverPreco(\''+l.prodId+'\','+l.apresIdx+')" title="Remover">\u00d7</button>'
+        +'</div></div>';
+    }).join('');
+    return;
+  }
+
   var itens   = _cadDados[aba] || [];
   if(!itens.length){
     lista.innerHTML = '<div class="cad-vazia">Nenhum item cadastrado.<br>Toque em + para adicionar.</div>';
@@ -16709,7 +16820,18 @@ function _cadRenderAba(aba){
     }
     if(aba==='clientes')    det = it.contato||it.obs||'';
     if(aba==='fornecedores')det = it.contato||it.obs||'';
-    if(aba==='precos')      det = (it.prodNome||'')+(it.unid?' · '+it.unid:'')+(it.preco?' · R$ '+Number(it.preco).toFixed(2).replace('.',','):'');
+
+    if(aba==='produtos' && _cadModoUnificacao){
+      var marcado = _cadSelecionadosUnificacao.indexOf(idx)>-1;
+      return '<div class="cad-item" style="'+(marcado?'background:#fff3d6;':'')+'">'
+        +'<label style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer">'
+        +'<input type="checkbox" '+(marcado?'checked':'')+' onchange="_cadMarcarUnificacao('+idx+',this.checked)" style="width:20px;height:20px">'
+        +'<div class="cad-item-info">'
+        +'<div class="cad-item-nm">'+_escH(it.nome||'—')+'</div>'
+        +(det?'<div class="cad-item-det">'+_escH(det)+'</div>':'')
+        +'</div></label></div>';
+    }
+
     return '<div class="cad-item">'
       +'<div class="cad-item-info">'
       +'<div class="cad-item-nm">'+_escH(it.nome||it.prodNome||'—')+'</div>'
@@ -16733,6 +16855,24 @@ function _cadNovoForm(aba){
 function _cadEditar(aba, idx){
   _cadEditIdx = idx;
   _cadMostrarForm(aba, (_cadDados[aba]||[])[idx]);
+}
+
+/* Preços agora vive dentro de cada Produto (apresentacoes) — editar/remover
+   um "preço" na prática edita/remove uma apresentação específica daquele
+   produto, não um registro numa tabela separada. */
+function _cadEditarPreco(prodId, apresIdx){
+  _cadEditIdx = 0; // só para o formulário saber que é edição, não usado como índice aqui
+  _cadMostrarForm('precos', {_prodId:prodId, _apresIdx:apresIdx});
+}
+
+async function _cadRemoverPreco(prodId, apresIdx){
+  if(!confirm('Remover esta apresentação/preço?')) return;
+  var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===prodId; });
+  if(!prod || !prod.apresentacoes) return;
+  prod.apresentacoes.splice(apresIdx,1);
+  await _cadSalvar();
+  _cadRenderAba('precos');
+  _toast('✅ Removido');
 }
 
 function _cadMostrarForm(aba, dados){
@@ -16773,19 +16913,15 @@ function _cadMostrarForm(aba, dados){
       +'<div><label class="cad-inp-lbl">Observação (opcional)</label>'
       +'<input class="cad-inp" id="cf-obs" placeholder="Produtos fornecidos..." value="'+_escH(d.obs||'')+'"></div>';
   } else if(aba==='precos'){
-    var prodOpts = (_cadDados.produtos||[]).map(function(p){
-      return '<option value="'+_escH(p.nome)+'" data-unid="'+_escH(p.unid||'')+'">';
-    }).join('');
+    var prodSelOpts = '<option value="">— Escolha um produto —</option>'
+      + (_cadDados.produtos||[]).map(function(p){
+          return '<option value="'+_escH(p.id)+'"'+(d._prodId===p.id?' selected':'')+'>'+_escH(p.nome)+'</option>';
+        }).join('');
     campos =
-      '<div><label class="cad-inp-lbl">Produto</label>'
-      +'<input class="cad-inp" id="cf-prodnome" placeholder="Nome do produto" value="'+_escH(d.prodNome||'')+'" list="cad-prod-list" oninput="_cadPrecoProdChange()">'
-      +'<datalist id="cad-prod-list">'+prodOpts+'</datalist></div>'
-      +'<div style="display:flex;gap:8px">'
-      +'<div style="flex:1"><label class="cad-inp-lbl">Preço (R$)</label>'
-      +'<input class="cad-inp" id="cf-preco" type="number" min="0" step="0.01" placeholder="0,00" value="'+(d.preco||'')+'"></div>'
-      +'<div style="flex:1"><label class="cad-inp-lbl">Unidade</label>'
-      +'<input class="cad-inp" id="cf-unid" placeholder="unid" value="'+_escH(d.unid||'')+'"></div>'
-      +'</div>';
+      '<div><label class="cad-inp-lbl">Produto (da tabela única de Produtos)</label>'
+      +'<select class="cad-inp" id="cf-prod-select" onchange="_cadPrecoProdutoChange()">'+prodSelOpts+'</select></div>'
+      +'<div id="cf-apres-wrap"></div>';
+    setTimeout(function(){ _cadPrecoMontarApresentacoes(d); }, 0);
   }
   container.innerHTML =
     '<div class="cad-form">'
@@ -16895,18 +17031,60 @@ async function _cadAdicionarCandidatoRevisao(i){
   _cadAbrirRevisaoCatalogo(); // atualiza a lista, removendo o item ja adicionado
 }
 
-function _cadPrecoProdChange(){
-  var inp = document.getElementById('cf-prodnome');
-  if(!inp) return;
-  var nome = inp.value;
-  var prod = (_cadDados.produtos||[]).find(function(p){ return p.nome===nome; });
-  if(prod){
-    var pu = document.getElementById('cf-unid');
-    var pp = document.getElementById('cf-preco');
-    if(pu && !pu.value) pu.value = prod.unid||'';
-    // Preenche preço existente se houver
-    var prExist = (_cadDados.precos||[]).find(function(p){ return p.prodNome===nome; });
-    if(prExist && pp && !pp.value) pp.value = prExist.preco||'';
+/* Monta a área de "Apresentação" assim que um produto é escolhido no
+   formulário de Preços — mostra as apresentações já existentes desse
+   produto (pra editar o preço de uma delas) e a opção de adicionar uma
+   nova (Unidade, Bandeja, Caixa, Kg, Sacos etc). */
+function _cadPrecoMontarApresentacoes(dPre){
+  var sel = document.getElementById('cf-prod-select');
+  var wrap = document.getElementById('cf-apres-wrap');
+  if(!sel || !wrap) return;
+  var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===sel.value; });
+  if(!prod){
+    wrap.innerHTML = '<div style="font-size:12px;color:var(--mu);padding:8px 0">Escolha um produto para ver ou adicionar uma apresentação.</div>';
+    return;
+  }
+  var apresOpts = '<option value="_nova">+ Nova apresentação</option>'
+    + (prod.apresentacoes||[]).map(function(a,i){
+        return '<option value="'+i+'"'+(dPre && dPre._apresIdx===i?' selected':'')+'>'+_escH(a.unid)+(a.preco?' — R$ '+Number(a.preco).toFixed(2).replace('.',','):'')+'</option>';
+      }).join('');
+  wrap.innerHTML =
+    '<div><label class="cad-inp-lbl">Apresentação</label>'
+    +'<select class="cad-inp" id="cf-apres-select" onchange="_cadPrecoApresChange()">'+apresOpts+'</select></div>'
+    +'<div style="display:flex;gap:8px;margin-top:8px">'
+    +'<div style="flex:1" id="cf-unid-nova-wrap"><label class="cad-inp-lbl">Unidade (ex: Bandeja, Caixa, Kg, Sacos...)</label>'
+    +'<input class="cad-inp" id="cf-unid-nova" placeholder="Unidade, Bandeja, Kg..."></div>'
+    +'<div style="flex:1"><label class="cad-inp-lbl">Preço (R$)</label>'
+    +'<input class="cad-inp" id="cf-preco" type="number" min="0" step="0.01" placeholder="0,00"></div>'
+    +'</div>';
+  // Se estiver editando um item de preco existente, ja seleciona a apresentacao certa
+  if(dPre && typeof dPre._apresIdx === 'number'){
+    document.getElementById('cf-apres-select').value = String(dPre._apresIdx);
+    _cadPrecoApresChange();
+  }
+}
+
+function _cadPrecoProdutoChange(){
+  _cadPrecoMontarApresentacoes(null);
+}
+
+/* Ao escolher uma apresentação já existente, preenche o preço atual dela
+   para edição; ao escolher "+ Nova apresentação", limpa os campos. */
+function _cadPrecoApresChange(){
+  var selProd = document.getElementById('cf-prod-select');
+  var selApres = document.getElementById('cf-apres-select');
+  var unidNovaWrap = document.getElementById('cf-unid-nova-wrap');
+  var precoInp = document.getElementById('cf-preco');
+  if(!selProd || !selApres) return;
+  var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===selProd.value; });
+  if(selApres.value === '_nova'){
+    if(unidNovaWrap) unidNovaWrap.style.display = 'block';
+    document.getElementById('cf-unid-nova').value = '';
+    precoInp.value = '';
+  } else {
+    var apres = prod && prod.apresentacoes && prod.apresentacoes[parseInt(selApres.value,10)];
+    if(unidNovaWrap) unidNovaWrap.style.display = 'none';
+    precoInp.value = apres ? (apres.preco||'') : '';
   }
 }
 
@@ -16949,14 +17127,27 @@ async function _cadSalvarItem(aba){
     };
     if(!item.nome){ _toast('\u26a0\ufe0f Informe o nome do fornecedor'); return; }
   } else if(aba==='precos'){
-    item = {
-      id:      'r'+Date.now(),
-      prodNome:prodNome,
-      preco:   parseFloat((document.getElementById('cf-preco')||{value:0}).value)||0,
-      unid:    (document.getElementById('cf-unid')||{value:''}).value.trim(),
-      nome:    prodNome  // para exibição
-    };
-    if(!item.prodNome){ _toast('\u26a0\ufe0f Informe o produto'); return; }
+    var prodId = (document.getElementById('cf-prod-select')||{value:''}).value;
+    var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===prodId; });
+    if(!prod){ _toast('\u26a0\ufe0f Escolha um produto'); return; }
+    var selApres = document.getElementById('cf-apres-select');
+    var precoVal = parseFloat((document.getElementById('cf-preco')||{value:0}).value)||0;
+    if(!prod.apresentacoes) prod.apresentacoes = [];
+    if(selApres && selApres.value !== '_nova'){
+      // Editando o preço de uma apresentação já existente do produto
+      var idxA = parseInt(selApres.value,10);
+      if(prod.apresentacoes[idxA]) prod.apresentacoes[idxA].preco = precoVal;
+    } else {
+      // Nova apresentação (Unidade, Bandeja, Caixa, Kg, Sacos...)
+      var unidNova = (document.getElementById('cf-unid-nova')||{value:''}).value.trim();
+      if(!unidNova){ _toast('\u26a0\ufe0f Informe a unidade/apresentação'); return; }
+      prod.apresentacoes.push({unid:unidNova, preco:precoVal});
+    }
+    await _cadSalvar();
+    _cadEdicaoLimpar();
+    _cadRenderAba('precos');
+    _toast('\u2705 Preço salvo!');
+    return;
   }
   if(_cadEditIdx >= 0){
     item.id = (_cadDados[aba][_cadEditIdx]||{}).id || item.id;
@@ -17251,8 +17442,13 @@ async function _cadInit(){
     <div class="cad-rodape" style="flex-direction:column;gap:8px;align-items:stretch">
       <button class="cad-btn-add" onclick="_cadNovoForm('produtos')">+ Novo produto</button>
       <button class="cad-btn-add" style="background:#1e3a5f" onclick="_cadAbrirRevisaoCatalogo()">🔀 Revisar itens do catálogo de coleta</button>
+      <button class="cad-btn-add" style="background:#7a3a00" onclick="_cadToggleUnificacao()" id="btn-toggle-unificacao">🔗 Unificar produtos duplicados</button>
     </div>
     <div id="cad-revisao-catalogo" style="display:none"></div>
+    <div id="cad-unificacao-barra" style="display:none;position:sticky;bottom:0;background:#fff;border-top:2px solid #7a3a00;padding:10px;margin-top:8px">
+      <div style="font-size:11px;color:var(--mu);margin-bottom:6px" id="cad-unificacao-status">Selecione 2 ou mais produtos que sejam a mesma coisa</div>
+      <button class="cad-btn-add" style="background:#7a3a00" onclick="_cadUnificarSelecionados()" id="btn-unificar-confirmar" disabled>Unificar selecionados</button>
+    </div>
   </div>
   <!-- Clientes -->
   <div class="cad-painel" id="cad-p-clientes">
