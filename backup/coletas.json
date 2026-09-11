@@ -37,7 +37,7 @@
     "itens": [
       {
         "setor": "Campo",
-        "nome": "Estacas de sabiÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¡",
+        "nome": "Estacas de sabiÃÂÃÂÃÂÃÂ¡",
         "unid": "Unid.",
         "qtd": 45,
         "obs": "",
@@ -46,6 +46,22 @@
       }
     ],
     "ts": 1789065329666
+  },
+  {
+    "data": "2026-09-10",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Galinha",
+        "unid": "unid",
+        "qtd": 14,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1789055576800
   },
   {
     "data": "2026-09-09",
