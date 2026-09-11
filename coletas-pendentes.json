@@ -16,23 +16,5 @@
     "ts": 1789066976274,
     "status": "pendente",
     "enviadoEm": "2026-09-10T19:02:56.753Z"
-  },
-  {
-    "data": "2026-09-10",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Aviario",
-        "nome": "Galinha",
-        "unid": "unid",
-        "qtd": 14,
-        "obs": "",
-        "forn": "",
-        "tipo": ""
-      }
-    ],
-    "ts": 1789055576800,
-    "status": "pendente",
-    "enviadoEm": "2026-09-10T15:52:57.485Z"
   }
 ]
