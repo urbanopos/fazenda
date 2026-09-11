@@ -1,23 +1,5 @@
 [
   {
-    "data": "2026-09-11",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 45,
-        "obs": "",
-        "forn": "",
-        "tipo": ""
-      }
-    ],
-    "ts": 1789154730236,
-    "status": "pendente",
-    "enviadoEm": "2026-09-11T19:25:30.831Z"
-  },
-  {
     "data": "2026-09-10",
     "coletor": "Menininha",
     "itens": [
@@ -41,7 +23,7 @@
     "itens": [
       {
         "setor": "Campo",
-        "nome": "Estacas de sabiÃÂÃÂÃÂÃÂ¡",
+        "nome": "Estacas de sabiÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¡",
         "unid": "Unid.",
         "qtd": 45,
         "obs": "",
