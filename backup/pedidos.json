@@ -1,5 +1,63 @@
 [
   {
+    "num": "PED-0080",
+    "cliente": "Luiza Gomes",
+    "clienteId": "c_1787276555930_100",
+    "data": "2026-09-11",
+    "itens": [
+      {
+        "col1": "11/09/2026",
+        "col2": "Galinha Abatida",
+        "col3": "7 Unid.",
+        "col4": "R$ 60,00 x 7 (desc. R$ 70,00)",
+        "col5": "R$ 350,00",
+        "val": 350,
+        "prodId": "p_galinha",
+        "nome": "Galinha Abatida",
+        "unidade": "Unid.",
+        "qtd": 7,
+        "preco": 60,
+        "desconto": 70,
+        "sub": 350,
+        "data": "11/09/2026"
+      },
+      {
+        "col1": "11/09/2026",
+        "col2": "Frango Abatido",
+        "col3": "7 Unid.",
+        "col4": "R$ 50,00 x 7",
+        "col5": "R$ 350,00",
+        "val": 350,
+        "prodId": "p_frango",
+        "nome": "Frango Abatido",
+        "unidade": "Unid.",
+        "qtd": 7,
+        "preco": 50,
+        "desconto": 0,
+        "sub": 350,
+        "data": "11/09/2026"
+      },
+      {
+        "col1": "11/09/2026",
+        "col2": "ovo",
+        "col3": "4 Bandeja c/30 Ovos",
+        "col4": "R$ 30,00 x 4",
+        "col5": "R$ 120,00",
+        "val": 120,
+        "prodId": "ovo",
+        "nome": "ovo",
+        "unidade": "Bandeja c/30 Ovos",
+        "qtd": 4,
+        "preco": 30,
+        "desconto": 0,
+        "sub": 120,
+        "data": "11/09/2026"
+      }
+    ],
+    "total": 820,
+    "ts": 1789126483115
+  },
+  {
     "num": "PED-0079",
     "cliente": "Luiza Gomes",
     "data": "2026-09-03",
