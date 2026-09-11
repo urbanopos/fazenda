@@ -4,6 +4,22 @@
     "coletor": "Menininha",
     "itens": [
       {
+        "setor": "Campo",
+        "nome": "Estacas de sabiÃ¡",
+        "unid": "Unid.",
+        "qtd": 11,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1789155275793
+  },
+  {
+    "data": "2026-09-11",
+    "coletor": "Menininha",
+    "itens": [
+      {
         "setor": "Perda",
         "nome": "Ovos de Capoeira",
         "unid": "unid",
