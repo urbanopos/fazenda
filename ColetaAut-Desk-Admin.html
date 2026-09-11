@@ -11557,7 +11557,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = 'ab78cce0513b';
+var _caFP = '8e919b051b2d';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -16186,16 +16186,29 @@ function _bkpSetStatus(msg, cls){
    id — item novo de qualquer lado entra, nada é apagado. Para Produtos,
    mescla também as apresentações (unidade+preço) de cada lado entre si,
    sem duplicar a mesma unidade. */
+/* Corrige nomes salvos com problema de codificação (ex: "RaÃ§Ã£o" em vez de
+   "Ração") — função global, usada tanto na migração de correção quanto na
+   sincronização entre aparelhos (evita que um aparelho ainda não corrigido
+   reintroduza o problema num aparelho que já foi corrigido). */
+function _corrigirMojibake(str){
+  if(!str || typeof str !== 'string' || str.indexOf('\u00c3') === -1) return str;
+  try{ return decodeURIComponent(escape(str)); }catch(e){ return str; }
+}
+
 function _mesclarCadastros(local, remoto){
   var resultado = {produtos:[], clientes:[], fornecedores:[], precos:[]};
   ['produtos','clientes','fornecedores','precos'].forEach(function(categoria){
     var vistos = {};
     var combinado = [];
     (local[categoria]||[]).forEach(function(item){
+      if(item.nome) item.nome = _corrigirMojibake(item.nome);
+      if(item.prodNome) item.prodNome = _corrigirMojibake(item.prodNome);
       var chave = String(item.id||JSON.stringify(item));
       if(!vistos[chave]){ vistos[chave]=true; combinado.push(item); }
     });
     (remoto[categoria]||[]).forEach(function(item){
+      if(item.nome) item.nome = _corrigirMojibake(item.nome);
+      if(item.prodNome) item.prodNome = _corrigirMojibake(item.prodNome);
       var chave = String(item.id||JSON.stringify(item));
       if(!vistos[chave]){
         vistos[chave]=true; combinado.push(item);
@@ -16217,14 +16230,27 @@ function _mesclarCadastros(local, remoto){
   return resultado;
 }
 
+function _corrigirMojibakeRegistro(r){
+  if(r.coletor) r.coletor = _corrigirMojibake(r.coletor);
+  if(r.cliente) r.cliente = _corrigirMojibake(r.cliente);
+  (r.itens||[]).forEach(function(it){
+    if(it.nome) it.nome = _corrigirMojibake(it.nome);
+    if(it._nome) it._nome = _corrigirMojibake(it._nome);
+    if(it.obs) it.obs = _corrigirMojibake(it.obs);
+  });
+  return r;
+}
+
 function _mesclarRegistros(local, remoto){
   var vistos = {};
   var combinado = [];
   (local||[]).forEach(function(r){
+    _corrigirMojibakeRegistro(r);
     var chave = String(r.ts||JSON.stringify(r));
     if(!vistos[chave]){ vistos[chave]=true; combinado.push(r); }
   });
   (remoto||[]).forEach(function(r){
+    _corrigirMojibakeRegistro(r);
     var chave = String(r.ts||JSON.stringify(r));
     if(!vistos[chave]){
       vistos[chave]=true; combinado.push(r);
@@ -17511,11 +17537,7 @@ async function _cadInit(){
   // digitado passa por uma conversao de acentuacao errada em algum momento.
   // Varre catalogo de coleta, historico de coletas e pedidos, corrigindo
   // qualquer nome que contenha o sinal tipico desse problema ("Ã").
-  if(!localStorage.getItem('ca_fix_mojibake_v3')){
-    function _corrigirMojibake(str){
-      if(!str || typeof str !== 'string' || str.indexOf('\u00c3') === -1) return str;
-      try{ return decodeURIComponent(escape(str)); }catch(e){ return str; }
-    }
+  if(!localStorage.getItem('ca_fix_mojibake_v4')){
     var houveCorrecao = false;
 
     // Catálogo de coleta (Aviário/Perda/Campo/Estoque)
@@ -17609,7 +17631,7 @@ async function _cadInit(){
 
     if(mudouProd || mudouCli || mudouForn || mudouPreco) await _cadSalvar();
 
-    try{ localStorage.setItem('ca_fix_mojibake_v3','1'); }catch(e){}
+    try{ localStorage.setItem('ca_fix_mojibake_v4','1'); }catch(e){}
   }
   _cadAtualizarSetores();
   _atualizarSugestoesClientes();
