@@ -152,22 +152,6 @@
       ]
     },
     {
-      "id": "p1787993157009",
-      "setor": "Vendas",
-      "nome": "Frango Vivo",
-      "unid": "Unid.",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 50
-        },
-        {
-          "unid": "unid",
-          "preco": 0
-        }
-      ]
-    },
-    {
       "id": "p1789066561642_0",
       "setor": "Aviario",
       "nome": "Galinha",
@@ -186,6 +170,10 @@
         {
           "unid": "unid",
           "preco": 0
+        },
+        {
+          "unid": "Unid.",
+          "preco": 50
         }
       ]
     },
@@ -367,6 +355,22 @@
       "setor": "Aviario",
       "nome": "Pinto",
       "apresentacoes": [
+        {
+          "unid": "unid",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1787993157009",
+      "setor": "Vendas",
+      "nome": "Frango Vivo",
+      "unid": "Unid.",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 50
+        },
         {
           "unid": "unid",
           "preco": 0
