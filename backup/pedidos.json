@@ -39,7 +39,8 @@
         "unidade": "Unid.",
         "preco": 50,
         "sub": 350,
-        "data": "11/09/2026"
+        "data": "11/09/2026",
+        "prodId": "p_galinha"
       },
       {
         "nome": "Frango Abatido",
