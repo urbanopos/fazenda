@@ -105,7 +105,7 @@
         "data": "03/09/2026"
       },
       {
-        "nome": "Esterco de galinha",
+        "nome": "Esterco de Galinha",
         "col2": "Esterco de galinha",
         "col1": "04/09/2026",
         "col3": "14 unid",
@@ -115,7 +115,8 @@
         "unidade": "unid",
         "preco": 15,
         "sub": 210,
-        "data": "04/09/2026"
+        "data": "04/09/2026",
+        "prodId": "p1789184203486"
       },
       {
         "nome": "Ovos de Capoeira",
