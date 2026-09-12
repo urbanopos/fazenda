@@ -46,7 +46,7 @@
 <script>
 var REPO = "urbanopos/fazenda";
 var TOKEN_KEY = "ghpub_token_generico";
-var ARQUIVOS_VALIDOS = ["ColetaAut-Admin-corrigido.html","ColetaAut-Admin.html","ColetaAut-Desk-Admin.html","ColetaAut-Coletor.html","ColetaAut-Coletor-corrigido.html"];
+var ARQUIVOS_VALIDOS = ["ColetaAut-Admin-corrigido.html","ColetaAut-Admin.html","ColetaAut-Desk-Admin.html","ColetaAut-Coletor.html","ColetaAut-Coletor-corrigido.html","publicar.html"];
 var _conteudoArquivo = null;
 var _nomeArquivoAlvo = null;
 var _modoBotao = "publicar"; // ou "fechar", depois de publicar com sucesso
@@ -94,7 +94,7 @@ document.getElementById("arquivo").addEventListener("change", function(e){
   var reader = new FileReader();
   reader.onload = function(ev){
     _conteudoArquivo = ev.target.result; // já vem como texto
-    info.textContent = (conhecido ? "✅" : "⚠️") + " Vai substituir: " + _nomeArquivoAlvo + (conhecido ? "" : " (nome não reconhecido — confirme se é isso mesmo antes de publicar)");
+    info.textContent = (conhecido ? "✅" : "⚠️") + " Vai substituir: " + _nomeArquivoAlvo + (conhecido ? "" : " — nome fora da lista de arquivos conhecidos desta ferramenta (não significa que não existe no GitHub; só confirme se é esse mesmo o arquivo antes de publicar)");
     info.style.display = "block";
     btn.disabled = false;
     setStatus("", ""); document.getElementById("status").style.display = "none";
