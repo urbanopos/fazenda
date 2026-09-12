@@ -60,15 +60,23 @@ window.addEventListener("load", function(){
 
 function _onClickBotao(){
   if(_modoBotao === "fechar"){
-    window.close();
-    // Alguns navegadores só permitem fechar abas abertas via script — se
-    // não conseguir, avisa que pode fechar manualmente.
-    setTimeout(function(){
-      setStatus("✅ Pode fechar esta aba manualmente agora.", "ok");
-    }, 200);
+    _resetarFerramenta();
   } else {
     publicar();
   }
+}
+
+function _resetarFerramenta(){
+  var nomePublicado = _nomeArquivoAlvo;
+  _conteudoArquivo = null;
+  _nomeArquivoAlvo = null;
+  document.getElementById("arquivo").value = "";
+  document.getElementById("alvo-info").style.display = "none";
+  _voltarModoPublicar();
+  document.getElementById("btn-publicar").disabled = true;
+  // Mantém visível a confirmação de que o arquivo anterior foi publicado
+  // com sucesso, em vez de simplesmente sumir com a mensagem.
+  setStatus("✅ " + nomePublicado + " foi publicado no GitHub com sucesso. Pronto para o próximo arquivo.", "ok");
 }
 
 function _voltarModoPublicar(){
@@ -153,7 +161,7 @@ async function publicar(){
     try{ localStorage.setItem(TOKEN_KEY, token); }catch(e){}
     setStatus("✅ " + _nomeArquivoAlvo + " publicado com sucesso! A nova versão já está no ar.", "ok");
     _modoBotao = "fechar";
-    btn.textContent = "Fechar";
+    btn.textContent = "Concluir (publicar outro arquivo)";
     btn.disabled = false;
     return; // não cai no finally que reabilitaria como "Publicar"
   }catch(err){
