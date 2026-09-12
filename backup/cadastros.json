@@ -21,18 +21,6 @@
       ]
     },
     {
-      "id": "p_galinha",
-      "setor": "Vendas",
-      "nome": "Galinha",
-      "unid": "",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 60
-        }
-      ]
-    },
-    {
       "id": "p_frango",
       "setor": "Vendas",
       "nome": "Frango",
@@ -348,6 +336,18 @@
         {
           "unid": "unid",
           "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p_galinha",
+      "setor": "Vendas",
+      "nome": "Galinha",
+      "unid": "",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 60
         }
       ]
     }
