@@ -376,6 +376,17 @@
           "preco": 0
         }
       ]
+    },
+    {
+      "id": "p1789199978544_0",
+      "setor": "Campo",
+      "nome": "Banana",
+      "apresentacoes": [
+        {
+          "unid": "cac.",
+          "preco": 0
+        }
+      ]
     }
   ],
   "clientes": [
