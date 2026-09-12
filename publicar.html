@@ -36,7 +36,7 @@
   <label>Token do GitHub</label>
   <input type="password" id="token" placeholder="ghp_...">
 
-  <button id="btn-publicar" onclick="publicar()" disabled>Publicar</button>
+  <button id="btn-publicar" onclick="_onClickBotao()" disabled>Publicar</button>
 
   <div id="status"></div>
 
@@ -49,6 +49,7 @@ var TOKEN_KEY = "ghpub_token_generico";
 var ARQUIVOS_VALIDOS = ["ColetaAut-Admin-corrigido.html","ColetaAut-Admin.html","ColetaAut-Desk-Admin.html","ColetaAut-Coletor.html","ColetaAut-Coletor-corrigido.html"];
 var _conteudoArquivo = null;
 var _nomeArquivoAlvo = null;
+var _modoBotao = "publicar"; // ou "fechar", depois de publicar com sucesso
 
 window.addEventListener("load", function(){
   try{
@@ -57,7 +58,27 @@ window.addEventListener("load", function(){
   }catch(e){}
 });
 
+function _onClickBotao(){
+  if(_modoBotao === "fechar"){
+    window.close();
+    // Alguns navegadores só permitem fechar abas abertas via script — se
+    // não conseguir, avisa que pode fechar manualmente.
+    setTimeout(function(){
+      setStatus("✅ Pode fechar esta aba manualmente agora.", "ok");
+    }, 200);
+  } else {
+    publicar();
+  }
+}
+
+function _voltarModoPublicar(){
+  _modoBotao = "publicar";
+  var btn = document.getElementById("btn-publicar");
+  btn.textContent = "Publicar";
+}
+
 document.getElementById("arquivo").addEventListener("change", function(e){
+  _voltarModoPublicar();
   var f = e.target.files[0];
   var info = document.getElementById("alvo-info");
   var btn = document.getElementById("btn-publicar");
@@ -76,6 +97,7 @@ document.getElementById("arquivo").addEventListener("change", function(e){
     info.textContent = (conhecido ? "✅" : "⚠️") + " Vai substituir: " + _nomeArquivoAlvo + (conhecido ? "" : " (nome não reconhecido — confirme se é isso mesmo antes de publicar)");
     info.style.display = "block";
     btn.disabled = false;
+    setStatus("", ""); document.getElementById("status").style.display = "none";
   };
   reader.readAsText(f, "UTF-8");
 });
@@ -130,6 +152,10 @@ async function publicar(){
 
     try{ localStorage.setItem(TOKEN_KEY, token); }catch(e){}
     setStatus("✅ " + _nomeArquivoAlvo + " publicado com sucesso! A nova versão já está no ar.", "ok");
+    _modoBotao = "fechar";
+    btn.textContent = "Fechar";
+    btn.disabled = false;
+    return; // não cai no finally que reabilitaria como "Publicar"
   }catch(err){
     setStatus("⚠️ " + err.message, "err");
   }finally{
