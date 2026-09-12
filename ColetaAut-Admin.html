@@ -231,8 +231,8 @@ body:has(#sec-vendas.at) #contador{
 /* HISTORICO DE COLETAS */
 .btn-consulta{width:100%;padding:11px;border:2px solid var(--ac);border-radius:var(--r);background:rgba(184,148,63,.08);color:var(--ac);font-family:'DM Mono',monospace;font-size:12px;letter-spacing:1px;cursor:pointer;margin-top:10px;display:none}
 .btn-consulta.vis{display:block}
-#modal-hcol{display:none;position:fixed;inset:0;z-index:9991;background:rgba(0,0,0,.78);align-items:flex-end}
-#modal-hcol.vis{display:flex}
+#modal-hcol,#modal-hist-pedidos{display:none;position:fixed;inset:0;z-index:9991;background:rgba(0,0,0,.78);align-items:flex-end}
+#modal-hcol.vis,#modal-hist-pedidos.vis{display:flex}
 .hcol-box{background:var(--cr);width:100%;max-height:92vh;border-radius:20px 20px 0 0;overflow:hidden;display:flex;flex-direction:column}
 .hcol-hd{background:var(--vd);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:3px solid var(--ac)}
 .hcol-hd-t{font-family:'DM Serif Display',serif;font-size:17px;color:var(--ac)}
@@ -887,6 +887,56 @@ input[type="password"]:-webkit-autofill{
   </div>
 </div>
 
+<!-- MODAL HISTORICO DE PEDIDOS -->
+<div id="modal-hist-pedidos" onclick="fecharHistPedidos()">
+  <div class="hcol-box" onclick="event.stopPropagation()">
+    <div class="hcol-hd">
+      <div><div class="hcol-hd-t">Historico de Pedidos</div><div class="hcol-hd-s">Acesso restrito — Administrador</div></div>
+      <button class="hcol-x" onclick="fecharHistPedidos()">✕</button>
+    </div>
+    <div class="hcol-filtros">
+      <div>
+        <div class="hcol-lbl">Ano</div>
+        <select class="hcol-sel" id="hped-ano" onchange="_renderHist()"></select>
+      </div>
+      <div>
+        <div class="hcol-lbl">Mes</div>
+        <select class="hcol-sel" id="hped-mes" onchange="_renderHist()">
+          <option value="">Todos</option>
+          <option value="01">Janeiro</option><option value="02">Fevereiro</option>
+          <option value="03">Marco</option><option value="04">Abril</option>
+          <option value="05">Maio</option><option value="06">Junho</option>
+          <option value="07">Julho</option><option value="08">Agosto</option>
+          <option value="09">Setembro</option><option value="10">Outubro</option>
+          <option value="11">Novembro</option><option value="12">Dezembro</option>
+        </select>
+      </div>
+      <div>
+        <div class="hcol-lbl">Valor</div>
+        <div id="hped-total" style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:#7a3a00;padding:5px 0;min-width:90px">R$ 0,00</div>
+      </div>
+      <div>
+        <div class="hcol-lbl">Visao</div>
+        <select class="hcol-sel" id="hped-visao" onchange="_renderHist()">
+          <option value="total">Totalizacao por produto</option>
+          <option value="detalhe">Pedidos detalhados</option>
+        </select>
+      </div>
+      <div>
+        <div class="hcol-lbl">Cliente</div>
+        <select class="hcol-sel" id="hped-cli" onchange="_renderHist()" style="max-width:130px">
+          <option value="">Todos</option>
+        </select>
+      </div>
+      <div>
+        <div class="hcol-lbl">&nbsp;</div>
+        <button class="hcol-sel" id="hped-aberto-btn" onclick="_toggleFiltroAberto()" style="cursor:pointer;font-weight:700">Em aberto</button>
+      </div>
+    </div>
+    <div class="hcol-body" id="hist-lista"></div>
+  </div>
+</div>
+
 <!-- MODAL VISUALIZACAO PEDIDO -->
 <div id="modal-ped" onclick="fecharModalPed()">
   <div class="mp-box" onclick="event.stopPropagation()">
@@ -915,7 +965,7 @@ input[type="password"]:-webkit-autofill{
 <div id="sec-vendas">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
     <div class="sec-t" style="color:#7a3a00">Vendas</div>
-    <button id="btn-aba-hist" onclick="mostrarPainelVendas('hist')" style="padding:5px 12px;width:96px;background:rgba(122,58,0,.1);border:1.5px solid #7a3a00;border-radius:6px;color:#7a3a00;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📋 Histórico</button>
+    <button id="btn-aba-hist" onclick="abrirHistPedidos()" style="padding:5px 12px;width:96px;background:rgba(122,58,0,.1);border:1.5px solid #7a3a00;border-radius:6px;color:#7a3a00;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📋 Histórico</button>
   </div>
   <div class="sec-d">Talao de pedido numerado</div>
   <!-- PAINEL NOVO PEDIDO -->
@@ -942,52 +992,6 @@ input[type="password"]:-webkit-autofill{
       </button>
     </div>
   </div>
-  <!-- Filtros de pedidos — mesmo layout do historico de coletas -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;background:#f5f0e8;border-bottom:1px solid var(--ce);margin:0 -16px 14px;padding:10px 16px">
-    <div>
-      <div class="hcol-lbl">Ano</div>
-      <select class="hcol-sel" id="hped-ano" onchange="_renderHist()"></select>
-    </div>
-    <div>
-      <div class="hcol-lbl">Mes</div>
-      <select class="hcol-sel" id="hped-mes" onchange="_renderHist()">
-        <option value="">Todos</option>
-        <option value="01">Janeiro</option><option value="02">Fevereiro</option>
-        <option value="03">Marco</option><option value="04">Abril</option>
-        <option value="05">Maio</option><option value="06">Junho</option>
-        <option value="07">Julho</option><option value="08">Agosto</option>
-        <option value="09">Setembro</option><option value="10">Outubro</option>
-        <option value="11">Novembro</option><option value="12">Dezembro</option>
-      </select>
-    </div>
-    <div>
-      <div class="hcol-lbl">Valor</div>
-      <div id="hped-total" style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:#7a3a00;padding:5px 0;min-width:90px">R$ 0,00</div>
-    </div>
-    <div>
-      <div class="hcol-lbl">Visao</div>
-      <select class="hcol-sel" id="hped-visao" onchange="_renderHist()">
-        <option value="total">Totalizacao por produto</option>
-        <option value="detalhe">Pedidos detalhados</option>
-      </select>
-    </div>
-    <div>
-      <div class="hcol-lbl">Cliente</div>
-      <select class="hcol-sel" id="hped-cli" onchange="_renderHist()" style="max-width:130px">
-        <option value="">Todos</option>
-      </select>
-    </div>
-    <div>
-      <div class="hcol-lbl">&nbsp;</div>
-      <button class="hcol-sel" id="hped-aberto-btn" onclick="_toggleFiltroAberto()" style="cursor:pointer;font-weight:700">Em aberto</button>
-    </div>
-  </div>
-  <!-- PAINEL HISTORICO DE PEDIDOS -->
-  <div class="hist-panel" id="painel-hist">
-    <button onclick="mostrarPainelVendas('novo')" style="margin-bottom:10px;padding:6px 14px;background:none;border:1.5px solid var(--ac);border-radius:6px;color:var(--ac);font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer">← Voltar ao pedido</button>
-    <div id="hist-lista"></div>
-  </div>
-</div>
   <div class="div"></div>
   <div id="wrap-pendentes-btn" style="margin-bottom:8px">
     <button onclick="abrirPendentes()" style="width:100%;padding:12px 0;border:2px solid #1a6b2a;border-radius:var(--r);background:rgba(26,107,42,.08);color:#1a6b2a;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer">
@@ -11395,7 +11399,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = 'bd66622ed898';
+var _caFP = '1dfdbabd0cf3';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -12523,6 +12527,7 @@ document.addEventListener('DOMContentLoaded', function(){
 var _navFechar = {
   'modal-ped'       : fecharModalPed,
   'modal-hcol'      : fecharHistColeta,
+  'modal-hist-pedidos' : fecharHistPedidos,
   'modal-rev-quit'  : _mrqFechar,
   'modal-conf-quit' : _mcqFechar,
   'modal-pendentes' : _mpdFechar,
@@ -12535,7 +12540,6 @@ var _navFechar = {
   'ca-lock'         : function(){ document.getElementById('ca-lock').classList.remove('vis'); },
   'ca-setup'        : function(){ document.getElementById('ca-setup').classList.remove('vis'); },
   'guia-ios'        : fecharGuiaIos,
-  'vendas-hist'     : function(){ mostrarPainelVendas('novo'); },
   'aba'             : function(){ trocarAba('aviario'); }
 };
 
@@ -13148,10 +13152,31 @@ var _vItens = [];
 var _vIdx = 0;
 var _pedNum = 0;
 
+/* O número do pedido (PED-XXXX) precisa refletir o total já enviado por
+   QUALQUER aparelho, não só o contador local deste dispositivo — senão
+   dois aparelhos diferentes podem gerar o mesmo número, ou um aparelho
+   que nunca enviou nada localmente mostra "PED-0001" mesmo já havendo
+   dezenas de pedidos enviados pelo outro. Recalcula sempre pelo maior
+   número já visto no histórico sincronizado. */
+function _recalcularPedNumPeloHistorico(){
+  var hist = _carregarHistRaw();
+  var maiorEncontrado = 0;
+  hist.forEach(function(p){
+    var m = String(p.num||'').match(/(\d+)/);
+    if(m){ var n = parseInt(m[1],10); if(n>maiorEncontrado) maiorEncontrado = n; }
+  });
+  if(maiorEncontrado > _pedNum){
+    _pedNum = maiorEncontrado;
+    try{ localStorage.setItem(NK, String(_pedNum)); }catch(e){}
+    _renderTalaoNum();
+  }
+}
+
 function _initVendas(){
   var ativa = localStorage.getItem(VK)==='1';
   _aplicarVendas(ativa);
   _pedNum = parseInt(localStorage.getItem(NK)||'0');
+  _recalcularPedNumPeloHistorico();
   _renderTalaoNum();
   _atualizarSugestoesClientes();
 }
@@ -13500,23 +13525,22 @@ async function _carregarHistOPFS(){
   return _carregarHist();
 }
 
+/* Abre/fecha o modal de Histórico de Pedidos — mesmo padrão visual e de
+   navegação usado no Histórico de Coletas das outras abas. */
+function _mostrarModalHistPedidos(){
+  document.getElementById('modal-hist-pedidos').classList.add('vis');
+  _renderHist();
+  _navPush('modal-hist-pedidos');
+}
+function fecharHistPedidos(){
+  document.getElementById('modal-hist-pedidos').classList.remove('vis');
+  var idx = _navPilha.indexOf('modal-hist-pedidos');
+  if(idx >= 0){ _navPilha.splice(idx,1); history.replaceState({navSentinel:true},''); }
+}
+
 function mostrarPainelVendas(qual){
-  var btnHist = document.getElementById('btn-aba-hist');
-  var pNovo   = document.getElementById('painel-novo');
-  var pHist   = document.getElementById('painel-hist');
-  if(qual==='hist'){
-    if(btnHist) btnHist.classList.add('ativo');
-    pNovo.classList.remove('vis');     pHist.classList.add('vis');
-    _renderHist();
-    /* Sub-painel histórico entra na pilha de navegação */
-    if(_navPilha.indexOf('vendas-hist') < 0) _navPush('vendas-hist');
-  } else {
-    if(btnHist) btnHist.classList.remove('ativo');
-    pHist.classList.remove('vis');     pNovo.classList.add('vis');
-    /* Remove do histórico de navegação */
-    var idx = _navPilha.indexOf('vendas-hist');
-    if(idx >= 0){ _navPilha.splice(idx,1); history.replaceState({navSentinel:true},''); }
-  }
+  // Mantida por compatibilidade — a tela de "Novo Pedido" agora é sempre
+  // a única exibida na aba Vendas; o Histórico abre como pop-up próprio.
 }
 
 /* Filtro centralizado — ano, mes, cliente e status — usado em toda a tela Vendas */
@@ -15798,7 +15822,7 @@ function abrirHistPedidos(){
   if(selMes) selMes.value='';
   var selVis = document.getElementById('hped-visao');
   if(selVis) selVis.value='detalhe';
-  mostrarPainelVendas('hist');
+  _mostrarModalHistPedidos();
   var sv = document.getElementById('sec-vendas');
   if(sv) sv.scrollIntoView({behavior:'smooth', block:'start'});
 }
@@ -16156,6 +16180,7 @@ async function _sincronizarRegistrosGitHub(manual){
         try{ localStorage.setItem(HK, jp); }catch(e){}
         if(_caOpfs) await _caOpfsSalvar(FSJ_PEDIDOS, jp);
         _renderHist();
+        _recalcularPedNumPeloHistorico();
         houveMudanca = true;
         await _ghGravar(GH_BCK_PEDIDOS, pedidosMerge, 'Sincronizacao automatica (pedidos)');
       }
