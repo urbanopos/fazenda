@@ -16,7 +16,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 60,
-        "data": "11/09/2026"
+        "data": "11/09/2026",
+        "prodId": "p_ovo"
       }
     ],
     "total": 60,
@@ -65,10 +66,11 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 120,
-        "data": "11/09/2026"
+        "data": "11/09/2026",
+        "prodId": "p_ovo"
       },
       {
-        "nome": "Ovos de capoeira",
+        "nome": "Ovos de Capoeira",
         "col2": "Ovos de capoeira",
         "col1": "11/09/2026",
         "col3": "2 Bandeja c/30 ovos",
@@ -78,7 +80,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 60,
-        "data": "11/09/2026"
+        "data": "11/09/2026",
+        "prodId": "p_ovo"
       }
     ],
     "total": 880,
@@ -100,7 +103,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 90,
-        "data": "03/09/2026"
+        "data": "03/09/2026",
+        "prodId": "p_ovo"
       },
       {
         "nome": "Esterco de galinha",
@@ -126,10 +130,11 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 60,
-        "data": "04/09/2026"
+        "data": "04/09/2026",
+        "prodId": "p_ovo"
       },
       {
-        "nome": "Ovos de capoeira",
+        "nome": "Ovos de Capoeira",
         "col2": "Ovos de capoeira",
         "col1": "05/09/2026",
         "col3": "2 Bandeja c/30 ovos",
@@ -139,7 +144,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 60,
-        "data": "05/09/2026"
+        "data": "05/09/2026",
+        "prodId": "p_ovo"
       }
     ],
     "total": 420,
@@ -163,7 +169,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 30,
-        "data": "02/09/2026"
+        "data": "02/09/2026",
+        "prodId": "p_ovo"
       }
     ],
     "total": 30,
@@ -239,7 +246,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 60,
-        "data": "28/08/2026"
+        "data": "28/08/2026",
+        "prodId": "p_ovo"
       },
       {
         "nome": "Galinha",
@@ -265,7 +273,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 60,
-        "data": "28/08/2026"
+        "data": "28/08/2026",
+        "prodId": "p_ovo"
       }
     ],
     "total": 820,
@@ -289,7 +298,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 30,
-        "data": "26/08/2026"
+        "data": "26/08/2026",
+        "prodId": "p_ovo"
       }
     ],
     "total": 30,
@@ -339,7 +349,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 30,
-        "data": "26/08/2026"
+        "data": "26/08/2026",
+        "prodId": "p_ovo"
       }
     ],
     "total": 30,
@@ -389,7 +400,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 90,
-        "data": "26/08/2026"
+        "data": "26/08/2026",
+        "prodId": "p_ovo"
       }
     ],
     "total": 640,
@@ -413,7 +425,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 150,
-        "data": "22/08/2026"
+        "data": "22/08/2026",
+        "prodId": "p_ovo"
       }
     ],
     "total": 150,
@@ -433,7 +446,7 @@
         "col4": "R$ 30,00 x 2",
         "col5": "R$ 60,00",
         "val": 60,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 2,
@@ -459,7 +472,7 @@
         "col4": "R$ 30,00 x 5",
         "col5": "R$ 150,00",
         "val": 150,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 5,
@@ -489,7 +502,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 30,
-        "data": "12/08/2026"
+        "data": "12/08/2026",
+        "prodId": "p_ovo"
       },
       {
         "nome": "Galinha",
@@ -526,10 +540,11 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 60,
-        "data": "12/08/2026"
+        "data": "12/08/2026",
+        "prodId": "p_ovo"
       },
       {
-        "nome": "Ovos de capoeira",
+        "nome": "Ovos de Capoeira",
         "col2": "Ovos de capoeira",
         "col1": "20/08/2026",
         "col3": "1 Bandeja c/30 ovos",
@@ -539,7 +554,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 30,
-        "data": "20/08/2026"
+        "data": "20/08/2026",
+        "prodId": "p_ovo"
       },
       {
         "nome": "Ovos de Capoeira",
@@ -552,10 +568,11 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 30,
-        "data": "26/08/2026"
+        "data": "26/08/2026",
+        "prodId": "p_ovo"
       },
       {
-        "nome": "Ovos de capoeira",
+        "nome": "Ovos de Capoeira",
         "col2": "Ovos de capoeira",
         "col1": "02/09/2026",
         "col3": "1 Bandeja c/30 ovos",
@@ -565,7 +582,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 30,
-        "data": "02/09/2026"
+        "data": "02/09/2026",
+        "prodId": "p_ovo"
       }
     ],
     "total": 150,
@@ -589,7 +607,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 30,
-        "data": "12/08/2026"
+        "data": "12/08/2026",
+        "prodId": "p_ovo"
       }
     ],
     "total": 30,
@@ -613,7 +632,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 60,
-        "data": "12/08/2026"
+        "data": "12/08/2026",
+        "prodId": "p_ovo"
       }
     ],
     "total": 60,
@@ -633,7 +653,7 @@
         "col4": "R$ 30,00 x 1",
         "col5": "R$ 30,00",
         "val": 30,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "unid",
         "qtd": 1,
@@ -704,10 +724,11 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 30,
-        "data": "07/08/2026"
+        "data": "07/08/2026",
+        "prodId": "p_ovo"
       },
       {
-        "nome": "Ovos de capoeira",
+        "nome": "Ovos de Capoeira",
         "col2": "Ovos de capoeira",
         "col1": "07/08/2026",
         "col3": "6 Bandeja c/30 ovos",
@@ -717,7 +738,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 180,
-        "data": "07/08/2026"
+        "data": "07/08/2026",
+        "prodId": "p_ovo"
       }
     ],
     "total": 210,
@@ -744,7 +766,7 @@
         "data": "06/08/2026"
       },
       {
-        "nome": "Ovos de capoeira",
+        "nome": "Ovos de Capoeira",
         "col2": "Ovos de capoeira",
         "col1": "06/08/2026",
         "col3": "5 Bandeja c/30 ovos",
@@ -754,7 +776,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 150,
-        "data": "06/08/2026"
+        "data": "06/08/2026",
+        "prodId": "p_ovo"
       }
     ],
     "total": 830,
@@ -830,7 +853,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 210,
-        "data": "05/08/2026"
+        "data": "05/08/2026",
+        "prodId": "p_ovo"
       }
     ],
     "total": 884,
@@ -850,7 +874,7 @@
         "col4": "R$ 30,00 x 9",
         "col5": "R$ 270,00",
         "val": 270,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 9,
@@ -891,7 +915,7 @@
         "col4": "R$ 30,00 x 3",
         "col5": "R$ 90,00",
         "val": 90,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "unid",
         "qtd": 3,
@@ -917,7 +941,7 @@
         "col4": "R$ 30,00 x 1",
         "col5": "R$ 30,00",
         "val": 30,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "unid",
         "qtd": 1,
@@ -943,7 +967,7 @@
         "col4": "R$ 30,00 x 1",
         "col5": "R$ 30,00",
         "val": 30,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "unid",
         "qtd": 1,
@@ -969,7 +993,7 @@
         "col4": "R$ 30,00 x 2",
         "col5": "R$ 60,00",
         "val": 60,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "unid",
         "qtd": 2,
@@ -1104,7 +1128,7 @@
         "data": "24/07/2026"
       },
       {
-        "nome": "Ovos de capoeira",
+        "nome": "Ovos de Capoeira",
         "col2": "Ovos de capoeira",
         "col1": "24/07/2026",
         "col3": "5 Bandeja c/30 ovos",
@@ -1114,7 +1138,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 150,
-        "data": "24/07/2026"
+        "data": "24/07/2026",
+        "prodId": "p_ovo"
       }
     ],
     "total": 200,
@@ -1175,7 +1200,7 @@
         "col4": "R$ 30,00 x 1",
         "col5": "R$ 30,00",
         "val": 30,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 1,
@@ -1201,7 +1226,7 @@
         "col4": "R$ 30,00 x 2",
         "col5": "R$ 60,00",
         "val": 60,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 2,
@@ -1227,7 +1252,7 @@
         "col4": "R$ 30,00 x 1",
         "col5": "R$ 30,00",
         "val": 30,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 1,
@@ -1253,7 +1278,7 @@
         "col4": "R$ 30,00 x 1",
         "col5": "R$ 30,00",
         "val": 30,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 1,
@@ -1279,7 +1304,7 @@
         "col4": "R$ 30,00 x 5",
         "col5": "R$ 150,00",
         "val": 150,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 5,
@@ -1305,7 +1330,7 @@
         "col4": "R$ 30,00 x 2",
         "col5": "R$ 60,00",
         "val": 60,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 2,
@@ -1331,7 +1356,7 @@
         "col4": "R$ 30,00 x 1",
         "col5": "R$ 30,00",
         "val": 30,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 1,
@@ -1357,7 +1382,7 @@
         "col4": "R$ 30,00 x 5",
         "col5": "R$ 150,00",
         "val": 150,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 5,
@@ -1383,7 +1408,7 @@
         "col4": "R$ 30,00 x 1",
         "col5": "R$ 30,00",
         "val": 30,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 1,
@@ -1413,7 +1438,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 150,
-        "data": "15/07/2026"
+        "data": "15/07/2026",
+        "prodId": "p_ovo"
       }
     ],
     "total": 150,
@@ -1457,7 +1483,7 @@
         "col4": "R$ 30,00 x 1",
         "col5": "R$ 30,00",
         "val": 30,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 1,
@@ -1487,7 +1513,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 30,
-        "data": "15/07/2026"
+        "data": "15/07/2026",
+        "prodId": "p_ovo"
       }
     ],
     "total": 30,
@@ -1507,7 +1534,7 @@
         "col4": "R$ 30,00 x 5",
         "col5": "R$ 150,00",
         "val": 150,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 5,
@@ -1533,7 +1560,7 @@
         "col4": "R$ 30,00 x 1",
         "col5": "R$ 30,00",
         "val": 30,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "",
         "qtd": 1,
@@ -1559,7 +1586,7 @@
         "col4": "R$ 30,00 x 2",
         "col5": "R$ 60,00",
         "val": 60,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 2,
@@ -1584,7 +1611,7 @@
         "col4": "R$ 30,00 x 2",
         "col5": "R$ 60,00",
         "val": 60,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 2,
@@ -1635,7 +1662,7 @@
         "col4": "R$ 30,00 x 5",
         "col5": "R$ 150,00",
         "val": 150,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 5,
@@ -1660,7 +1687,7 @@
         "col4": "R$ 30,00 x 3",
         "col5": "R$ 90,00",
         "val": 90,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 3,
@@ -1710,7 +1737,7 @@
         "col4": "R$ 30,00 x 7",
         "col5": "R$ 210,00",
         "val": 210,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 7,
@@ -1759,7 +1786,7 @@
         "col4": "R$ 30,00 x 1",
         "col5": "R$ 30,00",
         "val": 30,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 1,
@@ -1799,7 +1826,7 @@
         "col4": "R$ 30,00 x 2",
         "col5": "R$ 60,00",
         "val": 60,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 2,
@@ -1850,7 +1877,7 @@
         "col4": "R$ 30,00 x 2",
         "col5": "R$ 60,00",
         "val": 60,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 2,
@@ -1865,7 +1892,7 @@
         "col4": "R$ 30,00 x 2",
         "col5": "R$ 60,00",
         "val": 60,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 2,
@@ -1880,7 +1907,7 @@
         "col4": "R$ 30,00 x 1",
         "col5": "R$ 30,00",
         "val": 30,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 1,
@@ -1905,7 +1932,7 @@
         "col4": "R$ 30,00 x 6",
         "col5": "R$ 180,00",
         "val": 180,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 6,
@@ -1930,7 +1957,7 @@
         "col4": "R$ 30,00 x 2",
         "col5": "R$ 60,00",
         "val": 60,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 2,
@@ -1955,7 +1982,7 @@
         "col4": "R$ 30,00 x 2",
         "col5": "R$ 60,00",
         "val": 60,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandejas c/30 ovos",
         "qtd": 2,
@@ -1980,7 +2007,7 @@
         "col4": "R$ 30,00 x 5",
         "col5": "R$ 150,00",
         "val": 150,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/ 30 ovos",
         "qtd": 5,
@@ -2067,7 +2094,7 @@
         "col4": "R$ 30,00 x 8",
         "col5": "R$ 240,00",
         "val": 240,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 8,
@@ -2131,7 +2158,7 @@
         "col4": "R$ 30,00 x 3",
         "col5": "R$ 90,00",
         "val": 90,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 3,
@@ -2156,7 +2183,7 @@
         "col4": "R$ 30,00 x 5",
         "col5": "R$ 150,00",
         "val": 150,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/ 30 ovos",
         "qtd": 5,
@@ -2181,7 +2208,7 @@
         "col4": "R$ 30,00 x 1",
         "col5": "R$ 30,00",
         "val": 30,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 1,
@@ -2243,7 +2270,7 @@
         "col3": "5 Bandeja c/30 ovos",
         "col4": "R$ 30,00",
         "val": 150,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 5,
@@ -2267,7 +2294,7 @@
         "col3": "5 Bandeja c/30 ovos",
         "col4": "R$ 30,00",
         "val": 150,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 5,
@@ -2281,7 +2308,7 @@
         "col3": "2 Bandeja c/30 ovos",
         "col4": "R$ 30,00",
         "val": 60,
-        "prodId": "ovo",
+        "prodId": "p_ovo",
         "nome": "Ovos de Capoeira",
         "unidade": "Bandeja c/30 ovos",
         "qtd": 2,
