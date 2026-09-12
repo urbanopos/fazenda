@@ -40,8 +40,7 @@
         "unidade": "Unid.",
         "preco": 50,
         "sub": 350,
-        "data": "11/09/2026",
-        "prodId": "p_galinha"
+        "data": "11/09/2026"
       },
       {
         "nome": "Frango Abatido",
@@ -54,8 +53,7 @@
         "unidade": "Unid.",
         "preco": 50,
         "sub": 350,
-        "data": "11/09/2026",
-        "prodId": "p_frango"
+        "data": "11/09/2026"
       },
       {
         "nome": "Ovos de Capoeira",
@@ -68,12 +66,11 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 120,
-        "data": "11/09/2026",
-        "prodId": "p_ovo"
+        "data": "11/09/2026"
       },
       {
         "nome": "Ovos de Capoeira",
-        "col2": "Ovos de capoeira",
+        "col2": "Ovos de Capoeira",
         "col1": "11/09/2026",
         "col3": "2 Bandeja c/30 ovos",
         "col4": "R$ 30,00 x 2",
@@ -82,11 +79,23 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 60,
-        "data": "11/09/2026",
-        "prodId": "p_ovo"
+        "data": "11/09/2026"
+      },
+      {
+        "nome": "Ovos de Capoeira",
+        "col2": "Ovos de Capoeira",
+        "col1": "11/09/2026",
+        "col3": "2 Bandeja c/30 ovos",
+        "col4": "R$ 30,00 x 2",
+        "col5": "R$ 60,00",
+        "qtd": 2,
+        "unidade": "Bandeja c/30 ovos",
+        "preco": 30,
+        "sub": 60,
+        "data": "11/09/2026"
       }
     ],
-    "total": 880,
+    "total": 940,
     "ts": 1789126483115
   },
   {
