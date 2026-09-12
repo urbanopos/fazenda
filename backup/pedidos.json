@@ -1006,7 +1006,8 @@
         "unidade": "unid",
         "preco": 2,
         "sub": 400,
-        "data": "30/07/2026"
+        "data": "30/07/2026",
+        "prodId": "p_coco"
       }
     ],
     "total": 400,
@@ -1445,7 +1446,8 @@
         "unidade": "unid",
         "preco": 2.5,
         "sub": 250,
-        "data": "15/07/2026"
+        "data": "15/07/2026",
+        "prodId": "p_coco"
       }
     ],
     "total": 250,
@@ -1747,7 +1749,8 @@
         "unidade": "Unidade",
         "preco": 2,
         "sub": 400,
-        "data": "01/07/2026"
+        "data": "01/07/2026",
+        "prodId": "p_coco"
       }
     ],
     "total": 400,
@@ -2120,7 +2123,8 @@
         "unidade": "Unidade",
         "preco": 2.5,
         "sub": 500,
-        "data": "17/06/2026"
+        "data": "17/06/2026",
+        "prodId": "p_coco"
       }
     ],
     "total": 500,
