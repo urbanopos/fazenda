@@ -52,6 +52,10 @@
         {
           "unid": "Unid.",
           "preco": 30
+        },
+        {
+          "unid": "unid",
+          "preco": 0
         }
       ]
     },
@@ -178,17 +182,6 @@
       "id": "p1789066562691_0",
       "setor": "Aviario",
       "nome": "Frango",
-      "apresentacoes": [
-        {
-          "unid": "unid",
-          "preco": 0
-        }
-      ]
-    },
-    {
-      "id": "p1789066563591_0",
-      "setor": "Aviario",
-      "nome": "Pinto",
       "apresentacoes": [
         {
           "unid": "unid",
@@ -366,6 +359,17 @@
         {
           "unid": "Saco",
           "preco": 15
+        }
+      ]
+    },
+    {
+      "id": "p1789066563591_0",
+      "setor": "Aviario",
+      "nome": "Pinto",
+      "apresentacoes": [
+        {
+          "unid": "unid",
+          "preco": 0
         }
       ]
     }
