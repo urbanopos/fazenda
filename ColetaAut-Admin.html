@@ -11399,7 +11399,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '0e41340070da';
+var _caFP = '1e9bd32c0ef0';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -13565,7 +13565,15 @@ function _filtrarHist(hist){
     if(!p.data) return false;
     if(ano && p.data.slice(0,4)!==ano) return false;
     if(mes && p.data.slice(5,7)!==mes) return false;
-    if(cli && (p.cliente||'')!==cli) return false;
+    // Mesma lógica de _renderHist: o filtro de cliente usa uma chave
+    // composta (id do cadastro quando disponível, senão o texto do nome)
+    // — comparar direto com p.cliente aqui nunca bateria, pois o valor
+    // selecionado no <select> é essa chave composta, não o nome puro.
+    if(cli){
+      var cadastroP = p.clienteId ? (_cadDados.clientes||[]).find(function(c){ return c.id===p.clienteId; }) : null;
+      var chaveP = cadastroP ? ('id:'+cadastroP.id) : ('n:'+(p.cliente||''));
+      if(chaveP !== cli) return false;
+    }
     if(_filtroAbertoAtivo && p.pago) return false;
     return true;
   });
@@ -13777,6 +13785,18 @@ function abrirModalPedIdx(idxFiltrado, btn){
   var filtrado = _filtrarHist(hist);
   var p = filtrado[idxFiltrado];
   if(!p) return;
+  _renderModalPedConteudo(p);
+  document.getElementById('modal-ped').classList.add('vis');
+  _navPush('modal-ped');
+}
+
+/* Preenche o conteúdo do modal "Ver pedido" a partir de um pedido já
+   resolvido (não um índice de lista filtrada) — usada tanto ao abrir o
+   modal normalmente quanto para atualizar a mesma tela já aberta depois
+   de salvar uma edição, sem precisar refazer a busca pelo índice (que
+   pode ter mudado de posição, ou até saído do filtro atual, depois da
+   edição — ex: trocou o nome do cliente que estava sendo filtrado). */
+function _renderModalPedConteudo(p){
   _pedAtual = p;
   document.getElementById('mp-titulo').textContent = p.num;
   document.getElementById('mp-sub').textContent = p.cliente||'(sem cliente)';
@@ -13811,8 +13831,6 @@ function abrirModalPedIdx(idxFiltrado, btn){
       btnPago.classList.remove('ja-pago');
     }
   }
-  document.getElementById('modal-ped').classList.add('vis');
-  _navPush('modal-ped');
   _atualizarPreviewPedido(p);
 }
 
@@ -15564,10 +15582,11 @@ function _abrirEditPedidoIdx(i){
   var filtrado = _filtrarHist(hist);
   var p = filtrado[i];
   if(!p) return;
-  // Abre o modal normalmente
+  // Abre o modal e já mostra o formulário de edição em seguida — direto,
+  // sem depender de um tempo de espera fixo (que era frágil e podia falhar
+  // dependendo da velocidade do aparelho).
   abrirModalPedIdx(i, null);
-  // Aguarda render e aciona a edição
-  setTimeout(function(){ _abrirEditPedido(); }, 80);
+  _abrirEditPedido();
 }
 
 function _abrirEditPedido(){
@@ -15614,26 +15633,90 @@ function _brParaIso(str){
   return m ? (m[3]+'-'+m[2]+'-'+m[1]) : '';
 }
 
+/* Monta o campo de "Item": um <select> com os produtos do cadastro (para
+   escolher direto, já populando unidade/preço automaticamente) + opção
+   "Outro..." para textos livres — necessário para itens antigos que não
+   correspondam a nenhum produto cadastrado atualmente. */
+function _nomeSelectHtml(ii, nomeAtual){
+  var nomes = [], vistos = {};
+  (_cadDados.produtos||[]).forEach(function(p){
+    var n = (p.nome||'').trim();
+    if(n && !vistos[n.toLowerCase()]){ vistos[n.toLowerCase()]=true; nomes.push(n); }
+  });
+  nomes.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
+  var nomeTrim = (nomeAtual||'').trim();
+  var bateComCadastro = nomes.some(function(n){ return n.toLowerCase()===nomeTrim.toLowerCase(); });
+  // "Outro" fica selecionado sempre que o nome atual não corresponder a
+  // nenhum produto do cadastro — inclusive quando o item é novo e ainda
+  // não tem nome nenhum (evita cair, por padrão, num produto aleatório
+  // só porque ele é o primeiro da lista em ordem alfabética).
+  var usarOutro = !bateComCadastro;
+  var opts = nomes.map(function(n){
+    return '<option value="'+_esc(n)+'"'+(n.toLowerCase()===nomeTrim.toLowerCase()?' selected':'')+'>'+_esc(n)+'</option>';
+  }).join('');
+  opts += '<option value="__outro__"'+(usarOutro?' selected':'')+'>+ Outro (digitar)...</option>';
+  return '<select class="mp-edit-inp" style="flex:1.4;min-width:0;'+(usarOutro?'display:none':'')+'" id="mpe-nome-'+ii+'" onchange="_onNomeSelChange('+ii+')">'+opts+'</select>'
+    +'<input class="mp-edit-inp" style="flex:1.4;min-width:0;'+(usarOutro?'':'display:none')+'" id="mpe-nome-texto-'+ii+'" placeholder="Nome do item" value="'+(usarOutro?_esc(nomeTrim):'')+'" oninput="_atualizarUnidEditPed('+ii+')">';
+}
+
+/* Ao trocar o produto escolhido: se for "Outro", troca pra campo de texto
+   livre; senão, refaz a lista de unidades e já sugere o preço cadastrado
+   dessa apresentação (o admin ainda pode ajustar manualmente). */
+function _onNomeSelChange(ii){
+  var sel = document.getElementById('mpe-nome-'+ii);
+  var txt = document.getElementById('mpe-nome-texto-'+ii);
+  if(!sel) return;
+  if(sel.value === '__outro__'){
+    sel.style.display = 'none';
+    if(txt){ txt.style.display=''; txt.value=''; txt.focus(); }
+    _atualizarUnidEditPed(ii);
+    return;
+  }
+  _atualizarUnidEditPed(ii);
+  // Sugere o preço cadastrado da primeira apresentação encontrada
+  var unidEl = document.getElementById('mpe-unid-'+ii);
+  var precoEl = document.getElementById('mpe-preco-'+ii);
+  if(unidEl && precoEl){
+    var preco = _precoParaProdutoUnidade(sel.value, unidEl.value);
+    if(preco!=null){ precoEl.value = preco; _recalcSubEditPed(ii); }
+  }
+}
+
+/* Le o nome do item "ii" — do select se um produto do cadastro estiver
+   escolhido, ou do campo de texto livre se "Outro" estiver selecionado. */
+function _lerNomeEditPed(ii){
+  var sel = document.getElementById('mpe-nome-'+ii);
+  var txt = document.getElementById('mpe-nome-texto-'+ii);
+  if(sel && sel.value === '__outro__') return (txt?txt.value:'').trim();
+  return sel ? sel.value.trim() : '';
+}
 /* Lista as unidades/apresentacoes ja conhecidas para um nome de produto,
-   olhando tanto Cadastros → Produtos quanto Cadastros → Precos (um produto
-   pode ter mais de uma apresentacao cadastrada: "Bandeja c/30 ovos",
-   "Duzia de ovos", etc). Usado para popular a lista de selecao de unidade
-   na edicao de pedido. */
+   olhando o cadastro unico de Produtos → apresentacoes (cada produto pode
+   ter mais de uma: "Bandeja c/30 ovos", "Unid.", etc). Usado para popular
+   a lista de selecao de unidade na edicao de pedido. */
 function _unidadesParaProdutoNome(nome){
   nome = (nome||'').trim().toLowerCase();
   if(!nome) return [];
   var unids = [], vistos = {};
   (_cadDados.produtos||[]).forEach(function(p){
-    if((p.nome||'').trim().toLowerCase()===nome && p.unid && !vistos[p.unid.toLowerCase()]){
-      vistos[p.unid.toLowerCase()]=true; unids.push(p.unid);
-    }
-  });
-  (_cadDados.precos||[]).forEach(function(pr){
-    if((pr.prodNome||'').trim().toLowerCase()===nome && pr.unid && !vistos[pr.unid.toLowerCase()]){
-      vistos[pr.unid.toLowerCase()]=true; unids.push(pr.unid);
-    }
+    if((p.nome||'').trim().toLowerCase()!==nome) return;
+    (p.apresentacoes||[]).forEach(function(a){
+      var u = (a.unid||'').trim();
+      if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; unids.push(u); }
+    });
   });
   return unids;
+}
+
+/* Preço já cadastrado para um produto+unidade específicos, usado para
+   preencher automaticamente o preço ao trocar a unidade na edição. */
+function _precoParaProdutoUnidade(nome, unid){
+  nome = (nome||'').trim().toLowerCase();
+  unid = (unid||'').trim().toLowerCase();
+  var prod = (_cadDados.produtos||[]).find(function(p){ return (p.nome||'').trim().toLowerCase()===nome; });
+  if(!prod) return null;
+  var apres = (prod.apresentacoes||[]).find(function(a){ return (a.unid||'').trim().toLowerCase()===unid; });
+  return apres ? apres.preco : null;
 }
 
 /* Monta o <select> de unidade para a linha "ii", com as apresentacoes
@@ -15655,12 +15738,12 @@ function _unidSelectHtml(ii, nome, unidAtual){
 /* Quando o nome do item muda, refaz a lista de unidades disponiveis
    (produtos diferentes podem ter apresentacoes diferentes). */
 function _atualizarUnidEditPed(ii){
-  var nomeEl = document.getElementById('mpe-nome-'+ii);
+  var nomeAtual = _lerNomeEditPed(ii);
   var unidEl = document.getElementById('mpe-unid-'+ii);
-  if(!nomeEl || !unidEl) return;
+  if(!unidEl) return;
   var unidAtual = unidEl.value;
   var tmp = document.createElement('div');
-  tmp.innerHTML = _unidSelectHtml(ii, nomeEl.value, unidAtual);
+  tmp.innerHTML = _unidSelectHtml(ii, nomeAtual, unidAtual);
   unidEl.parentNode.replaceChild(tmp.firstChild, unidEl);
 }
 
@@ -15689,7 +15772,7 @@ function _mpItemEditCardHtml(ii, nome, unid, qtd, preco, dataIso, sub){
     +'<input class="mp-edit-inp" type="date" style="flex:none;width:150px" value="'+(dataIso||'')+'" id="mpe-data-'+ii+'">'
     +'</div>'
     +'<div class="mp-item-edit-row">'
-    +'<input class="mp-edit-inp" style="flex:1.4;min-width:0" placeholder="Item" value="'+_esc(nome)+'" id="mpe-nome-'+ii+'" oninput="_atualizarUnidEditPed('+ii+')">'
+    +_nomeSelectHtml(ii, nome)
     +_unidSelectHtml(ii, nome, unid)
     +'</div>'
     +'<div class="mp-item-edit-row">'
@@ -15751,7 +15834,7 @@ async function _salvarEditPedido(){
   var novosItens = [];
   if(wrap){
     wrap.querySelectorAll('.mp-item-edit-card').forEach(function(card,ii){
-      var nome  = (document.getElementById('mpe-nome-'+ii)||{value:''}).value.trim();
+      var nome  = _lerNomeEditPed(ii);
       var qtd   = parseFloat((document.getElementById('mpe-qtd-'+ii)||{value:0}).value)||0;
       var unid  = (document.getElementById('mpe-unid-'+ii)||{value:''}).value.trim();
       var preco = parseFloat((document.getElementById('mpe-preco-'+ii)||{value:0}).value)||0;
@@ -15790,7 +15873,11 @@ async function _salvarEditPedido(){
     await _gravarHist(hist);
   }
   _toast('✅ Pedido atualizado!');
-  fecharModalPed();
+  // Fecha só o formulário de edição e mostra de novo o pedido consolidado
+  // já atualizado — sem fechar o modal inteiro, como pedido.
+  var ef = document.getElementById('mp-edit-form');
+  if(ef){ ef.style.display='none'; ef.innerHTML=''; }
+  _renderModalPedConteudo(_pedAtual);
   _renderHist();
 }
 
