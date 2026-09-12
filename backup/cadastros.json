@@ -4,7 +4,6 @@
       "id": "p_ovo",
       "setor": "Vendas",
       "nome": "Ovos de Capoeira",
-      "unid": "",
       "apresentacoes": [
         {
           "unid": "Bandeja c/30 ovos",
@@ -21,9 +20,22 @@
       ]
     },
     {
+      "id": "p_galinha",
+      "setor": "Vendas",
+      "nome": "Galinha Abatida",
+      "unid": "Unid.",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 60
+        }
+      ]
+    },
+    {
       "id": "p_frango",
       "setor": "Vendas",
       "nome": "Frango Abatido",
+      "unid": "Unid.",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -34,8 +46,8 @@
     {
       "id": "p_pinto",
       "setor": "Vendas",
-      "nome": "Pinto",
-      "unid": "",
+      "nome": "Pintos",
+      "unid": "Unid.",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -47,7 +59,7 @@
       "id": "p_pintainha",
       "setor": "Vendas",
       "nome": "Pintainha",
-      "unid": "",
+      "unid": "Unid.",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -63,7 +75,7 @@
       "id": "p_esterco",
       "setor": "Vendas",
       "nome": "Esterco",
-      "unid": "",
+      "unid": "Sc.",
       "apresentacoes": [
         {
           "unid": "Sc.",
@@ -79,7 +91,7 @@
       "id": "p_coco",
       "setor": "Vendas",
       "nome": "Coco Seco",
-      "unid": "",
+      "unid": "Unid.",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -95,7 +107,7 @@
       "id": "p_manga",
       "setor": "Vendas",
       "nome": "Manga",
-      "unid": "",
+      "unid": "Caixa",
       "apresentacoes": [
         {
           "unid": "Caixa",
@@ -111,7 +123,7 @@
       "id": "p_abacate",
       "setor": "Vendas",
       "nome": "Abacate",
-      "unid": "",
+      "unid": "Caixa",
       "apresentacoes": [
         {
           "unid": "Caixa",
@@ -163,6 +175,17 @@
       ]
     },
     {
+      "id": "p1789066562691_0",
+      "setor": "Aviario",
+      "nome": "Frango",
+      "apresentacoes": [
+        {
+          "unid": "unid",
+          "preco": 0
+        }
+      ]
+    },
+    {
       "id": "p1789066563591_0",
       "setor": "Aviario",
       "nome": "Pinto",
@@ -187,8 +210,12 @@
     {
       "id": "p1789066568948_0",
       "setor": "Campo",
-      "nome": "Banana Prata",
+      "nome": "Banana",
       "apresentacoes": [
+        {
+          "unid": "cac.",
+          "preco": 0
+        },
         {
           "unid": "Cacho",
           "preco": 0
@@ -328,28 +355,6 @@
         {
           "unid": "Sc 40kg",
           "preco": 0
-        }
-      ]
-    },
-    {
-      "id": "p1789066562691_0",
-      "setor": "Aviario",
-      "nome": "Frango",
-      "apresentacoes": [
-        {
-          "unid": "unid",
-          "preco": 0
-        }
-      ]
-    },
-    {
-      "id": "p_galinha",
-      "setor": "Vendas",
-      "nome": "Galinha Abatida",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 60
         }
       ]
     },
