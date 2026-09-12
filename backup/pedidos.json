@@ -1185,8 +1185,8 @@
         "col4": "R$ 25,00 x 10",
         "col5": "R$ 250,00",
         "val": 250,
-        "prodId": "p1789066563591_0",
-        "nome": "Pinto",
+        "prodId": "p_pinto",
+        "nome": "Pintos",
         "unidade": "unid",
         "qtd": 10,
         "preco": 25,
@@ -2067,7 +2067,7 @@
         "prodId": "p_pintainha"
       },
       {
-        "nome": "Pinto",
+        "nome": "Pintos",
         "col2": "Pinto",
         "col1": "19/06/2026",
         "col3": "15 Unidade",
@@ -2078,7 +2078,7 @@
         "preco": 25,
         "sub": 375,
         "data": "19/06/2026",
-        "prodId": "p1789066563591_0"
+        "prodId": "p_pinto"
       },
       {
         "nome": "Frango Vivo",
