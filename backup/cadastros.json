@@ -354,6 +354,17 @@
           "preco": 60
         }
       ]
+    },
+    {
+      "id": "p1789184203486",
+      "setor": "Aviario",
+      "nome": "Esterco de Galinha",
+      "apresentacoes": [
+        {
+          "unid": "Saco",
+          "preco": 15
+        }
+      ]
     }
   ],
   "clientes": [
