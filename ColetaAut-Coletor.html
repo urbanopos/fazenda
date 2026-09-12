@@ -534,6 +534,7 @@ var GH_TOKEN_KEY = 'fsj_gh_token';
 var GH_API   = 'https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE;
 var GH_BCK_COLETAS = 'backup/coletas.json';
 var GH_BCK_CADASTROS = 'backup/cadastros.json';
+var GH_BCK_PEDIDOS = 'backup/pedidos.json';
 var GH_CATALOGO_PUB = 'https://urbanopos.github.io/fazenda/catalogo.json'; // leitura publica, sem token
 function _ghToken(){ return localStorage.getItem(GH_TOKEN_KEY)||''; }
 
@@ -636,6 +637,15 @@ function _catalogoPadrao(){
   });
   return out;
 }
+/* Corrige nomes salvos com problema de codificação (ex: "RaÃ§Ã£o" em vez
+   de "Ração") — função global, para poder ser usada também ao mesclar
+   dados vindos de outro aparelho (catálogo remoto), evitando que um
+   texto corrompido vindo de outro dispositivo entre no catálogo local. */
+function _corrigirMojibake(str){
+  if(!str || typeof str !== 'string' || str.indexOf('\u00c3') === -1) return str;
+  try{ return decodeURIComponent(escape(str)); }catch(e){ return str; }
+}
+
 function _catalogoCarregar(){
   if(_catalogo) return _catalogo;
   try{ _catalogo = JSON.parse(localStorage.getItem(CAT_KEY)||'null'); }catch(e){ _catalogo=null; }
@@ -694,6 +704,9 @@ function _catalogoUnidadesPara(setor, nome){
   (cadRemoto||[]).forEach(function(p){
     if(p.setor===label && p.nome.trim().toLowerCase()===alvo){
       (p.apresentacoes||[]).forEach(function(a){
+        // Se a apresentação tiver abas restritas, só entra se este setor
+        // estiver na lista; sem restrição (campo ausente ou vazio), aparece sempre.
+        if(Array.isArray(a.abas) && a.abas.length>0 && a.abas.indexOf(label)===-1) return;
         var u = (a.unid||'').trim();
         if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
       });
@@ -732,12 +745,13 @@ function _catalogoMesclarRemoto(remoto){
     if(!Array.isArray(local[setor])) local[setor] = [];
     (remoto[setor]||[]).forEach(function(itRemoto){
       if(!itRemoto || !itRemoto.nome) return;
+      var nomeCorrigido = _corrigirMojibake(itRemoto.nome);
       var existe = local[setor].some(function(itLocal){
-        return itLocal.nome.trim().toLowerCase()===itRemoto.nome.trim().toLowerCase()
+        return itLocal.nome.trim().toLowerCase()===nomeCorrigido.trim().toLowerCase()
             && itLocal.unid.trim().toLowerCase()===(itRemoto.unid||'unid').trim().toLowerCase();
       });
       if(!existe){
-        local[setor].push({ id:itRemoto.id||_catalogoSlug(itRemoto.nome), nome:itRemoto.nome, unid:itRemoto.unid||'unid', passo:itRemoto.passo||1 });
+        local[setor].push({ id:itRemoto.id||_catalogoSlug(nomeCorrigido), nome:nomeCorrigido, unid:itRemoto.unid||'unid', passo:itRemoto.passo||1 });
         mudou = true;
       }
     });
@@ -1054,10 +1068,6 @@ function _iniciar(){
   // aplicada no Admin — roda uma única vez neste aparelho.
   if(!localStorage.getItem('ca_fix_mojibake_v1')){
     (function(){
-      function _corrigirMojibake(str){
-        if(!str || typeof str !== 'string' || str.indexOf('\u00c3') === -1) return str;
-        try{ return decodeURIComponent(escape(str)); }catch(e){ return str; }
-      }
       // Nome do coletor
       var nomeAtual = localStorage.getItem('wpp_nome');
       var nomeCorrigido = _corrigirMojibake(nomeAtual);
@@ -1128,7 +1138,7 @@ function _iniciar(){
    nada salvo no aparelho — token, catálogo e coletas pendentes continuam
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
-var _caFP = '8a48302da2ef';
+var _caFP = '5d54d7196624';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -1744,10 +1754,66 @@ var _vItens = [];
 var _vIdx = 0;
 var _pedNum = 0;
 
+/* O número do pedido (PED-XXXX) precisa refletir o total já enviado por
+   QUALQUER aparelho — mas o Coletor não escreve pedidos no GitHub (só
+   gera o link de importação pro Admin), então seu histórico local
+   sozinho NUNCA sabe quantos pedidos outros aparelhos já enviaram. Por
+   isso, busca também (somente leitura, mesmo padrão do catálogo) o
+   backup de pedidos já publicado, e usa o maior número entre local e
+   remoto — sem esse passo, o Coletor sempre mostraria uma numeração
+   desatualizada, igual ao bug que já corrigimos no Admin/Desktop. */
+async function _buscarPedidosGlobais(){
+  if(!_ghToken()) return null;
+  try{
+    var headers = {
+      'Authorization': 'token '+_ghToken(),
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28'
+    };
+    var resp = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_BCK_PEDIDOS+'?t='+Date.now(),
+      {headers:headers, cache:'no-store'});
+    if(!resp.ok) return null;
+    var meta = await resp.json();
+    var dados = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g,'')))));
+    return Array.isArray(dados) ? dados : null;
+  }catch(e){
+    console.warn('Busca pedidos globais:', e.message);
+    return null;
+  }
+}
+
+function _maiorNumEmLista(lista){
+  var maior = 0;
+  (lista||[]).forEach(function(p){
+    var m = String(p.num||'').match(/(\d+)/);
+    if(m){ var n = parseInt(m[1],10); if(n>maior) maior = n; }
+  });
+  return maior;
+}
+
+async function _recalcularPedNumPeloHistorico(){
+  var maiorLocal = _maiorNumEmLista(_carregarHist());
+  if(maiorLocal > _pedNum){
+    _pedNum = maiorLocal;
+    try{ localStorage.setItem(NK, String(_pedNum)); }catch(e){}
+    _renderTalaoNum();
+  }
+  // Busca a contagem global (pode demorar um instante) e atualiza de
+  // novo se encontrar um número ainda maior vindo de outro aparelho
+  var pedidosGlobais = await _buscarPedidosGlobais();
+  var maiorGlobal = _maiorNumEmLista(pedidosGlobais);
+  if(maiorGlobal > _pedNum){
+    _pedNum = maiorGlobal;
+    try{ localStorage.setItem(NK, String(_pedNum)); }catch(e){}
+    _renderTalaoNum();
+  }
+}
+
 function _initVendas(){
   var ativa = localStorage.getItem(VK)==='1';
   _aplicarVendas(ativa);
   _pedNum = parseInt(localStorage.getItem(NK)||'0');
+  _recalcularPedNumPeloHistorico(); // assíncrona: atualiza a tela assim que resolver
   _renderTalaoNum();
 }
 
@@ -1815,6 +1881,7 @@ async function _buscarProdutosCadastro(){
     var meta = await resp.json();
     var dados = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g,'')))));
     var produtos = (dados && Array.isArray(dados.produtos)) ? dados.produtos : [];
+    produtos.forEach(function(p){ if(p.nome) p.nome = _corrigirMojibake(p.nome); });
     _produtosCadastro = produtos;
     try{ localStorage.setItem(CACHE_PRODUTOS_KEY, JSON.stringify(produtos)); }catch(e){}
     return produtos;
@@ -1860,8 +1927,17 @@ function _optsApresentacao(prodId, selIdx){
   if(!apres.length){
     return '<option value="">— nenhuma apresentação cadastrada —</option>';
   }
-  return apres.map(function(a,i){
-    return '<option value="'+i+'"'+(i===selIdx?' selected':'')+'>'+a.unid+'</option>';
+  // Só mostra apresentações habilitadas para a aba "Vendas" — mas o valor
+  // de cada <option> continua sendo o ÍNDICE ORIGINAL no array completo
+  // (não a posição na lista filtrada), pois é esse índice original que
+  // setApresV() usa depois para encontrar a apresentação certa.
+  var opts = apres.map(function(a,i){ return {a:a, i:i}; })
+    .filter(function(par){ return !Array.isArray(par.a.abas) || par.a.abas.length===0 || par.a.abas.indexOf('Vendas')>-1; });
+  if(!opts.length){
+    return '<option value="">— nenhuma apresentação disponível para venda —</option>';
+  }
+  return opts.map(function(par){
+    return '<option value="'+par.i+'"'+(par.i===selIdx?' selected':'')+'>'+par.a.unid+'</option>';
   }).join('');
 }
 
@@ -2272,7 +2348,7 @@ async function _enviarColetaGitHub(reg,tentativa){
     if(resp.ok){
       var meta = await resp.json();
       sha = meta.sha;
-      try{ pendentes = JSON.parse(atob(meta.content.replace(/\n/g,''))); }catch(e){ pendentes=[]; }
+      try{ pendentes = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g,''))))); }catch(e){ pendentes=[]; }
     } else if(resp.status !== 404){
       console.warn('GitHub leitura:', resp.status);
     }
@@ -2336,7 +2412,7 @@ async function _buscarHistColetaAprovada(){
       {headers:headers, cache:'no-store'});
     if(!resp.ok) return null;
     var meta = await resp.json();
-    var lista = JSON.parse(atob(meta.content.replace(/\n/g,'')));
+    var lista = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g,'')))));
     return Array.isArray(lista) ? lista : null;
   }catch(e){
     console.warn('Busca base aprovada do admin:', e.message);
