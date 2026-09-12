@@ -680,8 +680,8 @@
         "col4": "R$ 45,00 x 2",
         "col5": "R$ 90,00",
         "val": 90,
-        "prodId": "frango",
-        "nome": "Frango",
+        "prodId": "p1787993157009",
+        "nome": "Frango Vivo",
         "unidade": "unid",
         "qtd": 2,
         "preco": 45,
@@ -801,7 +801,7 @@
     "data": "2026-08-05",
     "itens": [
       {
-        "nome": "Frango",
+        "nome": "Frango Vivo",
         "col2": "Frango",
         "col1": "05/08/2026",
         "col3": "17 unid",
@@ -811,10 +811,11 @@
         "unidade": "unid",
         "preco": 37,
         "sub": 629,
-        "data": "05/08/2026"
+        "data": "05/08/2026",
+        "prodId": "p1787993157009"
       },
       {
-        "nome": "Frango",
+        "nome": "Frango Vivo",
         "col2": "Frango",
         "col1": "05/08/2026",
         "col3": "1 unid",
@@ -824,7 +825,8 @@
         "unidade": "unid",
         "preco": 45,
         "sub": 45,
-        "data": "05/08/2026"
+        "data": "05/08/2026",
+        "prodId": "p1787993157009"
       },
       {
         "nome": "Ovos de Capoeira",
@@ -1143,8 +1145,8 @@
         "col4": "R$ 40,00 x 6",
         "col5": "R$ 240,00",
         "val": 240,
-        "prodId": "frango",
-        "nome": "Frango",
+        "prodId": "p1787993157009",
+        "nome": "Frango Vivo",
         "unidade": "unid",
         "qtd": 6,
         "preco": 40,
@@ -2050,7 +2052,7 @@
         "prodId": "p1789066563591_0"
       },
       {
-        "nome": "Frango",
+        "nome": "Frango Vivo",
         "col2": "Frango",
         "col1": "19/06/2026",
         "col3": "5 Unidade",
@@ -2060,7 +2062,8 @@
         "unidade": "Unidade",
         "preco": 35,
         "sub": 175,
-        "data": "19/06/2026"
+        "data": "19/06/2026",
+        "prodId": "p1787993157009"
       }
     ],
     "total": 875,
