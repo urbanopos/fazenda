@@ -147,21 +147,6 @@
       ]
     },
     {
-      "id": "p1789066562691_0",
-      "setor": "Aviario",
-      "nome": "Frango",
-      "apresentacoes": [
-        {
-          "unid": "unid",
-          "preco": 0
-        },
-        {
-          "unid": "Unid.",
-          "preco": 50
-        }
-      ]
-    },
-    {
       "id": "p1789066565373_0",
       "setor": "Aviario",
       "nome": "Peru",
@@ -393,6 +378,21 @@
         {
           "unid": "sacos",
           "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066562691_0",
+      "setor": "Aviario",
+      "nome": "Frango",
+      "apresentacoes": [
+        {
+          "unid": "unid",
+          "preco": 0
+        },
+        {
+          "unid": "Unid.",
+          "preco": 50
         }
       ]
     }
