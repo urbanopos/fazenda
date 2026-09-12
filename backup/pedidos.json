@@ -2049,7 +2049,8 @@
         "unidade": "Unidade",
         "preco": 20,
         "sub": 200,
-        "data": "19/06/2026"
+        "data": "19/06/2026",
+        "prodId": "p_pintainha"
       },
       {
         "nome": "Pintainha",
@@ -2062,7 +2063,8 @@
         "unidade": "Unidade",
         "preco": 25,
         "sub": 125,
-        "data": "19/06/2026"
+        "data": "19/06/2026",
+        "prodId": "p_pintainha"
       },
       {
         "nome": "Pinto",
