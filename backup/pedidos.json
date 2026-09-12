@@ -1174,7 +1174,7 @@
         "col4": "R$ 25,00 x 10",
         "col5": "R$ 250,00",
         "val": 250,
-        "prodId": "pinto",
+        "prodId": "p1789066563591_0",
         "nome": "Pinto",
         "unidade": "unid",
         "qtd": 10,
@@ -2062,7 +2062,8 @@
         "unidade": "Unidade",
         "preco": 25,
         "sub": 375,
-        "data": "19/06/2026"
+        "data": "19/06/2026",
+        "prodId": "p1789066563591_0"
       },
       {
         "nome": "Frango",
