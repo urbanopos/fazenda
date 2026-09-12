@@ -582,7 +582,22 @@ input[type="password"]:-webkit-autofill{
   }
   .cad-lista .cad-item{ margin-bottom:0; }
   .cad-topo{ padding:18px 24px; }
-  .cad-rodape{ padding:16px 24px 24px; }
+  /* Botões de ação (Novo/Revisar/Unificar/Corrigir) ficam numa única linha
+     compacta logo abaixo das abas, em vez de empilhados no rodapé */
+  .cad-rodape{
+    padding:14px 24px 10px;
+    flex-direction:row !important;
+    flex-wrap:wrap;
+    align-items:stretch !important;
+    gap:8px;
+  }
+  .cad-rodape .cad-btn-add{
+    flex:1 1 auto;
+    width:auto;
+    padding:8px 14px;
+    font-size:11px;
+    white-space:nowrap;
+  }
 
   /* Formulário de coleta: card + lista de itens lado a lado, em vez de
      empilhados — aproveita a largura extra e evita rolagem vertical */
@@ -11561,7 +11576,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1463a3f3b83e';
+var _caFP = '54cd74c056b8';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -12028,7 +12043,7 @@ function _catalogoUnidadesPara(setor, nome){
       (p.apresentacoes||[]).forEach(function(a){
         // Se a apresentação tiver abas restritas, só entra se este setor
         // estiver na lista; sem restrição (campo ausente), aparece sempre.
-        if(Array.isArray(a.abas) && a.abas.indexOf(label)===-1) return;
+        if(Array.isArray(a.abas) && a.abas.length>0 && a.abas.indexOf(label)===-1) return;
         var u = (a.unid||'').trim();
         if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
       });
@@ -12764,9 +12779,11 @@ window.addEventListener('popstate', function(e){
 
 function _relogio(){
   var d = new Date();
-  document.getElementById('relogio').innerHTML =
-    d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'})+'<br>'+
+  var html = d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'})+'<br>'+
     d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('relogio').innerHTML = html;
+  var relCad = document.getElementById('relogio-cad');
+  if(relCad) relCad.innerHTML = html;
 }
 
 /* ---- CARD COLETA ---- */
@@ -13471,7 +13488,7 @@ function _renderVItens(){
       // como lista de opções — trocar a unidade também atualiza o preço.
       var prodSel = isEdit ? null : (_cadDados.produtos||[]).find(function(p){ return p.id===it.prodId; });
       var apresentacoes = (prodSel && prodSel.apresentacoes && prodSel.apresentacoes.length)
-        ? prodSel.apresentacoes.filter(function(a){ return !Array.isArray(a.abas) || a.abas.indexOf('Vendas')>-1; })
+        ? prodSel.apresentacoes.filter(function(a){ return !Array.isArray(a.abas) || a.abas.length===0 || a.abas.indexOf('Vendas')>-1; })
         : [];
       var campoUnidade;
       if(apresentacoes.length){
@@ -13517,7 +13534,7 @@ function setProdV(i,v){
   if(v && v!=='_edit'){
     var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===v; });
     var apresVendas = (prod && prod.apresentacoes)
-      ? prod.apresentacoes.filter(function(a){ return !Array.isArray(a.abas) || a.abas.indexOf('Vendas')>-1; })
+      ? prod.apresentacoes.filter(function(a){ return !Array.isArray(a.abas) || a.abas.length===0 || a.abas.indexOf('Vendas')>-1; })
       : [];
     if(apresVendas.length){
       _vItens[i].unidade = apresVendas[0].unid;
@@ -16030,7 +16047,7 @@ async function _verificarPendentes(){
     if(!resp.ok) return;
     var meta = await resp.json();
     var lista = [];
-    try{ lista = JSON.parse(atob(meta.content.replace(/\n/g,''))); }catch(e){}
+    try{ lista = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g,''))))); }catch(e){}
     var count = lista.filter(function(r){ return r.status==='pendente'; }).length;
     var badge = document.getElementById('badge-pendentes');
     if(badge){ badge.textContent=count; badge.style.display=count>0?'inline':'none'; }
@@ -16061,7 +16078,7 @@ async function abrirPendentes(){
     var meta = await resp.json();
     window._mpdSHA = meta.sha;
     var todos = [];
-    try{ todos = JSON.parse(atob(meta.content.replace(/\n/g,''))); }catch(e){}
+    try{ todos = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g,''))))); }catch(e){}
     window._mpdTodos = todos;
     var lista = todos.filter(function(r){ return r.status==='pendente'; });
     window._mpdLista = lista;
@@ -16188,7 +16205,7 @@ async function _ghLer(caminho){
     {headers:_bkpH(), cache:'no-store'});
   if(!r.ok) return null;
   var m = await r.json();
-  return JSON.parse(atob(m.content.replace(/\n/g,'')));
+  return JSON.parse(decodeURIComponent(escape(atob(m.content.replace(/\n/g,'')))));
 }
 
 function _bkpSetStatus(msg, cls){
@@ -17259,6 +17276,99 @@ async function _cadAdicionarCandidatoRevisao(i){
   _cadAbrirRevisaoCatalogo(); // atualiza a lista, removendo o item ja adicionado
 }
 
+/* Encontra itens de PEDIDOS antigos cujo prodId não aponta pra nenhum
+   produto existente hoje (foi apagado, nunca existiu, ou o pedido é de
+   antes da tabela única existir) — mesmo que o texto do nome pareça o
+   mesmo produto, sem essa referência eles ficam de fora da totalização
+   por produto. Deixa o admin vincular manualmente cada texto encontrado
+   ao produto certo, corrigindo todos os pedidos com esse texto de uma vez. */
+function _cadAbrirVinculoOrfaos(){
+  var cont = document.getElementById('cad-vinculo-orfaos');
+  var formCont = document.getElementById('cad-form-produtos');
+  if(formCont) formCont.style.display = 'none';
+  var revCont = document.getElementById('cad-revisao-catalogo');
+  if(revCont) revCont.style.display = 'none';
+  _cadEditIdx = -1;
+
+  var hist = _carregarHistRaw();
+  var idsValidos = {};
+  (_cadDados.produtos||[]).forEach(function(p){ idsValidos[p.id] = true; });
+
+  // Agrupa por texto do nome (sem diferenciar maiúsculas/minúsculas) —
+  // cada grupo representa um jeito diferente que esse item foi digitado
+  var grupos = {}; // chave: texto normalizado -> {textoOriginal, qtdPedidos}
+  hist.forEach(function(p){
+    (p.itens||[]).forEach(function(it){
+      var temIdValido = it.prodId && idsValidos[it.prodId];
+      if(!temIdValido && it.nome){
+        var chave = it.nome.trim().toLowerCase();
+        if(!grupos[chave]) grupos[chave] = { textoOriginal:it.nome.trim(), qtd:0 };
+        grupos[chave].qtd++;
+      }
+    });
+  });
+
+  var listaGrupos = Object.keys(grupos).map(function(k){ return grupos[k]; });
+  cont.style.display = 'block';
+
+  if(!listaGrupos.length){
+    cont.innerHTML = '<div class="cad-vazia" style="margin-top:12px">✅ Nenhum item de pedido antigo sem vínculo encontrado — tudo já está corretamente ligado a um produto.</div>';
+    return;
+  }
+
+  var optsProdutos = '<option value="">— Escolha o produto certo —</option>'
+    + (_cadDados.produtos||[]).map(function(p){ return '<option value="'+p.id+'">'+_escH(p.nome)+'</option>'; }).join('');
+
+  cont.innerHTML = '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--ce)">'
+    +'<div style="font-family:DM Mono,monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:10px">'
+    +listaGrupos.length+' texto(s) encontrados em pedidos sem vínculo com nenhum produto — escolha a qual produto cada um pertence:</div>'
+    +listaGrupos.map(function(g, i){
+      return '<div class="cad-item" style="flex-direction:column;align-items:stretch;gap:8px">'
+        +'<div class="cad-item-info">'
+        +'<div class="cad-item-nm">"'+_escH(g.textoOriginal)+'"</div>'
+        +'<div class="cad-item-det">aparece em '+g.qtd+' item(ns) de pedido</div>'
+        +'</div>'
+        +'<div style="display:flex;gap:8px">'
+        +'<select class="cad-inp" id="orfao-prod-'+i+'" style="flex:1">'+optsProdutos+'</select>'
+        +'<button class="cad-btn-ed" onclick="_cadVincularOrfao('+i+')">Vincular</button>'
+        +'</div></div>';
+    }).join('');
+  cont._grupos = listaGrupos;
+}
+
+async function _cadVincularOrfao(i){
+  var cont = document.getElementById('cad-vinculo-orfaos');
+  var g = cont._grupos && cont._grupos[i];
+  if(!g) return;
+  var sel = document.getElementById('orfao-prod-'+i);
+  var produtoId = sel ? sel.value : '';
+  if(!produtoId){ _toast('⚠️ Escolha o produto antes de vincular.'); return; }
+  var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===produtoId; });
+  if(!prod) return;
+
+  var textoAlvo = g.textoOriginal.trim().toLowerCase();
+  var hist = _carregarHistRaw();
+  var mudou = false;
+  hist.forEach(function(p){
+    (p.itens||[]).forEach(function(it){
+      if(it.nome && it.nome.trim().toLowerCase()===textoAlvo){
+        it.prodId = prod.id;
+        it.nome = prod.nome; // atualiza tambem o texto exibido pro nome atual do produto
+        mudou = true;
+      }
+    });
+  });
+  if(mudou){
+    var jp = JSON.stringify(hist);
+    try{ localStorage.setItem(HK, jp); }catch(e){}
+    if(_caOpfs) await _caOpfsSalvar(FSJ_PEDIDOS, jp);
+    _renderHist();
+    setTimeout(function(){ _sincronizarRegistrosGitHub().then(function(){ _fazerBackup(false); }); }, 800);
+  }
+  _toast('✅ "'+g.textoOriginal+'" vinculado a "'+prod.nome+'"! ('+g.qtd+' item(ns) corrigido(s))');
+  _cadAbrirVinculoOrfaos(); // atualiza a lista, removendo o grupo ja vinculado
+}
+
 /* Monta a área de "Apresentação" assim que um produto é escolhido no
    formulário de Preços — mostra as apresentações já existentes desse
    produto (pra editar o preço de uma delas) e a opção de adicionar uma
@@ -17343,8 +17453,15 @@ async function _cadSalvarItem(aba){
   var nome = (document.getElementById('cf-nome')||{value:''}).value.trim();
   var prodNome = (document.getElementById('cf-prodnome')||{value:''}).value.trim();
   if(aba==='produtos'){
+    // Preserva a configuração de "abas" de cada apresentação — esse campo
+    // é exclusivo da tela de Apresentação; salvar um produto por aqui
+    // (ex: só corrigindo o nome) nunca deve apagar essa configuração.
     var apresentacoesValidas = (_formApresentacoes||[]).filter(function(a){ return (a.unid||'').trim(); })
-      .map(function(a){ return {unid:a.unid.trim(), preco:parseFloat(a.preco)||0}; });
+      .map(function(a){
+        var obj = {unid:a.unid.trim(), preco:parseFloat(a.preco)||0};
+        if(Array.isArray(a.abas)) obj.abas = a.abas;
+        return obj;
+      });
     item = {
       id:   'p'+Date.now(),
       setor:(document.getElementById('cf-setor')||{value:''}).value.trim(),
@@ -17379,7 +17496,11 @@ async function _cadSalvarItem(aba){
     // nenhuma (comportamento padrão: aparece em qualquer lugar).
     var TODAS_ABAS = ['Aviario','Perda','Campo','Estoque','Vendas'];
     var chksMarcados = Array.prototype.slice.call(document.querySelectorAll('.cf-aba-chk:checked')).map(function(c){ return c.value; });
-    var abasEscolhidas = (chksMarcados.length===TODAS_ABAS.length) ? undefined : chksMarcados;
+    // "Todas marcadas" OU "nenhuma marcada" viram a mesma coisa: sem
+    // restrição (aparece em qualquer lugar). Isso evita que uma
+    // apresentação fique invisível em todo lugar por engano, caso o
+    // admin desmarque tudo sem perceber.
+    var abasEscolhidas = (chksMarcados.length===0 || chksMarcados.length===TODAS_ABAS.length) ? undefined : chksMarcados;
     if(!prod.apresentacoes) prod.apresentacoes = [];
     if(selApres && selApres.value !== '_nova'){
       // Editando o preço/abas de uma apresentação já existente do produto
@@ -17675,9 +17796,12 @@ async function _cadInit(){
 
 <!-- TELA CADASTROS -->
 <div class="cad-tela" id="cad-tela">
-  <div class="cad-topo">
-    <span class="cad-topo-t">📚 Cadastros</span>
-    <button class="cad-topo-x" onclick="_cadFechar()">✕</button>
+  <div class="topo">
+    <div class="topo-icon">🌿</div>
+    <div><div class="topo-t">Fazenda Sao Jose</div><div class="topo-s">Cadastros</div></div>
+    <button class="btn-inst" onclick="_cadFechar()" style="background:rgba(255,255,255,.12);color:#fff">✕ Fechar</button>
+    <div class="topo-d" id="relogio-cad">seg., 08 de jun.<br>05:34</div>
+    <div class="topo-r"><button class="topo-btn" title="Menu ColetaAut" onclick="_caAbrirMenu()">⋮</button></div>
   </div>
   <div class="cad-abas">
     <button class="cad-aba sel" onclick="_cadTrocaAba('produtos',this)">Produtos</button>
@@ -17687,13 +17811,15 @@ async function _cadInit(){
   </div>
   <!-- Produtos -->
   <div class="cad-painel vis" id="cad-p-produtos">
-    <div class="cad-lista" id="cad-lista-produtos"></div>
-    <div id="cad-form-produtos" style="display:none"></div>
     <div class="cad-rodape" style="flex-direction:column;gap:8px;align-items:stretch">
       <button class="cad-btn-add" onclick="_cadNovoForm('produtos')">+ Novo produto</button>
       <button class="cad-btn-add" style="background:#1e3a5f" onclick="_cadAbrirRevisaoCatalogo()">🔀 Revisar itens do catálogo de coleta</button>
       <button class="cad-btn-add" style="background:#7a3a00" onclick="_cadToggleUnificacao('produtos')" id="btn-toggle-unificacao-produtos">🔗 Unificar produtos duplicados</button>
+      <button class="cad-btn-add" style="background:#5a3a7a" onclick="_cadAbrirVinculoOrfaos()">🔧 Corrigir itens de pedidos antigos sem produto</button>
     </div>
+    <div class="cad-lista" id="cad-lista-produtos"></div>
+    <div id="cad-form-produtos" style="display:none"></div>
+    <div id="cad-vinculo-orfaos" style="display:none"></div>
     <div id="cad-revisao-catalogo" style="display:none"></div>
     <div id="cad-unificacao-barra-produtos" style="display:none;position:sticky;bottom:0;background:#fff;border-top:2px solid #7a3a00;padding:10px;margin-top:8px">
       <div style="font-size:11px;color:var(--mu);margin-bottom:6px" id="cad-unificacao-status-produtos">Selecione 2 ou mais produtos que sejam a mesma coisa</div>
@@ -17702,12 +17828,12 @@ async function _cadInit(){
   </div>
   <!-- Clientes -->
   <div class="cad-painel" id="cad-p-clientes">
-    <div class="cad-lista" id="cad-lista-clientes"></div>
-    <div id="cad-form-clientes" style="display:none"></div>
     <div class="cad-rodape" style="flex-direction:column;gap:8px;align-items:stretch">
       <button class="cad-btn-add" onclick="_cadNovoForm('clientes')">+ Novo cliente</button>
       <button class="cad-btn-add" style="background:#7a3a00" onclick="_cadToggleUnificacao('clientes')" id="btn-toggle-unificacao-clientes">🔗 Unificar clientes duplicados</button>
     </div>
+    <div class="cad-lista" id="cad-lista-clientes"></div>
+    <div id="cad-form-clientes" style="display:none"></div>
     <div id="cad-unificacao-barra-clientes" style="display:none;position:sticky;bottom:0;background:#fff;border-top:2px solid #7a3a00;padding:10px;margin-top:8px">
       <div style="font-size:11px;color:var(--mu);margin-bottom:6px" id="cad-unificacao-status-clientes">Selecione 2 ou mais clientes que sejam a mesma pessoa</div>
       <button class="cad-btn-add" style="background:#7a3a00" onclick="_cadUnificarSelecionados()" id="btn-unificar-confirmar-clientes" disabled>Unificar selecionados</button>
@@ -17715,19 +17841,19 @@ async function _cadInit(){
   </div>
   <!-- Fornecedores -->
   <div class="cad-painel" id="cad-p-fornecedores">
-    <div class="cad-lista" id="cad-lista-fornecedores"></div>
-    <div id="cad-form-fornecedores" style="display:none"></div>
     <div class="cad-rodape">
       <button class="cad-btn-add" onclick="_cadNovoForm('fornecedores')">+ Novo fornecedor</button>
     </div>
+    <div class="cad-lista" id="cad-lista-fornecedores"></div>
+    <div id="cad-form-fornecedores" style="display:none"></div>
   </div>
   <!-- Preços -->
   <div class="cad-painel" id="cad-p-precos">
-    <div class="cad-lista" id="cad-lista-precos"></div>
-    <div id="cad-form-precos" style="display:none"></div>
     <div class="cad-rodape">
       <button class="cad-btn-add" onclick="_cadNovoForm('precos')">+ Nova apresentação</button>
     </div>
+    <div class="cad-lista" id="cad-lista-precos"></div>
+    <div id="cad-form-precos" style="display:none"></div>
   </div>
 </div>
 
