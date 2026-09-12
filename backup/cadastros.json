@@ -76,22 +76,6 @@
       ]
     },
     {
-      "id": "p_esterco",
-      "setor": "Vendas",
-      "nome": "Esterco",
-      "unid": "Sc.",
-      "apresentacoes": [
-        {
-          "unid": "Sc.",
-          "preco": 15
-        },
-        {
-          "unid": "sacos",
-          "preco": 0
-        }
-      ]
-    },
-    {
       "id": "p_coco",
       "setor": "Vendas",
       "nome": "Coco Seco",
@@ -347,6 +331,14 @@
         {
           "unid": "Saco",
           "preco": 15
+        },
+        {
+          "unid": "Sc.",
+          "preco": 15
+        },
+        {
+          "unid": "sacos",
+          "preco": 0
         }
       ]
     },
@@ -384,6 +376,22 @@
       "apresentacoes": [
         {
           "unid": "cac.",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p_esterco",
+      "setor": "Vendas",
+      "nome": "Esterco",
+      "unid": "Sc.",
+      "apresentacoes": [
+        {
+          "unid": "Sc.",
+          "preco": 15
+        },
+        {
+          "unid": "sacos",
           "preco": 0
         }
       ]
