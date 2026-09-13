@@ -11411,7 +11411,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '5991dad80487';
+var _caFP = 'b363b3d04ee6';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -15203,7 +15203,7 @@ function _abrirEditColeta(ri){
 
   var itensHtml = '';
   (r.itens||[]).forEach(function(it, ii){
-    itensHtml += _linhaEditItemColeta(ri, ii, it.setor||'', it.nome||'', it.qtd||0, it.unid||'', it.tipo||'');
+    itensHtml += _linhaEditItemColeta(ri, ii, it.setor||'', it.nome||'', it.qtd||0, it.unid||'', it.tipo||'', it.forn||'');
   });
 
   var corpo = document.getElementById('modal-edit-coleta-corpo');
@@ -15232,7 +15232,7 @@ function _setorKeyFromLabel(label){
   return (label||'').toLowerCase(); // ultimo recurso
 }
 
-function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtual){
+function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtual, fornAtual){
   var setorKey = _setorKeyFromLabel(setor);
   var nomes = _catalogoNomesUnicos(setorKey);
   if(nomeAtual && nomes.indexOf(nomeAtual)===-1) nomes.push(nomeAtual); // preserva item legado fora do catalogo
@@ -15245,12 +15245,14 @@ function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtua
     return '<option value="'+_esc(u)+'"'+(u===unidAtual?' selected':'')+'>'+_esc(u)+'</option>';
   }).join('');
   var linhaTipo = '';
+  var linhaForn = '';
   if(setorKey === 'estoque'){
     var ehSaida = (tipoAtual === 'Saida');
     linhaTipo = '<div class="hcol-item-edit-tipo" style="display:flex;gap:16px;padding:4px 0 8px;font-size:13px">'
       +'<label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="hcol-ei-tipo-'+ri+'-'+ii+'" value="Entrada" id="hcol-ei-tipo-entrada-'+ri+'-'+ii+'"'+(!ehSaida?' checked':'')+' style="width:16px;height:16px;accent-color:#1a6b2a"> Entrada</label>'
       +'<label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="hcol-ei-tipo-'+ri+'-'+ii+'" value="Saida" id="hcol-ei-tipo-saida-'+ri+'-'+ii+'"'+(ehSaida?' checked':'')+' style="width:16px;height:16px;accent-color:#c0392b"> Saida</label>'
       +'</div>';
+    linhaForn = '<input class="hcol-edit-inp" style="flex:1 1 100%;width:100%;margin-top:4px" type="text" placeholder="Fornecedor..." list="fornecedores-datalist" value="'+_esc(fornAtual||'')+'" id="hcol-ei-forn-'+ri+'-'+ii+'">';
   }
   return '<div class="hcol-item-edit-wrap">'
     +'<div class="hcol-item-edit-row" style="flex-wrap:wrap">'
@@ -15260,6 +15262,7 @@ function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtua
     +'<select class="hcol-edit-inp" style="width:90px;min-width:90px;flex:none" id="hcol-ei-unid-'+ri+'-'+ii+'">'+optsUnid+'</select>'
     +'<button class="hcol-del-item" onclick="_delItemEditColeta('+ri+','+ii+')" title="Remover item">\u00d7</button>'
     +'</div>'
+    +linhaForn
     +linhaTipo
     +'</div>';
 }
@@ -15334,7 +15337,9 @@ function _salvarEditColeta(ri){
       var unid  = (document.getElementById('hcol-ei-unid-'+ri+'-'+ii)||{value:''}).value.trim();
       var tipoEl = document.querySelector('input[name="hcol-ei-tipo-'+ri+'-'+ii+'"]:checked');
       var tipo = tipoEl ? tipoEl.value : '';
-      if(nome) novosItens.push({setor:setor, nome:nome, qtd:qtd, unid:unid, tipo:tipo});
+      var fornEl = document.getElementById('hcol-ei-forn-'+ri+'-'+ii);
+      var forn = fornEl ? fornEl.value.trim() : '';
+      if(nome) novosItens.push({setor:setor, nome:nome, qtd:qtd, unid:unid, tipo:tipo, forn:forn});
     });
   }
 
