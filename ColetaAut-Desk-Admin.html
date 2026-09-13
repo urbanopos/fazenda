@@ -11587,7 +11587,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '4c80b15a33ba';
+var _caFP = '06f3a0388a52';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -13003,8 +13003,17 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt, opcoesExtra, f
   if(isPago) H += 22;                  // faixa quitação
   H += 8;                              // margem inferior
 
-  c.width = W;
-  c.height = H;
+  // Gera a imagem em resolução 3x maior que o "tamanho lógico" usado no
+  // desenho — sem isso, a imagem (420px de largura) fica borrada tanto na
+  // pré-visualização (que estica pra 100% do espaço disponível) quanto
+  // quando enviada pro WhatsApp do cliente, que pode abrir em qualquer
+  // aparelho com tela de alta densidade. Todo o código de desenho abaixo
+  // continua usando as mesmas coordenadas de sempre — o ctx.scale() já
+  // multiplica tudo automaticamente na hora de gravar os pixels de verdade.
+  var ESCALA_IMG = 3;
+  c.width = W*ESCALA_IMG;
+  c.height = H*ESCALA_IMG;
+  ctx.scale(ESCALA_IMG, ESCALA_IMG);
   var y = 0;
 
   function rect(x,yy,w,h,col){ ctx.fillStyle=col; ctx.fillRect(x,yy,w,h); }
@@ -13097,7 +13106,7 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt, opcoesExtra, f
   if(isPago){
     var agora = extra.dataQuit || new Date().toLocaleString('pt-BR');
     rect(0,y,W,22,'#e8f5e9');
-    txt('Quitado em '+agora,W/2,y+15,8,'#1a6b2a','bold','center');
+    txt('Quitado em '+agora,W/2,y+15,11,'#1a6b2a','bold','center');
     y+=22;
   }
 
@@ -15628,8 +15637,24 @@ function _mcqAbrir(ctx){
   var numEl  = document.getElementById('mcq-pedido-num');
   var infoEl = document.getElementById('mcq-pedido-info');
   if(numEl)  numEl.textContent  = p.num || '';
-  if(infoEl) infoEl.textContent = (p.cliente ? p.cliente : '(sem cliente)')
-    + (p.total ? ' — R$ ' + _fmt(p.total) : '');
+  if(infoEl){
+    infoEl.textContent = (p.cliente ? p.cliente : '(sem cliente)')
+      + (p.total ? ' — R$ ' + _fmt(p.total) : '');
+    // Remove um aviso anterior, se houver, antes de decidir se mostra um novo
+    var avisoAntigo = document.getElementById('mcq-aviso-data-futura');
+    if(avisoAntigo) avisoAntigo.remove();
+    // Se a data do pedido for no futuro, a quitação (sempre registrada com
+    // a data/hora de agora) ficaria ANTES da data de venda — avisa antes
+    // de confirmar, para evitar um registro sem sentido por engano.
+    var hojeIso = new Date().toISOString().slice(0,10);
+    if(p.data && p.data > hojeIso){
+      var aviso = document.createElement('div');
+      aviso.id = 'mcq-aviso-data-futura';
+      aviso.style.cssText = 'margin-top:8px;padding:8px;background:#fff3d6;border:1px solid #d4a94a;border-radius:6px;font-size:12px;color:#6b4f1a';
+      aviso.textContent = '⚠️ Este pedido está datado para ' + new Date(p.data+'T12:00').toLocaleDateString('pt-BR') + ' (no futuro). A quitação será registrada com a data de hoje, ficando ANTES da data do pedido.';
+      infoEl.parentNode.insertBefore(aviso, infoEl.nextSibling);
+    }
+  }
   document.getElementById('modal-conf-quit').classList.add('vis');
   _navPush('modal-conf-quit');
   setTimeout(function(){
@@ -15834,15 +15859,15 @@ function _dataQuitParaIso(str){
 }
 
 /* Reconstroi uma string de data de pagamento a partir de uma data ISO
-   (AAAA-MM-DD) + o horário original (se houver), preservando o formato
-   usado no comprovante e na tela. Se não houver horário original, usa
-   meio-dia como padrão. */
+   (AAAA-MM-DD) editada pelo admin — o horário usado é o momento exato em
+   que o botão "Salvar alteracoes" foi acionado (não o horário original da
+   primeira quitação), já que essa edição É o novo registro de quando o
+   ajuste foi feito. */
 function _isoParaDataQuit(iso, dataQuitOriginal){
   if(!iso) return dataQuitOriginal||'';
   var partes = iso.split('-');
   var dataFmt = partes[2]+'/'+partes[1]+'/'+partes[0];
-  var mHorario = /,\s*(\d{2}:\d{2}:\d{2})$/.exec(dataQuitOriginal||'');
-  var horario = mHorario ? mHorario[1] : '12:00:00';
+  var horario = new Date().toLocaleTimeString('pt-BR');
   return dataFmt+', '+horario;
 }
 
@@ -16069,6 +16094,14 @@ async function _salvarEditPedido(){
   }
   var novoTotal = novosItens.reduce(function(s,it){ return s+it.sub; },0);
   var novaDataPagamentoIso = (document.getElementById('mpe-data-pagamento')||{value:''}).value;
+  if(novaDataPagamentoIso && novaData && novaDataPagamentoIso < novaData){
+    var confirmou = confirm(
+      '⚠️ A data de pagamento ('+new Date(novaDataPagamentoIso+'T12:00').toLocaleDateString('pt-BR')+
+      ') é ANTERIOR à data do pedido ('+new Date(novaData+'T12:00').toLocaleDateString('pt-BR')+
+      ').\n\nIsso normalmente indica um erro de digitação. Deseja salvar mesmo assim?'
+    );
+    if(!confirmou) return;
+  }
 
   // Atualiza no localStorage
   var hist = _carregarHistRaw();
@@ -16087,10 +16120,11 @@ async function _salvarEditPedido(){
         // quitar de novo, revendo o novo valor).
         hist[idx].pago = false;
         delete hist[idx].dataQuit;
-      } else if(novaDataPagamentoIso){
-        // Só a data do pagamento foi ajustada (ex: corrigir um lançamento
-        // tardio) — o valor continua o mesmo, então a quitação permanece
-        // válida, só atualiza a data registrada.
+      } else if(novaDataPagamentoIso && novaDataPagamentoIso !== _dataQuitParaIso(hist[idx].dataQuit)){
+        // A data do pagamento foi de fato alterada (ex: corrigir um
+        // lançamento tardio) — o valor continua o mesmo, então a quitação
+        // permanece válida; grava a nova data com o horário exato deste
+        // salvamento (não o horário da quitação original).
         hist[idx].dataQuit = _isoParaDataQuit(novaDataPagamentoIso, hist[idx].dataQuit);
       }
     }
