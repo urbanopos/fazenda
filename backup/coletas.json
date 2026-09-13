@@ -5,11 +5,9 @@
     "itens": [
       {
         "setor": "Campo",
-        "nome": "Estacas de sabiÃ¡",
-        "unid": "Unid.",
+        "nome": "Estacas de sabiá",
         "qtd": 11,
-        "obs": "",
-        "forn": "",
+        "unid": "Unid.",
         "tipo": ""
       }
     ],
@@ -201,22 +199,6 @@
     "ts": 1788894367498
   },
   {
-    "data": "2026-09-08",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
-        "unid": "unid",
-        "qtd": 53,
-        "obs": "",
-        "forn": "",
-        "tipo": ""
-      }
-    ],
-    "ts": 1788872362449
-  },
-  {
     "data": "2026-09-07",
     "coletor": "Júnior",
     "itens": [
@@ -266,6 +248,20 @@
       }
     ],
     "ts": 1788802408782
+  },
+  {
+    "data": "2026-09-06",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "qtd": 53,
+        "unid": "unid",
+        "tipo": ""
+      }
+    ],
+    "ts": 1788872362449
   },
   {
     "data": "2026-09-06",
@@ -2471,21 +2467,21 @@
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "qtd": 35,
+        "qtd": 23,
         "unid": "sc 40kg",
         "tipo": "Entrada"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "qtd": 15,
+        "qtd": 12,
         "unid": "sc 40kg",
         "tipo": "Entrada"
       },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "qtd": 12,
+        "qtd": 7,
         "unid": "sc 40kg",
         "tipo": "Entrada"
       },
@@ -2506,7 +2502,7 @@
       {
         "setor": "Estoque",
         "nome": "Milho",
-        "qtd": 5,
+        "qtd": 3,
         "unid": "sc 40kg",
         "tipo": "Entrada"
       },
@@ -2520,7 +2516,7 @@
       {
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
-        "qtd": 2,
+        "qtd": 3,
         "unid": "sc 40kg",
         "tipo": "Saida"
       },
