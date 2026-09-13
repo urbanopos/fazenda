@@ -1113,6 +1113,17 @@ input[type="password"]:-webkit-autofill{
   </div>
 </div>
 
+<!-- MODAL EDITAR REGISTRO DE COLETA (popup, sobre o Histórico) -->
+<div id="modal-edit-coleta" onclick="_fecharEditColeta()" style="display:none;position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:20px;overflow-y:auto">
+  <div class="hcol-box" onclick="event.stopPropagation()" style="max-width:480px">
+    <div class="hcol-hd">
+      <div><div class="hcol-hd-t">Editar registro</div><div class="hcol-hd-s">Alterando dados já enviados</div></div>
+      <button class="hcol-x" onclick="_fecharEditColeta()">✕</button>
+    </div>
+    <div id="modal-edit-coleta-corpo" style="padding:14px 18px"></div>
+  </div>
+</div>
+
 <!-- MODAL VISUALIZACAO PEDIDO -->
 <div id="modal-ped" onclick="fecharModalPed()">
   <div class="mp-box" onclick="event.stopPropagation()">
@@ -11576,7 +11587,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = 'a452859c15e8';
+var _caFP = 'e84ac5e208eb';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -12704,6 +12715,7 @@ document.addEventListener('DOMContentLoaded', function(){
 var _navFechar = {
   'modal-ped'       : fecharModalPed,
   'modal-hcol'      : fecharHistColeta,
+  'modal-edit-coleta' : _fecharEditColeta,
   'modal-hist-pedidos' : fecharHistPedidos,
   'modal-rev-quit'  : _mrqFechar,
   'modal-conf-quit' : _mcqFechar,
@@ -15354,23 +15366,14 @@ function _abrirEditColeta(ri){
   var regs = body._regRefs;
   if(!regs || !regs[ri]) return;
   var r = regs[ri];
-  var div = document.getElementById('hcol-reg-'+ri);
-  if(!div) return;
-  // Fecha qualquer outro em edicao
-  var outros = body.querySelectorAll('.hcol-edit-form');
-  outros.forEach(function(o){ o.parentElement.querySelector('.hcol-edit-form') && _fecharEditColeta(o); });
 
   var itensHtml = '';
   (r.itens||[]).forEach(function(it, ii){
     itensHtml += _linhaEditItemColeta(ri, ii, it.setor||'', it.nome||'', it.qtd||0, it.unid||'', it.tipo||'');
   });
 
-  var form = document.createElement('div');
-  form.className = 'hcol-edit-form';
-  form.id = 'hcol-form-'+ri;
-  form.dataset.ri = ri;
-  form.dataset.nitens = (r.itens||[]).length;
-  form.innerHTML =
+  var corpo = document.getElementById('modal-edit-coleta-corpo');
+  corpo.innerHTML =
     '<div class="hcol-edit-row"><span class="hcol-edit-lbl">Data</span>'
     +'<input class="hcol-edit-inp" type="date" id="hcol-ei-data-'+ri+'" value="'+(r.data||'')+'"></div>'
     +'<div class="hcol-edit-row"><span class="hcol-edit-lbl">Coletor</span>'
@@ -15380,8 +15383,11 @@ function _abrirEditColeta(ri){
     +'<button style="width:100%;margin-top:8px;padding:7px;background:rgba(184,148,63,.1);border:1px dashed var(--ac);border-radius:6px;color:var(--ac);font-family:DM Mono,monospace;font-size:11px;cursor:pointer" onclick="_addItemEditColeta('+ri+')">'
     +'+ Adicionar item</button>'
     +'<button class="hcol-edit-save" onclick="_salvarEditColeta('+ri+')">Salvar alteracoes</button>'
-    +'<button class="hcol-edit-cancel" onclick="_fecharEditColeta(document.getElementById(\'hcol-form-'+ri+'\'))">Cancelar</button>';
-  div.appendChild(form);
+    +'<button class="hcol-edit-cancel" onclick="_fecharEditColeta()">Cancelar</button>';
+
+  var modal = document.getElementById('modal-edit-coleta');
+  modal.style.display = 'flex';
+  _navPush('modal-edit-coleta');
 }
 
 function _setorKeyFromLabel(label){
@@ -15435,8 +15441,12 @@ function _onMudarNomeEditColeta(ri, ii){
 
 function _esc(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 
-function _fecharEditColeta(form){
-  if(form && form.parentElement) form.parentElement.removeChild(form);
+function _fecharEditColeta(){
+  var modal = document.getElementById('modal-edit-coleta');
+  modal.style.display = 'none';
+  document.getElementById('modal-edit-coleta-corpo').innerHTML = '';
+  var idx = _navPilha.indexOf('modal-edit-coleta');
+  if(idx >= 0){ _navPilha.splice(idx,1); history.replaceState({navSentinel:true},''); }
 }
 
 function _delItemEditColeta(ri, ii){
@@ -15515,9 +15525,8 @@ function _salvarEditColeta(ri){
   setTimeout(function(){ _sincronizarRegistrosGitHub().then(function(){ _fazerBackup(false); }); }, 800);
 
   _toast('\u2705 Registro atualizado!');
-  // Fecha form e re-renderiza
-  var form = document.getElementById('hcol-form-'+ri);
-  _fecharEditColeta(form);
+  // Fecha o popup e re-renderiza a lista por trás
+  _fecharEditColeta();
   renderHistColeta();
 }
 
