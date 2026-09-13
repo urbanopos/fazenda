@@ -11410,7 +11410,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '041220bb1920';
+var _caFP = 'aa39ee4433e5';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -13778,7 +13778,7 @@ function _renderHPedDetalhe(lista, pedidos){
       +'<div>'
       +'<div class="hist-num">'+p.num+(p.pago?'<span class="hist-pago-badge">PAGO</span>':'')+'</div>'
       +'<div class="hist-cli">'+(p.cliente||'(sem cliente)')+'</div>'
-      +'<div class="hist-det">'+dtFmt+' &middot; '+nItens+' item(ns)</div>'
+      +'<div class="hist-det">'+dtFmt+' &middot; '+nItens+' item(ns)'+(p.pago && p.dataQuit?' &middot; Pago em '+p.dataQuit.split(',')[0]:'')+'</div>'
       +'</div>'
       +'<div class="hist-tot">R$ '+_fmt(p.total)+'</div>'
       +'</div>'
@@ -13816,7 +13816,8 @@ function _renderModalPedConteudo(p){
   document.getElementById('mp-meta').innerHTML =
     '<div class="mp-meta-item"><span class="mp-meta-lbl">Data</span><span class="mp-meta-val">'+dtFmt+'</span></div>'
     +'<div class="mp-meta-item"><span class="mp-meta-lbl">Cliente</span><span class="mp-meta-val">'+(p.cliente||'—')+'</span></div>'
-    +'<div class="mp-meta-item"><span class="mp-meta-lbl">Itens</span><span class="mp-meta-val">'+(p.itens?p.itens.length:0)+'</span></div>';
+    +'<div class="mp-meta-item"><span class="mp-meta-lbl">Itens</span><span class="mp-meta-val">'+(p.itens?p.itens.length:0)+'</span></div>'
+    +(p.pago && p.dataQuit ? '<div class="mp-meta-item"><span class="mp-meta-lbl">Pago em</span><span class="mp-meta-val">'+p.dataQuit.split(',')[0]+'</span></div>' : '');
   document.getElementById('mp-linhas').innerHTML = (p.itens||[]).map(function(it){
     return '<div class="mp-linha">'
       +'<div style="flex:1">'
@@ -15623,6 +15624,11 @@ function _abrirEditPedido(){
     +'<div style="flex:1.4"><span class="mp-edit-lbl">Cliente</span>'
     +'<input class="mp-edit-inp" id="mpe-cliente" value="'+_esc(p.cliente||'')+'"></div>'
     +'</div>'
+    +(p.pago
+      ? '<div class="mp-edit-row-2col"><div style="flex:1">'
+        +'<span class="mp-edit-lbl">Data do pagamento</span>'
+        +'<input class="mp-edit-inp" type="date" id="mpe-data-pagamento" value="'+_dataQuitParaIso(p.dataQuit)+'"></div></div>'
+      : '')
     +'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;'
     +'color:var(--mu);margin:8px 0 4px">Itens · cada item pode ter sua propria data</div>'
     +'<div id="mpe-itens">'+itensHtml+'</div>'
@@ -15640,6 +15646,27 @@ function _abrirEditPedido(){
 function _brParaIso(str){
   var m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(str||'');
   return m ? (m[3]+'-'+m[2]+'-'+m[1]) : '';
+}
+
+/* Converte a data de pagamento salva (toLocaleString('pt-BR'), ex:
+   "13/09/2026, 06:03:00") para "AAAA-MM-DD", extraindo só a parte da data —
+   o horário exato do pagamento não é editável, só o dia. */
+function _dataQuitParaIso(str){
+  var m = /^(\d{2})\/(\d{2})\/(\d{4})/.exec(str||'');
+  return m ? (m[3]+'-'+m[2]+'-'+m[1]) : '';
+}
+
+/* Reconstroi uma string de data de pagamento a partir de uma data ISO
+   (AAAA-MM-DD) + o horário original (se houver), preservando o formato
+   usado no comprovante e na tela. Se não houver horário original, usa
+   meio-dia como padrão. */
+function _isoParaDataQuit(iso, dataQuitOriginal){
+  if(!iso) return dataQuitOriginal||'';
+  var partes = iso.split('-');
+  var dataFmt = partes[2]+'/'+partes[1]+'/'+partes[0];
+  var mHorario = /,\s*(\d{2}:\d{2}:\d{2})$/.exec(dataQuitOriginal||'');
+  var horario = mHorario ? mHorario[1] : '12:00:00';
+  return dataFmt+', '+horario;
 }
 
 /* Monta o campo de "Item": um <select> com os produtos do cadastro (para
@@ -15864,19 +15891,31 @@ async function _salvarEditPedido(){
     });
   }
   var novoTotal = novosItens.reduce(function(s,it){ return s+it.sub; },0);
+  var novaDataPagamentoIso = (document.getElementById('mpe-data-pagamento')||{value:''}).value;
 
   // Atualiza no localStorage
   var hist = _carregarHistRaw();
   var idx = hist.findIndex(function(p){ return p.ts === _pedAtual.ts; });
   if(idx >= 0){
+    var totalAntesDaEdicao = hist[idx].total;
     hist[idx].data    = novaData;
     hist[idx].cliente = novoCliente;
     hist[idx].itens   = novosItens;
     hist[idx].total   = novoTotal;
     if(hist[idx].pago){
-      // Pedido editado depois de quitado — volta ao inicio (precisa quitar de novo)
-      hist[idx].pago = false;
-      delete hist[idx].dataQuit;
+      var valorMudou = Math.round(totalAntesDaEdicao*100) !== Math.round(novoTotal*100);
+      if(valorMudou){
+        // O valor total mudou depois de já ter sido quitado — a quitação
+        // não reflete mais o valor certo, então volta ao início (precisa
+        // quitar de novo, revendo o novo valor).
+        hist[idx].pago = false;
+        delete hist[idx].dataQuit;
+      } else if(novaDataPagamentoIso){
+        // Só a data do pagamento foi ajustada (ex: corrigir um lançamento
+        // tardio) — o valor continua o mesmo, então a quitação permanece
+        // válida, só atualiza a data registrada.
+        hist[idx].dataQuit = _isoParaDataQuit(novaDataPagamentoIso, hist[idx].dataQuit);
+      }
     }
     _pedAtual = hist[idx];
     await _gravarHist(hist);
