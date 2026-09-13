@@ -1003,7 +1003,8 @@ input[type="password"]:-webkit-autofill{
       </button>
     </div>
   </div>
-  <div class="div"></div>
+</div>
+<div class="div"></div>
   <div id="wrap-pendentes-btn" style="margin-bottom:8px">
     <button onclick="abrirPendentes()" style="width:100%;padding:12px 0;border:2px solid #1a6b2a;border-radius:var(--r);background:rgba(26,107,42,.08);color:#1a6b2a;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer">
       📥 Coletas Pendentes <span id="badge-pendentes" style="display:none;background:#1a6b2a;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;margin-left:4px"></span>
@@ -11410,7 +11411,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1259ab395fcd';
+var _caFP = '1ad3edaece85';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
