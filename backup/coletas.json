@@ -1,5 +1,37 @@
 [
   {
+    "data": "2026-09-13",
+    "coletor": "Junior Desk",
+    "itens": [
+      {
+        "setor": "Perda",
+        "nome": "Pintainha",
+        "unid": "unid",
+        "qtd": 2,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1789335846258
+  },
+  {
+    "data": "2026-09-13",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Ração de peixe",
+        "unid": "Sc 25kg",
+        "qtd": 1,
+        "obs": "",
+        "forn": "Irca",
+        "tipo": "Saida"
+      }
+    ],
+    "ts": 1789323252643
+  },
+  {
     "data": "2026-09-12",
     "coletor": "Menininha",
     "itens": [
@@ -21,7 +53,7 @@
     "itens": [
       {
         "setor": "Campo",
-        "nome": "Estacas de sabiÃ¡",
+        "nome": "Estacas de sabiá",
         "unid": "Unid.",
         "qtd": 11,
         "obs": "",
