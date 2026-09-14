@@ -4,7 +4,6 @@
       "id": "p_ovo",
       "setor": "Vendas",
       "nome": "Ovos de Capoeira",
-      "unid": "",
       "apresentacoes": [
         {
           "unid": "Bandeja c/30 ovos",
@@ -13,10 +12,6 @@
         {
           "unid": "Unid.",
           "preco": 1
-        },
-        {
-          "unid": "unid",
-          "preco": 0
         }
       ]
     },
