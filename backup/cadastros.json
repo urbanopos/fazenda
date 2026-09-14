@@ -101,15 +101,16 @@
       "id": "p_abacate",
       "setor": "Vendas",
       "nome": "Abacate",
-      "unid": "",
       "apresentacoes": [
         {
           "unid": "Caixa",
-          "preco": 0
+          "preco": 0,
+          "fornecedor": "Fazenda São José"
         },
         {
           "unid": "unid",
-          "preco": 0
+          "preco": 0,
+          "fornecedor": "Fazenda São José"
         }
       ]
     },
