@@ -12255,7 +12255,6 @@ function _cardColetaSetor(setor, cl, forn){
   var opts = nomes.map(function(n){
     return '<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/</g,'&lt;')+'</option>';
   }).join('');
-  var fH = forn ? '<div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-'+k+'" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div>' : '';
   return '<div class="pc at pc-edit'+(cl?' '+cl:'')+'" id="card-'+k+'" style="cursor:default">'
     +'<div class="pbd" style="display:block;padding:16px 14px" id="body-'+k+'">'
 
@@ -12289,26 +12288,100 @@ function _cardColetaSetor(setor, cl, forn){
     +'</div>'
     +'<div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obsnovo-'+k+'" placeholder="Detalhes sobre este item..."></textarea></div>'
     +'<div class="card-acoes"><button class="btn-con" onclick="_cadastrarItemCatalogo(\''+setor+'\')" style="background:#1a6b2a">Cadastrar item</button></div>'
+    +'<div style="font-size:11px;color:var(--mu);margin-top:6px">Isso cria só o nome/unidade no menu de coleta. Para definir Fornecedor e Preço, cadastre a apresentação em <strong>Cadastros → Produtos</strong>.</div>'
     +'</div>'
 
     +'<div id="wrap-coleta-'+k+'" style="display:none">'
-    +'<div class="cg"><span class="cl">Unidade</span><div id="unid-wrap-'+k+'">'
-    +'<input type="text" id="eunid-'+k+'" value="" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">'
-    +'</div></div>'
+    +'<div class="cg"><span class="cl">Apresentação</span><div id="apres-wrap-'+k+'"></div></div>'
+    +'<input type="hidden" id="eunid-'+k+'" value="">'
+    +'<input type="hidden" id="epreco-'+k+'" value="0">'
 
+    +'<div id="apres-campos-'+k+'" style="display:none">'
     +'<div class="cg"><span class="cl">Quantidade</span>'
     +'<div class="step" style="display:flex;align-items:center;gap:6px">'
     +'<button class="sb" onclick="stepQ(\''+k+'\',1,-1)">-</button>'
     +'<input class="si" type="number" id="qtd-'+k+'" inputmode="decimal" min="0" step="1" value="0" onkeypress="if(event.key===\'Enter\'){_adicionarItemSessao(\''+setor+'\');return false;}">'
     +'<button class="sb" onclick="stepQ(\''+k+'\',1,1)">+</button>'
     +'</div></div>'
-    +fH
+    +'<div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-'+k+'" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:15px;box-sizing:border-box;background:#f0ede6"></div>'
+    +'<div class="cg"><span class="cl">Preço (R$)</span><input type="text" id="preco-vis-'+k+'" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6"></div>'
     +'<div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-'+k+'" placeholder="Ex: lote A, qualidade boa..."></textarea></div>'
     +'<div class="card-acoes"><button class="btn-con" onclick="_adicionarItemSessao(\''+setor+'\')">+ Adicionar item</button></div>'
+    +'</div>'
     +'</div>'
 
     +'</div></div>'
     +'<div id="lista-'+setor+'" style="margin-top:12px"></div>';
+}
+
+/* Apresentações (unidade+fornecedor+preço) cadastradas para este item,
+   dentro deste setor — nunca cai para o catálogo antigo (que não tem
+   fornecedor/preço): se não houver nada cadastrado, a coleta fica
+   bloqueada até o Admin cadastrar em Cadastros → Produtos. */
+function _catalogoApresentacoesPara(setor, nome){
+  var label = (SETORES[setor]||{}).label || setor;
+  var alvo = String(nome).trim().toLowerCase();
+  var out = [];
+  (_cadDados.produtos||[]).forEach(function(p){
+    if(p.setor===label && p.nome.trim().toLowerCase()===alvo){
+      (p.apresentacoes||[]).forEach(function(a){
+        if(Array.isArray(a.abas) && a.abas.length>0 && a.abas.indexOf(label)===-1) return;
+        out.push({unid:(a.unid||'').trim(), preco:Number(a.preco)||0, fornecedor:a.fornecedor||''});
+      });
+    }
+  });
+  return out;
+}
+
+function _labelApres(a){
+  var partes = [a.unid||'—'];
+  if(a.fornecedor) partes.push(a.fornecedor);
+  partes.push(a.preco ? 'R$ '+_fmt(a.preco) : 'sem preço');
+  return partes.join(' — ');
+}
+
+function _montarApresentacaoColeta(setor, nome){
+  var k = setor+'_novo';
+  var apresWrap = document.getElementById('apres-wrap-'+k);
+  var camposWrap = document.getElementById('apres-campos-'+k);
+  if(!apresWrap || !camposWrap) return;
+  var apres = _catalogoApresentacoesPara(setor, nome);
+  if(!apres.length){
+    apresWrap.innerHTML = '<div style="font-size:12px;color:#a03030;background:#fde8e8;border:1px solid #f5c6c6;border-radius:6px;padding:8px 10px;line-height:1.4">⚠️ Sem apresentação cadastrada para este item.<br>Cadastre unidade, fornecedor e preço em <strong>Cadastros → Produtos</strong> antes de registrar.</div>';
+    camposWrap.style.display = 'none';
+    return;
+  }
+  if(apres.length === 1){
+    apresWrap.innerHTML = '<input type="text" readonly value="'+_escH(_labelApres(apres[0]))+'" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">';
+    _aplicarApresentacaoColeta(k, apres[0]);
+  } else {
+    var optsA = apres.map(function(a,i){ return '<option value="'+i+'">'+_escH(_labelApres(a))+'</option>'; }).join('');
+    apresWrap.innerHTML = '<select id="apres-sel-'+k+'" onchange="_onApresColetaChange(\''+setor+'\')" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#fff">'+optsA+'</select>';
+    apresWrap._apres = apres;
+    _aplicarApresentacaoColeta(k, apres[0]);
+  }
+  camposWrap.style.display = 'block';
+}
+
+function _onApresColetaChange(setor){
+  var k = setor+'_novo';
+  var apresWrap = document.getElementById('apres-wrap-'+k);
+  var sel = document.getElementById('apres-sel-'+k);
+  if(!apresWrap || !sel) return;
+  var apres = apresWrap._apres || [];
+  var a = apres[parseInt(sel.value,10)];
+  if(a) _aplicarApresentacaoColeta(k, a);
+}
+
+function _aplicarApresentacaoColeta(k, a){
+  var eunid = document.getElementById('eunid-'+k);
+  var eforn = document.getElementById('for-'+k);
+  var precoVis = document.getElementById('preco-vis-'+k);
+  var precoHid = document.getElementById('epreco-'+k);
+  if(eunid) eunid.value = a.unid||'';
+  if(eforn) eforn.value = a.fornecedor||'—';
+  if(precoVis) precoVis.value = a.preco ? 'R$ '+_fmt(a.preco) : '—';
+  if(precoHid) precoHid.value = a.preco||0;
 }
 
 function _onSelecionarItem(setor){
@@ -12318,7 +12391,6 @@ function _onSelecionarItem(setor){
   var wrapColeta = document.getElementById('wrap-coleta-'+k);
   var nomeEl = document.getElementById('enome-'+k);
   var nomeVisEl = document.getElementById('nomevis-'+k);
-  var unidWrap = document.getElementById('unid-wrap-'+k);
   var btnDel = document.getElementById('del-cat-'+k);
   if(!sel) return;
   var val = sel.value;
@@ -12332,19 +12404,12 @@ function _onSelecionarItem(setor){
     var obsNovoEl = document.getElementById('obsnovo-'+k); if(obsNovoEl) obsNovoEl.value='';
     setTimeout(function(){ var el=document.getElementById('nomevis-'+k); if(el) el.focus(); }, 50);
   } else if(val){
-    // Item existente — mostra a(s) unidade(s) ja cadastradas + quantidade, para registrar a coleta
+    // Item existente — mostra a(s) apresentacao(oes) ja cadastradas + quantidade, para registrar a coleta
     wrapNovo.style.display = 'none';
     wrapColeta.style.display = 'block';
     if(btnDel) btnDel.style.display = '';
     nomeEl.value = val;
-    var unidades = _catalogoUnidadesPara(setor, val);
-    if(unidades.length > 1){
-      // Mais de uma apresentacao cadastrada — mostra como lista de opcoes
-      var opts = unidades.map(function(u){ return '<option value="'+u.replace(/"/g,'&quot;')+'">'+u.replace(/</g,'&lt;')+'</option>'; }).join('');
-      unidWrap.innerHTML = '<select id="eunid-'+k+'" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#fff">'+opts+'</select>';
-    } else {
-      unidWrap.innerHTML = '<input type="text" id="eunid-'+k+'" value="'+(unidades[0]||'unid')+'" readonly style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">';
-    }
+    _montarApresentacaoColeta(setor, val);
   } else {
     wrapNovo.style.display = 'none';
     wrapColeta.style.display = 'none';
@@ -12408,14 +12473,21 @@ function _adicionarItemSessao(setor){
   var nomeEl = document.getElementById('enome-'+k);
   var qtdEl  = document.getElementById('qtd-'+k);
   var unidEl = document.getElementById('eunid-'+k);
+  var precoEl = document.getElementById('epreco-'+k);
   var obsEl  = document.getElementById('obs-'+k);
   var forEl  = document.getElementById('for-'+k);
   var nome = (nomeEl?nomeEl.value:'').trim();
   var qtd  = parseFloat(qtdEl?qtdEl.value:0)||0;
   var unid = (unidEl?unidEl.value:'').trim()||'unid';
+  var preco = parseFloat(precoEl?precoEl.value:0)||0;
   if(!nome){ _toast('Selecione um item da lista.'); return; }
+  if(!_catalogoApresentacoesPara(setor, nome).length){
+    _toast('⚠️ Sem apresentação cadastrada para este item. Cadastre em Cadastros → Produtos.');
+    return;
+  }
   if(qtd<=0){ _toast('Informe a quantidade antes de adicionar.'); return; }
   var forn = (forEl?forEl.value:'')||'';
+  if(forn==='—') forn='';
   var obs  = (obsEl?obsEl.value:'')||'';
   var tipo = '';
   if(setor==='estoque'){
@@ -12423,13 +12495,12 @@ function _adicionarItemSessao(setor){
     tipo = tipoEl ? tipoEl.value : 'Entrada';
   }
   _sessaoInit();
-  _sessaoItens[setor].push({nome:nome, unid:unid, qtd:qtd, obs:obs.trim(), forn:forn.trim(), tipo:tipo});
+  _sessaoItens[setor].push({nome:nome, unid:unid, qtd:qtd, preco:preco, obs:obs.trim(), forn:forn.trim(), tipo:tipo});
   // Limpa o formulario para o proximo item
   var sel = document.getElementById('sel-'+k);
   var wrapColeta = document.getElementById('wrap-coleta-'+k);
   qtdEl.value=0;
   if(obsEl) obsEl.value='';
-  if(forEl) forEl.value='';
   var tipoEntradaEl = document.getElementById('tipo-entrada-'+k);
   if(tipoEntradaEl) tipoEntradaEl.checked = true;
   if(wrapColeta) wrapColeta.style.display='none';
@@ -12457,7 +12528,7 @@ function _renderListaSessao(setor){
   cont.innerHTML = itens.map(function(it,i){
     var tagTipo = it.tipo ? ' <span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:'+(it.tipo==='Saida'?'#f8d7d7;color:#c0392b':'#d7f0dd;color:#1a6b2a')+'">'+it.tipo.toUpperCase()+'</span>' : '';
     return '<div style="display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid #e6ddd0;border-radius:8px;padding:10px 12px;margin-bottom:6px">'
-      +'<div><strong>'+it.nome+'</strong>'+tagTipo+'<br><span style="font-size:12px;color:#999">'+it.qtd+' '+it.unid+(it.forn?' &middot; '+it.forn:'')+(it.obs?' &middot; '+it.obs:'')+'</span></div>'
+      +'<div><strong>'+it.nome+'</strong>'+tagTipo+'<br><span style="font-size:12px;color:#999">'+it.qtd+' '+it.unid+(it.forn?' &middot; '+it.forn:'')+(it.preco?' &middot; R$ '+_fmt(it.preco):'')+(it.obs?' &middot; '+it.obs:'')+'</span></div>'
       +'<button onclick="_removerItemSessao(\''+setor+'\','+i+')" style="background:none;border:none;color:#c0392b;font-size:18px;cursor:pointer;padding:4px 8px" title="Remover">\uD83D\uDDD1</button>'
       +'</div>';
   }).join('');
@@ -12768,7 +12839,7 @@ function _coletarItens(){
   Object.keys(SETORES).forEach(function(setor){
     var cfg = SETORES[setor];
     (_sessaoItens[setor]||[]).forEach(function(it){
-      itens.push({setor:cfg.label, nome:it.nome, unid:it.unid, qtd:it.qtd, obs:it.obs, forn:it.forn, tipo:it.tipo||''});
+      itens.push({setor:cfg.label, nome:it.nome, unid:it.unid, qtd:it.qtd, preco:it.preco||0, obs:it.obs, forn:it.forn, tipo:it.tipo||''});
     });
   });
   return itens;
@@ -14077,7 +14148,7 @@ function _gerarPDFEspelhoTela(){
       y += 4.5;
 
       itensVisiveis.forEach(function(it){
-        novaPaginaSeNecessario(10);
+        novaPaginaSeNecessario((it.forn||it.preco) ? 14 : 10);
         var cor = CORES_PDF[it.setor] || [0,0,0];
         var nomeExib = setorFiltro ? it.nome : it.setor+' - '+it.nome;
         doc.setFontSize(9); doc.setTextColor(0);
@@ -14086,6 +14157,15 @@ function _gerarPDFEspelhoTela(){
         doc.text(String(it.qtd)+' '+it.unid, pageW-margin, y, {align:'right'});
         doc.setFont('helvetica','normal'); doc.setTextColor(0);
         y += 5.5;
+        if(it.forn || it.preco){
+          var detalheLinha = [];
+          if(it.forn) detalheLinha.push(it.forn);
+          if(it.preco) detalheLinha.push('R$ '+_fmt(it.preco));
+          doc.setFontSize(7.5); doc.setTextColor(120);
+          doc.text(detalheLinha.join(' · '), margin+2, y);
+          doc.setTextColor(0);
+          y += 4;
+        }
       });
       y += 3;
     });
@@ -15143,9 +15223,11 @@ function _renderHistColetaDetalhe(body, registros, setorFiltro){
     itensVisiveis.forEach(function(it){
       var cor = COR_SETOR[it.setor] || 'var(--vd)';
       var nomeExib = setorFiltro ? it.nome : it.setor+' · '+it.nome;
+      if(it.forn) nomeExib += ' <span style="font-weight:400;color:#999;font-size:11px">('+it.forn+')</span>';
+      var qtdExib = it.qtd+' '+it.unid+(it.preco?' · R$ '+_fmt(it.preco):'');
       html += '<div class="hcol-entrada-item">'
         +'<span>'+nomeExib+'</span>'
-        +'<span style="font-weight:700;color:'+cor+'">'+it.qtd+' '+it.unid+'</span>'
+        +'<span style="font-weight:700;color:'+cor+'">'+qtdExib+'</span>'
         +'</div>';
     });
     // Linha de botões
@@ -15203,7 +15285,7 @@ function _abrirEditColeta(ri){
 
   var itensHtml = '';
   (r.itens||[]).forEach(function(it, ii){
-    itensHtml += _linhaEditItemColeta(ri, ii, it.setor||'', it.nome||'', it.qtd||0, it.unid||'', it.tipo||'', it.forn||'');
+    itensHtml += _linhaEditItemColeta(ri, ii, it.setor||'', it.nome||'', it.qtd||0, it.unid||'', it.tipo||'', it.forn||'', it.preco||0);
   });
 
   var corpo = document.getElementById('modal-edit-coleta-corpo');
@@ -15232,48 +15314,101 @@ function _setorKeyFromLabel(label){
   return (label||'').toLowerCase(); // ultimo recurso
 }
 
-function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtual, fornAtual){
+function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtual, fornAtual, precoAtual){
   var setorKey = _setorKeyFromLabel(setor);
   var nomes = _catalogoNomesUnicos(setorKey);
   if(nomeAtual && nomes.indexOf(nomeAtual)===-1) nomes.push(nomeAtual); // preserva item legado fora do catalogo
   var optsNome = nomes.map(function(n){
     return '<option value="'+_esc(n)+'"'+(n===nomeAtual?' selected':'')+'>'+_esc(n)+'</option>';
   }).join('');
-  var unidades = _catalogoUnidadesPara(setorKey, nomeAtual);
-  if(unidAtual && unidades.indexOf(unidAtual)===-1) unidades.push(unidAtual); // preserva unidade legada
-  var optsUnid = unidades.map(function(u){
-    return '<option value="'+_esc(u)+'"'+(u===unidAtual?' selected':'')+'>'+_esc(u)+'</option>';
-  }).join('');
+
   var linhaTipo = '';
-  var linhaForn = '';
   if(setorKey === 'estoque'){
     var ehSaida = (tipoAtual === 'Saida');
     linhaTipo = '<div class="hcol-item-edit-tipo" style="display:flex;gap:16px;padding:4px 0 8px;font-size:13px">'
       +'<label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="hcol-ei-tipo-'+ri+'-'+ii+'" value="Entrada" id="hcol-ei-tipo-entrada-'+ri+'-'+ii+'"'+(!ehSaida?' checked':'')+' style="width:16px;height:16px;accent-color:#1a6b2a"> Entrada</label>'
       +'<label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="hcol-ei-tipo-'+ri+'-'+ii+'" value="Saida" id="hcol-ei-tipo-saida-'+ri+'-'+ii+'"'+(ehSaida?' checked':'')+' style="width:16px;height:16px;accent-color:#c0392b"> Saida</label>'
       +'</div>';
-    linhaForn = '<input class="hcol-edit-inp" style="flex:1 1 100%;width:100%;margin-top:4px" type="text" placeholder="Fornecedor..." list="fornecedores-datalist" value="'+_esc(fornAtual||'')+'" id="hcol-ei-forn-'+ri+'-'+ii+'">';
   }
+
+  // Apresentações (unid+fornecedor+preço) cadastradas para este nome — se
+  // existirem, usa o mesmo padrão do formulário de registro; senão, cai no
+  // comportamento antigo (unidade solta, sem fornecedor/preço amarrados).
+  var apres = nomeAtual ? _catalogoApresentacoesPara(setorKey, nomeAtual) : [];
+  var blocoApresUnid, linhaForn;
+  if(apres.length){
+    var idxMatch = 0;
+    for(var i=0;i<apres.length;i++){
+      if((apres[i].unid||'').toLowerCase() === (unidAtual||'').toLowerCase()){ idxMatch = i; break; }
+    }
+    var optsApres = apres.map(function(a,ai){
+      return '<option value="'+ai+'"'+(ai===idxMatch?' selected':'')+'>'+_esc(_labelApres(a))+'</option>';
+    }).join('');
+    blocoApresUnid =
+      '<select class="hcol-edit-inp" style="flex:1 1 100%;width:100%" id="hcol-ei-apres-'+ri+'-'+ii+'" onchange="_onApresEditColetaChange('+ri+','+ii+')">'+optsApres+'</select>'
+      +'<input type="hidden" id="hcol-ei-unid-'+ri+'-'+ii+'" value="'+_esc(apres[idxMatch].unid||'')+'">'
+      +'<input type="hidden" id="hcol-ei-preco-'+ri+'-'+ii+'" value="'+(apres[idxMatch].preco||0)+'">';
+    linhaForn = '<input class="hcol-edit-inp" style="flex:1 1 100%;width:100%;margin-top:4px" type="text" readonly value="'+_esc(apres[idxMatch].fornecedor||'—')+'" id="hcol-ei-forn-'+ri+'-'+ii+'">';
+  } else {
+    var unidades = _catalogoUnidadesPara(setorKey, nomeAtual);
+    if(unidAtual && unidades.indexOf(unidAtual)===-1) unidades.push(unidAtual);
+    var optsUnid = unidades.map(function(u){
+      return '<option value="'+_esc(u)+'"'+(u===unidAtual?' selected':'')+'>'+_esc(u)+'</option>';
+    }).join('');
+    blocoApresUnid =
+      '<select class="hcol-edit-inp" style="flex:1 1 100%;width:100%" id="hcol-ei-unid-'+ri+'-'+ii+'">'+optsUnid+'</select>'
+      +'<input type="hidden" id="hcol-ei-preco-'+ri+'-'+ii+'" value="'+(precoAtual||0)+'">';
+    linhaForn = (setorKey==='estoque')
+      ? '<input class="hcol-edit-inp" style="flex:1 1 100%;width:100%;margin-top:4px" type="text" placeholder="Fornecedor..." list="fornecedores-datalist" value="'+_esc(fornAtual||'')+'" id="hcol-ei-forn-'+ri+'-'+ii+'">'
+      : '<input type="hidden" id="hcol-ei-forn-'+ri+'-'+ii+'" value="'+_esc(fornAtual||'')+'">';
+    if(nomeAtual){
+      linhaForn += '<div style="font-size:11px;color:#a03030;margin-top:4px">⚠️ Sem apresentação cadastrada para este item — fornecedor/preço não ficam amarrados até cadastrar em Cadastros → Produtos.</div>';
+    }
+  }
+
   return '<div class="hcol-item-edit-wrap">'
     +'<div class="hcol-item-edit-row" style="flex-wrap:wrap">'
     +'<input type="hidden" value="'+_esc(setor)+'" id="hcol-ei-setor-'+ri+'-'+ii+'">'
     +'<select class="hcol-edit-inp" style="flex:1 1 100%;width:100%" id="hcol-ei-nome-'+ri+'-'+ii+'" onchange="_onMudarNomeEditColeta('+ri+','+ii+')">'+optsNome+'</select>'
     +'<input class="hcol-edit-inp" style="width:70px;min-width:70px;flex:none" type="number" min="0" step="0.5" placeholder="Qtd" value="'+qtd+'" id="hcol-ei-qtd-'+ri+'-'+ii+'">'
-    +'<select class="hcol-edit-inp" style="width:90px;min-width:90px;flex:none" id="hcol-ei-unid-'+ri+'-'+ii+'">'+optsUnid+'</select>'
     +'<button class="hcol-del-item" onclick="_delItemEditColeta('+ri+','+ii+')" title="Remover item">\u00d7</button>'
     +'</div>'
+    +'<div class="hcol-item-edit-row" style="flex-wrap:wrap;margin-top:4px">'+blocoApresUnid+'</div>'
     +linhaForn
     +linhaTipo
     +'</div>';
 }
 
+function _onApresEditColetaChange(ri, ii){
+  var setorEl = document.getElementById('hcol-ei-setor-'+ri+'-'+ii);
+  var nomeEl  = document.getElementById('hcol-ei-nome-'+ri+'-'+ii);
+  var apresEl = document.getElementById('hcol-ei-apres-'+ri+'-'+ii);
+  var unidHid = document.getElementById('hcol-ei-unid-'+ri+'-'+ii);
+  var precoHid = document.getElementById('hcol-ei-preco-'+ri+'-'+ii);
+  var fornEl = document.getElementById('hcol-ei-forn-'+ri+'-'+ii);
+  if(!setorEl || !nomeEl || !apresEl) return;
+  var apres = _catalogoApresentacoesPara(_setorKeyFromLabel(setorEl.value), nomeEl.value);
+  var a = apres[parseInt(apresEl.value,10)];
+  if(!a) return;
+  if(unidHid) unidHid.value = a.unid||'';
+  if(precoHid) precoHid.value = a.preco||0;
+  if(fornEl) fornEl.value = a.fornecedor||'—';
+}
+
 function _onMudarNomeEditColeta(ri, ii){
   var setorEl = document.getElementById('hcol-ei-setor-'+ri+'-'+ii);
   var nomeEl  = document.getElementById('hcol-ei-nome-'+ri+'-'+ii);
-  var unidEl  = document.getElementById('hcol-ei-unid-'+ri+'-'+ii);
-  if(!setorEl || !nomeEl || !unidEl) return;
-  var unidades = _catalogoUnidadesPara(_setorKeyFromLabel(setorEl.value), nomeEl.value);
-  unidEl.innerHTML = unidades.map(function(u){ return '<option value="'+_esc(u)+'">'+_esc(u)+'</option>'; }).join('');
+  if(!setorEl || !nomeEl) return;
+  var rowWrap = nomeEl.closest('.hcol-item-edit-wrap');
+  if(!rowWrap) return;
+  var qtdEl = document.getElementById('hcol-ei-qtd-'+ri+'-'+ii);
+  var qtd = qtdEl ? qtdEl.value : 0;
+  var tipoEl = document.querySelector('input[name="hcol-ei-tipo-'+ri+'-'+ii+'"]:checked');
+  var tipo = tipoEl ? tipoEl.value : '';
+  var novoHtml = _linhaEditItemColeta(ri, ii, setorEl.value, nomeEl.value, qtd, '', tipo, '', 0);
+  var temp = document.createElement('div');
+  temp.innerHTML = novoHtml;
+  rowWrap.parentElement.replaceChild(temp.firstElementChild, rowWrap);
 }
 
 function _esc(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
@@ -15339,7 +15474,10 @@ function _salvarEditColeta(ri){
       var tipo = tipoEl ? tipoEl.value : '';
       var fornEl = document.getElementById('hcol-ei-forn-'+ri+'-'+ii);
       var forn = fornEl ? fornEl.value.trim() : '';
-      if(nome) novosItens.push({setor:setor, nome:nome, qtd:qtd, unid:unid, tipo:tipo, forn:forn});
+      if(forn==='—') forn='';
+      var precoEl = document.getElementById('hcol-ei-preco-'+ri+'-'+ii);
+      var preco = precoEl ? parseFloat(precoEl.value)||0 : 0;
+      if(nome) novosItens.push({setor:setor, nome:nome, qtd:qtd, unid:unid, tipo:tipo, forn:forn, preco:preco});
     });
   }
 
@@ -17020,7 +17158,7 @@ function _cadRenderAba(aba){
     var linhas = [];
     (_cadDados.produtos||[]).forEach(function(p){
       (p.apresentacoes||[]).forEach(function(a, ai){
-        linhas.push({prodId:p.id, prodNome:p.nome, apresIdx:ai, unid:a.unid, preco:a.preco});
+        linhas.push({prodId:p.id, prodNome:p.nome, apresIdx:ai, unid:a.unid, preco:a.preco, fornecedor:a.fornecedor||''});
       });
     });
     linhas.sort(function(x,y){
@@ -17032,7 +17170,7 @@ function _cadRenderAba(aba){
       return;
     }
     lista.innerHTML = linhas.map(function(l){
-      var det = l.unid+(l.preco?' · R$ '+Number(l.preco).toFixed(2).replace('.',','):' · sem preço definido');
+      var det = l.unid+(l.preco?' · R$ '+Number(l.preco).toFixed(2).replace('.',','):' · sem preço definido')+(l.fornecedor?' · '+l.fornecedor:'');
       return '<div class="cad-item">'
         +'<div class="cad-item-info">'
         +'<div class="cad-item-nm">'+_escH(l.prodNome)+'</div>'
@@ -17063,7 +17201,7 @@ function _cadRenderAba(aba){
     var det = '';
     if(aba==='produtos'){
       var resumoApres = (it.apresentacoes||[]).map(function(a){
-        return a.unid+(a.preco?' (R$ '+Number(a.preco).toFixed(2).replace('.',',')+')':'');
+        return a.unid+(a.preco?' (R$ '+Number(a.preco).toFixed(2).replace('.',',')+')':'')+(a.fornecedor?' — '+a.fornecedor:'');
       }).join(' · ');
       det = (it.setor||'')+(resumoApres?' · '+resumoApres:(it.unid?' · '+it.unid:''));
     }
@@ -17132,7 +17270,7 @@ function _cadMostrarForm(aba, dados){
   if(aba==='produtos'){
     _formApresentacoes = (d.apresentacoes && d.apresentacoes.length)
       ? JSON.parse(JSON.stringify(d.apresentacoes))
-      : [{unid:d.unid||'', preco:0}];
+      : [{unid:d.unid||'', preco:0, fornecedor:''}];
     campos =
       '<div><label class="cad-inp-lbl">Setor</label>'
       +'<input class="cad-inp" id="cf-setor" placeholder="ex: Aviário" value="'+_escH(d.setor||'')+'" list="cad-setores-list"></div>'
@@ -17195,15 +17333,16 @@ function _cadRenderApresentacoes(){
   var cont = document.getElementById('cad-apresentacoes-lista');
   if(!cont) return;
   cont.innerHTML = _formApresentacoes.map(function(a, i){
-    return '<div style="display:flex;gap:8px;margin-bottom:6px;align-items:center">'
-      +'<input class="cad-inp" style="flex:1" placeholder="unid, kg, sc 40kg..." value="'+_escH(a.unid||'')+'" oninput="_formApresentacoes['+i+'].unid=this.value">'
+    return '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;align-items:center">'
+      +'<input class="cad-inp" style="flex:1;min-width:110px" placeholder="unid, kg, sc 40kg..." value="'+_escH(a.unid||'')+'" oninput="_formApresentacoes['+i+'].unid=this.value">'
       +'<input class="cad-inp" style="width:110px" type="number" min="0" step="0.01" placeholder="Preço R$" value="'+(a.preco||'')+'" oninput="_formApresentacoes['+i+'].preco=parseFloat(this.value)||0">'
+      +'<input class="cad-inp" style="flex:1;min-width:130px" placeholder="Fornecedor (opcional)" list="fornecedores-datalist" value="'+_escH(a.fornecedor||'')+'" oninput="_formApresentacoes['+i+'].fornecedor=this.value">'
       +(_formApresentacoes.length>1 ? '<button type="button" onclick="_cadRemoverApresentacao('+i+')" style="background:none;border:none;color:#c0392b;font-size:18px;cursor:pointer;padding:0 4px">×</button>' : '<span style="width:26px"></span>')
       +'</div>';
   }).join('');
 }
 function _cadAdicionarApresentacao(){
-  _formApresentacoes.push({unid:'', preco:0});
+  _formApresentacoes.push({unid:'', preco:0, fornecedor:''});
   _cadRenderApresentacoes();
 }
 function _cadRemoverApresentacao(i){
@@ -17252,6 +17391,7 @@ function _cadAbrirRevisaoCatalogo(){
         +'<div class="cad-item-det">'+_escH(c.setor)+' · '+_escH(c.unid)+'</div>'
         +'</div>'
         +'<input type="number" min="0" step="0.01" placeholder="Preço R$" id="revpreco-'+i+'" style="width:80px;padding:6px;border:1px solid #ddd;border-radius:6px;font-size:13px;margin-right:6px">'
+        +'<input type="text" placeholder="Fornecedor" list="fornecedores-datalist" id="revforn-'+i+'" style="width:110px;padding:6px;border:1px solid #ddd;border-radius:6px;font-size:13px;margin-right:6px">'
         +'<button class="cad-btn-ed" onclick="_cadAdicionarCandidatoRevisao('+i+')" title="Adicionar ao cadastro">+ Adicionar</button>'
         +'</div>';
     }).join('');
@@ -17264,18 +17404,22 @@ async function _cadAdicionarCandidatoRevisao(i){
   if(!c) return;
   var precoEl = document.getElementById('revpreco-'+i);
   var preco = precoEl ? (parseFloat(precoEl.value)||0) : 0;
+  var fornEl = document.getElementById('revforn-'+i);
+  var forn = fornEl ? fornEl.value.trim() : '';
+  var novaApres = { unid:c.unid, preco:preco };
+  if(forn) novaApres.fornecedor = forn;
 
   var nomeNorm = (c.nome||'').trim().toLowerCase();
   var prod = (_cadDados.produtos||[]).find(function(p){ return (p.nome||'').trim().toLowerCase()===nomeNorm; });
   if(prod){
     if(!prod.apresentacoes) prod.apresentacoes = [];
-    prod.apresentacoes.push({ unid:c.unid, preco:preco });
+    prod.apresentacoes.push(novaApres);
   } else {
     _cadDados.produtos.push({
       id: 'p'+Date.now()+'_'+i,
       setor: c.setor,
       nome: c.nome,
-      apresentacoes: [{ unid:c.unid, preco:preco }]
+      apresentacoes: [novaApres]
     });
   }
   await _cadSalvar();
@@ -17423,6 +17567,8 @@ function _cadPrecoMontarApresentacoes(dPre){
     +'<div style="flex:1"><label class="cad-inp-lbl">Preço (R$)</label>'
     +'<input class="cad-inp" id="cf-preco" type="number" min="0" step="0.01" placeholder="0,00"></div>'
     +'</div>'
+    +'<div style="margin-top:8px"><label class="cad-inp-lbl">Fornecedor (opcional)</label>'
+    +'<input class="cad-inp" id="cf-fornecedor" placeholder="Nome do fornecedor..." list="fornecedores-datalist"></div>'
     +'<div style="margin-top:10px"><label class="cad-inp-lbl">Aparece nas abas</label>'
     +'<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">'+abasCheckboxes+'</div></div>';
   // Se estiver editando um item de preco existente, ja seleciona a apresentacao certa
@@ -17444,6 +17590,7 @@ function _cadPrecoApresChange(){
   var selApres = document.getElementById('cf-apres-select');
   var unidNovaWrap = document.getElementById('cf-unid-nova-wrap');
   var precoInp = document.getElementById('cf-preco');
+  var fornInp = document.getElementById('cf-fornecedor');
   if(!selProd || !selApres) return;
   var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===selProd.value; });
   var chks = document.querySelectorAll('.cf-aba-chk');
@@ -17451,11 +17598,13 @@ function _cadPrecoApresChange(){
     if(unidNovaWrap) unidNovaWrap.style.display = 'block';
     document.getElementById('cf-unid-nova').value = '';
     precoInp.value = '';
+    if(fornInp) fornInp.value = '';
     chks.forEach(function(c){ c.checked = true; }); // padrão: aparece em todas as abas
   } else {
     var apres = prod && prod.apresentacoes && prod.apresentacoes[parseInt(selApres.value,10)];
     if(unidNovaWrap) unidNovaWrap.style.display = 'none';
     precoInp.value = apres ? (apres.preco||'') : '';
+    if(fornInp) fornInp.value = apres ? (apres.fornecedor||'') : '';
     // Se a apresentação já tem abas salvas, marca só essas; se nunca teve
     // essa informação (apresentação antiga), marca todas — mantendo o
     // comportamento de sempre aparecer em qualquer lugar.
@@ -17482,6 +17631,7 @@ async function _cadSalvarItem(aba){
     var apresentacoesValidas = (_formApresentacoes||[]).filter(function(a){ return (a.unid||'').trim(); })
       .map(function(a){
         var obj = {unid:a.unid.trim(), preco:parseFloat(a.preco)||0};
+        if((a.fornecedor||'').trim()) obj.fornecedor = a.fornecedor.trim();
         if(Array.isArray(a.abas)) obj.abas = a.abas;
         return obj;
       });
@@ -17515,6 +17665,7 @@ async function _cadSalvarItem(aba){
     if(!prod){ _toast('\u26a0\ufe0f Escolha um produto'); return; }
     var selApres = document.getElementById('cf-apres-select');
     var precoVal = parseFloat((document.getElementById('cf-preco')||{value:0}).value)||0;
+    var fornVal = (document.getElementById('cf-fornecedor')||{value:''}).value.trim();
     var TODAS_ABAS = ['Aviario','Perda','Campo','Estoque','Vendas'];
     var chksMarcados = Array.prototype.slice.call(document.querySelectorAll('.cf-aba-chk:checked')).map(function(c){ return c.value; });
     var abasEscolhidas = (chksMarcados.length===0 || chksMarcados.length===TODAS_ABAS.length) ? undefined : chksMarcados;
@@ -17524,6 +17675,8 @@ async function _cadSalvarItem(aba){
       var idxA = parseInt(selApres.value,10);
       if(prod.apresentacoes[idxA]){
         prod.apresentacoes[idxA].preco = precoVal;
+        if(fornVal) prod.apresentacoes[idxA].fornecedor = fornVal;
+        else delete prod.apresentacoes[idxA].fornecedor;
         if(abasEscolhidas) prod.apresentacoes[idxA].abas = abasEscolhidas;
         else delete prod.apresentacoes[idxA].abas;
       }
@@ -17532,6 +17685,7 @@ async function _cadSalvarItem(aba){
       var unidNova = (document.getElementById('cf-unid-nova')||{value:''}).value.trim();
       if(!unidNova){ _toast('\u26a0\ufe0f Informe a unidade/apresentação'); return; }
       var novaApres = {unid:unidNova, preco:precoVal};
+      if(fornVal) novaApres.fornecedor = fornVal;
       if(abasEscolhidas) novaApres.abas = abasEscolhidas;
       prod.apresentacoes.push(novaApres);
     }
