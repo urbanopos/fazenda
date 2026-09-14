@@ -2238,24 +2238,31 @@
         "nome": "Crescimento",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida"
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
-        "unid": "Sc 40kg",
-        "tipo": "Saida"
+        "unid": "sc 40kg",
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 2,
-        "unid": "Se 40kg",
-        "tipo": "Saida"
+        "unid": "sc 40kg",
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
       }
     ],
-    "ts": 1781090425770
+    "ts": 1781090425770,
+    "mov": "MOV-0009"
   },
   {
     "data": "2026-07-02",
