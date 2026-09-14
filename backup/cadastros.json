@@ -377,12 +377,12 @@
     {
       "id": "p_esterco",
       "setor": "Vendas",
-      "nome": "Esterco",
-      "unid": "Sc.",
+      "nome": "Esterco de Galinha",
       "apresentacoes": [
         {
           "unid": "Sc.",
-          "preco": 15
+          "preco": 15,
+          "fornecedor": "Fazenda São José"
         },
         {
           "unid": "sacos",
