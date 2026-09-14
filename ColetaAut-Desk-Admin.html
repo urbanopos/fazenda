@@ -1047,7 +1047,6 @@ input[type="password"]:-webkit-autofill{
         <select class="hcol-sel" id="hcol-visao" onchange="renderHistColeta()">
           <option value="total">Totalizacao por item</option>
           <option value="detalhe">Registros detalhados</option>
-          <option value="mov">Movimentacoes (MOV-XXXX)</option>
         </select>
       </div>
       <div>
@@ -13238,7 +13237,7 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt, opcoesExtra, f
 var _qrPayloadAtual = null;
 
 /* ---- INTEGRACAO COM GRANJA ---- */
-function _gerarPayloadColeta(itensParam){
+function _gerarPayloadColeta(itensParam, movRegistro){
   var itens = itensParam || _coletarItens();
   if(!itens.length) return null;
   var data = document.getElementById('data-global').value||_dataLocalHoje();
@@ -13255,11 +13254,11 @@ function _gerarPayloadColeta(itensParam){
         unid: it.unid,
         qtd: it.qtd,
         forn: it.forn||'',
-        obs: it.obs||'',
-        mov: it.mov||''
+        obs: it.obs||''
       };
     })
   };
+  if(movRegistro) payload.mov = movRegistro;
   return payload;
 }
 
@@ -13302,10 +13301,10 @@ function _gerarLinkImportacao(payload){
         var o = {setor:it.setor, nome:it.nome, unid:it.unid, qtd:it.qtd};
         if(it.forn && it.forn.trim()) o.forn = it.forn.trim();
         if(it.obs  && it.obs.trim())  o.obs  = it.obs.trim();
-        if(it.mov) o.mov = it.mov;
         return o;
       })
     };
+    if(payload.mov)     p.mov     = payload.mov;
     if(payload.numPed)  p.numPed  = payload.numPed;
     if(payload.cliente) p.cliente = payload.cliente;
     if(payload.total)   p.total   = payload.total;
@@ -13353,35 +13352,25 @@ function _mostrarConfirmacaoEnvio(blob, nomeArquivo, numeroWpp){
   };
 }
 
-/* Atribui MOV-XXXX sequencial a cada item de Estoque (Entrada ou Saída)
-   que ainda não tenha um — nunca reatribui a quem já tem (preserva o
-   número original em edições). O número reflete o maior já visto em
-   TODO o histórico sincronizado, igual ao padrão já usado no PED-XXXX
-   de Vendas, para reduzir colisão entre aparelhos diferentes. */
-function _atribuirNumerosMov(itens){
+/* Atribui UM MOV-XXXX sequencial ao REGISTRO inteiro (a movimentação —
+   ou seja, a coleta enviada naquela data/hora), e não a cada item dentro
+   dele — só quando o registro tem ao menos um item de Estoque. Nunca
+   reatribui quem já tem (preserva o número original em edições). O
+   número reflete o maior já visto em TODO o histórico sincronizado,
+   igual ao padrão já usado no PED-XXXX de Vendas. */
+function _atribuirNumeroMovRegistro(reg){
+  var temEstoque = (reg.itens||[]).some(function(it){ return it.setor==='Estoque'; });
+  if(!temEstoque || reg.mov) return reg;
   var hist = _carregarHistColetaRaw();
   var maior = 0;
   hist.forEach(function(r){
-    (r.itens||[]).forEach(function(it){
-      if(it.mov){
-        var m = String(it.mov).match(/(\d+)/);
-        if(m){ var n = parseInt(m[1],10); if(n>maior) maior = n; }
-      }
-    });
-  });
-  itens.forEach(function(it){
-    if(it.mov){
-      var m2 = String(it.mov).match(/(\d+)/);
-      if(m2){ var n2 = parseInt(m2[1],10); if(n2>maior) maior = n2; }
+    if(r.mov){
+      var m = String(r.mov).match(/(\d+)/);
+      if(m){ var n = parseInt(m[1],10); if(n>maior) maior = n; }
     }
   });
-  itens.forEach(function(it){
-    if(it.setor==='Estoque' && !it.mov){
-      maior++;
-      it.mov = 'MOV-'+String(maior).padStart(4,'0');
-    }
-  });
-  return itens;
+  reg.mov = 'MOV-'+String(maior+1).padStart(4,'0');
+  return reg;
 }
 
 function enviarTudo(){
@@ -13390,22 +13379,21 @@ function enviarTudo(){
   var n = _getNum();
   if(!n){ _toast('Numero nao configurado. Contacte o administrador.'); return; }
 
-  _atribuirNumerosMov(itens);
-
   // GRAVA coleta no historico (antes de limpar)
   var _dataColeta = document.getElementById('data-global').value||_dataLocalHoje();
   var _nomeColeta = (localStorage.getItem('wpp_nome')||'').trim();
-  _salvarColeta({data:_dataColeta, coletor:_nomeColeta, itens:itens, ts:Date.now()});
+  var _regColeta = {data:_dataColeta, coletor:_nomeColeta, itens:itens, ts:Date.now()};
+  _atribuirNumeroMovRegistro(_regColeta);
+  _salvarColeta(_regColeta);
 
   // Link de importacao guardado localmente — NAO vai na mensagem enviada
-  var payload = _gerarPayloadColeta(itens);
+  var payload = _gerarPayloadColeta(itens, _regColeta.mov);
   var linkImport = payload ? _gerarLinkImportacao(payload) : null;
   if(linkImport) try{ localStorage.setItem('fsj_last_import', linkImport); }catch(e){}
 
   var linhas = [];
   itens.forEach(function(it){
-    var nomeExib = it.mov ? it.nome+' ('+it.mov+')' : it.nome;
-    linhas.push({col1:it.setor, col2:nomeExib, col3:it.qtd+' '+it.unid, col4:'', val:0});
+    linhas.push({col1:it.setor, col2:it.nome, col3:it.qtd+' '+it.unid, col4:'', val:0});
     if(it.forn) linhas[linhas.length-1].col4 = it.forn;
   });
 
@@ -13427,7 +13415,7 @@ function enviarTudo(){
   }
 
   _qrPayloadAtual = payload; // QR na imagem usa este payload
-  _gerarImagem('BOLETIM DE COLETA', linhas, null, function(blob){
+  _gerarImagem('BOLETIM DE COLETA'+(_regColeta.mov?' · '+_regColeta.mov:''), linhas, null, function(blob){
     if(!blob){ _toast('Erro ao gerar imagem.'); return; }
     var data = document.getElementById('data-global').value||_dataLocalHoje();
     var nome = (localStorage.getItem('wpp_nome')||'').trim();
@@ -14353,11 +14341,12 @@ function _gerarPDFEspelhoTela(){
       var tipoUnico = tiposPresentes.length && tiposPresentes.every(function(t){ return t===tiposPresentes[0]; }) ? tiposPresentes[0] : null;
 
       doc.setFont('helvetica','bold'); doc.setFontSize(10);
-      doc.text(dtFmt, margin, y);
+      var dtComMov = r.mov ? dtFmt+' '+r.mov : dtFmt;
+      doc.text(dtComMov, margin, y);
       if(tipoUnico){
-        var larguraData = doc.getTextWidth(dtFmt);
+        var larguraData = doc.getTextWidth(dtComMov);
         doc.setTextColor(tipoUnico==='Saida'?192:30, tipoUnico==='Saida'?57:95, tipoUnico==='Saida'?43:191);
-        doc.text(tipoUnico==='Saida'?'Saida':'Entrada', margin+larguraData+4, y);
+        doc.text(tipoUnico==='Saida'?'- Saida':'- Entrada', margin+larguraData+4, y);
       }
       doc.setTextColor(0); doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(120);
       doc.text(r.coletor||'', pageW-margin, y, {align:'right'});
@@ -14367,7 +14356,7 @@ function _gerarPDFEspelhoTela(){
       y += 4.5;
 
       itensVisiveis.forEach(function(it){
-        novaPaginaSeNecessario((it.forn||it.preco||it.mov) ? 14 : 10);
+        novaPaginaSeNecessario((it.forn||it.preco) ? 14 : 10);
         var cor = CORES_PDF[it.setor] || [0,0,0];
         var nomeExib = setorFiltro ? it.nome : it.setor+' - '+it.nome;
         doc.setFontSize(9); doc.setTextColor(0);
@@ -14376,9 +14365,8 @@ function _gerarPDFEspelhoTela(){
         doc.text(String(it.qtd)+' '+it.unid, pageW-margin, y, {align:'right'});
         doc.setFont('helvetica','normal'); doc.setTextColor(0);
         y += 5.5;
-        if(it.forn || it.preco || it.mov){
+        if(it.forn || it.preco){
           var detalheLinha = [];
-          if(it.mov) detalheLinha.push(it.mov);
           if(it.forn) detalheLinha.push(it.forn);
           if(it.preco) detalheLinha.push('R$ '+_fmt(it.preco));
           doc.setFontSize(7.5); doc.setTextColor(120);
@@ -15102,7 +15090,7 @@ function _gerarRelatorioPDF(setorLabel, anoFiltro, mesFiltro){
       if(!setorLabel && (it.setor||'') === 'Estoque') return; // Estoque tem relatório próprio (kardex mensal) — não entra no relatório geral
       novaLinhaSeNecessario();
       qtdRegistros++;
-      doc.text(dataFmt, colX.data, y);
+      doc.text(mostrarTipo && r.mov ? dataFmt+' '+r.mov : dataFmt, colX.data, y);
       doc.text(String(r.coletor||'-').slice(0,14), colX.coletor, y);
       doc.text(String(it.nome||'').slice(0,mostrarTipo?18:24), colX.item, y);
       if(mostrarTipo) doc.text(it.tipo==='Saida' ? 'Saida' : 'Entrada', colX.tipo, y);
@@ -15278,69 +15266,9 @@ function renderHistColeta(){
 
   if(visao==='total'){
     _renderHistColetaTotal(body, filtrado, ano, mes, setor);
-  } else if(visao==='mov'){
-    _renderHistColetaMovimentacoes(body, filtrado, setor);
   } else {
     _renderHistColetaDetalhe(body, filtrado, setor);
   }
-}
-
-/* Lista "achatada" de cada movimentação de Estoque (uma linha por item,
-   não por registro) ordenada do MOV-XXXX mais alto (mais recente) para o
-   mais baixo — pensada pra conferir manualmente o saldo, achar duplicatas
-   ou lançamentos fora de ordem. Só entram itens que já têm número
-   atribuído (setor Estoque); registros antigos sem MOV ficam de fora. */
-function _renderHistColetaMovimentacoes(body, registros, setorFiltro){
-  var linhas = [];
-  registros.forEach(function(r){
-    (r.itens||[]).forEach(function(it){
-      if((it.setor||'')!=='Estoque') return;
-      if(setorFiltro && setorFiltro!=='Estoque') return;
-      var movMatch = it.mov ? String(it.mov).match(/(\d+)/) : null;
-      linhas.push({
-        mov: it.mov||'',
-        movNum: movMatch ? parseInt(movMatch[1],10) : -1,
-        data: r.data||'',
-        coletor: r.coletor||'',
-        nome: it.nome||'',
-        tipo: it.tipo||'',
-        qtd: it.qtd||0,
-        unid: it.unid||'',
-        forn: it.forn||''
-      });
-    });
-  });
-  if(!linhas.length){
-    body.innerHTML = '<div class="hcol-vazia">Nenhuma movimentação de Estoque numerada encontrada'+(setorFiltro && setorFiltro!=='Estoque' ? ' (troque o filtro Setor para "Todos" ou "Estoque")' : '')+'.</div>';
-    return;
-  }
-  // Maior MOV-XXXX primeiro (mais recente); sem número vai por último, por data
-  linhas.sort(function(a,b){
-    if(a.movNum!==b.movNum) return b.movNum - a.movNum;
-    return (b.data||'') < (a.data||'') ? -1 : 1;
-  });
-  var MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  var html = '<div style="font-family:DM Mono,monospace;font-size:10px;color:var(--mu);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">'
-    +linhas.length+' movimentação(ões) de Estoque</div>';
-  html += linhas.map(function(l){
-    var dt = l.data ? new Date(l.data+'T12:00') : null;
-    var dtFmt = dt ? dt.getDate().toString().padStart(2,'0')+' '+MESES[dt.getMonth()]+' '+dt.getFullYear() : '—';
-    var corTipo = l.tipo==='Saida' ? '#c0392b' : '#1e5fbf';
-    return '<div class="hcol-item" style="flex-direction:column;align-items:stretch;gap:2px">'
-      +'<div style="display:flex;justify-content:space-between;align-items:center">'
-      +'<span style="font-family:DM Mono,monospace;font-size:11px;font-weight:700;color:var(--vc)">'+(l.mov||'—')+'</span>'
-      +'<span style="font-family:DM Mono,monospace;font-size:10px;color:var(--mu)">'+dtFmt+'</span>'
-      +'</div>'
-      +'<div style="display:flex;justify-content:space-between;align-items:center">'
-      +'<div class="hcol-item-nome">'+l.nome+(l.forn?' <span style="font-weight:400;color:#999;font-size:11px">('+l.forn+')</span>':'')+'</div>'
-      +'<div style="text-align:right">'
-      +(l.tipo?'<div style="font-size:9px;font-weight:700;color:'+corTipo+'">'+(l.tipo==='Saida'?'SAÍDA':'ENTRADA')+'</div>':'')
-      +'<div class="hcol-item-qtd" style="color:'+corTipo+'">'+l.qtd+' '+l.unid+'</div>'
-      +'</div></div>'
-      +(l.coletor?'<div style="font-size:10px;color:var(--mu)">'+l.coletor+'</div>':'')
-      +'</div>';
-  }).join('');
-  body.innerHTML = html;
 }
 
 function _renderHistColetaTotal(body, registros, ano, mes, setorFiltro){
@@ -15500,21 +15428,21 @@ function _renderHistColetaDetalhe(body, registros, setorFiltro){
     var tiposPresentes = itensVisiveis.map(function(it){ return it.tipo; }).filter(Boolean);
     var tipoUnico = tiposPresentes.length && tiposPresentes.every(function(t){ return t===tiposPresentes[0]; })
       ? tiposPresentes[0] : null;
+    var movTxt = r.mov ? ' '+r.mov : '';
     var tagTipoHd = tipoUnico
-      ? '<span style="margin-left:8px;font-weight:700;font-size:12px;color:'+(tipoUnico==='Saida'?'#c0392b':'#1e5fbf')+'">'+(tipoUnico==='Saida'?'Saída':'Entrada')+'</span>'
+      ? '<span style="margin-left:8px;font-weight:700;font-size:12px;color:'+(tipoUnico==='Saida'?'#c0392b':'#1e5fbf')+'">'+(r.mov?'- ':'')+(tipoUnico==='Saida'?'Saída':'Entrada')+'</span>'
       : '';
 
     html += '<div class="hcol-entrada" id="hcol-reg-'+ri+'">';
-    // Cabeçalho: data + coletor
+    // Cabeçalho: data + MOV-XXXX (se houver) + Entrada/Saída + coletor
     html += '<div class="hcol-entrada-hd">'
-      +'<span class="hcol-entrada-data">'+dtFmt+tagTipoHd+'</span>'
+      +'<span class="hcol-entrada-data">'+dtFmt+movTxt+tagTipoHd+'</span>'
       +'<span class="hcol-entrada-col">'+(r.coletor||'')+'</span>'
       +'</div>';
     // Itens filtrados — sem prefixo de setor quando filtrado (já é óbvio)
     itensVisiveis.forEach(function(it){
       var cor = COR_SETOR[it.setor] || 'var(--vd)';
       var nomeExib = setorFiltro ? it.nome : it.setor+' · '+it.nome;
-      if(it.mov) nomeExib += ' <span style="font-family:DM Mono,monospace;font-size:10px;color:var(--mu)">'+it.mov+'</span>';
       if(it.forn) nomeExib += ' <span style="font-weight:400;color:#999;font-size:11px">('+it.forn+')</span>';
       var qtdExib = it.qtd+' '+it.unid+(it.preco?' · R$ '+_fmt(it.preco):'');
       html += '<div class="hcol-entrada-item">'
@@ -15542,8 +15470,7 @@ function _reenviarColeta(ri){
   var n = _getNum();
   if(!n){ _toast('Numero nao configurado.'); return; }
   var linhas = (r.itens||[]).map(function(it){
-    var nomeExib = it.mov ? it.nome+' ('+it.mov+')' : it.nome;
-    return {col1:it.setor, col2:nomeExib, col3:it.qtd+' '+it.unid, col4:it.forn||'', val:0};
+    return {col1:it.setor, col2:it.nome, col3:it.qtd+' '+it.unid, col4:it.forn||'', val:0};
   });
 
   // Nome(s) da(s) aba(s) de origem, exibido na faixa amarela ao lado de "BOLETIM DE COLETA"
@@ -15556,8 +15483,8 @@ function _reenviarColeta(ri){
     return NOMES_SETOR_TITULO[s] || String(s).toUpperCase();
   }).join(' / ');
 
-  _qrPayloadAtual = {origem:'coleta', coletor:r.coletor, data:r.data, ts:r.ts, itens:r.itens};
-  _gerarImagem('BOLETIM DE COLETA', linhas, null, function(blob){
+  _qrPayloadAtual = {origem:'coleta', coletor:r.coletor, data:r.data, ts:r.ts, itens:r.itens, mov:r.mov||''};
+  _gerarImagem('BOLETIM DE COLETA'+(r.mov?' · '+r.mov:''), linhas, null, function(blob){
     if(!blob){ _toast('Erro ao gerar imagem.'); return; }
     var nomearq = 'coleta-'+(r.data||'reenvio')+'.jpg';
     var file = new File([blob], nomearq, {type:'image/jpeg'});
@@ -15578,12 +15505,15 @@ function _abrirEditColeta(ri){
 
   var itensHtml = '';
   (r.itens||[]).forEach(function(it, ii){
-    itensHtml += _linhaEditItemColeta(ri, ii, it.setor||'', it.nome||'', it.qtd||0, it.unid||'', it.tipo||'', it.forn||'', it.preco||0, it.mov||'');
+    itensHtml += _linhaEditItemColeta(ri, ii, it.setor||'', it.nome||'', it.qtd||0, it.unid||'', it.tipo||'', it.forn||'', it.preco||0);
   });
+
+  var movBadge = r.mov ? '<div style="font-family:DM Mono,monospace;font-size:11px;font-weight:700;color:var(--vc);margin-bottom:6px">'+_esc(r.mov)+'</div>' : '';
 
   var corpo = document.getElementById('modal-edit-coleta-corpo');
   corpo.innerHTML =
-    '<div class="hcol-edit-row"><span class="hcol-edit-lbl">Data</span>'
+    movBadge
+    +'<div class="hcol-edit-row"><span class="hcol-edit-lbl">Data</span>'
     +'<input class="hcol-edit-inp" type="date" id="hcol-ei-data-'+ri+'" value="'+(r.data||'')+'"></div>'
     +'<div class="hcol-edit-row"><span class="hcol-edit-lbl">Coletor</span>'
     +'<input class="hcol-edit-inp" id="hcol-ei-coletor-'+ri+'" value="'+_esc(r.coletor||'')+'"></div>'
@@ -15607,7 +15537,7 @@ function _setorKeyFromLabel(label){
   return (label||'').toLowerCase(); // ultimo recurso
 }
 
-function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtual, fornAtual, precoAtual, movAtual){
+function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtual, fornAtual, precoAtual){
   var setorKey = _setorKeyFromLabel(setor);
   var nomes = _catalogoNomesUnicos(setorKey);
   if(nomeAtual && nomes.indexOf(nomeAtual)===-1) nomes.push(nomeAtual); // preserva item legado fora do catalogo
@@ -15618,11 +15548,9 @@ function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtua
   var linhaTipo = '';
   if(setorKey === 'estoque'){
     var ehSaida = (tipoAtual === 'Saida');
-    var badgeMov = movAtual ? '<span style="margin-left:auto;font-family:DM Mono,monospace;font-size:11px;color:var(--mu)">'+_esc(movAtual)+'</span>' : '';
     linhaTipo = '<div class="hcol-item-edit-tipo" style="display:flex;gap:16px;align-items:center;padding:4px 0 8px;font-size:13px">'
       +'<label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="hcol-ei-tipo-'+ri+'-'+ii+'" value="Entrada" id="hcol-ei-tipo-entrada-'+ri+'-'+ii+'"'+(!ehSaida?' checked':'')+' style="width:16px;height:16px;accent-color:#1a6b2a"> Entrada</label>'
       +'<label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="hcol-ei-tipo-'+ri+'-'+ii+'" value="Saida" id="hcol-ei-tipo-saida-'+ri+'-'+ii+'"'+(ehSaida?' checked':'')+' style="width:16px;height:16px;accent-color:#c0392b"> Saida</label>'
-      +badgeMov
       +'</div>';
   }
 
@@ -15664,7 +15592,6 @@ function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtua
   return '<div class="hcol-item-edit-wrap">'
     +'<div class="hcol-item-edit-row" style="flex-wrap:wrap">'
     +'<input type="hidden" value="'+_esc(setor)+'" id="hcol-ei-setor-'+ri+'-'+ii+'">'
-    +'<input type="hidden" value="'+_esc(movAtual||'')+'" id="hcol-ei-mov-'+ri+'-'+ii+'">'
     +'<select class="hcol-edit-inp" style="flex:1 1 100%;width:100%" id="hcol-ei-nome-'+ri+'-'+ii+'" onchange="_onMudarNomeEditColeta('+ri+','+ii+')">'+optsNome+'</select>'
     +'<input class="hcol-edit-inp" style="width:70px;min-width:70px;flex:none" type="number" min="0" step="0.5" placeholder="Qtd" value="'+qtd+'" id="hcol-ei-qtd-'+ri+'-'+ii+'">'
     +'<button class="hcol-del-item" onclick="_delItemEditColeta('+ri+','+ii+')" title="Remover item">\u00d7</button>'
@@ -15699,11 +15626,9 @@ function _onMudarNomeEditColeta(ri, ii){
   if(!rowWrap) return;
   var qtdEl = document.getElementById('hcol-ei-qtd-'+ri+'-'+ii);
   var qtd = qtdEl ? qtdEl.value : 0;
-  var movEl = document.getElementById('hcol-ei-mov-'+ri+'-'+ii);
-  var mov = movEl ? movEl.value : '';
   var tipoEl = document.querySelector('input[name="hcol-ei-tipo-'+ri+'-'+ii+'"]:checked');
   var tipo = tipoEl ? tipoEl.value : '';
-  var novoHtml = _linhaEditItemColeta(ri, ii, setorEl.value, nomeEl.value, qtd, '', tipo, '', 0, mov);
+  var novoHtml = _linhaEditItemColeta(ri, ii, setorEl.value, nomeEl.value, qtd, '', tipo, '', 0);
   var temp = document.createElement('div');
   temp.innerHTML = novoHtml;
   rowWrap.parentElement.replaceChild(temp.firstElementChild, rowWrap);
@@ -15775,20 +15700,17 @@ function _salvarEditColeta(ri){
       if(forn==='—') forn='';
       var precoEl = document.getElementById('hcol-ei-preco-'+ri+'-'+ii);
       var preco = precoEl ? parseFloat(precoEl.value)||0 : 0;
-      var movEl = document.getElementById('hcol-ei-mov-'+ri+'-'+ii);
-      var mov = movEl ? movEl.value.trim() : '';
       var item = {setor:setor, nome:nome, qtd:qtd, unid:unid, tipo:tipo, forn:forn, preco:preco};
-      if(mov) item.mov = mov;
       if(nome) novosItens.push(item);
     });
   }
-  _atribuirNumerosMov(novosItens); // numera qualquer item de Estoque novo que ainda nao tenha MOV-XXXX
 
   // Atualiza o registro na memoria
   regs[ri].data    = novaData;
   regs[ri].coletor = novoColetor;
   regs[ri].itens   = novosItens;
   regs[ri].ts      = regs[ri].ts || Date.now();
+  _atribuirNumeroMovRegistro(regs[ri]); // so numera se o registro tiver Estoque e ainda nao tiver MOV-XXXX
 
   // Persiste: recarrega TODO o historico (incluindo excluidos, para nao
   // perder tombstones ainda nao sincronizados), encontra pelo ts e substitui
@@ -16568,7 +16490,7 @@ async function _aprovarColeta(idx){
   // Numera aqui, na aprovação — é o único ponto que grava no histórico
   // oficial, então evita duas coletas pendentes (de aparelhos diferentes)
   // ganharem o mesmo MOV-XXXX.
-  _atribuirNumerosMov(novo.itens||[]);
+  _atribuirNumeroMovRegistro(novo);
   hist.unshift(novo);
   try{ localStorage.setItem(CK, JSON.stringify(hist)); }catch(e){}
   if(_caOpfs) await _caOpfsSalvar(FSJ_COLETAS, JSON.stringify(hist));
