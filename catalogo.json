@@ -1,12 +1,6 @@
 {
   "aviario": [
     {
-      "id": "ovo",
-      "nome": "Ovos de Capoeira",
-      "unid": "unid",
-      "passo": 1
-    },
-    {
       "id": "esterco",
       "nome": "Esterco",
       "unid": "sacos",
