@@ -11587,7 +11587,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0a22a6b2b2';
+var _caFP = '1a0a2431dd0c';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -15714,6 +15714,7 @@ function _salvarEditColeta(ri){
   regs[ri].coletor = novoColetor;
   regs[ri].itens   = novosItens;
   regs[ri].ts      = regs[ri].ts || Date.now();
+  regs[ri]._editadoEm = Date.now(); // usado na mesclagem pra saber qual versao e mais recente entre aparelhos
   var movEl = document.getElementById('hcol-ei-mov-'+ri);
   if(movEl){
     var movDigitado = movEl.value.trim();
@@ -16670,17 +16671,31 @@ function _mesclarRegistros(local, remoto){
     } else {
       var idx = combinado.findIndex(function(x){ return String(x.ts||JSON.stringify(x))===chave; });
       if(idx>-1){
-        // Se qualquer um dos dois lados marcou como excluído, o resultado
-        // fica excluído — uma exclusão intencional nunca "ressuscita" numa
-        // mesclagem, não importa de qual aparelho ela veio.
-        if(r._excluido && !combinado[idx]._excluido){
-          combinado[idx]._excluido = true;
-          combinado[idx]._excluidoEm = r._excluidoEm || Date.now();
+        // Se o lado remoto foi EDITADO mais recentemente que a versão local
+        // conhecida (_editadoEm), ele vence por inteiro — assim uma correção
+        // feita num aparelho (ex: Admin) chega no outro (ex: Desk-Admin) na
+        // próxima sincronização, em vez de ficar presa só onde foi editada.
+        var edLocal  = combinado[idx]._editadoEm || 0;
+        var edRemoto = r._editadoEm || 0;
+        if(edRemoto > edLocal){
+          var excluidoFinal = combinado[idx]._excluido || r._excluido;
+          var pagoFinal     = combinado[idx].pago || r.pago;
+          combinado[idx] = Object.assign({}, r);
+          if(excluidoFinal) combinado[idx]._excluido = true;
+          if(pagoFinal) combinado[idx].pago = true;
+        } else {
+          // Se qualquer um dos dois lados marcou como excluído, o resultado
+          // fica excluído — uma exclusão intencional nunca "ressuscita" numa
+          // mesclagem, não importa de qual aparelho ela veio.
+          if(r._excluido && !combinado[idx]._excluido){
+            combinado[idx]._excluido = true;
+            combinado[idx]._excluidoEm = r._excluidoEm || Date.now();
+          }
+          // Se um dos dois marca como pago e o outro nao, mantem PAGO (uma vez
+          // quitado, nunca "desquita" sozinho numa mesclagem — evita perder
+          // uma confirmacao de pagamento).
+          if(r.pago && !combinado[idx].pago) combinado[idx] = Object.assign({}, r, {_excluido: combinado[idx]._excluido||r._excluido});
         }
-        // Se um dos dois marca como pago e o outro nao, mantem PAGO (uma vez
-        // quitado, nunca "desquita" sozinho numa mesclagem — evita perder
-        // uma confirmacao de pagamento).
-        if(r.pago && !combinado[idx].pago) combinado[idx] = Object.assign({}, r, {_excluido: combinado[idx]._excluido||r._excluido});
       }
     }
   });
