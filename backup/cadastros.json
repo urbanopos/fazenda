@@ -162,11 +162,12 @@
     {
       "id": "p1789066565373_0",
       "setor": "Aviario",
-      "nome": "Peru",
+      "nome": "Peru jovem",
       "apresentacoes": [
         {
-          "unid": "Jovem",
-          "preco": 0
+          "unid": "Unid.",
+          "preco": 0,
+          "fornecedor": "Fazenda São José"
         }
       ]
     },
