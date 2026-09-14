@@ -670,6 +670,8 @@ function _catalogoBuscarExato(setor, nome, unid){
   var an = String(nome).trim().toLowerCase(), au = String(unid).trim().toLowerCase();
   return cat.find(function(it){ return it.nome.trim().toLowerCase()===an && it.unid.trim().toLowerCase()===au; });
 }
+function _esc(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
 function _catalogoNomesUnicos(setor){
   // Busca primeiro na tabela única de Produtos do Admin (já buscada do
   // GitHub, só leitura) — filtrando pelo setor — e complementa com o
@@ -931,7 +933,6 @@ function _cardColetaSetor(setor, cl, forn){
   var opts = nomes.map(function(n){
     return '<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/</g,'&lt;')+'</option>';
   }).join('');
-  var fH = forn ? '<div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-'+k+'" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div>' : '';
   return '<div class="pc at pc-edit'+(cl?' '+cl:'')+'" id="card-'+k+'" style="cursor:default">'
     +'<div class="pbd" style="display:block;padding:16px 14px" id="body-'+k+'">'
 
@@ -952,22 +953,93 @@ function _cardColetaSetor(setor, cl, forn){
     +'<input type="hidden" id="enome-'+k+'" value="">'
 
     +'<div id="wrap-coleta-'+k+'" style="display:none">'
-    +'<div class="cg"><span class="cl">Unidade</span><div id="unid-wrap-'+k+'">'
-    +'<input type="text" id="eunid-'+k+'" value="" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">'
-    +'</div></div>'
+    +'<div class="cg"><span class="cl">Apresentação</span><div id="apres-wrap-'+k+'"></div></div>'
+    +'<input type="hidden" id="eunid-'+k+'" value="">'
+    +'<input type="hidden" id="epreco-'+k+'" value="0">'
 
+    +'<div id="apres-campos-'+k+'" style="display:none">'
     +'<div class="cg"><span class="cl">Quantidade</span>'
     +'<div class="step" style="display:flex;align-items:center;gap:6px">'
     +'<button class="sb" onclick="stepQ(\''+k+'\',1,-1)">-</button>'
     +'<input class="si" type="number" id="qtd-'+k+'" inputmode="decimal" min="0" step="1" value="0" onkeypress="if(event.key===\'Enter\'){_adicionarItemSessao(\''+setor+'\');return false;}">'
     +'<button class="sb" onclick="stepQ(\''+k+'\',1,1)">+</button>'
     +'</div></div>'
-    +fH
+    +'<div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-'+k+'" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:15px;box-sizing:border-box;background:#f0ede6"></div>'
     +'<div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-'+k+'" placeholder="Ex: lote A, qualidade boa..."></textarea></div>'
     +'<div class="card-acoes"><button class="btn-con" onclick="_adicionarItemSessao(\''+setor+'\')">+ Adicionar item</button></div>'
     +'</div>'
+    +'</div>'
     +'</div></div>'
     +'<div id="lista-'+setor+'" style="margin-top:12px"></div>';
+}
+
+/* Apresentações (unidade+fornecedor+preço) cadastradas pelo Admin para
+   este item, dentro deste setor. O preço nunca é exposto na tela do
+   Coletor (fica só no campo oculto, para seguir no registro e aparecer
+   depois nos relatórios do Admin). Se não houver nenhuma apresentação
+   cadastrada, a coleta fica bloqueada até o Admin cadastrar. */
+function _catalogoApresentacoesPara(setor, nome){
+  var label = (SETORES[setor]||{}).label || setor;
+  var alvo = String(nome).trim().toLowerCase();
+  var out = [];
+  var cadRemoto = _produtosCadastro || _produtosCadastroLocal();
+  (cadRemoto||[]).forEach(function(p){
+    if(p.setor===label && p.nome.trim().toLowerCase()===alvo){
+      (p.apresentacoes||[]).forEach(function(a){
+        if(Array.isArray(a.abas) && a.abas.length>0 && a.abas.indexOf(label)===-1) return;
+        out.push({unid:(a.unid||'').trim(), preco:Number(a.preco)||0, fornecedor:a.fornecedor||''});
+      });
+    }
+  });
+  return out;
+}
+
+// Rótulo da apresentação SEM preço — este texto é o único lugar onde o
+// coletor vê a apresentação, então preço nunca entra aqui.
+function _labelApresColetor(a){
+  return a.fornecedor ? (a.unid||'—')+' — '+a.fornecedor : (a.unid||'—');
+}
+
+function _montarApresentacaoColeta(setor, nome){
+  var k = setor+'_novo';
+  var apresWrap = document.getElementById('apres-wrap-'+k);
+  var camposWrap = document.getElementById('apres-campos-'+k);
+  if(!apresWrap || !camposWrap) return;
+  var apres = _catalogoApresentacoesPara(setor, nome);
+  if(!apres.length){
+    apresWrap.innerHTML = '<div style="font-size:12px;color:#a03030;background:#fde8e8;border:1px solid #f5c6c6;border-radius:6px;padding:8px 10px;line-height:1.4">⚠️ Sem apresentação cadastrada para este item.<br>Peça para o Administrador cadastrar antes de registrar esta coleta.</div>';
+    camposWrap.style.display = 'none';
+    return;
+  }
+  if(apres.length === 1){
+    apresWrap.innerHTML = '<input type="text" readonly value="'+_esc(_labelApresColetor(apres[0]))+'" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">';
+    _aplicarApresentacaoColeta(k, apres[0]);
+  } else {
+    var optsA = apres.map(function(a,i){ return '<option value="'+i+'">'+_esc(_labelApresColetor(a))+'</option>'; }).join('');
+    apresWrap.innerHTML = '<select id="apres-sel-'+k+'" onchange="_onApresColetaChange(\''+setor+'\')" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#fff">'+optsA+'</select>';
+    apresWrap._apres = apres;
+    _aplicarApresentacaoColeta(k, apres[0]);
+  }
+  camposWrap.style.display = 'block';
+}
+
+function _onApresColetaChange(setor){
+  var k = setor+'_novo';
+  var apresWrap = document.getElementById('apres-wrap-'+k);
+  var sel = document.getElementById('apres-sel-'+k);
+  if(!apresWrap || !sel) return;
+  var apres = apresWrap._apres || [];
+  var a = apres[parseInt(sel.value,10)];
+  if(a) _aplicarApresentacaoColeta(k, a);
+}
+
+function _aplicarApresentacaoColeta(k, a){
+  var eunid = document.getElementById('eunid-'+k);
+  var eforn = document.getElementById('for-'+k);
+  var precoHid = document.getElementById('epreco-'+k);
+  if(eunid) eunid.value = a.unid||'';
+  if(eforn) eforn.value = a.fornecedor||'—';
+  if(precoHid) precoHid.value = a.preco||0; // nunca mostrado — so segue no registro p/ os relatorios do Admin
 }
 
 function _onSelecionarItem(setor){
@@ -975,19 +1047,12 @@ function _onSelecionarItem(setor){
   var sel = document.getElementById('sel-'+k);
   var wrapColeta = document.getElementById('wrap-coleta-'+k);
   var nomeEl = document.getElementById('enome-'+k);
-  var unidWrap = document.getElementById('unid-wrap-'+k);
   if(!sel) return;
   var val = sel.value;
   if(val){
     wrapColeta.style.display = 'block';
     nomeEl.value = val;
-    var unidades = _catalogoUnidadesPara(setor, val);
-    if(unidades.length > 1){
-      var opts = unidades.map(function(u){ return '<option value="'+u.replace(/"/g,'&quot;')+'">'+u.replace(/</g,'&lt;')+'</option>'; }).join('');
-      unidWrap.innerHTML = '<select id="eunid-'+k+'" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#fff">'+opts+'</select>';
-    } else {
-      unidWrap.innerHTML = '<input type="text" id="eunid-'+k+'" value="'+(unidades[0]||'unid')+'" readonly style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">';
-    }
+    _montarApresentacaoColeta(setor, val);
   } else {
     wrapColeta.style.display = 'none';
     nomeEl.value = '';
@@ -999,29 +1064,33 @@ function _adicionarItemSessao(setor){
   var nomeEl = document.getElementById('enome-'+k);
   var qtdEl  = document.getElementById('qtd-'+k);
   var unidEl = document.getElementById('eunid-'+k);
+  var precoEl = document.getElementById('epreco-'+k);
   var obsEl  = document.getElementById('obs-'+k);
   var forEl  = document.getElementById('for-'+k);
   var nome = (nomeEl?nomeEl.value:'').trim();
   var qtd  = parseFloat(qtdEl?qtdEl.value:0)||0;
   var unid = (unidEl?unidEl.value:'').trim()||'unid';
+  var preco = parseFloat(precoEl?precoEl.value:0)||0; // nunca mostrado ao coletor
   if(!nome){ _toast('Selecione um item da lista.'); return; }
+  if(!_catalogoApresentacoesPara(setor, nome).length){
+    _toast('⚠️ Sem apresentação cadastrada para este item. Peça para o Administrador cadastrar.');
+    return;
+  }
   if(qtd<=0){ _toast('Informe a quantidade antes de adicionar.'); return; }
   var forn = (forEl?forEl.value:'')||'';
+  if(forn==='—') forn='';
   var obs  = (obsEl?obsEl.value:'')||'';
   var tipo = (setor==='estoque') ? 'Saida' : '';
   // No app Coletor so e possivel usar itens ja cadastrados pelo Admin —
   // nao cadastra item novo no catalogo aqui. No Estoque, so sao permitidas
   // saidas (consumo) — entradas ficam exclusivas do painel Administrador.
   _sessaoInit();
-  _sessaoItens[setor].push({nome:nome, unid:unid, qtd:qtd, obs:obs.trim(), forn:forn.trim(), tipo:tipo});
+  _sessaoItens[setor].push({nome:nome, unid:unid, qtd:qtd, preco:preco, obs:obs.trim(), forn:forn.trim(), tipo:tipo});
   var sel = document.getElementById('sel-'+k);
   var wrapColeta = document.getElementById('wrap-coleta-'+k);
-  var unidWrap = document.getElementById('unid-wrap-'+k);
   nomeEl.value=''; qtdEl.value=0;
   if(obsEl) obsEl.value='';
-  if(forEl) forEl.value='';
   if(wrapColeta) wrapColeta.style.display='none';
-  if(unidWrap) unidWrap.innerHTML = '<input type="text" id="eunid-'+k+'" value="" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">';
   if(sel) sel.value = '';
   _renderListaSessao(setor);
   _atualizarContador();
@@ -1462,7 +1531,7 @@ function _coletarItens(){
   Object.keys(SETORES).forEach(function(setor){
     var cfg = SETORES[setor];
     (_sessaoItens[setor]||[]).forEach(function(it){
-      itens.push({setor:cfg.label, nome:it.nome, unid:it.unid, qtd:it.qtd, obs:it.obs, forn:it.forn, tipo:it.tipo||''});
+      itens.push({setor:cfg.label, nome:it.nome, unid:it.unid, qtd:it.qtd, preco:it.preco||0, obs:it.obs, forn:it.forn, tipo:it.tipo||''});
     });
   });
   return itens;
