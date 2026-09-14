@@ -1131,10 +1131,13 @@
         "nome": "Farelo de Trigo",
         "qtd": 4,
         "unid": "sc 40kg",
-        "tipo": "Entrada"
+        "tipo": "Entrada",
+        "forn": "",
+        "preco": 0
       }
     ],
-    "ts": 1787092865427
+    "ts": 1787092865427,
+    "mov": "MOV-0021"
   },
   {
     "data": "2026-08-14",
