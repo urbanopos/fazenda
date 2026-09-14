@@ -1,5 +1,21 @@
 [
   {
+    "data": "2026-09-14",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "unid": "unid",
+        "qtd": 50,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1789382995759
+  },
+  {
     "data": "2026-09-13",
     "coletor": "Junior Desk",
     "itens": [
