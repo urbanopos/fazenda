@@ -40,7 +40,7 @@
 
   <div id="status"></div>
 
-  <div class="info">Esta ferramenta lê o nome do arquivo escolhido (ex: "ColetaAut-Desk-Admin.html") e substitui exatamente esse arquivo no repositório — não mexe em nenhum outro. O token fica salvo neste navegador para a próxima vez.</div>
+  <div class="info">Esta ferramenta lê o nome do arquivo escolhido (ex: "ColetaAut-Desk-Admin.html") e substitui exatamente esse arquivo no repositório — não mexe em nenhum outro. O token fica salvo neste navegador para a próxima vez. Cada publicação também renova a "impressão digital" do app, então quem estiver usando o ColetaAut recebe a versão nova sozinho, sem precisar mexer no navegador.</div>
 </div>
 
 <script>
@@ -141,8 +141,15 @@ async function publicar(){
     var infoAtual = await respGet.json();
     var shaAtual = infoAtual.sha;
 
+    // Gera uma nova "impressão digital" (_caFP) e a grava no arquivo antes
+    // de publicar. O app já verifica essa impressão sozinho a cada 3 min
+    // e recarrega quando ela muda — sem isso, o valor ficava sempre igual
+    // e o app nunca percebia que havia uma versão nova no ar.
+    var novaFp = (Date.now().toString(16) + Math.random().toString(16).slice(2)).slice(0,12);
+    var conteudoParaPublicar = _conteudoArquivo.replace(/var _caFP = '[a-f0-9]+'/, "var _caFP = '" + novaFp + "'");
+
     // Codifica o conteúdo (texto) em base64, tratando corretamente acentos/UTF-8
-    var conteudoB64 = btoa(unescape(encodeURIComponent(_conteudoArquivo)));
+    var conteudoB64 = btoa(unescape(encodeURIComponent(conteudoParaPublicar)));
 
     var respPut = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + _nomeArquivoAlvo, {
       method: "PUT",
@@ -159,7 +166,7 @@ async function publicar(){
     }
 
     try{ localStorage.setItem(TOKEN_KEY, token); }catch(e){}
-    setStatus("✅ " + _nomeArquivoAlvo + " publicado com sucesso! A nova versão já está no ar.", "ok");
+    setStatus("✅ " + _nomeArquivoAlvo + " publicado com sucesso! Quem estiver com o app aberto recebe a atualização automática em até 3 minutos, sem precisar fazer nada.", "ok");
     _modoBotao = "fechar";
     btn.textContent = "Concluir (publicar outro arquivo)";
     btn.disabled = false;
