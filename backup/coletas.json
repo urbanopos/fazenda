@@ -313,10 +313,13 @@
         "nome": "Ração de peixe",
         "qtd": 1,
         "unid": "Sc 25kg",
-        "tipo": "Saida"
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
       }
     ],
-    "ts": 1788849931047
+    "ts": 1788849931047,
+    "mov": "MOV-0026"
   },
   {
     "data": "2026-09-07",
