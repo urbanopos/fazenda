@@ -332,10 +332,13 @@
         "qtd": 1,
         "unid": "Sc 25kg",
         "tipo": "Saida",
-        "forn": "IRCA"
+        "forn": "Purina",
+        "preco": 0
       }
     ],
-    "ts": 1788849931047
+    "ts": 1788849931047,
+    "_editadoEm": 1789428962539,
+    "mov": "MOV-0026"
   },
   {
     "data": "2026-09-07",
