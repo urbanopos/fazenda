@@ -871,6 +871,7 @@ input[type="password"]:-webkit-autofill{
         <select class="hcol-sel" id="hcol-visao" onchange="renderHistColeta()">
           <option value="total">Totalizacao por item</option>
           <option value="detalhe">Registros detalhados</option>
+          <option value="mov">Movimentacoes (MOV-XXXX)</option>
         </select>
       </div>
       <div>
@@ -15101,9 +15102,69 @@ function renderHistColeta(){
 
   if(visao==='total'){
     _renderHistColetaTotal(body, filtrado, ano, mes, setor);
+  } else if(visao==='mov'){
+    _renderHistColetaMovimentacoes(body, filtrado, setor);
   } else {
     _renderHistColetaDetalhe(body, filtrado, setor);
   }
+}
+
+/* Lista "achatada" de cada movimentação de Estoque (uma linha por item,
+   não por registro) ordenada do MOV-XXXX mais alto (mais recente) para o
+   mais baixo — pensada pra conferir manualmente o saldo, achar duplicatas
+   ou lançamentos fora de ordem. Só entram itens que já têm número
+   atribuído (setor Estoque); registros antigos sem MOV ficam de fora. */
+function _renderHistColetaMovimentacoes(body, registros, setorFiltro){
+  var linhas = [];
+  registros.forEach(function(r){
+    (r.itens||[]).forEach(function(it){
+      if((it.setor||'')!=='Estoque') return;
+      if(setorFiltro && setorFiltro!=='Estoque') return;
+      var movMatch = it.mov ? String(it.mov).match(/(\d+)/) : null;
+      linhas.push({
+        mov: it.mov||'',
+        movNum: movMatch ? parseInt(movMatch[1],10) : -1,
+        data: r.data||'',
+        coletor: r.coletor||'',
+        nome: it.nome||'',
+        tipo: it.tipo||'',
+        qtd: it.qtd||0,
+        unid: it.unid||'',
+        forn: it.forn||''
+      });
+    });
+  });
+  if(!linhas.length){
+    body.innerHTML = '<div class="hcol-vazia">Nenhuma movimentação de Estoque numerada encontrada'+(setorFiltro && setorFiltro!=='Estoque' ? ' (troque o filtro Setor para "Todos" ou "Estoque")' : '')+'.</div>';
+    return;
+  }
+  // Maior MOV-XXXX primeiro (mais recente); sem número vai por último, por data
+  linhas.sort(function(a,b){
+    if(a.movNum!==b.movNum) return b.movNum - a.movNum;
+    return (b.data||'') < (a.data||'') ? -1 : 1;
+  });
+  var MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  var html = '<div style="font-family:DM Mono,monospace;font-size:10px;color:var(--mu);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">'
+    +linhas.length+' movimentação(ões) de Estoque</div>';
+  html += linhas.map(function(l){
+    var dt = l.data ? new Date(l.data+'T12:00') : null;
+    var dtFmt = dt ? dt.getDate().toString().padStart(2,'0')+' '+MESES[dt.getMonth()]+' '+dt.getFullYear() : '—';
+    var corTipo = l.tipo==='Saida' ? '#c0392b' : '#1e5fbf';
+    return '<div class="hcol-item" style="flex-direction:column;align-items:stretch;gap:2px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center">'
+      +'<span style="font-family:DM Mono,monospace;font-size:11px;font-weight:700;color:var(--vc)">'+(l.mov||'—')+'</span>'
+      +'<span style="font-family:DM Mono,monospace;font-size:10px;color:var(--mu)">'+dtFmt+'</span>'
+      +'</div>'
+      +'<div style="display:flex;justify-content:space-between;align-items:center">'
+      +'<div class="hcol-item-nome">'+l.nome+(l.forn?' <span style="font-weight:400;color:#999;font-size:11px">('+l.forn+')</span>':'')+'</div>'
+      +'<div style="text-align:right">'
+      +(l.tipo?'<div style="font-size:9px;font-weight:700;color:'+corTipo+'">'+(l.tipo==='Saida'?'SAÍDA':'ENTRADA')+'</div>':'')
+      +'<div class="hcol-item-qtd" style="color:'+corTipo+'">'+l.qtd+' '+l.unid+'</div>'
+      +'</div></div>'
+      +(l.coletor?'<div style="font-size:10px;color:var(--mu)">'+l.coletor+'</div>':'')
+      +'</div>';
+  }).join('');
+  body.innerHTML = html;
 }
 
 function _renderHistColetaTotal(body, registros, ano, mes, setorFiltro){
