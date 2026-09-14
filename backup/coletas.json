@@ -681,14 +681,16 @@
       {
         "setor": "Estoque",
         "nome": "Ração de peixe",
-        "unid": "Sc 25kg",
         "qtd": 1,
-        "obs": "Tilemax 32",
-        "forn": "Irca",
-        "tipo": "Saida"
+        "unid": "Sc 25kg",
+        "tipo": "Saida",
+        "forn": "Purina",
+        "preco": 0
       }
     ],
-    "ts": 1787967529060
+    "ts": 1787967529060,
+    "_editadoEm": 1789428949284,
+    "mov": "MOV-0024"
   },
   {
     "data": "2026-08-28",
