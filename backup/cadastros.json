@@ -103,6 +103,11 @@
           "unid": "unid",
           "preco": 5,
           "fornecedor": "Fazenda São José"
+        },
+        {
+          "unid": "CaixA",
+          "preco": 90,
+          "fornecedor": "Fazenda São José"
         }
       ]
     },
