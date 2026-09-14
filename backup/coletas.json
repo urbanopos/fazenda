@@ -1611,10 +1611,13 @@
         "nome": "Ração de peixe",
         "qtd": 3,
         "unid": "Sc 25kg",
-        "tipo": "Entrada"
+        "tipo": "Entrada",
+        "forn": "",
+        "preco": 0
       }
     ],
-    "ts": 1787092301594
+    "ts": 1787092301594,
+    "mov": "MOV-0015"
   },
   {
     "data": "2026-07-30",
