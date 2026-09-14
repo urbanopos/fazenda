@@ -246,7 +246,8 @@
       "apresentacoes": [
         {
           "unid": "sc 40kg",
-          "preco": 0
+          "preco": 0,
+          "fornecedor": "IRCA"
         }
       ]
     },
