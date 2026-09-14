@@ -154,8 +154,9 @@
       "nome": "Pinto",
       "apresentacoes": [
         {
-          "unid": "unid",
-          "preco": 0
+          "unid": "Unid",
+          "preco": 8,
+          "fornecedor": "Fazenda São José"
         }
       ]
     },
