@@ -2144,38 +2144,49 @@
         "nome": "Pre-Inicial",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Entrada"
+        "tipo": "Entrada",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
         "qtd": 20,
         "unid": "sc 40kg",
-        "tipo": "Entrada"
+        "tipo": "Entrada",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 8,
         "unid": "sc 40kg",
-        "tipo": "Entrada"
+        "tipo": "Entrada",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 20,
         "unid": "sc 40kg",
-        "tipo": "Entrada"
+        "tipo": "Entrada",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
         "qtd": 3,
         "unid": "sc 40kg",
-        "tipo": "Entrada"
+        "tipo": "Entrada",
+        "forn": "",
+        "preco": 0
       }
     ],
-    "ts": 1787091950102
+    "ts": 1787091950102,
+    "mov": "MOV-0010"
   },
   {
     "data": "2026-07-06",
