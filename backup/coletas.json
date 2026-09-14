@@ -1173,38 +1173,49 @@
         "nome": "Ração de peixe",
         "qtd": 10,
         "unid": "Sc 25kg",
-        "tipo": "Entrada"
+        "tipo": "Entrada",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 15,
         "unid": "sc 40kg",
-        "tipo": "Entrada"
+        "tipo": "Entrada",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
         "qtd": 10,
         "unid": "sc 40kg",
-        "tipo": "Entrada"
+        "tipo": "Entrada",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 10,
         "unid": "sc 40kg",
-        "tipo": "Entrada"
+        "tipo": "Entrada",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Ração de Gado",
         "qtd": 10,
         "unid": "Sc 40kg",
-        "tipo": "Entrada"
+        "tipo": "Entrada",
+        "forn": "",
+        "preco": 0
       }
     ],
-    "ts": 1787092762795
+    "ts": 1787092762795,
+    "mov": "MOV-0020"
   },
   {
     "data": "2026-08-12",
