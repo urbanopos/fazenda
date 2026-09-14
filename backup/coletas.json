@@ -2456,31 +2456,40 @@
         "nome": "Postura",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida"
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
         "qtd": 2,
-        "unid": "Sc 50kg",
-        "tipo": "Saida"
+        "unid": "sc 40kg",
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
         "qtd": 2,
-        "unid": "Sc 40kg",
-        "tipo": "Saida"
+        "unid": "sc 40kg",
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
-        "unid": "Sc 40kg",
-        "tipo": "Saida"
+        "unid": "sc 40kg",
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
       }
     ],
-    "ts": 1781089303703
+    "ts": 1781089303703,
+    "mov": "MOV-0005"
   },
   {
     "data": "2026-06-05",
