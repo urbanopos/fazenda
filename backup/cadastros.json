@@ -67,15 +67,11 @@
       "id": "p_esterco",
       "setor": "Vendas",
       "nome": "Esterco",
-      "unid": "",
       "apresentacoes": [
         {
-          "unid": "Sc.",
-          "preco": 15
-        },
-        {
-          "unid": "sacos",
-          "preco": 0
+          "unid": "Sacos",
+          "preco": 0,
+          "fornecedor": "Fazenda São José"
         }
       ]
     },
