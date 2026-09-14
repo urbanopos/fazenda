@@ -380,8 +380,8 @@
       "nome": "Banana Maçã",
       "apresentacoes": [
         {
-          "unid": "cac.",
-          "preco": 0,
+          "unid": "Cacho",
+          "preco": 50,
           "fornecedor": "Fazenda São José"
         }
       ]
