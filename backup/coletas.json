@@ -1773,38 +1773,49 @@
         "nome": "Crescimento",
         "qtd": 1,
         "unid": "sc 40kg",
-        "tipo": "Saida"
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 3,
         "unid": "sc 40kg",
-        "tipo": "Saida"
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida"
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
         "qtd": 1,
         "unid": "sc 40kg",
-        "tipo": "Saida"
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Ração de peixe",
         "qtd": 1,
         "unid": "Sc 25kg",
-        "tipo": "Saida"
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
       }
     ],
-    "ts": 1784751238222
+    "ts": 1784751238222,
+    "mov": "MOV-0013"
   },
   {
     "data": "2026-07-22",
