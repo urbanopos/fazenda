@@ -115,11 +115,11 @@
       "id": "p1787993055897",
       "setor": "Vendas",
       "nome": "Galinha Viva",
-      "unid": "Unid.",
       "apresentacoes": [
         {
           "unid": "Unid.",
-          "preco": 50
+          "preco": 50,
+          "fornecedor": "Fazenda São José"
         }
       ]
     },
