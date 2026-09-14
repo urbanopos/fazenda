@@ -11411,7 +11411,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0a242f4ab3';
+var _caFP = '1a0a25af05de';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -12347,8 +12347,12 @@ function _montarApresentacaoColeta(setor, nome){
   if(!apresWrap || !camposWrap) return;
   var apres = _catalogoApresentacoesPara(setor, nome);
   if(!apres.length){
-    apresWrap.innerHTML = '<div style="font-size:12px;color:#a03030;background:#fde8e8;border:1px solid #f5c6c6;border-radius:6px;padding:8px 10px;line-height:1.4">⚠️ Sem apresentação cadastrada para este item.<br>Cadastre unidade, fornecedor e preço em <strong>Cadastros → Produtos</strong> antes de registrar.</div>';
-    camposWrap.style.display = 'none';
+    // Sem apresentação cadastrada — não usa mais o catálogo antigo como
+    // fallback. Deixa unidade/fornecedor em branco e segue liberado, pra
+    // nunca travar a coleta do dia a dia.
+    apresWrap.innerHTML = '<input type="text" readonly value="" placeholder="— sem apresentação cadastrada —" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6;color:#999">';
+    _aplicarApresentacaoColeta(k, {unid:'', fornecedor:'', preco:0});
+    camposWrap.style.display = 'block';
     return;
   }
   if(apres.length === 1){
@@ -12478,13 +12482,9 @@ function _adicionarItemSessao(setor){
   var forEl  = document.getElementById('for-'+k);
   var nome = (nomeEl?nomeEl.value:'').trim();
   var qtd  = parseFloat(qtdEl?qtdEl.value:0)||0;
-  var unid = (unidEl?unidEl.value:'').trim()||'unid';
+  var unid = (unidEl?unidEl.value:'').trim();
   var preco = parseFloat(precoEl?precoEl.value:0)||0;
   if(!nome){ _toast('Selecione um item da lista.'); return; }
-  if(!_catalogoApresentacoesPara(setor, nome).length){
-    _toast('⚠️ Sem apresentação cadastrada para este item. Cadastre em Cadastros → Produtos.');
-    return;
-  }
   if(qtd<=0){ _toast('Informe a quantidade antes de adicionar.'); return; }
   var forn = (forEl?forEl.value:'')||'';
   if(forn==='—') forn='';
