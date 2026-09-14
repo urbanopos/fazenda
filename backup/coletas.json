@@ -6,42 +6,41 @@
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "qtd": 3,
         "unid": "sc 40kg",
-        "tipo": "Saida",
+        "qtd": 3,
+        "obs": "",
         "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
-        "qtd": 1,
         "unid": "sc 40kg",
-        "tipo": "Saida",
+        "qtd": 1,
+        "obs": "",
         "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "qtd": 3,
         "unid": "sc 40kg",
-        "tipo": "Saida",
+        "qtd": 3,
+        "obs": "",
         "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
-        "qtd": 1,
         "unid": "sc 40kg",
-        "tipo": "Saida",
+        "qtd": 1,
+        "obs": "",
         "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       }
     ],
-    "ts": 1789382691978,
-    "mov": "MOV-0029"
+    "ts": 1789382691978
   },
   {
     "data": "2026-09-13",
@@ -81,15 +80,14 @@
       {
         "setor": "Estoque",
         "nome": "Ração de peixe",
-        "qtd": 1,
         "unid": "Sc 25kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "qtd": 1,
+        "obs": "",
+        "forn": "Irca",
+        "tipo": "Saida"
       }
     ],
-    "ts": 1789323252643,
-    "mov": "MOV-0028"
+    "ts": 1789323252643
   },
   {
     "data": "2026-09-12",
@@ -114,8 +112,10 @@
       {
         "setor": "Campo",
         "nome": "Estacas de sabiá",
-        "qtd": 11,
         "unid": "Unid.",
+        "qtd": 11,
+        "obs": "",
+        "forn": "",
         "tipo": ""
       }
     ],
@@ -189,12 +189,12 @@
     "itens": [
       {
         "setor": "Aviario",
-        "nome": "Galinha Abatida",
-        "qtd": 14,
+        "nome": "Galinha",
         "unid": "unid",
-        "tipo": "",
+        "qtd": 14,
+        "obs": "",
         "forn": "",
-        "preco": 0
+        "tipo": ""
       }
     ],
     "ts": 1789055576800
@@ -254,42 +254,41 @@
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "qtd": 3,
         "unid": "sc 40kg",
-        "tipo": "Saida",
+        "qtd": 3,
+        "obs": "",
         "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "qtd": 3,
         "unid": "sc 40kg",
-        "tipo": "Saida",
+        "qtd": 3,
+        "obs": "",
         "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "qtd": 3,
         "unid": "sc 40kg",
-        "tipo": "Saida",
+        "qtd": 3,
+        "obs": "",
         "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Pre-Inicial",
-        "qtd": 1,
         "unid": "sc 40kg",
-        "tipo": "Saida",
+        "qtd": 1,
+        "obs": "",
         "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       }
     ],
-    "ts": 1788895476507,
-    "mov": "MOV-0027"
+    "ts": 1788895476507
   },
   {
     "data": "2026-09-08",
@@ -308,6 +307,22 @@
     "ts": 1788894367498
   },
   {
+    "data": "2026-09-08",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "unid": "unid",
+        "qtd": 53,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1788872362449
+  },
+  {
     "data": "2026-09-07",
     "coletor": "Júnior",
     "itens": [
@@ -317,12 +332,10 @@
         "qtd": 1,
         "unid": "Sc 25kg",
         "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "forn": "IRCA"
       }
     ],
-    "ts": 1788849931047,
-    "mov": "MOV-0026"
+    "ts": 1788849931047
   },
   {
     "data": "2026-09-07",
@@ -360,20 +373,6 @@
       }
     ],
     "ts": 1788802408782
-  },
-  {
-    "data": "2026-09-06",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
-        "qtd": 53,
-        "unid": "unid",
-        "tipo": ""
-      }
-    ],
-    "ts": 1788872362449
   },
   {
     "data": "2026-09-06",
@@ -604,33 +603,32 @@
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "qtd": 3,
         "unid": "sc 40kg",
-        "tipo": "Saida",
+        "qtd": 3,
+        "obs": "",
         "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "qtd": 3,
         "unid": "sc 40kg",
-        "tipo": "Saida",
+        "qtd": 3,
+        "obs": "",
         "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
+        "qtd": 2,
+        "obs": "",
         "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       }
     ],
-    "ts": 1788186625161,
-    "mov": "MOV-0025"
+    "ts": 1788186625161
   },
   {
     "data": "2026-08-30",
@@ -683,15 +681,14 @@
       {
         "setor": "Estoque",
         "nome": "Ração de peixe",
-        "qtd": 1,
         "unid": "Sc 25kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "qtd": 1,
+        "obs": "Tilemax 32",
+        "forn": "Irca",
+        "tipo": "Saida"
       }
     ],
-    "ts": 1787967529060,
-    "mov": "MOV-0024"
+    "ts": 1787967529060
   },
   {
     "data": "2026-08-28",
@@ -715,12 +712,12 @@
     "itens": [
       {
         "setor": "Aviario",
-        "nome": "Galinha Abatida",
-        "qtd": 14,
+        "nome": "Galinha",
         "unid": "unid",
-        "tipo": "",
+        "qtd": 14,
+        "obs": "",
         "forn": "",
-        "preco": 0
+        "tipo": ""
       }
     ],
     "ts": 1787858834027
@@ -826,49 +823,38 @@
         "nome": "Crescimento",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
         "qtd": 1,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 3,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Ração de peixe",
         "qtd": 1,
         "unid": "Sc 25kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       }
     ],
-    "ts": 1787567616906,
-    "mov": "MOV-0023"
+    "ts": 1787567616906
   },
   {
     "data": "2026-08-23",
@@ -1087,40 +1073,31 @@
         "nome": "Crescimento",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 3,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 3,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
         "qtd": 1,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       }
     ],
-    "ts": 1786962898272,
-    "mov": "MOV-0022"
+    "ts": 1786962898272
   },
   {
     "data": "2026-08-16",
@@ -1159,13 +1136,10 @@
         "nome": "Farelo de Trigo",
         "qtd": 4,
         "unid": "sc 40kg",
-        "tipo": "Entrada",
-        "forn": "",
-        "preco": 0
+        "tipo": "Entrada"
       }
     ],
-    "ts": 1787092865427,
-    "mov": "MOV-0021"
+    "ts": 1787092865427
   },
   {
     "data": "2026-08-14",
@@ -1204,49 +1178,38 @@
         "nome": "Ração de peixe",
         "qtd": 10,
         "unid": "Sc 25kg",
-        "tipo": "Entrada",
-        "forn": "",
-        "preco": 0
+        "tipo": "Entrada"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 15,
         "unid": "sc 40kg",
-        "tipo": "Entrada",
-        "forn": "",
-        "preco": 0
+        "tipo": "Entrada"
       },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
         "qtd": 10,
         "unid": "sc 40kg",
-        "tipo": "Entrada",
-        "forn": "",
-        "preco": 0
+        "tipo": "Entrada"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 10,
         "unid": "sc 40kg",
-        "tipo": "Entrada",
-        "forn": "",
-        "preco": 0
+        "tipo": "Entrada"
       },
       {
         "setor": "Estoque",
         "nome": "Ração de Gado",
         "qtd": 10,
         "unid": "Sc 40kg",
-        "tipo": "Entrada",
-        "forn": "",
-        "preco": 0
+        "tipo": "Entrada"
       }
     ],
-    "ts": 1787092762795,
-    "mov": "MOV-0020"
+    "ts": 1787092762795
   },
   {
     "data": "2026-08-12",
@@ -1332,40 +1295,31 @@
         "nome": "Crescimento",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
         "qtd": 1,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 3,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       }
     ],
-    "ts": 1786358780904,
-    "mov": "MOV-0019"
+    "ts": 1786358780904
   },
   {
     "data": "2026-08-09",
@@ -1462,22 +1416,17 @@
         "nome": "Ração de peixe",
         "qtd": 1,
         "unid": "Sc 25kg",
-        "tipo": "Entrada",
-        "forn": "",
-        "preco": 0
+        "tipo": "Entrada"
       },
       {
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
         "qtd": 3,
         "unid": "sc 40kg",
-        "tipo": "Entrada",
-        "forn": "",
-        "preco": 0
+        "tipo": "Entrada"
       }
     ],
-    "ts": 1787092426716,
-    "mov": "MOV-0018"
+    "ts": 1787092426716
   },
   {
     "data": "2026-08-05",
@@ -1537,13 +1486,10 @@
         "nome": "Pre-Inicial",
         "qtd": 1,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       }
     ],
-    "ts": 1785843820269,
-    "mov": "MOV-0017"
+    "ts": 1785843820269
   },
   {
     "data": "2026-08-03",
@@ -1592,40 +1538,31 @@
         "nome": "Crescimento",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
         "qtd": 1,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       }
     ],
-    "ts": 1785759358679,
-    "mov": "MOV-0016"
+    "ts": 1785759358679
   },
   {
     "data": "2026-08-02",
@@ -1679,13 +1616,10 @@
         "nome": "Ração de peixe",
         "qtd": 3,
         "unid": "Sc 25kg",
-        "tipo": "Entrada",
-        "forn": "",
-        "preco": 0
+        "tipo": "Entrada"
       }
     ],
-    "ts": 1787092301594,
-    "mov": "MOV-0015"
+    "ts": 1787092301594
   },
   {
     "data": "2026-07-30",
@@ -1741,31 +1675,24 @@
         "nome": "Crescimento",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 3,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       }
     ],
-    "ts": 1785249179757,
-    "mov": "MOV-0014"
+    "ts": 1785249179757
   },
   {
     "data": "2026-07-27",
@@ -1851,49 +1778,38 @@
         "nome": "Crescimento",
         "qtd": 1,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 3,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
         "qtd": 1,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Ração de peixe",
         "qtd": 1,
         "unid": "Sc 25kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       }
     ],
-    "ts": 1784751238222,
-    "mov": "MOV-0013"
+    "ts": 1784751238222
   },
   {
     "data": "2026-07-22",
@@ -2001,40 +1917,31 @@
         "nome": "Crescimento",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
         "qtd": 1,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       }
     ],
-    "ts": 1784294203660,
-    "mov": "MOV-0012"
+    "ts": 1784294203660
   },
   {
     "data": "2026-07-16",
@@ -2155,49 +2062,38 @@
         "nome": "Postura",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
         "qtd": 1,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
         "qtd": 1,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       }
     ],
-    "ts": 1783688506163,
-    "mov": "MOV-0011"
+    "ts": 1783688506163
   },
   {
     "data": "2026-07-09",
@@ -2253,49 +2149,38 @@
         "nome": "Pre-Inicial",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Entrada",
-        "forn": "",
-        "preco": 0
+        "tipo": "Entrada"
       },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
         "qtd": 20,
         "unid": "sc 40kg",
-        "tipo": "Entrada",
-        "forn": "",
-        "preco": 0
+        "tipo": "Entrada"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 8,
         "unid": "sc 40kg",
-        "tipo": "Entrada",
-        "forn": "",
-        "preco": 0
+        "tipo": "Entrada"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 20,
         "unid": "sc 40kg",
-        "tipo": "Entrada",
-        "forn": "",
-        "preco": 0
+        "tipo": "Entrada"
       },
       {
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
         "qtd": 3,
         "unid": "sc 40kg",
-        "tipo": "Entrada",
-        "forn": "",
-        "preco": 0
+        "tipo": "Entrada"
       }
     ],
-    "ts": 1787091950102,
-    "mov": "MOV-0010"
+    "ts": 1787091950102
   },
   {
     "data": "2026-07-06",
@@ -2358,31 +2243,24 @@
         "nome": "Crescimento",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
-        "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 2,
-        "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "unid": "Se 40kg",
+        "tipo": "Saida"
       }
     ],
-    "ts": 1781090425770,
-    "mov": "MOV-0009"
+    "ts": 1781090425770
   },
   {
     "data": "2026-07-02",
@@ -2421,13 +2299,10 @@
         "nome": "Ração de peixe",
         "qtd": 1,
         "unid": "Sc 25kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       }
     ],
-    "ts": 1781095076513,
-    "mov": "MOV-0008"
+    "ts": 1781095076513
   },
   {
     "data": "2026-07-01",
@@ -2450,41 +2325,32 @@
         "setor": "Estoque",
         "nome": "Crescimento",
         "qtd": 2,
-        "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
-        "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 3,
-        "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
         "qtd": 2,
-        "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       }
     ],
-    "ts": 1781089929186,
-    "mov": "MOV-0007"
+    "ts": 1781089929186
   },
   {
     "data": "2026-06-22",
@@ -2540,49 +2406,38 @@
         "nome": "Crescimento",
         "qtd": 3,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
-        "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 3,
-        "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
         "qtd": 2,
-        "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "unid": "Sc 50kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Ração de peixe",
         "qtd": 1,
         "unid": "Sc 25kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       }
     ],
-    "ts": 1781089417326,
-    "mov": "MOV-0006"
+    "ts": 1781089417326
   },
   {
     "data": "2026-06-15",
@@ -2606,40 +2461,31 @@
         "nome": "Postura",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
         "qtd": 2,
-        "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "unid": "Sc 50kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
         "qtd": 2,
-        "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
-        "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       }
     ],
-    "ts": 1781089303703,
-    "mov": "MOV-0005"
+    "ts": 1781089303703
   },
   {
     "data": "2026-06-05",
@@ -2650,13 +2496,10 @@
         "nome": "Milho",
         "qtd": 10,
         "unid": "sc 40kg",
-        "tipo": "Entrada",
-        "forn": "",
-        "preco": 0
+        "tipo": "Entrada"
       }
     ],
-    "ts": 1787091684915,
-    "mov": "MOV-0004"
+    "ts": 1787091684915
   },
   {
     "data": "2026-06-02",
@@ -2667,40 +2510,31 @@
         "nome": "Crescimento",
         "qtd": 27,
         "unid": "sc 40kg",
-        "tipo": "Entrada",
-        "forn": "",
-        "preco": 0
+        "tipo": "Entrada"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 10,
         "unid": "sc 40kg",
-        "tipo": "Entrada",
-        "forn": "",
-        "preco": 0
+        "tipo": "Entrada"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 25,
         "unid": "sc 40kg",
-        "tipo": "Entrada",
-        "forn": "",
-        "preco": 0
+        "tipo": "Entrada"
       },
       {
         "setor": "Estoque",
         "nome": "Ração de peixe",
         "qtd": 3,
         "unid": "Sc 25kg",
-        "tipo": "Entrada",
-        "forn": "",
-        "preco": 0
+        "tipo": "Entrada"
       }
     ],
-    "ts": 1787091283784,
-    "mov": "MOV-0003"
+    "ts": 1787091283784
   },
   {
     "data": "2026-06-02",
@@ -2711,40 +2545,31 @@
         "nome": "Crescimento",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 3,
-        "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 3,
-        "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "unid": "Sc 40kg",
+        "tipo": "Saida"
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
         "qtd": 1,
-        "unid": "sc 40kg",
-        "tipo": "Saida",
-        "forn": "",
-        "preco": 0
+        "unid": "Sc 50kg",
+        "tipo": "Saida"
       }
     ],
-    "ts": 1781094500821,
-    "mov": "MOV-0002"
+    "ts": 1781094500821
   },
   {
     "data": "2026-05-01",
@@ -2753,28 +2578,28 @@
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "qtd": 23,
+        "qtd": 35,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "qtd": 12,
+        "qtd": 15,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "qtd": 7,
+        "qtd": 12,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "Fazenda São José",
         "preco": 0
       },
       {
@@ -2783,7 +2608,7 @@
         "qtd": 0,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -2798,7 +2623,7 @@
       {
         "setor": "Estoque",
         "nome": "Milho",
-        "qtd": 3,
+        "qtd": 5,
         "unid": "sc 40kg",
         "tipo": "Entrada",
         "forn": "",
@@ -2810,14 +2635,14 @@
         "qtd": 8,
         "unid": "Sc 25kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "Purina",
         "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
-        "qtd": 3,
-        "unid": "sc 40kg",
+        "qtd": 2,
+        "unid": "sc 30kg",
         "tipo": "Saida",
         "forn": "",
         "preco": 0
@@ -2828,7 +2653,7 @@
         "qtd": 12,
         "unid": "Sc 25kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "Purina",
         "preco": 0
       }
     ],
