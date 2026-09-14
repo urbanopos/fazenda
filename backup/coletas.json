@@ -6,41 +6,43 @@
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "unid": "sc 40kg",
         "qtd": 3,
-        "obs": "",
-        "forn": "",
-        "tipo": "Saida"
+        "unid": "sc 40kg",
+        "tipo": "Saida",
+        "forn": "Fazenda São José",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
-        "unid": "sc 40kg",
         "qtd": 1,
-        "obs": "",
+        "unid": "sc 30kg",
+        "tipo": "Saida",
         "forn": "",
-        "tipo": "Saida"
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "unid": "sc 40kg",
         "qtd": 3,
-        "obs": "",
-        "forn": "",
-        "tipo": "Saida"
+        "unid": "sc 40kg",
+        "tipo": "Saida",
+        "forn": "IRCA",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
-        "unid": "sc 40kg",
         "qtd": 1,
-        "obs": "",
+        "unid": "sc 40kg",
+        "tipo": "Saida",
         "forn": "",
-        "tipo": "Saida"
+        "preco": 0
       }
     ],
-    "ts": 1789382691978
+    "ts": 1789382691978,
+    "_editadoEm": 1789429002163,
+    "mov": "MOV-0029"
   },
   {
     "data": "2026-09-13",
