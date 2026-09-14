@@ -189,12 +189,12 @@
     "itens": [
       {
         "setor": "Aviario",
-        "nome": "Galinha",
-        "unid": "unid",
+        "nome": "Galinha Abatida",
         "qtd": 14,
-        "obs": "",
+        "unid": "unid",
+        "tipo": "",
         "forn": "",
-        "tipo": ""
+        "preco": 0
       }
     ],
     "ts": 1789055576800
