@@ -4,6 +4,7 @@
       "id": "p_ovo",
       "setor": "Vendas",
       "nome": "Ovos de Capoeira",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Bandeja c/30 ovos",
@@ -20,22 +21,9 @@
       ]
     },
     {
-      "id": "p_galinha",
-      "setor": "Vendas",
-      "nome": "Galinha Abatida",
-      "unid": "Unid.",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 60
-        }
-      ]
-    },
-    {
       "id": "p_frango",
       "setor": "Vendas",
       "nome": "Frango Abatido",
-      "unid": "Unid.",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -46,8 +34,8 @@
     {
       "id": "p_pinto",
       "setor": "Vendas",
-      "nome": "Pintos",
-      "unid": "Unid.",
+      "nome": "Pinto",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -63,7 +51,7 @@
       "id": "p_pintainha",
       "setor": "Vendas",
       "nome": "Pintainha",
-      "unid": "Unid.",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -76,10 +64,26 @@
       ]
     },
     {
+      "id": "p_esterco",
+      "setor": "Vendas",
+      "nome": "Esterco",
+      "unid": "",
+      "apresentacoes": [
+        {
+          "unid": "Sc.",
+          "preco": 15
+        },
+        {
+          "unid": "sacos",
+          "preco": 0
+        }
+      ]
+    },
+    {
       "id": "p_coco",
       "setor": "Vendas",
       "nome": "Coco Seco",
-      "unid": "Unid.",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -95,7 +99,7 @@
       "id": "p_manga",
       "setor": "Vendas",
       "nome": "Manga",
-      "unid": "Caixa",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Caixa",
@@ -111,7 +115,7 @@
       "id": "p_abacate",
       "setor": "Vendas",
       "nome": "Abacate",
-      "unid": "Caixa",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Caixa",
@@ -136,9 +140,36 @@
       ]
     },
     {
+      "id": "p1787993157009",
+      "setor": "Vendas",
+      "nome": "Frango Vivo",
+      "unid": "Unid.",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 50
+        },
+        {
+          "unid": "unid",
+          "preco": 0
+        }
+      ]
+    },
+    {
       "id": "p1789066561642_0",
       "setor": "Aviario",
       "nome": "Galinha",
+      "apresentacoes": [
+        {
+          "unid": "unid",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066563591_0",
+      "setor": "Aviario",
+      "nome": "Pinto",
       "apresentacoes": [
         {
           "unid": "unid",
@@ -163,15 +194,15 @@
       "nome": "Banana Prata",
       "apresentacoes": [
         {
+          "unid": "Cacho",
+          "preco": 0
+        },
+        {
+          "unid": "Cacho",
+          "preco": 0
+        },
+        {
           "unid": "cac.",
-          "preco": 0
-        },
-        {
-          "unid": "Cacho",
-          "preco": 0
-        },
-        {
-          "unid": "Cacho",
           "preco": 0
         }
       ]
@@ -309,6 +340,32 @@
       ]
     },
     {
+      "id": "p1789066562691_0",
+      "setor": "Aviario",
+      "nome": "Frango",
+      "apresentacoes": [
+        {
+          "unid": "unid",
+          "preco": 0
+        },
+        {
+          "unid": "Unid.",
+          "preco": 50
+        }
+      ]
+    },
+    {
+      "id": "p_galinha",
+      "setor": "Vendas",
+      "nome": "Galinha Abatida",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 60
+        }
+      ]
+    },
+    {
       "id": "p1789184203486",
       "setor": "Aviario",
       "nome": "Esterco de Galinha",
@@ -318,38 +375,7 @@
           "preco": 15
         },
         {
-          "unid": "Sc.",
-          "preco": 15
-        },
-        {
           "unid": "sacos",
-          "preco": 0
-        }
-      ]
-    },
-    {
-      "id": "p1789066563591_0",
-      "setor": "Aviario",
-      "nome": "Pinto",
-      "apresentacoes": [
-        {
-          "unid": "unid",
-          "preco": 0
-        }
-      ]
-    },
-    {
-      "id": "p1787993157009",
-      "setor": "Vendas",
-      "nome": "Frango Vivo",
-      "unid": "Unid.",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 50
-        },
-        {
-          "unid": "unid",
           "preco": 0
         }
       ]
@@ -362,37 +388,6 @@
         {
           "unid": "cac.",
           "preco": 0
-        }
-      ]
-    },
-    {
-      "id": "p_esterco",
-      "setor": "Vendas",
-      "nome": "Esterco",
-      "unid": "Sc.",
-      "apresentacoes": [
-        {
-          "unid": "Sc.",
-          "preco": 15
-        },
-        {
-          "unid": "sacos",
-          "preco": 0
-        }
-      ]
-    },
-    {
-      "id": "p1789066562691_0",
-      "setor": "Aviario",
-      "nome": "Frango",
-      "apresentacoes": [
-        {
-          "unid": "unid",
-          "preco": 0
-        },
-        {
-          "unid": "Unid.",
-          "preco": 50
         }
       ]
     }
