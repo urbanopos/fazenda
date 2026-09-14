@@ -818,38 +818,49 @@
         "nome": "Crescimento",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida"
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida"
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
         "qtd": 1,
         "unid": "sc 40kg",
-        "tipo": "Saida"
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 3,
         "unid": "sc 40kg",
-        "tipo": "Saida"
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Ração de peixe",
         "qtd": 1,
         "unid": "Sc 25kg",
-        "tipo": "Saida"
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
       }
     ],
-    "ts": 1787567616906
+    "ts": 1787567616906,
+    "mov": "MOV-0023"
   },
   {
     "data": "2026-08-23",
