@@ -2545,31 +2545,40 @@
         "nome": "Crescimento",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida"
+        "tipo": "Saida",
+        "forn": "Fazenda São José",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 3,
-        "unid": "Sc 40kg",
-        "tipo": "Saida"
+        "unid": "sc 40kg",
+        "tipo": "Saida",
+        "forn": "IRCA",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 3,
-        "unid": "Sc 40kg",
-        "tipo": "Saida"
+        "unid": "sc 40kg",
+        "tipo": "Saida",
+        "forn": "IRCA",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Milho",
         "qtd": 1,
-        "unid": "Sc 50kg",
-        "tipo": "Saida"
+        "unid": "sc 40kg",
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
       }
     ],
-    "ts": 1781094500821
+    "ts": 1781094500821,
+    "mov": "MOV-0002"
   },
   {
     "data": "2026-05-01",
