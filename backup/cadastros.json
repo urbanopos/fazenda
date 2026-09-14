@@ -345,12 +345,9 @@
       "nome": "Frango",
       "apresentacoes": [
         {
-          "unid": "unid",
-          "preco": 0
-        },
-        {
           "unid": "Unid.",
-          "preco": 50
+          "preco": 50,
+          "fornecedor": "Fazenda São José"
         }
       ]
     },
