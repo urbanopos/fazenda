@@ -1675,24 +1675,31 @@
         "nome": "Crescimento",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida"
+        "tipo": "Saida",
+        "forn": "Fazenda São José",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
         "unid": "sc 40kg",
-        "tipo": "Saida"
+        "tipo": "Saida",
+        "forn": "IRCA",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
         "qtd": 3,
         "unid": "sc 40kg",
-        "tipo": "Saida"
+        "tipo": "Saida",
+        "forn": "IRCA",
+        "preco": 0
       }
     ],
-    "ts": 1785249179757
+    "ts": 1785249179757,
+    "mov": "MOV-0014"
   },
   {
     "data": "2026-07-27",
