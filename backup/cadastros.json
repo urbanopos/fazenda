@@ -27,7 +27,8 @@
       "apresentacoes": [
         {
           "unid": "Unid.",
-          "preco": 50
+          "preco": 50,
+          "fornecedor": "Fazenda São José"
         }
       ]
     },
