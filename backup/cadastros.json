@@ -64,18 +64,6 @@
       ]
     },
     {
-      "id": "p_esterco",
-      "setor": "Vendas",
-      "nome": "Esterco",
-      "apresentacoes": [
-        {
-          "unid": "Sacos",
-          "preco": 0,
-          "fornecedor": "Fazenda São José"
-        }
-      ]
-    },
-    {
       "id": "p_coco",
       "setor": "Vendas",
       "nome": "Coco Seco",
@@ -382,6 +370,18 @@
         {
           "unid": "cac.",
           "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p_esterco",
+      "setor": "Vendas",
+      "nome": "Esterco",
+      "apresentacoes": [
+        {
+          "unid": "Sacos",
+          "preco": 0,
+          "fornecedor": "Fazenda São José"
         }
       ]
     }
