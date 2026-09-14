@@ -14,7 +14,10 @@
         },
         {
           "unid": "Unid.",
-          "preco": 1
+          "preco": 1,
+          "abas": [
+            "Vendas"
+          ]
         },
         {
           "unid": "unid",
