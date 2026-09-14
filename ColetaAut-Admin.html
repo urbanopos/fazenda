@@ -11411,7 +11411,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = 'b363b3d04ee6';
+var _caFP = '1a0a22a493af';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -15332,7 +15332,11 @@ function _abrirEditColeta(ri){
     itensHtml += _linhaEditItemColeta(ri, ii, it.setor||'', it.nome||'', it.qtd||0, it.unid||'', it.tipo||'', it.forn||'', it.preco||0);
   });
 
-  var movBadge = r.mov ? '<div style="font-family:DM Mono,monospace;font-size:11px;font-weight:700;color:var(--vc);margin-bottom:6px">'+_esc(r.mov)+'</div>' : '';
+  var movBadge = r.mov
+    ? '<div class="hcol-edit-row"><span class="hcol-edit-lbl">Nº movimento</span>'
+      +'<input class="hcol-edit-inp" id="hcol-ei-mov-'+ri+'" style="font-family:DM Mono,monospace;font-weight:700;color:var(--vc)" value="'+_esc(r.mov)+'"></div>'
+      +'<div style="font-size:10px;color:var(--mu);margin:-4px 0 8px">Editável só pra corrigir a ordem cronológica — mude com cuidado pra não repetir um número já usado em outro registro.</div>'
+    : '';
 
   var corpo = document.getElementById('modal-edit-coleta-corpo');
   corpo.innerHTML =
@@ -15534,6 +15538,11 @@ function _salvarEditColeta(ri){
   regs[ri].coletor = novoColetor;
   regs[ri].itens   = novosItens;
   regs[ri].ts      = regs[ri].ts || Date.now();
+  var movEl = document.getElementById('hcol-ei-mov-'+ri);
+  if(movEl){
+    var movDigitado = movEl.value.trim();
+    if(movDigitado) regs[ri].mov = movDigitado; // respeita correcao manual (ex: trocar a ordem entre dois registros)
+  }
   _atribuirNumeroMovRegistro(regs[ri]); // so numera se o registro tiver Estoque e ainda nao tiver MOV-XXXX
 
   // Persiste: recarrega TODO o historico (incluindo excluidos, para nao
