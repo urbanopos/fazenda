@@ -254,41 +254,43 @@
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "unid": "sc 40kg",
         "qtd": 3,
-        "obs": "",
-        "forn": "",
-        "tipo": "Saida"
+        "unid": "sc 40kg",
+        "tipo": "Saida",
+        "forn": "Fazenda São José",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "unid": "sc 40kg",
         "qtd": 3,
-        "obs": "",
-        "forn": "",
-        "tipo": "Saida"
+        "unid": "sc 40kg",
+        "tipo": "Saida",
+        "forn": "IRCA",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "unid": "sc 40kg",
         "qtd": 3,
-        "obs": "",
-        "forn": "",
-        "tipo": "Saida"
+        "unid": "sc 40kg",
+        "tipo": "Saida",
+        "forn": "IRCA",
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Pre-Inicial",
-        "unid": "sc 40kg",
         "qtd": 1,
-        "obs": "",
+        "unid": "sc 40kg",
+        "tipo": "Saida",
         "forn": "",
-        "tipo": "Saida"
+        "preco": 0
       }
     ],
-    "ts": 1788895476507
+    "ts": 1788895476507,
+    "_editadoEm": 1789428972119,
+    "mov": "MOV-0027"
   },
   {
     "data": "2026-09-08",
