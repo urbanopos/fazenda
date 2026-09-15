@@ -198,7 +198,12 @@
         {
           "unid": "Cacho",
           "preco": 0,
-          "fornecedor": "Fazenda São José"
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ]
         }
       ]
     },
