@@ -305,25 +305,6 @@
       ]
     },
     {
-      "id": "p1789184203486",
-      "setor": "Aviario",
-      "nome": "Esterco de Galinha",
-      "apresentacoes": [
-        {
-          "unid": "Saco",
-          "preco": 15
-        },
-        {
-          "unid": "Sc.",
-          "preco": 15
-        },
-        {
-          "unid": "sacos",
-          "preco": 0
-        }
-      ]
-    },
-    {
       "id": "p1789066563591_0",
       "setor": "Aviario",
       "nome": "Pintos",
@@ -388,6 +369,10 @@
         {
           "unid": "sacos",
           "preco": 0
+        },
+        {
+          "unid": "Saco",
+          "preco": 15
         }
       ]
     },
