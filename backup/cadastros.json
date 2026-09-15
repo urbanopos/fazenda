@@ -11,7 +11,11 @@
         },
         {
           "unid": "Unid.",
-          "preco": 1
+          "preco": 1,
+          "abas": [
+            "Aviario",
+            "Vendas"
+          ]
         }
       ]
     },
