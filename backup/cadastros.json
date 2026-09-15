@@ -431,7 +431,9 @@
             "Aviario",
             "Perda",
             "Vendas"
-          ]
+          ],
+          "_excluido": true,
+          "_excluidoEm": 1789469919655
         },
         {
           "id": "amu2k4a6nqk0dro",
