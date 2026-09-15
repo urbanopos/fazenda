@@ -322,10 +322,6 @@
       "nome": "Farelo de Trigo",
       "apresentacoes": [
         {
-          "unid": "sc 40kg",
-          "preco": 0
-        },
-        {
           "unid": "sc 30kg",
           "preco": 0,
           "abas": [
