@@ -166,10 +166,6 @@
           "unid": "Unid",
           "preco": 8,
           "fornecedor": "Fazenda São José"
-        },
-        {
-          "unid": "Unid.",
-          "preco": 30
         }
       ]
     },
@@ -460,12 +456,7 @@
       "setor": "Vendas",
       "nome": "Pinto",
       "unid": "",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 30
-        }
-      ]
+      "apresentacoes": []
     }
   ],
   "clientes": [
