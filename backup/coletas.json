@@ -168,14 +168,15 @@
       {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
-        "unid": "unid",
         "qtd": 45,
-        "obs": "",
+        "unid": "unid",
+        "tipo": "",
         "forn": "",
-        "tipo": ""
+        "preco": 0
       }
     ],
-    "ts": 1789154730236
+    "ts": 1789154730236,
+    "_editadoEm": 1789430425136
   },
   {
     "data": "2026-09-10",
