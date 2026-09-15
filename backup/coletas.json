@@ -180,8 +180,10 @@
       {
         "setor": "Campo",
         "nome": "Estacas de sabiá",
-        "qtd": 11,
         "unid": "Unid.",
+        "qtd": 11,
+        "obs": "",
+        "forn": "",
         "tipo": ""
       }
     ],
@@ -256,12 +258,12 @@
     "itens": [
       {
         "setor": "Aviario",
-        "nome": "Galinha Abatida",
-        "qtd": 14,
+        "nome": "Galinha",
         "unid": "unid",
-        "tipo": "",
+        "qtd": 14,
+        "obs": "",
         "forn": "",
-        "preco": 0
+        "tipo": ""
       }
     ],
     "ts": 1789055576800
@@ -376,6 +378,22 @@
     "ts": 1788894367498
   },
   {
+    "data": "2026-09-08",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "unid": "unid",
+        "qtd": 53,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1788872362449
+  },
+  {
     "data": "2026-09-07",
     "coletor": "Júnior",
     "itens": [
@@ -429,20 +447,6 @@
       }
     ],
     "ts": 1788802408782
-  },
-  {
-    "data": "2026-09-06",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
-        "qtd": 53,
-        "unid": "unid",
-        "tipo": ""
-      }
-    ],
-    "ts": 1788872362449
   },
   {
     "data": "2026-09-06",
@@ -786,12 +790,12 @@
     "itens": [
       {
         "setor": "Aviario",
-        "nome": "Galinha Abatida",
-        "qtd": 14,
+        "nome": "Galinha",
         "unid": "unid",
-        "tipo": "",
+        "qtd": 14,
+        "obs": "",
         "forn": "",
-        "preco": 0
+        "tipo": ""
       }
     ],
     "ts": 1787858834027
@@ -1408,7 +1412,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "Fazenda São José",
         "preco": 0
       },
       {
@@ -1417,14 +1421,14 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
         "qtd": 1,
-        "unid": "sc 40kg",
+        "unid": "sc 30kg",
         "tipo": "Saida",
         "forn": "",
         "preco": 0
@@ -1435,7 +1439,7 @@
         "qtd": 3,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       }
     ],
@@ -1538,14 +1542,14 @@
         "qtd": 1,
         "unid": "Sc 25kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "Purina",
         "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
         "qtd": 3,
-        "unid": "sc 40kg",
+        "unid": "sc 30kg",
         "tipo": "Entrada",
         "forn": "",
         "preco": 0
@@ -1668,7 +1672,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "Fazenda São José",
         "preco": 0
       },
       {
@@ -1677,7 +1681,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -1695,7 +1699,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       }
     ],
@@ -1755,7 +1759,7 @@
         "qtd": 3,
         "unid": "Sc 25kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "Purina",
         "preco": 0
       }
     ],
@@ -1817,7 +1821,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "Fazenda São José",
         "preco": 0
       },
       {
@@ -1826,7 +1830,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -1835,7 +1839,7 @@
         "qtd": 3,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       }
     ],
@@ -1927,7 +1931,7 @@
         "qtd": 1,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "Fazenda São José",
         "preco": 0
       },
       {
@@ -1936,7 +1940,7 @@
         "qtd": 3,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -1945,7 +1949,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -1963,7 +1967,7 @@
         "qtd": 1,
         "unid": "Sc 25kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "Purina",
         "preco": 0
       }
     ],
@@ -2077,7 +2081,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "Fazenda São José",
         "preco": 0
       },
       {
@@ -2086,7 +2090,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -2095,7 +2099,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -2231,7 +2235,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -2240,7 +2244,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "Fazenda São José",
         "preco": 0
       },
       {
@@ -2249,7 +2253,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -2265,7 +2269,7 @@
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
         "qtd": 1,
-        "unid": "sc 40kg",
+        "unid": "sc 30kg",
         "tipo": "Saida",
         "forn": "",
         "preco": 0
@@ -2338,7 +2342,7 @@
         "qtd": 20,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "Fazenda São José",
         "preco": 0
       },
       {
@@ -2347,7 +2351,7 @@
         "qtd": 8,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -2356,14 +2360,14 @@
         "qtd": 20,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
         "qtd": 3,
-        "unid": "sc 40kg",
+        "unid": "sc 30kg",
         "tipo": "Entrada",
         "forn": "",
         "preco": 0
@@ -2434,7 +2438,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "Fazenda São José",
         "preco": 0
       },
       {
@@ -2443,7 +2447,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -2452,7 +2456,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       }
     ],
@@ -2497,7 +2501,7 @@
         "qtd": 1,
         "unid": "Sc 25kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "Purina",
         "preco": 0
       }
     ],
@@ -2527,7 +2531,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "Fazenda São José",
         "preco": 0
       },
       {
@@ -2536,7 +2540,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -2545,7 +2549,7 @@
         "qtd": 3,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -2616,7 +2620,7 @@
         "qtd": 3,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "Fazenda São José",
         "preco": 0
       },
       {
@@ -2625,7 +2629,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -2634,7 +2638,7 @@
         "qtd": 3,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -2652,7 +2656,7 @@
         "qtd": 1,
         "unid": "Sc 25kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "Purina",
         "preco": 0
       }
     ],
@@ -2682,7 +2686,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -2700,7 +2704,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "Fazenda São José",
         "preco": 0
       },
       {
@@ -2709,7 +2713,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       }
     ],
@@ -2743,7 +2747,7 @@
         "qtd": 27,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "Fazenda São José",
         "preco": 0
       },
       {
@@ -2752,7 +2756,7 @@
         "qtd": 10,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -2761,7 +2765,7 @@
         "qtd": 25,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -2770,7 +2774,7 @@
         "qtd": 3,
         "unid": "Sc 25kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "Purina",
         "preco": 0
       }
     ],
@@ -2787,7 +2791,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "Fazenda São José",
         "preco": 0
       },
       {
@@ -2796,7 +2800,7 @@
         "qtd": 3,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -2805,7 +2809,7 @@
         "qtd": 3,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -2828,28 +2832,28 @@
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "qtd": 23,
+        "qtd": 35,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "qtd": 12,
+        "qtd": 15,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "qtd": 7,
+        "qtd": 12,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "Fazenda São José",
         "preco": 0
       },
       {
@@ -2858,7 +2862,7 @@
         "qtd": 0,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -2873,7 +2877,7 @@
       {
         "setor": "Estoque",
         "nome": "Milho",
-        "qtd": 3,
+        "qtd": 5,
         "unid": "sc 40kg",
         "tipo": "Entrada",
         "forn": "",
@@ -2885,14 +2889,14 @@
         "qtd": 8,
         "unid": "Sc 25kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "Purina",
         "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
-        "qtd": 3,
-        "unid": "sc 40kg",
+        "qtd": 2,
+        "unid": "sc 30kg",
         "tipo": "Saida",
         "forn": "",
         "preco": 0
@@ -2903,7 +2907,7 @@
         "qtd": 12,
         "unid": "Sc 25kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "Purina",
         "preco": 0
       }
     ],
