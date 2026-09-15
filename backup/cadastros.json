@@ -139,15 +139,6 @@
           "unid": "Unid.",
           "preco": 50,
           "fornecedor": "Fazenda São José"
-        },
-        {
-          "unid": "unid",
-          "preco": 0,
-          "abas": [
-            "Aviario",
-            "Perda",
-            "Vendas"
-          ]
         }
       ]
     },
