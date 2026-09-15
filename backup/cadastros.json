@@ -409,18 +409,7 @@
       "id": "p_esterco",
       "setor": "Vendas",
       "nome": "Esterco",
-      "apresentacoes": [
-        {
-          "unid": "Sacos",
-          "preco": 0,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Aviario",
-            "Perda",
-            "Vendas"
-          ]
-        }
-      ]
+      "apresentacoes": []
     },
     {
       "id": "p1789066561642_0",
