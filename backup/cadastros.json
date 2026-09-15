@@ -289,7 +289,10 @@
         {
           "unid": "sc 40kg",
           "preco": 0,
-          "fornecedor": "IRCA"
+          "fornecedor": "IRCA",
+          "abas": [
+            "Estoque"
+          ]
         },
         {
           "unid": "sc 40kg",
