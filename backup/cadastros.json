@@ -440,7 +440,12 @@
         {
           "unid": "Unid.",
           "preco": 50,
-          "fornecedor": "Fazenda São José"
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ]
         }
       ]
     },
