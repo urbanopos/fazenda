@@ -266,8 +266,7 @@
           "preco": 0,
           "fornecedor": "IRCA",
           "abas": [
-            "Estoque",
-            "Vendas"
+            "Estoque"
           ]
         }
       ]
