@@ -473,6 +473,17 @@
           "abas": [
             "Vendas"
           ]
+        },
+        {
+          "id": "amu2kegk0ky06vh",
+          "unid": "Unid. Viva",
+          "preco": 50,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ]
         }
       ]
     },
