@@ -1027,6 +1027,9 @@ input[type="password"]:-webkit-autofill{
   <div class="mpd-body" id="mpd-body">
     <div class="mpd-loading">Carregando...</div>
   </div>
+  <div style="padding:12px 16px;border-top:1px solid rgba(255,255,255,.12);background:var(--vd);flex-shrink:0">
+    <button class="cad-btn-add" style="width:100%;background:rgba(255,255,255,.1);color:#fff" onclick="_mpdFechar()">Voltar ao aplicativo</button>
+  </div>
 </div>
 
 <script>
@@ -11411,7 +11414,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0a4d3ecf9b';
+var _caFP = '1a0a4dc36eab';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
