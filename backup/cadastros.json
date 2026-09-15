@@ -25,16 +25,7 @@
       "id": "p_frango",
       "setor": "Vendas",
       "nome": "Frango Abatido",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 50,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Vendas"
-          ]
-        }
-      ]
+      "apresentacoes": []
     },
     {
       "id": "p_pintainha",
