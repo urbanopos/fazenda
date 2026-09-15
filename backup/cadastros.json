@@ -461,9 +461,10 @@
     {
       "id": "p_galinha",
       "setor": "Vendas",
-      "nome": "Galinha Abatida",
+      "nome": "Galinha",
       "apresentacoes": [
         {
+          "id": "amu2kcsk9kdfvro",
           "unid": "Unid.",
           "preco": 60,
           "fornecedor": "Fazenda São José",
