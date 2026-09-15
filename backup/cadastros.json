@@ -85,7 +85,11 @@
         {
           "unid": "Caixa",
           "preco": 65,
-          "fornecedor": "Fazenda São José"
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Campo",
+            "Vendas"
+          ]
         },
         {
           "unid": "Unid",
