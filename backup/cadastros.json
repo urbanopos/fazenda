@@ -511,7 +511,9 @@
             "Vendas"
           ]
         }
-      ]
+      ],
+      "_excluido": true,
+      "_excluidoEm": 1789469281439
     },
     {
       "id": "p_pinto",
