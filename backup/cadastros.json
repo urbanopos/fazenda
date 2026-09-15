@@ -339,22 +339,6 @@
       ]
     },
     {
-      "id": "p1787993157009",
-      "setor": "Vendas",
-      "nome": "Frango Vivo",
-      "unid": "Unid.",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 50
-        },
-        {
-          "unid": "unid",
-          "preco": 0
-        }
-      ]
-    },
-    {
       "id": "p1789199978544_0",
       "setor": "Campo",
       "nome": "Banana Maçã",
@@ -403,6 +387,22 @@
         },
         {
           "unid": "sacos",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1787993157009",
+      "setor": "Vendas",
+      "nome": "Frango Vivo",
+      "unid": "Unid.",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 50
+        },
+        {
+          "unid": "unid",
           "preco": 0
         }
       ]
