@@ -673,28 +673,24 @@ function _catalogoBuscarExato(setor, nome, unid){
 function _esc(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 
 function _catalogoNomesUnicos(setor){
-  // Busca primeiro na tabela única de Produtos do Admin (já buscada do
-  // GitHub, só leitura) — filtrando pelo setor — e complementa com o
-  // catálogo antigo, para itens ainda não migrados. Preço nunca é lido
-  // aqui, então nunca chega nesta tela de coleta.
+  // Fonte única: Cadastros → Produtos do Admin (só leitura, buscada do
+  // GitHub). Um produto aparece na aba se TIVER AO MENOS UMA apresentação
+  // habilitada para ela — quem decide isso é o campo "Aparece nas abas" de
+  // cada apresentação (definido pelo Admin/Desk), não um Setor único do
+  // produto. Produto sem nenhuma restrição de abas aparece em todas.
   var label = (SETORES[setor]||{}).label || setor;
   var cadRemoto = _produtosCadastro || _produtosCadastroLocal();
-  var doProdutos = (cadRemoto||[])
-    .filter(function(p){ return p.setor===label; })
-    .map(function(p){ return p.nome; });
-  var cat = _catalogoCarregar()[setor]||[];
-  var doCatalogoAntigo = [];
-  (function(){
-    var v = {};
-    cat.forEach(function(it){
-      var chave = it.nome.trim().toLowerCase();
-      if(!v[chave]){ v[chave]=true; doCatalogoAntigo.push(it.nome); }
-    });
-  })();
   var vistos = {}, out = [];
-  doProdutos.concat(doCatalogoAntigo).forEach(function(n){
-    var chave = n.trim().toLowerCase();
-    if(!vistos[chave]){ vistos[chave]=true; out.push(n); }
+  (cadRemoto||[]).forEach(function(p){
+    if(p._excluido) return;
+    var habilitado = (p.apresentacoes||[]).some(function(a){
+      if(a._excluido) return false;
+      if(!Array.isArray(a.abas) || a.abas.length===0) return true;
+      return a.abas.indexOf(label)>-1;
+    });
+    if(!habilitado) return;
+    var chave = (p.nome||'').trim().toLowerCase();
+    if(chave && !vistos[chave]){ vistos[chave]=true; out.push(p.nome); }
   });
   return out.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
 }
@@ -704,8 +700,10 @@ function _catalogoUnidadesPara(setor, nome){
   var vistos = {}, out = [];
   var cadRemoto = _produtosCadastro || _produtosCadastroLocal();
   (cadRemoto||[]).forEach(function(p){
-    if(p.setor===label && p.nome.trim().toLowerCase()===alvo){
+    if(p._excluido) return;
+    if(p.nome.trim().toLowerCase()===alvo){
       (p.apresentacoes||[]).forEach(function(a){
+        if(a._excluido) return;
         // Se a apresentação tiver abas restritas, só entra se este setor
         // estiver na lista; sem restrição (campo ausente ou vazio), aparece sempre.
         if(Array.isArray(a.abas) && a.abas.length>0 && a.abas.indexOf(label)===-1) return;
@@ -714,14 +712,7 @@ function _catalogoUnidadesPara(setor, nome){
       });
     }
   });
-  var cat = _catalogoCarregar()[setor]||[];
-  cat.forEach(function(it){
-    if(it.nome.trim().toLowerCase()===alvo){
-      var u = it.unid.trim();
-      if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
-    }
-  });
-  return out;
+  return out.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
 }
 function _catalogoAdicionar(setor, nome, unid, passo){
   var cat = _catalogoCarregar();
@@ -984,14 +975,16 @@ function _catalogoApresentacoesPara(setor, nome){
   var out = [];
   var cadRemoto = _produtosCadastro || _produtosCadastroLocal();
   (cadRemoto||[]).forEach(function(p){
-    if(p.setor===label && p.nome.trim().toLowerCase()===alvo){
+    if(p._excluido) return;
+    if(p.nome.trim().toLowerCase()===alvo){
       (p.apresentacoes||[]).forEach(function(a){
+        if(a._excluido) return;
         if(Array.isArray(a.abas) && a.abas.length>0 && a.abas.indexOf(label)===-1) return;
         out.push({unid:(a.unid||'').trim(), preco:Number(a.preco)||0, fornecedor:a.fornecedor||''});
       });
     }
   });
-  return out;
+  return out.sort(function(a,b){ return (a.unid||'').localeCompare(b.unid||'','pt-BR'); });
 }
 
 // Rótulo da apresentação SEM preço — este texto é o único lugar onde o
@@ -1208,7 +1201,7 @@ function _iniciar(){
    nada salvo no aparelho — token, catálogo e coletas pendentes continuam
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
-var _caFP = '1a0a25ac83ff';
+var _caFP = '1a0a49cd153f';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -1982,8 +1975,10 @@ function _atualizarDatalistFornecedores(){
   if(!lista){
     try{ lista = JSON.parse(localStorage.getItem(CACHE_FORNECEDORES_KEY)||'[]'); }catch(e){ lista = []; }
   }
-  dl.innerHTML = (lista||[]).map(function(f){
-    return '<option value="'+String(f.nome||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'">';
+  var nomes = (lista||[]).filter(function(f){ return !f._excluido; }).map(function(f){ return f.nome||''; });
+  nomes.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
+  dl.innerHTML = nomes.map(function(n){
+    return '<option value="'+String(n).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'">';
   }).join('');
 }
 
