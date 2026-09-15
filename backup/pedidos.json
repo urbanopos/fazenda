@@ -131,7 +131,7 @@
         "preco": 15,
         "sub": 210,
         "data": "04/09/2026",
-        "prodId": "p1789184203486"
+        "prodId": "p_esterco"
       },
       {
         "nome": "Ovos de Capoeira",
@@ -1090,7 +1090,7 @@
         "col4": "R$ 15,00 x 11",
         "col5": "R$ 165,00",
         "val": 165,
-        "prodId": "p1789184203486",
+        "prodId": "p_esterco",
         "nome": "Esterco de Galinha",
         "unidade": "sacos",
         "qtd": 11,
@@ -1659,7 +1659,7 @@
         "col4": "R$ 15,00 x 13",
         "col5": "R$ 195,00",
         "val": 195,
-        "prodId": "p1789184203486",
+        "prodId": "p_esterco",
         "nome": "Esterco de Galinha",
         "unidade": "Sacos",
         "qtd": 13,
