@@ -25,7 +25,9 @@
       "id": "p_frango",
       "setor": "Vendas",
       "nome": "Frango Abatido",
-      "apresentacoes": []
+      "apresentacoes": [],
+      "_excluido": true,
+      "_excluidoEm": 1789469955251
     },
     {
       "id": "p_pintainha",
