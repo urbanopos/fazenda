@@ -380,8 +380,6 @@
           "preco": 60,
           "fornecedor": "Fazenda São José",
           "abas": [
-            "Aviario",
-            "Perda",
             "Vendas"
           ]
         }
