@@ -443,6 +443,15 @@
             "Perda",
             "Vendas"
           ]
+        },
+        {
+          "id": "amu2k6f20gb7odl",
+          "unid": "Unid. Abatida",
+          "preco": 50,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Vendas"
+          ]
         }
       ]
     },
