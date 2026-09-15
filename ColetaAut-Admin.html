@@ -11411,7 +11411,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0a25af05de';
+var _caFP = '1a0a45a51ac2';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -11842,53 +11842,36 @@ function _catalogoBuscarExato(setor, nome, unid){
   return cat.find(function(it){ return it.nome.trim().toLowerCase()===an && it.unid.trim().toLowerCase()===au; });
 }
 function _catalogoNomesUnicos(setor){
-  // Busca primeiro na tabela única de Produtos (filtrando pelo setor) —
-  // e complementa com o catálogo antigo, para itens que o admin ainda não
-  // migrou via "Revisar itens do catálogo de coleta". O preço nunca é
-  // lido aqui, então nunca chega nesta tela de coleta.
+  // Fonte única: Cadastros → Produtos. O catálogo antigo não é mais usado
+  // aqui — a listagem do campo de seleção passa a ser exclusivamente o que
+  // está cadastrado (produtos excluídos nunca aparecem).
   var label = (SETORES[setor]||{}).label || setor;
-  var doProdutos = (_cadDados.produtos||[])
-    .filter(function(p){ return p.setor===label; })
-    .map(function(p){ return p.nome; });
-  var cat = _catalogoCarregar()[setor]||[];
-  var doCatalogoAntigo = [];
-  (function(){
-    var v = {};
-    cat.forEach(function(it){
-      var chave = it.nome.trim().toLowerCase();
-      if(!v[chave]){ v[chave]=true; doCatalogoAntigo.push(it.nome); }
-    });
-  })();
   var vistos = {}, out = [];
-  doProdutos.concat(doCatalogoAntigo).forEach(function(n){
-    var chave = n.trim().toLowerCase();
-    if(!vistos[chave]){ vistos[chave]=true; out.push(n); }
+  (_cadDados.produtos||[]).forEach(function(p){
+    if(p._excluido) return;
+    if(p.setor !== label) return;
+    var chave = (p.nome||'').trim().toLowerCase();
+    if(chave && !vistos[chave]){ vistos[chave]=true; out.push(p.nome); }
   });
   return out.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
 }
 function _catalogoUnidadesPara(setor, nome){
-  // Mesma lógica: apresentações da tabela única de Produtos primeiro,
-  // complementadas pelas unidades do catálogo antigo (itens ainda não
-  // migrados). Nunca lê/usa preço aqui.
+  // Fonte única: Cadastros → Produtos (produtos/apresentações excluídos
+  // nunca aparecem, nem aqui nem na edição de registros antigos).
   var label = (SETORES[setor]||{}).label || setor;
   var alvo = String(nome).trim().toLowerCase();
   var vistos = {}, out = [];
   (_cadDados.produtos||[]).forEach(function(p){
+    if(p._excluido) return;
     if(p.setor===label && p.nome.trim().toLowerCase()===alvo){
       (p.apresentacoes||[]).forEach(function(a){
+        if(a._excluido) return;
         // Se a apresentação tiver abas restritas, só entra se este setor
         // estiver na lista; sem restrição (campo ausente), aparece sempre.
         if(Array.isArray(a.abas) && a.abas.length>0 && a.abas.indexOf(label)===-1) return;
         var u = (a.unid||'').trim();
         if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
       });
-    }
-  });
-  var cat = _catalogoCarregar()[setor]||[];
-  cat.forEach(function(it){
-    if(it.nome.trim().toLowerCase()===alvo){
-      var u = it.unid.trim();
-      if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
     }
   });
   return out;
@@ -12045,7 +12028,7 @@ var PROD_VENDA = [
 ];
 
 function _prodVenda(){
-  var out = (_cadDados.produtos||[]).map(function(p){ return {id:p.id, nome:p.nome}; });
+  var out = (_cadDados.produtos||[]).filter(function(p){ return !p._excluido; }).map(function(p){ return {id:p.id, nome:p.nome}; });
   out.push({id:'_edit', nome:'Editavel'});
   return out;
 }
@@ -12316,15 +12299,16 @@ function _cardColetaSetor(setor, cl, forn){
 
 /* Apresentações (unidade+fornecedor+preço) cadastradas para este item,
    dentro deste setor — nunca cai para o catálogo antigo (que não tem
-   fornecedor/preço): se não houver nada cadastrado, a coleta fica
-   bloqueada até o Admin cadastrar em Cadastros → Produtos. */
+   fornecedor/preço). Produtos/apresentações excluídos nunca aparecem. */
 function _catalogoApresentacoesPara(setor, nome){
   var label = (SETORES[setor]||{}).label || setor;
   var alvo = String(nome).trim().toLowerCase();
   var out = [];
   (_cadDados.produtos||[]).forEach(function(p){
+    if(p._excluido) return;
     if(p.setor===label && p.nome.trim().toLowerCase()===alvo){
       (p.apresentacoes||[]).forEach(function(a){
+        if(a._excluido) return;
         if(Array.isArray(a.abas) && a.abas.length>0 && a.abas.indexOf(label)===-1) return;
         out.push({unid:(a.unid||'').trim(), preco:Number(a.preco)||0, fornecedor:a.fornecedor||''});
       });
@@ -12422,7 +12406,7 @@ function _onSelecionarItem(setor){
   }
 }
 
-function _cadastrarItemCatalogo(setor){
+async function _cadastrarItemCatalogo(setor){
   var k = setor+'_novo';
   var nomeVisEl = document.getElementById('nomevis-'+k);
   var unidEl = document.getElementById('novaunid-'+k);
@@ -12430,13 +12414,25 @@ function _cadastrarItemCatalogo(setor){
   var unid = (unidEl?unidEl.value:'').trim();
   if(!nome){ _toast('Informe o nome do item.'); nomeVisEl&&nomeVisEl.focus(); return; }
   if(!unid){ _toast('Informe a unidade do item.'); unidEl&&unidEl.focus(); return; }
-  if(_catalogoBuscarExato(setor, nome, unid)){
-    _toast('Esse item com essa unidade já existe no catálogo.');
-    return;
+  var label = (SETORES[setor]||{}).label || setor;
+  var nomeNorm = nome.toLowerCase();
+  var unidNorm = unid.toLowerCase();
+  var existente = (_cadDados.produtos||[]).find(function(p){ return !p._excluido && p.setor===label && (p.nome||'').trim().toLowerCase()===nomeNorm; });
+  if(existente){
+    var jaTemUnid = (existente.apresentacoes||[]).some(function(a){ return !a._excluido && (a.unid||'').trim().toLowerCase()===unidNorm; });
+    if(jaTemUnid){ _toast('Esse item com essa unidade já existe no cadastro.'); return; }
+    if(!existente.apresentacoes) existente.apresentacoes = [];
+    existente.apresentacoes.push({id:_gerarIdApres(), unid:unid, preco:0});
+  } else {
+    _cadDados.produtos.push({
+      id: 'p'+Date.now(),
+      setor: label,
+      nome: nome,
+      apresentacoes: [{id:_gerarIdApres(), unid:unid, preco:0}]
+    });
   }
-  _catalogoAdicionar(setor, nome, unid);
-  _catalogoEnviarGitHub(); // publica no GitHub (nao bloqueia) — Coletores puxam essa versao automaticamente
-  _toast('✅ '+nome+' cadastrado no catálogo!');
+  await _cadSalvar();
+  _toast('✅ '+nome+' cadastrado em Cadastros → Produtos!');
 
   // Limpa o formulario de cadastro e ja seleciona o item recem-criado,
   // caso queiram registrar uma coleta dele agora mesmo
@@ -12452,16 +12448,26 @@ function _cadastrarItemCatalogo(setor){
   }
 }
 
-/* Remove um item do catalogo (menu) desta aba — apenas App Admin. Pede
-   confirmacao porque afeta o menu de TODOS os coletores, e nao remove nem
-   altera nenhuma coleta ja registrada com esse item (historico preservado). */
-function _confirmarRemoverCatalogo(setor, k){
+/* Remove (exclusão lógica) um produto do cadastro único, direto por aqui —
+   apenas App Admin. Pede confirmação porque afeta a lista de TODOS os
+   coletores, e nao remove nem altera nenhuma coleta ja registrada com esse
+   item (histórico preservado). Exclusão lógica: nunca "ressuscita" numa
+   sincronização com outro aparelho. */
+async function _confirmarRemoverCatalogo(setor, k){
   var sel = document.getElementById('sel-'+k);
   var nome = sel ? sel.value : '';
   if(!nome || nome==='__novo__') return;
-  if(!confirm('Remover "'+nome+'" do menu de '+(SETORES[setor]?SETORES[setor].label:setor)+'?\n\nEle deixará de aparecer para novos registros, mas o histórico já lançado com esse item é mantido.')) return;
-  _catalogoRemover(setor, nome);
-  _toast('🗑 '+nome+' removido do menu.');
+  var label = (SETORES[setor]||{}).label || setor;
+  if(!confirm('Remover "'+nome+'" do cadastro de '+label+'?\n\nEle deixará de aparecer para novos registros, mas o histórico já lançado com esse item é mantido.')) return;
+  var nomeNorm = nome.trim().toLowerCase();
+  (_cadDados.produtos||[]).forEach(function(p){
+    if(!p._excluido && p.setor===label && (p.nome||'').trim().toLowerCase()===nomeNorm){
+      p._excluido = true;
+      p._excluidoEm = Date.now();
+    }
+  });
+  await _cadSalvar();
+  _toast('🗑 '+nome+' removido do cadastro.');
 
   var nomes = _catalogoNomesUnicos(setor);
   var opts = nomes.map(function(n){ return '<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/</g,'&lt;')+'</option>'; }).join('');
@@ -16446,16 +16452,43 @@ function _mesclarCadastros(local, remoto){
       var chave = String(item.id||JSON.stringify(item));
       if(!vistos[chave]){
         vistos[chave]=true; combinado.push(item);
-      } else if(categoria==='produtos' && item.apresentacoes){
+      } else {
         var idx = combinado.findIndex(function(x){ return String(x.id||JSON.stringify(x))===chave; });
         if(idx>-1){
-          if(!combinado[idx].apresentacoes) combinado[idx].apresentacoes = [];
-          var unidsExistentes = combinado[idx].apresentacoes.map(function(a){ return (a.unid||'').trim().toLowerCase(); });
-          item.apresentacoes.forEach(function(a){
-            if(unidsExistentes.indexOf((a.unid||'').trim().toLowerCase())===-1){
-              combinado[idx].apresentacoes.push(a);
-            }
-          });
+          // Exclusão lógica nunca "ressuscita" — se qualquer lado marcou
+          // excluído, o resultado fica excluído, não importa de qual
+          // aparelho a exclusão veio nem qual lado foi visto primeiro.
+          if(item._excluido && !combinado[idx]._excluido){
+            combinado[idx]._excluido = true;
+            combinado[idx]._excluidoEm = item._excluidoEm || Date.now();
+          }
+          if(categoria==='produtos' && item.apresentacoes){
+            if(!combinado[idx].apresentacoes) combinado[idx].apresentacoes = [];
+            var porId = {};
+            combinado[idx].apresentacoes.forEach(function(a, ai){ if(a.id) porId[a.id] = ai; });
+            item.apresentacoes.forEach(function(a){
+              if(a.id && porId.hasOwnProperty(a.id)){
+                // Mesma apresentação (mesmo id) dos dois lados — só propaga
+                // exclusão lógica, nunca ressuscita uma já removida.
+                var existente = combinado[idx].apresentacoes[porId[a.id]];
+                if(a._excluido && !existente._excluido){
+                  existente._excluido = true;
+                  existente._excluidoEm = a._excluidoEm || Date.now();
+                }
+              } else if(a.id){
+                // Apresentação nova (id nunca visto neste produto) — adiciona.
+                combinado[idx].apresentacoes.push(a);
+                porId[a.id] = combinado[idx].apresentacoes.length-1;
+              } else {
+                // Dado legado sem id — mantém o comportamento antigo (soma
+                // por unidade, sem duplicar), só como rede de segurança.
+                var unidsExistentes = combinado[idx].apresentacoes.map(function(x){ return (x.unid||'').trim().toLowerCase(); });
+                if(unidsExistentes.indexOf((a.unid||'').trim().toLowerCase())===-1){
+                  combinado[idx].apresentacoes.push(a);
+                }
+              }
+            });
+          }
         }
       }
     });
@@ -17234,7 +17267,9 @@ function _cadRenderAba(aba){
   if(aba==='precos'){
     var linhas = [];
     (_cadDados.produtos||[]).forEach(function(p){
+      if(p._excluido) return;
       (p.apresentacoes||[]).forEach(function(a, ai){
+        if(a._excluido) return;
         linhas.push({prodId:p.id, prodNome:p.nome, apresIdx:ai, unid:a.unid, preco:a.preco, fornecedor:a.fornecedor||''});
       });
     });
@@ -17262,14 +17297,15 @@ function _cadRenderAba(aba){
   }
 
   var itens   = _cadDados[aba] || [];
-  if(!itens.length){
+  var itensComIdx = itens.map(function(it, idx){ return {it:it, idx:idx}; })
+    .filter(function(par){ return !par.it._excluido; });
+  if(!itensComIdx.length){
     lista.innerHTML = '<div class="cad-vazia">Nenhum item cadastrado.<br>Toque em + para adicionar.</div>';
     return;
   }
   // Ordena por nome para exibição, mas preserva o índice ORIGINAL de cada
   // item — editar/remover/unificar dependem desse índice para saber qual
   // item do array real (não da lista ordenada) está sendo referenciado.
-  var itensComIdx = itens.map(function(it, idx){ return {it:it, idx:idx}; });
   itensComIdx.sort(function(a,b){
     return (a.it.nome||a.it.prodNome||'').localeCompare((b.it.nome||b.it.prodNome||''),'pt-BR');
   });
@@ -17277,7 +17313,7 @@ function _cadRenderAba(aba){
     var it = par.it, idx = par.idx;
     var det = '';
     if(aba==='produtos'){
-      var resumoApres = (it.apresentacoes||[]).map(function(a){
+      var resumoApres = (it.apresentacoes||[]).filter(function(a){ return !a._excluido; }).map(function(a){
         return a.unid+(a.preco?' (R$ '+Number(a.preco).toFixed(2).replace('.',',')+')':'')+(a.fornecedor?' — '+a.fornecedor:'');
       }).join(' · ');
       det = (it.setor||'')+(resumoApres?' · '+resumoApres:(it.unid?' · '+it.unid:''));
@@ -17332,8 +17368,15 @@ function _cadEditarPreco(prodId, apresIdx){
 async function _cadRemoverPreco(prodId, apresIdx){
   if(!confirm('Remover esta apresentação/preço?')) return;
   var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===prodId; });
-  if(!prod || !prod.apresentacoes) return;
-  prod.apresentacoes.splice(apresIdx,1);
+  if(!prod || !prod.apresentacoes || !prod.apresentacoes[apresIdx]) return;
+  // Exclusão lógica (nunca some de vez) — assim não "ressuscita" numa
+  // sincronização com outro aparelho que ainda não recebeu a remoção.
+  if(prod.apresentacoes[apresIdx].id){
+    prod.apresentacoes[apresIdx]._excluido = true;
+    prod.apresentacoes[apresIdx]._excluidoEm = Date.now();
+  } else {
+    prod.apresentacoes.splice(apresIdx,1);
+  }
   await _cadSalvar();
   _cadRenderAba('precos');
   _toast('✅ Removido');
@@ -17346,13 +17389,13 @@ function _cadMostrarForm(aba, dados){
   var campos = '';
   if(aba==='produtos'){
     _formApresentacoes = (d.apresentacoes && d.apresentacoes.length)
-      ? JSON.parse(JSON.stringify(d.apresentacoes))
-      : [{unid:d.unid||'', preco:0, fornecedor:''}];
+      ? JSON.parse(JSON.stringify(d.apresentacoes)).map(function(a){ if(!a.id) a.id = _gerarIdApres(); return a; })
+      : [{id:_gerarIdApres(), unid:d.unid||'', preco:0, fornecedor:''}];
     campos =
       '<div><label class="cad-inp-lbl">Setor</label>'
       +'<input class="cad-inp" id="cf-setor" placeholder="ex: Aviário" value="'+_escH(d.setor||'')+'" list="cad-setores-list"></div>'
       +'<datalist id="cad-setores-list">'
-      +[...new Set((_cadDados.produtos||[]).map(function(p){return p.setor;}).filter(Boolean))].map(function(s){return'<option value="'+_escH(s)+'">';}).join('')
+      +[...new Set((_cadDados.produtos||[]).filter(function(p){ return !p._excluido; }).map(function(p){return p.setor;}).filter(Boolean))].map(function(s){return'<option value="'+_escH(s)+'">';}).join('')
       +'</datalist>'
       +'<div><label class="cad-inp-lbl">Nome do produto</label>'
       +'<input class="cad-inp" id="cf-nome" placeholder="ex: Ovos de Capoeira" value="'+_escH(d.nome||'')+'"></div>'
@@ -17378,7 +17421,7 @@ function _cadMostrarForm(aba, dados){
       +'<input class="cad-inp" id="cf-obs" placeholder="Produtos fornecidos..." value="'+_escH(d.obs||'')+'"></div>';
   } else if(aba==='precos'){
     var prodSelOpts = '<option value="">— Escolha um produto —</option>'
-      + (_cadDados.produtos||[]).map(function(p){
+      + (_cadDados.produtos||[]).filter(function(p){ return !p._excluido; }).map(function(p){
           return '<option value="'+_escH(p.id)+'"'+(d._prodId===p.id?' selected':'')+'>'+_escH(p.nome)+'</option>';
         }).join('');
     campos =
@@ -17405,25 +17448,38 @@ function _cadMostrarForm(aba, dados){
   if(first) setTimeout(function(){ first.focus(); },50);
 }
 
+function _gerarIdApres(){
+  return 'a'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+}
 var _formApresentacoes = [];
 function _cadRenderApresentacoes(){
   var cont = document.getElementById('cad-apresentacoes-lista');
   if(!cont) return;
+  var visiveis = _formApresentacoes.filter(function(a){ return !a._excluido; }).length;
   cont.innerHTML = _formApresentacoes.map(function(a, i){
+    if(a._excluido) return '';
     return '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;align-items:center">'
       +'<input class="cad-inp" style="flex:1;min-width:110px" placeholder="unid, kg, sc 40kg..." value="'+_escH(a.unid||'')+'" oninput="_formApresentacoes['+i+'].unid=this.value">'
       +'<input class="cad-inp" style="width:110px" type="number" min="0" step="0.01" placeholder="Preço R$" value="'+(a.preco||'')+'" oninput="_formApresentacoes['+i+'].preco=parseFloat(this.value)||0">'
       +'<input class="cad-inp" style="flex:1;min-width:130px" placeholder="Fornecedor (opcional)" list="fornecedores-datalist" value="'+_escH(a.fornecedor||'')+'" oninput="_formApresentacoes['+i+'].fornecedor=this.value">'
-      +(_formApresentacoes.length>1 ? '<button type="button" onclick="_cadRemoverApresentacao('+i+')" style="background:none;border:none;color:#c0392b;font-size:18px;cursor:pointer;padding:0 4px">×</button>' : '<span style="width:26px"></span>')
+      +(visiveis>1 ? '<button type="button" onclick="_cadRemoverApresentacao('+i+')" style="background:none;border:none;color:#c0392b;font-size:18px;cursor:pointer;padding:0 4px">×</button>' : '<span style="width:26px"></span>')
       +'</div>';
   }).join('');
 }
 function _cadAdicionarApresentacao(){
-  _formApresentacoes.push({unid:'', preco:0, fornecedor:''});
+  _formApresentacoes.push({id:_gerarIdApres(), unid:'', preco:0, fornecedor:''});
   _cadRenderApresentacoes();
 }
 function _cadRemoverApresentacao(i){
-  _formApresentacoes.splice(i,1);
+  // Se já tem id, é uma apresentação já salva — marca exclusão lógica em vez
+  // de apagar de vez, pra essa remoção não "ressuscitar" numa sincronização
+  // com outro aparelho que ainda não recebeu a exclusão. Uma linha em
+  // rascunho (nunca salva, sem id) pode ser removida direto.
+  if(_formApresentacoes[i] && _formApresentacoes[i].id){
+    _formApresentacoes[i]._excluido = true;
+  } else {
+    _formApresentacoes.splice(i,1);
+  }
   _cadRenderApresentacoes();
 }
 
@@ -17628,6 +17684,7 @@ function _cadPrecoMontarApresentacoes(dPre){
   }
   var apresOpts = '<option value="_nova">+ Nova apresentação</option>'
     + (prod.apresentacoes||[]).map(function(a,i){
+        if(a._excluido) return '';
         return '<option value="'+i+'"'+(dPre && dPre._apresIdx===i?' selected':'')+'>'+_escH(a.unid)+(a.preco?' — R$ '+Number(a.preco).toFixed(2).replace('.',','):'')+'</option>';
       }).join('');
   var ABAS_APRES = ['Aviario','Perda','Campo','Estoque','Vendas'];
@@ -17705,11 +17762,12 @@ async function _cadSalvarItem(aba){
     // Preserva a configuração de "abas" de cada apresentação — esse campo
     // é exclusivo da tela de Apresentação; salvar um produto por aqui
     // (ex: só corrigindo o nome) nunca deve apagar essa configuração.
-    var apresentacoesValidas = (_formApresentacoes||[]).filter(function(a){ return (a.unid||'').trim(); })
+    var apresentacoesValidas = (_formApresentacoes||[]).filter(function(a){ return (a.unid||'').trim() || a._excluido; })
       .map(function(a){
-        var obj = {unid:a.unid.trim(), preco:parseFloat(a.preco)||0};
+        var obj = {id:a.id||_gerarIdApres(), unid:(a.unid||'').trim(), preco:parseFloat(a.preco)||0};
         if((a.fornecedor||'').trim()) obj.fornecedor = a.fornecedor.trim();
         if(Array.isArray(a.abas)) obj.abas = a.abas;
+        if(a._excluido) obj._excluido = true;
         return obj;
       });
     item = {
@@ -17719,7 +17777,7 @@ async function _cadSalvarItem(aba){
       apresentacoes: apresentacoesValidas
     };
     if(!item.nome){ _toast('\u26a0\ufe0f Informe o nome do produto'); return; }
-    if(!item.apresentacoes.length){ _toast('\u26a0\ufe0f Informe ao menos uma unidade'); return; }
+    if(!apresentacoesValidas.some(function(a){ return !a._excluido; })){ _toast('\u26a0\ufe0f Informe ao menos uma unidade'); return; }
   } else if(aba==='clientes'){
     item = {
       id:      'c'+Date.now(),
@@ -17761,7 +17819,7 @@ async function _cadSalvarItem(aba){
       // Nova apresentação (Unidade, Bandeja, Caixa, Kg, Sacos...)
       var unidNova = (document.getElementById('cf-unid-nova')||{value:''}).value.trim();
       if(!unidNova){ _toast('\u26a0\ufe0f Informe a unidade/apresentação'); return; }
-      var novaApres = {unid:unidNova, preco:precoVal};
+      var novaApres = {id:_gerarIdApres(), unid:unidNova, preco:precoVal};
       if(fornVal) novaApres.fornecedor = fornVal;
       if(abasEscolhidas) novaApres.abas = abasEscolhidas;
       prod.apresentacoes.push(novaApres);
@@ -17786,7 +17844,12 @@ async function _cadSalvarItem(aba){
 
 async function _cadRemover(aba, idx){
   if(!confirm('Remover este item?')) return;
-  _cadDados[aba].splice(idx,1);
+  // Exclusão lógica — nunca some de vez, pra não "ressuscitar" numa
+  // sincronização com outro aparelho que ainda não recebeu a remoção.
+  if(_cadDados[aba][idx]){
+    _cadDados[aba][idx]._excluido = true;
+    _cadDados[aba][idx]._excluidoEm = Date.now();
+  }
   await _cadSalvar();
   _cadRenderAba(aba);
   _toast('\u2705 Removido');
