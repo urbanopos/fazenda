@@ -384,7 +384,12 @@
       "apresentacoes": [
         {
           "unid": "Saco",
-          "preco": 15
+          "preco": 15,
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ]
         }
       ]
     },
