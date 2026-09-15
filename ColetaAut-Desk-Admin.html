@@ -11587,7 +11587,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0a45a852a2';
+var _caFP = '1a0a470847c6';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -17233,6 +17233,14 @@ async function _cadSalvar(){
   if(_caOpfs) await _caOpfsSalvar(FSJ_CAD, json);
   try{ localStorage.setItem('ca_cad', json); }catch(e){}
   _atualizarDatalistFornecedores();
+  // Publica no GitHub JÁ, sem esperar a sincronização periódica — aquela só
+  // grava quando a MESCLAGEM resulta em algo diferente do que já estava
+  // localmente, o que nunca acontece para uma edição feita só neste
+  // aparelho (ex: uma exclusão) — sem isto, a mudança nunca saía daqui, e
+  // um recarregamento puro do outro lado trazia de volta a versão antiga.
+  if(_ghToken()){
+    try{ await _ghGravar(GH_BCK_CADASTROS, _cadDados, 'Atualização de cadastros'); }catch(e){}
+  }
   /* Toda gravação já dispara sincronização com o GitHub — primeiro traz o
      que houver de novo de outro aparelho e mescla, depois garante que o
      resultado final fica salvo lá. Assíncrono, não bloqueia o fluxo. */
@@ -18295,9 +18303,8 @@ async function _cadInit(){
   <div class="cad-painel vis" id="cad-p-produtos">
     <div class="cad-rodape" style="flex-direction:column;gap:8px;align-items:stretch">
       <button class="cad-btn-add" onclick="_cadNovoForm('produtos')">+ Novo produto</button>
-      <button class="cad-btn-add" style="background:#1e3a5f" onclick="_cadAbrirRevisaoCatalogo()">🔀 Revisar itens do catálogo de coleta</button>
       <button class="cad-btn-add" style="background:#7a3a00" onclick="_cadToggleUnificacao('produtos')" id="btn-toggle-unificacao-produtos">🔗 Unificar produtos duplicados</button>
-      <button class="cad-btn-add" style="background:#5a3a7a" onclick="_cadAbrirVinculoOrfaos()">🔧 Corrigir itens de pedidos antigos sem produto</button>
+      <button class="cad-btn-add" style="background:rgba(0,0,0,.08);color:var(--tx)" onclick="_cadFechar()">← Voltar ao aplicativo</button>
     </div>
     <div class="cad-lista" id="cad-lista-produtos"></div>
     <div id="cad-form-produtos" style="display:none"></div>
