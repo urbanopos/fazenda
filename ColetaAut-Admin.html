@@ -11418,7 +11418,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0a4e70bc86';
+var _caFP = '1a0a4f493a49';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -14151,14 +14151,23 @@ function _gerarPDFEspelhoTela(){
       doc.text(setor.toUpperCase(), margin+5, y);
 
       if(setor === 'Estoque'){
-        var totalSacos = 0;
-        Object.keys(totais[setor]).forEach(function(nome){ var it=totais[setor][nome]; totalSacos += it.temTipo?(it.entrada-it.saida):it.entrada; });
+        var totalSacos = 0, totalEnt = 0, totalSai = 0;
+        Object.keys(totais[setor]).forEach(function(nome){
+          var it=totais[setor][nome];
+          totalEnt += it.entrada;
+          if(it.temTipo){ totalSai += it.saida; totalSacos += (it.entrada-it.saida); }
+          else { totalSacos += it.entrada; }
+        });
         var totalFmt = Number(totalSacos).toLocaleString('pt-BR',{maximumFractionDigits:2});
-        var txtTotal = 'Total: '+totalFmt+' sacos';
+        var entFmt = Number(totalEnt).toLocaleString('pt-BR',{maximumFractionDigits:2});
+        var saiFmt = Number(totalSai).toLocaleString('pt-BR',{maximumFractionDigits:2});
+        var txtTotal = 'Total: '+totalFmt+' sacos (Ent. '+entFmt+' \u2212 Sai. '+saiFmt+')';
         var larguraTotal = doc.getTextWidth(txtTotal)+8;
+        var xTotal = margin+larguraSetor+4, yTotal = y;
+        if(xTotal+larguraTotal > pageW-margin){ xTotal = margin; yTotal = y+9; y += 9; }
         doc.setFillColor(cor[0],cor[1],cor[2]);
-        doc.roundedRect(margin+larguraSetor+4, y-4.8, larguraTotal, 7, 1.5, 1.5, 'F');
-        doc.text(txtTotal, margin+larguraSetor+8, y);
+        doc.roundedRect(xTotal, yTotal-4.8, larguraTotal, 7, 1.5, 1.5, 'F');
+        doc.text(txtTotal, xTotal+4, yTotal);
       }
       doc.setTextColor(0); doc.setFont('helvetica','normal');
       y += 9;
@@ -15345,13 +15354,21 @@ function _renderHistColetaTotal(body, registros, ano, mes, setorFiltro){
     var cor = CORES[setor]||'#555';
     var totalizacaoExtra = '';
     if(setor === 'Estoque'){
-      var totalSacos = 0;
+      var totalSacos = 0, totalEnt = 0, totalSai = 0;
       Object.keys(totais[setor]).forEach(function(nome){
         var it = totais[setor][nome];
-        totalSacos += it.temTipo ? (it.entrada - it.saida) : it.entrada;
+        totalEnt += it.entrada;
+        if(it.temTipo){
+          totalSai += it.saida;
+          totalSacos += (it.entrada - it.saida);
+        } else {
+          totalSacos += it.entrada;
+        }
       });
       var totalFmt = Number(totalSacos).toLocaleString('pt-BR',{maximumFractionDigits:2});
-      totalizacaoExtra = '<span style="font-family:\'DM Mono\',monospace;font-size:11px;font-weight:700;background:'+cor+';color:#fff;padding:5px 12px;border-radius:12px;margin-left:8px;vertical-align:middle">Total: '+totalFmt+' sacos</span>';
+      var entFmt = Number(totalEnt).toLocaleString('pt-BR',{maximumFractionDigits:2});
+      var saiFmt = Number(totalSai).toLocaleString('pt-BR',{maximumFractionDigits:2});
+      totalizacaoExtra = '<span style="font-family:\'DM Mono\',monospace;font-size:11px;font-weight:700;background:'+cor+';color:#fff;padding:5px 12px;border-radius:12px;margin-left:8px;vertical-align:middle">Total: '+totalFmt+' sacos (Ent. '+entFmt+' \u2212 Sai. '+saiFmt+')</span>';
     }
     html += '<div class="hcol-secao"><span class="hcol-secao-titulo" style="background:'+cor+'">'+setor+'</span>'+totalizacaoExtra;
     Object.keys(totais[setor]).forEach(function(nome){
