@@ -40,8 +40,7 @@
         "unidade": "Unid.",
         "preco": 50,
         "sub": 350,
-        "data": "11/09/2026",
-        "prodId": "p_galinha"
+        "data": "11/09/2026"
       },
       {
         "nome": "Frango Abatido",
@@ -54,8 +53,7 @@
         "unidade": "Unid.",
         "preco": 50,
         "sub": 350,
-        "data": "11/09/2026",
-        "prodId": "p_frango"
+        "data": "11/09/2026"
       },
       {
         "nome": "Ovos de Capoeira",
@@ -68,8 +66,7 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 120,
-        "data": "11/09/2026",
-        "prodId": "p_ovo"
+        "data": "11/09/2026"
       },
       {
         "nome": "Ovos de Capoeira",
@@ -82,8 +79,7 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 60,
-        "data": "11/09/2026",
-        "prodId": "p_ovo"
+        "data": "11/09/2026"
       },
       {
         "nome": "Ovos de Capoeira",
@@ -96,8 +92,7 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 60,
-        "data": "11/09/2026",
-        "prodId": "p_ovo"
+        "data": "11/09/2026"
       }
     ],
     "total": 940,
@@ -269,7 +264,7 @@
         "prodId": "p_ovo"
       },
       {
-        "nome": "Galinha Viva",
+        "nome": "Galinha Abatida",
         "col2": "Galinha",
         "col1": "28/08/2026",
         "col3": "14 unid",
@@ -280,7 +275,7 @@
         "preco": 50,
         "sub": 700,
         "data": "28/08/2026",
-        "prodId": "p1787993055897"
+        "prodId": "p_galinha"
       },
       {
         "nome": "Ovos de Capoeira",
@@ -397,7 +392,7 @@
         "data": "02/09/2026"
       },
       {
-        "nome": "Galinha Viva",
+        "nome": "Galinha Abatida",
         "col2": "Galinha",
         "col1": "02/09/2026",
         "col3": "9 unid",
@@ -408,7 +403,7 @@
         "preco": 50,
         "sub": 450,
         "data": "02/09/2026",
-        "prodId": "p1787993055897"
+        "prodId": "p_galinha"
       },
       {
         "nome": "Ovos de Capoeira",
@@ -527,7 +522,7 @@
         "prodId": "p_ovo"
       },
       {
-        "nome": "Galinha Viva",
+        "nome": "Galinha Abatida",
         "col2": "Galinha",
         "col1": "12/08/2026",
         "col3": "2 unid",
@@ -538,7 +533,7 @@
         "preco": 60,
         "sub": 120,
         "data": "12/08/2026",
-        "prodId": "p1787993055897"
+        "prodId": "p_galinha"
       }
     ],
     "total": 150,
@@ -701,8 +696,8 @@
         "col4": "R$ 50,00 x 10",
         "col5": "R$ 500,00",
         "val": 500,
-        "prodId": "p1787993055897",
-        "nome": "Galinha Viva",
+        "prodId": "p_galinha",
+        "nome": "Galinha Abatida",
         "unidade": "unid",
         "qtd": 10,
         "preco": 50,
@@ -775,7 +770,7 @@
     "data": "2026-08-06",
     "itens": [
       {
-        "nome": "Galinha Viva",
+        "nome": "Galinha Abatida",
         "col2": "Galinha",
         "col1": "06/08/2026",
         "col3": "17 unid",
@@ -786,7 +781,7 @@
         "preco": 40,
         "sub": 680,
         "data": "06/08/2026",
-        "prodId": "p1787993055897"
+        "prodId": "p_galinha"
       },
       {
         "nome": "Ovos de Capoeira",
@@ -820,8 +815,8 @@
         "col4": "R$ 60,00 x 2",
         "col5": "R$ 120,00",
         "val": 120,
-        "prodId": "p1787993055897",
-        "nome": "Galinha Viva",
+        "prodId": "p_galinha",
+        "nome": "Galinha Abatida",
         "unidade": "unid",
         "qtd": 2,
         "preco": 60,
@@ -914,8 +909,8 @@
         "col4": "R$ 50,00 x 1",
         "col5": "R$ 50,00",
         "val": 50,
-        "prodId": "p1787993055897",
-        "nome": "Galinha Viva",
+        "prodId": "p_galinha",
+        "nome": "Galinha Abatida",
         "unidade": "unid",
         "qtd": 1,
         "preco": 50,
@@ -1069,8 +1064,8 @@
         "col4": "R$ 50,00 x 10",
         "col5": "R$ 500,00",
         "val": 500,
-        "prodId": "p1787993055897",
-        "nome": "Galinha Viva",
+        "prodId": "p_galinha",
+        "nome": "Galinha Abatida",
         "unidade": "unid",
         "qtd": 10,
         "preco": 50,
@@ -1095,8 +1090,8 @@
         "col4": "R$ 15,00 x 11",
         "col5": "R$ 165,00",
         "val": 165,
-        "prodId": "p_esterco",
-        "nome": "Esterco",
+        "prodId": "p1789184203486",
+        "nome": "Esterco de Galinha",
         "unidade": "sacos",
         "qtd": 11,
         "preco": 15,
@@ -1121,8 +1116,8 @@
         "col4": "R$ 60,00 x 2",
         "col5": "R$ 120,00",
         "val": 120,
-        "prodId": "p1787993055897",
-        "nome": "Galinha Viva",
+        "prodId": "p_galinha",
+        "nome": "Galinha Abatida",
         "unidade": "unid",
         "qtd": 2,
         "preco": 60,
@@ -1141,7 +1136,7 @@
     "data": "2026-07-24",
     "itens": [
       {
-        "nome": "Galinha Viva",
+        "nome": "Galinha Abatida",
         "col2": "Galinha",
         "col1": "24/07/2026",
         "col3": "1 unid",
@@ -1152,7 +1147,7 @@
         "preco": 50,
         "sub": 50,
         "data": "24/07/2026",
-        "prodId": "p1787993055897"
+        "prodId": "p_galinha"
       },
       {
         "nome": "Ovos de Capoeira",
@@ -1202,7 +1197,7 @@
         "col5": "R$ 250,00",
         "val": 250,
         "prodId": "p1789066563591_0",
-        "nome": "Pinto",
+        "nome": "Pintos",
         "unidade": "unid",
         "qtd": 10,
         "preco": 25,
@@ -1664,8 +1659,8 @@
         "col4": "R$ 15,00 x 13",
         "col5": "R$ 195,00",
         "val": 195,
-        "prodId": "p_esterco",
-        "nome": "Esterco",
+        "prodId": "p1789184203486",
+        "nome": "Esterco de Galinha",
         "unidade": "Sacos",
         "qtd": 13,
         "preco": 15,
@@ -1740,8 +1735,8 @@
         "col4": "R$ 45,00 x 17",
         "col5": "R$ 765,00",
         "val": 765,
-        "prodId": "p1787993055897",
-        "nome": "Galinha Viva",
+        "prodId": "p_galinha",
+        "nome": "Galinha Abatida",
         "unidade": "Unidade",
         "qtd": 17,
         "preco": 45,
@@ -1830,8 +1825,8 @@
         "col4": "R$ 60,00 x 2",
         "col5": "R$ 120,00",
         "val": 120,
-        "prodId": "p1787993055897",
-        "nome": "Galinha Viva",
+        "prodId": "p_galinha",
+        "nome": "Galinha Abatida",
         "unidade": "Aves abatidas",
         "qtd": 2,
         "preco": 60,
@@ -1880,8 +1875,8 @@
         "col4": "R$ 50,00 x 10",
         "col5": "R$ 500,00",
         "val": 500,
-        "prodId": "p1787993055897",
-        "nome": "Galinha Viva",
+        "prodId": "p_galinha",
+        "nome": "Galinha Abatida",
         "unidade": "Aves vivas",
         "qtd": 10,
         "preco": 50,
@@ -2083,7 +2078,7 @@
         "prodId": "p_pintainha"
       },
       {
-        "nome": "Pinto",
+        "nome": "Pintos",
         "col2": "Pinto",
         "col1": "19/06/2026",
         "col3": "15 Unidade",
@@ -2142,8 +2137,8 @@
         "col4": "R$ 50,00 x 6",
         "col5": "R$ 300,00",
         "val": 300,
-        "prodId": "p1787993055897",
-        "nome": "Galinha Viva",
+        "prodId": "p_galinha",
+        "nome": "Galinha Abatida",
         "unidade": "Unidade",
         "qtd": 6,
         "preco": 50,
@@ -2266,8 +2261,8 @@
         "col3": "2 Unid",
         "col4": "R$ 150,00",
         "val": 300,
-        "prodId": "_edit",
-        "nome": "Peru macho adulto",
+        "prodId": "p1789066565373_0",
+        "nome": "Peru",
         "unidade": "Unid",
         "qtd": 2,
         "preco": 150,
@@ -2280,8 +2275,8 @@
         "col3": "3 Unidade.",
         "col4": "R$ 100,00",
         "val": 300,
-        "prodId": "_edit",
-        "nome": "Peruas adultas",
+        "prodId": "p1789066565373_0",
+        "nome": "Peru",
         "unidade": "Unidade.",
         "qtd": 3,
         "preco": 100,
