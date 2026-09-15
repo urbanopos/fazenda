@@ -149,7 +149,12 @@
       "apresentacoes": [
         {
           "unid": "Unid.",
-          "preco": 50
+          "preco": 50,
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ]
         },
         {
           "unid": "Unid.",
