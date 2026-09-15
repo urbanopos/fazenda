@@ -312,7 +312,10 @@
         {
           "unid": "sc 40kg",
           "preco": 0,
-          "fornecedor": "Fazenda São José"
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Estoque"
+          ]
         }
       ]
     },
