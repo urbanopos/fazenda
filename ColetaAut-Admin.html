@@ -11411,7 +11411,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0a49d58a73';
+var _caFP = '1a0a4d3ecf9b';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -11853,7 +11853,7 @@ function _catalogoNomesUnicos(setor){
     if(p._excluido) return;
     var habilitado = (p.apresentacoes||[]).some(function(a){
       if(a._excluido) return false;
-      if(!Array.isArray(a.abas) || a.abas.length===0) return true; // sem restrição = aparece em todas
+      if(!Array.isArray(a.abas)) return true; // campo nunca definido = sem restrição, aparece em todas
       return a.abas.indexOf(label)>-1;
     });
     if(!habilitado) return;
@@ -11877,7 +11877,7 @@ function _catalogoUnidadesPara(setor, nome){
         if(a._excluido) return;
         // Se a apresentação tiver abas restritas, só entra se este setor
         // estiver na lista; sem restrição (campo ausente), aparece sempre.
-        if(Array.isArray(a.abas) && a.abas.length>0 && a.abas.indexOf(label)===-1) return;
+        if(Array.isArray(a.abas) && a.abas.indexOf(label)===-1) return;
         var u = (a.unid||'').trim();
         if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
       });
@@ -12319,7 +12319,7 @@ function _catalogoApresentacoesPara(setor, nome){
     if(p.nome.trim().toLowerCase()===alvo){
       (p.apresentacoes||[]).forEach(function(a){
         if(a._excluido) return;
-        if(Array.isArray(a.abas) && a.abas.length>0 && a.abas.indexOf(label)===-1) return;
+        if(Array.isArray(a.abas) && a.abas.indexOf(label)===-1) return;
         out.push({unid:(a.unid||'').trim(), preco:Number(a.preco)||0, fornecedor:a.fornecedor||''});
       });
     }
@@ -13452,7 +13452,7 @@ function _renderVItens(){
       // como lista de opções — trocar a unidade também atualiza o preço.
       var prodSel = isEdit ? null : (_cadDados.produtos||[]).find(function(p){ return p.id===it.prodId; });
       var apresentacoes = (prodSel && prodSel.apresentacoes && prodSel.apresentacoes.length)
-        ? prodSel.apresentacoes.filter(function(a){ return !a._excluido && (!Array.isArray(a.abas) || a.abas.length===0 || a.abas.indexOf('Vendas')>-1); })
+        ? prodSel.apresentacoes.filter(function(a){ return !a._excluido && (!Array.isArray(a.abas) || a.abas.indexOf('Vendas')>-1); })
           .sort(function(x,y){ return (x.unid||'').localeCompare(y.unid||'','pt-BR'); })
         : [];
       var campoUnidade;
@@ -13499,7 +13499,7 @@ function setProdV(i,v){
   if(v && v!=='_edit'){
     var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===v; });
     var apresVendas = (prod && prod.apresentacoes)
-      ? prod.apresentacoes.filter(function(a){ return !Array.isArray(a.abas) || a.abas.length===0 || a.abas.indexOf('Vendas')>-1; })
+      ? prod.apresentacoes.filter(function(a){ return !Array.isArray(a.abas) || a.abas.indexOf('Vendas')>-1; })
       : [];
     if(apresVendas.length){
       _vItens[i].unidade = apresVendas[0].unid;
@@ -17832,7 +17832,7 @@ async function _cadSalvarItem(aba){
     var fornVal = (document.getElementById('cf-fornecedor')||{value:''}).value.trim();
     var TODAS_ABAS = ['Aviario','Perda','Campo','Estoque','Vendas'];
     var chksMarcados = Array.prototype.slice.call(document.querySelectorAll('.cf-aba-chk:checked')).map(function(c){ return c.value; });
-    var abasEscolhidas = (chksMarcados.length===0 || chksMarcados.length===TODAS_ABAS.length) ? undefined : chksMarcados;
+    var abasEscolhidas = (chksMarcados.length===TODAS_ABAS.length) ? undefined : chksMarcados;
     if(!prod.apresentacoes) prod.apresentacoes = [];
     if(selApres && selApres.value !== '_nova'){
       // Editando o preço/abas de uma apresentação já existente do produto
@@ -18158,7 +18158,7 @@ async function _cadInit(){
     <div class="cad-rodape" style="flex-direction:column;gap:8px;align-items:stretch">
       <button class="cad-btn-add" onclick="_cadNovoForm('produtos')">+ Novo produto</button>
       <button class="cad-btn-add" style="background:#7a3a00" onclick="_cadToggleUnificacao('produtos')" id="btn-toggle-unificacao-produtos">🔗 Unificar produtos duplicados</button>
-      <button class="cad-btn-add" style="background:rgba(0,0,0,.08);color:var(--tx)" onclick="_cadFechar()">← Voltar ao aplicativo</button>
+      <button class="cad-btn-add" style="background:rgba(0,0,0,.08);color:var(--tx)" onclick="_cadFechar()">Voltar ao aplicativo</button>
     </div>
     <div class="cad-lista" id="cad-lista-produtos"></div>
     <div id="cad-form-produtos" style="display:none"></div>
@@ -18174,6 +18174,7 @@ async function _cadInit(){
     <div class="cad-rodape" style="flex-direction:column;gap:8px;align-items:stretch">
       <button class="cad-btn-add" onclick="_cadNovoForm('clientes')">+ Novo cliente</button>
       <button class="cad-btn-add" style="background:#7a3a00" onclick="_cadToggleUnificacao('clientes')" id="btn-toggle-unificacao-clientes">🔗 Unificar clientes duplicados</button>
+      <button class="cad-btn-add" style="background:rgba(0,0,0,.08);color:var(--tx)" onclick="_cadFechar()">Voltar ao aplicativo</button>
     </div>
     <div class="cad-lista" id="cad-lista-clientes"></div>
     <div id="cad-form-clientes" style="display:none"></div>
@@ -18184,16 +18185,18 @@ async function _cadInit(){
   </div>
   <!-- Fornecedores -->
   <div class="cad-painel" id="cad-p-fornecedores">
-    <div class="cad-rodape">
+    <div class="cad-rodape" style="flex-direction:column;gap:8px;align-items:stretch">
       <button class="cad-btn-add" onclick="_cadNovoForm('fornecedores')">+ Novo fornecedor</button>
+      <button class="cad-btn-add" style="background:rgba(0,0,0,.08);color:var(--tx)" onclick="_cadFechar()">Voltar ao aplicativo</button>
     </div>
     <div class="cad-lista" id="cad-lista-fornecedores"></div>
     <div id="cad-form-fornecedores" style="display:none"></div>
   </div>
   <!-- Preços -->
   <div class="cad-painel" id="cad-p-precos">
-    <div class="cad-rodape">
+    <div class="cad-rodape" style="flex-direction:column;gap:8px;align-items:stretch">
       <button class="cad-btn-add" onclick="_cadNovoForm('precos')">+ Nova apresentação</button>
+      <button class="cad-btn-add" style="background:rgba(0,0,0,.08);color:var(--tx)" onclick="_cadFechar()">Voltar ao aplicativo</button>
     </div>
     <div class="cad-lista" id="cad-lista-precos"></div>
     <div id="cad-form-precos" style="display:none"></div>
