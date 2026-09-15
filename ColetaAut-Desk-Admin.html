@@ -1108,6 +1108,10 @@ input[type="password"]:-webkit-autofill{
         <div class="hcol-lbl">&nbsp;</div>
         <button class="hcol-sel" id="hped-aberto-btn" onclick="_toggleFiltroAberto()" style="cursor:pointer;font-weight:700">Em aberto</button>
       </div>
+      <div>
+        <div class="hcol-lbl">&nbsp;</div>
+        <button class="hcol-sel" onclick="_gerarRelatorioPedidosPDF()" style="cursor:pointer;background:#1a6b2a;color:#fff;border-color:#1a6b2a">📄 Gerar PDF</button>
+      </div>
     </div>
     <div class="hcol-body" id="hist-lista"></div>
   </div>
@@ -11590,7 +11594,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0a4dc67bbb';
+var _caFP = '1a0a4e7341d4';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -14401,6 +14405,180 @@ function _gerarPDFEspelhoTela(){
   }
 
   doc.save('historico-'+setorTitulo.toLowerCase().replace(/\s+/g,'-')+'-'+_dataLocalHoje()+'.pdf');
+  _toast('✅ PDF gerado!');
+}
+
+/* ── PDF do Historico de Pedidos — espelha a mesma logica de agrupamento
+   de _renderHPedTotal/_renderHPedDetalhe, respeitando os filtros de Ano,
+   Mes, Cliente, Visao e "Em aberto" aplicados na tela. ── */
+function _gerarRelatorioPedidosPDF(){
+  if(typeof window.jspdf === 'undefined'){
+    _toast('Carregando gerador de PDF, tente novamente em alguns segundos...');
+    return;
+  }
+  var ano   = (document.getElementById('hped-ano')||{}).value||'';
+  var mes   = (document.getElementById('hped-mes')||{}).value||'';
+  var visao = (document.getElementById('hped-visao')||{}).value||'detalhe';
+  var cli   = (document.getElementById('hped-cli')||{}).value||'';
+
+  var hist = _carregarHist();
+  var filtradoAnoMes = hist.filter(function(p){
+    if(!p.data) return false;
+    if(ano && p.data.slice(0,4)!==ano) return false;
+    if(mes && p.data.slice(5,7)!==mes) return false;
+    return true;
+  });
+  var filtrado = filtradoAnoMes.filter(function(p){
+    if(cli){
+      var cadastroP = p.clienteId ? (_cadDados.clientes||[]).find(function(c){ return c.id===p.clienteId; }) : null;
+      var chaveP = cadastroP ? ('id:'+cadastroP.id) : ('n:'+(p.cliente||''));
+      if(chaveP !== cli) return false;
+    }
+    if(_filtroAbertoAtivo && p.pago) return false;
+    return true;
+  });
+
+  if(!filtrado.length){ _toast('Nenhum pedido no período selecionado.'); return; }
+
+  filtrado.sort(function(a,b){
+    if(a.data !== b.data) return a.data < b.data ? 1 : -1;
+    return (b.ts||0) - (a.ts||0);
+  });
+
+  var jsPDFCtor = window.jspdf.jsPDF;
+  var doc = new jsPDFCtor({unit:'mm', format:'a4'});
+  var pageW = doc.internal.pageSize.getWidth();
+  var pageH = doc.internal.pageSize.getHeight();
+  var margin = 14;
+  var y = 18;
+
+  var MESES_N = ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var periodoLabel = mes ? MESES_N[parseInt(mes,10)-1]+' '+ano : (ano ? 'Ano '+ano : 'Todos os períodos');
+  var clienteLabel = '';
+  var selCli = document.getElementById('hped-cli');
+  if(cli && selCli){
+    var optSel = Array.prototype.slice.call(selCli.options).find(function(o){ return o.value===cli; });
+    clienteLabel = optSel ? optSel.textContent : '';
+  }
+
+  doc.setFont('helvetica','bold'); doc.setFontSize(14);
+  doc.text('Historico de Pedidos'+(clienteLabel?' - '+clienteLabel:''), margin, y);
+  y += 6;
+  doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(120);
+  doc.text(periodoLabel+' \u00b7 '+(visao==='total'?'Totalizacao por produto':'Pedidos detalhados')+(_filtroAbertoAtivo?' \u00b7 Em aberto':''), margin, y);
+  y += 5;
+  doc.setFontSize(8);
+  doc.text('Gerado em '+new Date().toLocaleString('pt-BR'), margin, y);
+  doc.setTextColor(0);
+  y += 8;
+
+  function novaPaginaSeNecessario(minimo){
+    if(y > pageH - (minimo||20)){ doc.addPage(); y = 18; return true; }
+    return false;
+  }
+
+  var totalGeral = filtrado.reduce(function(s,p){ return s+(Number(p.total)||0); },0);
+
+  if(visao === 'total'){
+    var totais = {};
+    filtrado.forEach(function(p){
+      (p.itens||[]).forEach(function(it){
+        var prod = (it.prodId && it.prodId!=='_edit')
+          ? (_cadDados.produtos||[]).find(function(x){ return x.id===it.prodId; })
+          : null;
+        var chave = prod ? ('p:'+prod.id) : ('n:'+(it.nome||it.col2||'—'));
+        var nomeExibicao = prod ? prod.nome : (it.nome||it.col2||'—');
+        if(!totais[chave]) totais[chave]={nomeExibicao:nomeExibicao, qtd:0, unid:'', total:0};
+        var partes = (it.col3||'').split(' ');
+        var qtd = parseFloat(partes[0])||Number(it.qtd)||0;
+        var unid = partes.slice(1).join(' ')||it.unidade||it.unid||'';
+        totais[chave].qtd += qtd;
+        if(!totais[chave].unid && unid) totais[chave].unid = unid;
+        totais[chave].total += Number(it.sub||it.val||0);
+      });
+    });
+
+    novaPaginaSeNecessario(30);
+    doc.setFont('helvetica','bold'); doc.setFontSize(9);
+    var larguraSetor = doc.getTextWidth('PEDIDOS')+10;
+    doc.setFillColor(122,58,0);
+    doc.roundedRect(margin, y-4.8, larguraSetor, 7, 1.5, 1.5, 'F');
+    doc.setTextColor(255,255,255);
+    doc.text('PEDIDOS', margin+5, y);
+    doc.setTextColor(0); doc.setFont('helvetica','normal');
+    y += 9;
+
+    Object.keys(totais).sort(function(a,b){ return totais[a].nomeExibicao.localeCompare(totais[b].nomeExibicao,'pt-BR'); }).forEach(function(chave){
+      novaPaginaSeNecessario(14);
+      var it = totais[chave];
+      doc.setFontSize(9); doc.setTextColor(0);
+      doc.text(it.nomeExibicao, margin, y);
+      doc.setFont('helvetica','bold'); doc.setTextColor(122,58,0);
+      doc.text('R$ '+_fmt(it.total), pageW-margin, y, {align:'right'});
+      doc.setFont('helvetica','normal'); doc.setTextColor(0);
+      y += 5.5;
+      var qtdFmt = Number(it.qtd).toLocaleString('pt-BR',{maximumFractionDigits:2});
+      doc.setFontSize(7.5); doc.setTextColor(120);
+      doc.text(qtdFmt+' '+it.unid, margin, y);
+      doc.setTextColor(0);
+      y += 5;
+    });
+    y += 3;
+  } else {
+    var MESES_ABR = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    filtrado.forEach(function(p){
+      var itens = p.itens||[];
+      novaPaginaSeNecessario(18 + itens.length*9.5);
+      var dt = p.data ? new Date(p.data+'T12:00') : null;
+      var dtFmt = dt ? dt.getDate().toString().padStart(2,'0')+' '+MESES_ABR[dt.getMonth()]+' '+dt.getFullYear() : '-';
+
+      doc.setFont('helvetica','bold'); doc.setFontSize(10);
+      var numData = p.num+' \u00b7 '+dtFmt;
+      doc.text(numData, margin, y);
+      if(p.pago){
+        var largNum = doc.getTextWidth(numData);
+        doc.setTextColor(26,107,42);
+        doc.text('- PAGO', margin+largNum+4, y);
+      }
+      doc.setTextColor(0); doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(120);
+      doc.text(p.cliente||'(sem cliente)', pageW-margin, y, {align:'right'});
+      doc.setTextColor(0);
+      y += 3.5;
+      doc.setDrawColor(220); doc.line(margin, y, pageW-margin, y);
+      y += 4.5;
+
+      itens.forEach(function(it){
+        novaPaginaSeNecessario(10);
+        var nome = it.nome||it.col2||'—';
+        var qtdUnid = it.col3||(((it.qtd||0))+' '+(it.unidade||it.unid||''));
+        var sub = Number(it.sub||it.val||0);
+        doc.setFontSize(9); doc.setTextColor(0);
+        doc.text(nome, margin+2, y);
+        doc.setFont('helvetica','bold'); doc.setTextColor(122,58,0);
+        doc.text('R$ '+_fmt(sub), pageW-margin, y, {align:'right'});
+        doc.setFont('helvetica','normal'); doc.setTextColor(0);
+        y += 5;
+        doc.setFontSize(7.5); doc.setTextColor(120);
+        doc.text(qtdUnid, margin+2, y);
+        doc.setTextColor(0);
+        y += 4.5;
+      });
+      doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(0);
+      doc.text('Total do pedido', margin+2, y);
+      doc.text('R$ '+_fmt(p.total), pageW-margin, y, {align:'right'});
+      doc.setFont('helvetica','normal');
+      y += 7;
+    });
+  }
+
+  novaPaginaSeNecessario(16);
+  doc.setDrawColor(180); doc.line(margin, y, pageW-margin, y);
+  y += 6;
+  doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(0);
+  doc.text('Total do periodo', margin, y);
+  doc.text('R$ '+_fmt(totalGeral), pageW-margin, y, {align:'right'});
+
+  doc.save('historico-pedidos-'+_dataLocalHoje()+'.pdf');
   _toast('✅ PDF gerado!');
 }
 
