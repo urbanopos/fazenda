@@ -333,10 +333,6 @@
           "fornecedor": "Fazenda São José"
         },
         {
-          "unid": "sacos",
-          "preco": 0
-        },
-        {
           "unid": "Saco",
           "preco": 15
         }
