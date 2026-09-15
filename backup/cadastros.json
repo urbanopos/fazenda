@@ -215,7 +215,12 @@
       "apresentacoes": [
         {
           "unid": "kg",
-          "preco": 0
+          "preco": 0,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ]
         }
       ]
     },
