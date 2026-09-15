@@ -169,7 +169,9 @@
           "unid": "Unid.",
           "preco": 50
         }
-      ]
+      ],
+      "_excluido": true,
+      "_excluidoEm": 1789469258838
     },
     {
       "id": "p1789066563591_0",
