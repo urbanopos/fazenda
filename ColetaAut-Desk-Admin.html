@@ -11587,7 +11587,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0a470847c6';
+var _caFP = '1a0a49cfa9ee';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -12018,14 +12018,21 @@ function _catalogoBuscarExato(setor, nome, unid){
   return cat.find(function(it){ return it.nome.trim().toLowerCase()===an && it.unid.trim().toLowerCase()===au; });
 }
 function _catalogoNomesUnicos(setor){
-  // Fonte única: Cadastros → Produtos. O catálogo antigo não é mais usado
-  // aqui — a listagem do campo de seleção passa a ser exclusivamente o que
-  // está cadastrado (produtos excluídos nunca aparecem).
+  // Fonte única: Cadastros → Produtos. Um produto aparece na aba se
+  // TIVER AO MENOS UMA apresentação habilitada para ela — quem decide
+  // isso é o campo "Aparece nas abas" de cada apresentação (definido
+  // pelo Admin/Desk), não o campo Setor do produto em si. Um produto sem
+  // nenhuma restrição de abas em nenhuma apresentação aparece em todas.
   var label = (SETORES[setor]||{}).label || setor;
   var vistos = {}, out = [];
   (_cadDados.produtos||[]).forEach(function(p){
     if(p._excluido) return;
-    if(p.setor !== label) return;
+    var habilitado = (p.apresentacoes||[]).some(function(a){
+      if(a._excluido) return false;
+      if(!Array.isArray(a.abas) || a.abas.length===0) return true; // sem restrição = aparece em todas
+      return a.abas.indexOf(label)>-1;
+    });
+    if(!habilitado) return;
     var chave = (p.nome||'').trim().toLowerCase();
     if(chave && !vistos[chave]){ vistos[chave]=true; out.push(p.nome); }
   });
@@ -12033,13 +12040,15 @@ function _catalogoNomesUnicos(setor){
 }
 function _catalogoUnidadesPara(setor, nome){
   // Fonte única: Cadastros → Produtos (produtos/apresentações excluídos
-  // nunca aparecem, nem aqui nem na edição de registros antigos).
+  // nunca aparecem, nem aqui nem na edição de registros antigos). A
+  // restrição de aba vive só na apresentação (campo "abas"), nunca no
+  // Setor do produto.
   var label = (SETORES[setor]||{}).label || setor;
   var alvo = String(nome).trim().toLowerCase();
   var vistos = {}, out = [];
   (_cadDados.produtos||[]).forEach(function(p){
     if(p._excluido) return;
-    if(p.setor===label && p.nome.trim().toLowerCase()===alvo){
+    if(p.nome.trim().toLowerCase()===alvo){
       (p.apresentacoes||[]).forEach(function(a){
         if(a._excluido) return;
         // Se a apresentação tiver abas restritas, só entra se este setor
@@ -12050,7 +12059,7 @@ function _catalogoUnidadesPara(setor, nome){
       });
     }
   });
-  return out;
+  return out.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
 }
 /* Mesma busca, mas em todos os setores — usada na tela de Vendas, onde o
    produto nao esta amarrado a um setor especifico (ex: "Ovos de Capoeira"
@@ -12205,6 +12214,7 @@ var PROD_VENDA = [
 
 function _prodVenda(){
   var out = (_cadDados.produtos||[]).filter(function(p){ return !p._excluido; }).map(function(p){ return {id:p.id, nome:p.nome}; });
+  out.sort(function(a,b){ return (a.nome||'').localeCompare(b.nome||'','pt-BR'); });
   out.push({id:'_edit', nome:'Editavel'});
   return out;
 }
@@ -12482,7 +12492,7 @@ function _catalogoApresentacoesPara(setor, nome){
   var out = [];
   (_cadDados.produtos||[]).forEach(function(p){
     if(p._excluido) return;
-    if(p.setor===label && p.nome.trim().toLowerCase()===alvo){
+    if(p.nome.trim().toLowerCase()===alvo){
       (p.apresentacoes||[]).forEach(function(a){
         if(a._excluido) return;
         if(Array.isArray(a.abas) && a.abas.length>0 && a.abas.indexOf(label)===-1) return;
@@ -12490,7 +12500,7 @@ function _catalogoApresentacoesPara(setor, nome){
       });
     }
   });
-  return out;
+  return out.sort(function(a,b){ return (a.unid||'').localeCompare(b.unid||'','pt-BR'); });
 }
 
 function _labelApres(a){
@@ -12593,7 +12603,7 @@ async function _cadastrarItemCatalogo(setor){
   var label = (SETORES[setor]||{}).label || setor;
   var nomeNorm = nome.toLowerCase();
   var unidNorm = unid.toLowerCase();
-  var existente = (_cadDados.produtos||[]).find(function(p){ return !p._excluido && p.setor===label && (p.nome||'').trim().toLowerCase()===nomeNorm; });
+  var existente = (_cadDados.produtos||[]).find(function(p){ return !p._excluido && (p.nome||'').trim().toLowerCase()===nomeNorm; });
   if(existente){
     var jaTemUnid = (existente.apresentacoes||[]).some(function(a){ return !a._excluido && (a.unid||'').trim().toLowerCase()===unidNorm; });
     if(jaTemUnid){ _toast('Esse item com essa unidade já existe no cadastro.'); return; }
@@ -12634,10 +12644,10 @@ async function _confirmarRemoverCatalogo(setor, k){
   var nome = sel ? sel.value : '';
   if(!nome || nome==='__novo__') return;
   var label = (SETORES[setor]||{}).label || setor;
-  if(!confirm('Remover "'+nome+'" do cadastro de '+label+'?\n\nEle deixará de aparecer para novos registros, mas o histórico já lançado com esse item é mantido.')) return;
+  if(!confirm('Remover "'+nome+'" do cadastro?\n\nComo o cadastro é único para todas as abas, ele deixará de aparecer em qualquer aba (não só '+label+'), mas o histórico já lançado com esse item é mantido.')) return;
   var nomeNorm = nome.trim().toLowerCase();
   (_cadDados.produtos||[]).forEach(function(p){
-    if(!p._excluido && p.setor===label && (p.nome||'').trim().toLowerCase()===nomeNorm){
+    if(!p._excluido && (p.nome||'').trim().toLowerCase()===nomeNorm){
       p._excluido = true;
       p._excluidoEm = Date.now();
     }
@@ -13497,6 +13507,7 @@ function _atualizarSugestoesClientes(){
   // Clientes cadastrados em Cadastros → Clientes entram primeiro na lista,
   // com o id estável como valor (não o texto do nome).
   (_cadDados.clientes||[]).forEach(function(c){
+    if(c._excluido) return;
     var nome = (c.nome||'').trim();
     var chave = nome.toLowerCase();
     if(nome && !vistos[chave]){ vistos[chave]=true; opcoes.push({id:c.id, nome:nome}); }
@@ -13617,7 +13628,8 @@ function _renderVItens(){
       // como lista de opções — trocar a unidade também atualiza o preço.
       var prodSel = isEdit ? null : (_cadDados.produtos||[]).find(function(p){ return p.id===it.prodId; });
       var apresentacoes = (prodSel && prodSel.apresentacoes && prodSel.apresentacoes.length)
-        ? prodSel.apresentacoes.filter(function(a){ return !Array.isArray(a.abas) || a.abas.length===0 || a.abas.indexOf('Vendas')>-1; })
+        ? prodSel.apresentacoes.filter(function(a){ return !a._excluido && (!Array.isArray(a.abas) || a.abas.length===0 || a.abas.indexOf('Vendas')>-1); })
+          .sort(function(x,y){ return (x.unid||'').localeCompare(y.unid||'','pt-BR'); })
         : [];
       var campoUnidade;
       if(apresentacoes.length){
@@ -16145,13 +16157,15 @@ function _unidadesParaProdutoNome(nome){
   if(!nome) return [];
   var unids = [], vistos = {};
   (_cadDados.produtos||[]).forEach(function(p){
+    if(p._excluido) return;
     if((p.nome||'').trim().toLowerCase()!==nome) return;
     (p.apresentacoes||[]).forEach(function(a){
+      if(a._excluido) return;
       var u = (a.unid||'').trim();
       if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; unids.push(u); }
     });
   });
-  return unids;
+  return unids.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
 }
 
 /* Preço já cadastrado para um produto+unidade específicos, usado para
@@ -17223,9 +17237,9 @@ async function _cadCarregar(){
 function _atualizarDatalistFornecedores(){
   var dl = document.getElementById('fornecedores-datalist');
   if(!dl) return;
-  dl.innerHTML = (_cadDados.fornecedores||[]).map(function(f){
-    return '<option value="'+_escH(f.nome||'')+'">';
-  }).join('');
+  var nomes = (_cadDados.fornecedores||[]).filter(function(f){ return !f._excluido; }).map(function(f){ return f.nome||''; });
+  nomes.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
+  dl.innerHTML = nomes.map(function(n){ return '<option value="'+_escH(n)+'">'; }).join('');
 }
 
 async function _cadSalvar(){
@@ -17501,7 +17515,9 @@ function _cadRenderAba(aba){
     var it = par.it, idx = par.idx;
     var det = '';
     if(aba==='produtos'){
-      var resumoApres = (it.apresentacoes||[]).filter(function(a){ return !a._excluido; }).map(function(a){
+      var resumoApres = (it.apresentacoes||[]).filter(function(a){ return !a._excluido; })
+        .sort(function(x,y){ return (x.unid||'').localeCompare(y.unid||'','pt-BR'); })
+        .map(function(a){
         return a.unid+(a.preco?' (R$ '+Number(a.preco).toFixed(2).replace('.',',')+')':'')+(a.fornecedor?' — '+a.fornecedor:'');
       }).join(' · ');
       det = (it.setor||'')+(resumoApres?' · '+resumoApres:(it.unid?' · '+it.unid:''));
@@ -17583,7 +17599,7 @@ function _cadMostrarForm(aba, dados){
       '<div><label class="cad-inp-lbl">Setor</label>'
       +'<input class="cad-inp" id="cf-setor" placeholder="ex: Aviário" value="'+_escH(d.setor||'')+'" list="cad-setores-list"></div>'
       +'<datalist id="cad-setores-list">'
-      +[...new Set((_cadDados.produtos||[]).filter(function(p){ return !p._excluido; }).map(function(p){return p.setor;}).filter(Boolean))].map(function(s){return'<option value="'+_escH(s)+'">';}).join('')
+      +[...new Set((_cadDados.produtos||[]).filter(function(p){ return !p._excluido; }).map(function(p){return p.setor;}).filter(Boolean))].sort(function(a,b){ return a.localeCompare(b,'pt-BR'); }).map(function(s){return'<option value="'+_escH(s)+'">';}).join('')
       +'</datalist>'
       +'<div><label class="cad-inp-lbl">Nome do produto</label>'
       +'<input class="cad-inp" id="cf-nome" placeholder="ex: Ovos de Capoeira" value="'+_escH(d.nome||'')+'"></div>'
@@ -17609,7 +17625,9 @@ function _cadMostrarForm(aba, dados){
       +'<input class="cad-inp" id="cf-obs" placeholder="Produtos fornecidos..." value="'+_escH(d.obs||'')+'"></div>';
   } else if(aba==='precos'){
     var prodSelOpts = '<option value="">— Escolha um produto —</option>'
-      + (_cadDados.produtos||[]).filter(function(p){ return !p._excluido; }).map(function(p){
+      + (_cadDados.produtos||[]).filter(function(p){ return !p._excluido; })
+        .sort(function(a,b){ return (a.nome||'').localeCompare(b.nome||'','pt-BR'); })
+        .map(function(p){
           return '<option value="'+_escH(p.id)+'"'+(d._prodId===p.id?' selected':'')+'>'+_escH(p.nome)+'</option>';
         }).join('');
     campos =
@@ -17856,8 +17874,11 @@ function _cadPrecoMontarApresentacoes(dPre){
     return;
   }
   var apresOpts = '<option value="_nova">+ Nova apresentação</option>'
-    + (prod.apresentacoes||[]).map(function(a,i){
-        if(a._excluido) return '';
+    + (prod.apresentacoes||[]).map(function(a,i){ return {a:a, i:i}; })
+      .filter(function(p){ return !p.a._excluido; })
+      .sort(function(x,y){ return (x.a.unid||'').localeCompare(y.a.unid||'','pt-BR'); })
+      .map(function(p){
+        var a = p.a, i = p.i;
         return '<option value="'+i+'"'+(dPre && dPre._apresIdx===i?' selected':'')+'>'+_escH(a.unid)+(a.preco?' — R$ '+Number(a.preco).toFixed(2).replace('.',','):'')+'</option>';
       }).join('');
   var ABAS_APRES = ['Aviario','Perda','Campo','Estoque','Vendas'];
@@ -18067,8 +18088,11 @@ function _acMostrar(inputId, tipo, onSelect){
   var q = inp.value.toLowerCase();
   var itens = _cadDados[tipo] || [];
   var filtrado = itens.filter(function(it){
+    if(it._excluido) return false;
     var nm = (it.nome||it.prodNome||'').toLowerCase();
     return nm.includes(q);
+  }).sort(function(a,b){
+    return (a.nome||a.prodNome||'').localeCompare((b.nome||b.prodNome||''),'pt-BR');
   }).slice(0,8);
   if(!filtrado.length){ list.classList.remove('vis'); return; }
   list.innerHTML = filtrado.map(function(it){
