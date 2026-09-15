@@ -54,10 +54,6 @@
         {
           "unid": "Unid.",
           "preco": 0
-        },
-        {
-          "unid": "unid",
-          "preco": 0
         }
       ]
     },
@@ -292,10 +288,6 @@
         {
           "unid": "unid",
           "preco": 0
-        },
-        {
-          "unid": "Unid.",
-          "preco": 30
         }
       ]
     },
