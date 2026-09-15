@@ -36,22 +36,6 @@
       ]
     },
     {
-      "id": "p_pinto",
-      "setor": "Vendas",
-      "nome": "Pinto",
-      "unid": "",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 30
-        },
-        {
-          "unid": "unid",
-          "preco": 0
-        }
-      ]
-    },
-    {
       "id": "p_pintainha",
       "setor": "Vendas",
       "nome": "Pintainha",
@@ -161,6 +145,10 @@
           "unid": "Unid",
           "preco": 8,
           "fornecedor": "Fazenda São José"
+        },
+        {
+          "unid": "Unid.",
+          "preco": 30
         }
       ]
     },
@@ -399,6 +387,22 @@
           "unid": "Sacos",
           "preco": 0,
           "fornecedor": "Fazenda São José"
+        }
+      ]
+    },
+    {
+      "id": "p_pinto",
+      "setor": "Vendas",
+      "nome": "Pinto",
+      "unid": "",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 30
+        },
+        {
+          "unid": "unid",
+          "preco": 0
         }
       ]
     }
