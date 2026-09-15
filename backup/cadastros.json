@@ -384,6 +384,17 @@
       ]
     },
     {
+      "id": "p1789066561642_0",
+      "setor": "Aviario",
+      "nome": "Galinha Viva",
+      "apresentacoes": [
+        {
+          "unid": "unid",
+          "preco": 0
+        }
+      ]
+    },
+    {
       "id": "p_pinto",
       "setor": "Vendas",
       "nome": "Pinto",
@@ -393,17 +404,6 @@
           "unid": "Unid.",
           "preco": 30
         },
-        {
-          "unid": "unid",
-          "preco": 0
-        }
-      ]
-    },
-    {
-      "id": "p1789066561642_0",
-      "setor": "Aviario",
-      "nome": "Galinha Viva",
-      "apresentacoes": [
         {
           "unid": "unid",
           "preco": 0
