@@ -685,7 +685,7 @@ function _catalogoNomesUnicos(setor){
     if(p._excluido) return;
     var habilitado = (p.apresentacoes||[]).some(function(a){
       if(a._excluido) return false;
-      if(!Array.isArray(a.abas) || a.abas.length===0) return true;
+      if(!Array.isArray(a.abas)) return true;
       return a.abas.indexOf(label)>-1;
     });
     if(!habilitado) return;
@@ -706,7 +706,7 @@ function _catalogoUnidadesPara(setor, nome){
         if(a._excluido) return;
         // Se a apresentação tiver abas restritas, só entra se este setor
         // estiver na lista; sem restrição (campo ausente ou vazio), aparece sempre.
-        if(Array.isArray(a.abas) && a.abas.length>0 && a.abas.indexOf(label)===-1) return;
+        if(Array.isArray(a.abas) && a.abas.indexOf(label)===-1) return;
         var u = (a.unid||'').trim();
         if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
       });
@@ -979,7 +979,7 @@ function _catalogoApresentacoesPara(setor, nome){
     if(p.nome.trim().toLowerCase()===alvo){
       (p.apresentacoes||[]).forEach(function(a){
         if(a._excluido) return;
-        if(Array.isArray(a.abas) && a.abas.length>0 && a.abas.indexOf(label)===-1) return;
+        if(Array.isArray(a.abas) && a.abas.indexOf(label)===-1) return;
         out.push({unid:(a.unid||'').trim(), preco:Number(a.preco)||0, fornecedor:a.fornecedor||''});
       });
     }
@@ -1201,7 +1201,7 @@ function _iniciar(){
    nada salvo no aparelho — token, catálogo e coletas pendentes continuam
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
-var _caFP = '1a0a49d84053';
+var _caFP = '1a0a4d415ba8';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -1630,7 +1630,10 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, faixaSufixo){
   // RODAPE
   rect(0,y,W,48,'#1c2e22');
   txt(rodape||'',PAD,y+18,8,'#7aa88a');
-  txt('R$ '+_fmt(linhas.reduce(function(s,it){ return s+(it.val||0); },0)),W-PAD,y+34,20,'#b8943f','bold','right');
+  var ehPedido = titulo.indexOf('TALAO DE PEDIDO')===0;
+  if(ehPedido){
+    txt('R$ '+_fmt(linhas.reduce(function(s,it){ return s+(it.val||0); },0)),W-PAD,y+34,20,'#b8943f','bold','right');
+  }
   txt(linhas.length+' item(ns)',PAD,y+34,11,'rgba(255,255,255,0.5)');
   y+=48;
 
@@ -2023,7 +2026,7 @@ function _optsApresentacao(prodId, selIdx){
   // (não a posição na lista filtrada), pois é esse índice original que
   // setApresV() usa depois para encontrar a apresentação certa.
   var opts = apres.map(function(a,i){ return {a:a, i:i}; })
-    .filter(function(par){ return !Array.isArray(par.a.abas) || par.a.abas.length===0 || par.a.abas.indexOf('Vendas')>-1; });
+    .filter(function(par){ return !Array.isArray(par.a.abas) || par.a.abas.indexOf('Vendas')>-1; });
   if(!opts.length){
     return '<option value="">— nenhuma apresentação disponível para venda —</option>';
   }
