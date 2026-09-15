@@ -68,7 +68,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 120,
-        "data": "11/09/2026"
+        "data": "11/09/2026",
+        "prodId": "p_ovo"
       },
       {
         "nome": "Ovos de Capoeira",
@@ -81,7 +82,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 60,
-        "data": "11/09/2026"
+        "data": "11/09/2026",
+        "prodId": "p_ovo"
       },
       {
         "nome": "Ovos de Capoeira",
@@ -94,7 +96,8 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 60,
-        "data": "11/09/2026"
+        "data": "11/09/2026",
+        "prodId": "p_ovo"
       }
     ],
     "total": 940,
