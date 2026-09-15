@@ -495,8 +495,15 @@
     {
       "id": "p_esterco",
       "setor": "Vendas",
-      "nome": "Esterco",
-      "apresentacoes": []
+      "nome": "Esterco de Boi",
+      "apresentacoes": [
+        {
+          "id": "amu2jtf0zeyp9y9",
+          "unid": "Saco",
+          "preco": 15,
+          "fornecedor": "Fazenda São José"
+        }
+      ]
     },
     {
       "id": "p1789066561642_0",
