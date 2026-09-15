@@ -434,13 +434,12 @@
             "Perda",
             "Vendas"
           ],
-          "_excluido": true,
-          "_excluidoEm": 1789469919655
+          "_excluido": true
         },
         {
           "id": "amu2k4a6nqk0dro",
           "unid": "Unid. Viva",
-          "preco": 50,
+          "preco": 0,
           "fornecedor": "Fazenda São José",
           "abas": [
             "Aviario",
@@ -451,7 +450,7 @@
         {
           "id": "amu2k6f20gb7odl",
           "unid": "Unid. Abatida",
-          "preco": 50,
+          "preco": 0,
           "fornecedor": "Fazenda São José",
           "abas": [
             "Vendas"
