@@ -362,7 +362,10 @@
         {
           "unid": "Sc 25kg",
           "preco": 0,
-          "fornecedor": "IRCA"
+          "fornecedor": "IRCA",
+          "abas": [
+            "Estoque"
+          ]
         }
       ]
     },
