@@ -136,7 +136,9 @@
             "Vendas"
           ]
         }
-      ]
+      ],
+      "_excluido": true,
+      "_excluidoEm": 1789470234199
     },
     {
       "id": "p1787993157009",
