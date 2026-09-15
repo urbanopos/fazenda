@@ -142,7 +142,12 @@
         },
         {
           "unid": "unid",
-          "preco": 0
+          "preco": 0,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ]
         }
       ]
     },
