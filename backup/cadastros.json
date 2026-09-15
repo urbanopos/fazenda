@@ -35,16 +35,6 @@
       "nome": "Pintainha",
       "apresentacoes": [
         {
-          "unid": "Unid.",
-          "preco": 25,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Aviario",
-            "Perda",
-            "Vendas"
-          ]
-        },
-        {
           "unid": "Unid",
           "preco": 25,
           "fornecedor": "Fazenda São José"
