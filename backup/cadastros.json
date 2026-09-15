@@ -527,7 +527,9 @@
       "setor": "Vendas",
       "nome": "Pinto",
       "unid": "",
-      "apresentacoes": []
+      "apresentacoes": [],
+      "_excluido": true,
+      "_excluidoEm": 1789469349387
     }
   ],
   "clientes": [
