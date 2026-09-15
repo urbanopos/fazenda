@@ -26,7 +26,10 @@
       "apresentacoes": [
         {
           "unid": "Unid.",
-          "preco": 60
+          "preco": 60,
+          "abas": [
+            "Vendas"
+          ]
         },
         {
           "id": "amu2kcsk9kdfvro",
