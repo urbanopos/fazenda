@@ -400,7 +400,10 @@
         {
           "unid": "Sc 25kg",
           "preco": 0,
-          "fornecedor": "Purina"
+          "fornecedor": "Purina",
+          "abas": [
+            "Estoque"
+          ]
         },
         {
           "unid": "Sc 25kg",
