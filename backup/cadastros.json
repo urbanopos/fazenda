@@ -472,7 +472,9 @@
           "fornecedor": "Fazenda São José",
           "abas": [
             "Vendas"
-          ]
+          ],
+          "_excluido": true,
+          "_excluidoEm": 1789470330532
         },
         {
           "id": "amu2kegk0ky06vh",
