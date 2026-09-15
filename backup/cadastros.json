@@ -439,7 +439,7 @@
         {
           "id": "amu2k4a6nqk0dro",
           "unid": "Unid. Viva",
-          "preco": 0,
+          "preco": 45,
           "fornecedor": "Fazenda São José",
           "abas": [
             "Aviario",
@@ -450,7 +450,7 @@
         {
           "id": "amu2k6f20gb7odl",
           "unid": "Unid. Abatida",
-          "preco": 0,
+          "preco": 50,
           "fornecedor": "Fazenda São José",
           "abas": [
             "Vendas"
