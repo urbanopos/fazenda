@@ -60,7 +60,12 @@
         {
           "unid": "Unid.",
           "preco": 2,
-          "fornecedor": "Fazenda São José"
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ]
         }
       ]
     },
