@@ -266,7 +266,10 @@
         {
           "unid": "sc 40kg",
           "preco": 0,
-          "fornecedor": "Mauricéia"
+          "fornecedor": "Mauricéia",
+          "abas": [
+            "Estoque"
+          ]
         }
       ]
     },
