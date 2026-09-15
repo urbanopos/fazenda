@@ -9,13 +9,19 @@
           "unid": "Bandeja c/30 ovos",
           "preco": 30,
           "abas": [
-            "Aviario",
             "Vendas"
           ]
         },
         {
           "unid": "Unid.",
           "preco": 1,
+          "abas": [
+            "Vendas"
+          ]
+        },
+        {
+          "unid": "unid",
+          "preco": 0,
           "abas": [
             "Aviario",
             "Vendas"
@@ -24,89 +30,14 @@
       ]
     },
     {
-      "id": "p_frango",
+      "id": "p_galinha",
       "setor": "Vendas",
-      "nome": "Frango Abatido",
+      "nome": "Galinha Abatida",
+      "unid": "Unid.",
       "apresentacoes": [
         {
           "unid": "Unid.",
-          "preco": 50,
-          "fornecedor": "Fazenda São José"
-        }
-      ]
-    },
-    {
-      "id": "p_pintainha",
-      "setor": "Vendas",
-      "nome": "Pintainha",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 25,
-          "fornecedor": "Fazenda São José"
-        },
-        {
-          "unid": "Unid",
-          "preco": 25,
-          "fornecedor": "Fazenda São José"
-        }
-      ]
-    },
-    {
-      "id": "p_coco",
-      "setor": "Vendas",
-      "nome": "Coco Seco",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 2,
-          "fornecedor": "Fazenda São José"
-        }
-      ]
-    },
-    {
-      "id": "p_manga",
-      "setor": "Vendas",
-      "nome": "Manga",
-      "apresentacoes": [
-        {
-          "unid": "Caixa",
-          "preco": 65,
-          "fornecedor": "Fazenda São José"
-        },
-        {
-          "unid": "Unid",
-          "preco": 0,
-          "fornecedor": "Fazenda São José"
-        }
-      ]
-    },
-    {
-      "id": "p_abacate",
-      "setor": "Vendas",
-      "nome": "Abacate",
-      "apresentacoes": [
-        {
-          "unid": "Caixa",
-          "preco": 90,
-          "fornecedor": "Fazenda São José"
-        },
-        {
-          "unid": "unid",
-          "preco": 5,
-          "fornecedor": "Fazenda São José"
-        }
-      ]
-    },
-    {
-      "id": "p1787993055897",
-      "setor": "Vendas",
-      "nome": "Galinha Viva",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 50,
-          "fornecedor": "Fazenda São José"
+          "preco": 60
         },
         {
           "unid": "unid",
@@ -115,14 +46,11 @@
       ]
     },
     {
-      "id": "p1787993157009",
+      "id": "p_frango",
       "setor": "Vendas",
-      "nome": "Frango Vivo",
+      "nome": "Frango Abatido",
+      "unid": "Unid.",
       "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 50
-        },
         {
           "unid": "Unid.",
           "preco": 50
@@ -130,26 +58,90 @@
       ]
     },
     {
-      "id": "p1789066563591_0",
-      "setor": "Aviario",
-      "nome": "Pinto",
+      "id": "p_pintainha",
+      "setor": "Vendas",
+      "nome": "Pintainha",
+      "unid": "Unid.",
       "apresentacoes": [
         {
-          "unid": "Unid",
-          "preco": 8,
-          "fornecedor": "Fazenda São José"
+          "unid": "Unid.",
+          "preco": 0
         },
         {
+          "unid": "unid",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p_coco",
+      "setor": "Vendas",
+      "nome": "Coco Seco",
+      "unid": "Unid.",
+      "apresentacoes": [
+        {
           "unid": "Unid.",
-          "preco": 30
+          "preco": 2
+        },
+        {
+          "unid": "unid",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p_manga",
+      "setor": "Vendas",
+      "nome": "Manga",
+      "unid": "Caixa",
+      "apresentacoes": [
+        {
+          "unid": "Caixa",
+          "preco": 0
+        },
+        {
+          "unid": "unid",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p_abacate",
+      "setor": "Vendas",
+      "nome": "Abacate",
+      "unid": "Caixa",
+      "apresentacoes": [
+        {
+          "unid": "Caixa",
+          "preco": 0
+        },
+        {
+          "unid": "unid",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1787993055897",
+      "setor": "Vendas",
+      "nome": "Galinha Viva",
+      "unid": "Unid.",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 50
         }
       ]
     },
     {
       "id": "p1789066565373_0",
       "setor": "Aviario",
-      "nome": "Peru jovem",
+      "nome": "Peru",
       "apresentacoes": [
+        {
+          "unid": "Jovem",
+          "preco": 0
+        },
         {
           "unid": "Unid.",
           "preco": 0,
@@ -163,14 +155,16 @@
       "nome": "Banana Prata",
       "apresentacoes": [
         {
-          "unid": "Cacho",
-          "preco": 0,
-          "fornecedor": "Fazenda São José"
+          "unid": "cac.",
+          "preco": 0
         },
         {
           "unid": "Cacho",
-          "preco": 0,
-          "fornecedor": "Fazenda São José"
+          "preco": 0
+        },
+        {
+          "unid": "Cacho",
+          "preco": 0
         }
       ]
     },
@@ -192,8 +186,7 @@
       "apresentacoes": [
         {
           "unid": "Cacho",
-          "preco": 0,
-          "fornecedor": "Fazenda São José"
+          "preco": 0
         }
       ]
     },
@@ -204,8 +197,7 @@
       "apresentacoes": [
         {
           "unid": "Unid.",
-          "preco": 0,
-          "fornecedor": "Fazenda São José"
+          "preco": 0
         }
       ]
     },
@@ -216,13 +208,7 @@
       "apresentacoes": [
         {
           "unid": "sc 40kg",
-          "preco": 0,
-          "fornecedor": "IRCA"
-        },
-        {
-          "unid": "sc 40kg",
-          "preco": 0,
-          "fornecedor": "Mauricéia"
+          "preco": 0
         }
       ]
     },
@@ -233,8 +219,7 @@
       "apresentacoes": [
         {
           "unid": "sc 40kg",
-          "preco": 0,
-          "fornecedor": "IRCA"
+          "preco": 0
         }
       ]
     },
@@ -256,8 +241,7 @@
       "apresentacoes": [
         {
           "unid": "sc 40kg",
-          "preco": 0,
-          "fornecedor": "Fazenda São José"
+          "preco": 0
         }
       ]
     },
@@ -268,8 +252,7 @@
       "apresentacoes": [
         {
           "unid": "sc 40kg",
-          "preco": 0,
-          "fornecedor": "IRCA"
+          "preco": 0
         }
       ]
     },
@@ -290,6 +273,10 @@
       "nome": "Farelo de Trigo",
       "apresentacoes": [
         {
+          "unid": "sc 40kg",
+          "preco": 0
+        },
+        {
           "unid": "sc 30kg",
           "preco": 0
         }
@@ -302,13 +289,7 @@
       "apresentacoes": [
         {
           "unid": "Sc 25kg",
-          "preco": 0,
-          "fornecedor": "Purina"
-        },
-        {
-          "unid": "Sc 25kg",
-          "preco": 0,
-          "fornecedor": "IRCA"
+          "preco": 0
         }
       ]
     },
@@ -319,32 +300,7 @@
       "apresentacoes": [
         {
           "unid": "Sc 40kg",
-          "preco": 0,
-          "fornecedor": "IRCA"
-        }
-      ]
-    },
-    {
-      "id": "p1789066562691_0",
-      "setor": "Aviario",
-      "nome": "Frango Vivo",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 50,
-          "fornecedor": "Fazenda São José"
-        }
-      ]
-    },
-    {
-      "id": "p_galinha",
-      "setor": "Vendas",
-      "nome": "Galinha Abatida",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 60,
-          "fornecedor": "Fazenda São José"
+          "preco": 0
         }
       ]
     },
@@ -356,6 +312,45 @@
         {
           "unid": "Saco",
           "preco": 15
+        },
+        {
+          "unid": "Sc.",
+          "preco": 15
+        },
+        {
+          "unid": "sacos",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066563591_0",
+      "setor": "Aviario",
+      "nome": "Pintos",
+      "apresentacoes": [
+        {
+          "unid": "unid",
+          "preco": 0
+        },
+        {
+          "unid": "Unid.",
+          "preco": 30
+        }
+      ]
+    },
+    {
+      "id": "p1787993157009",
+      "setor": "Vendas",
+      "nome": "Frango Vivo",
+      "unid": "Unid.",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 50
+        },
+        {
+          "unid": "unid",
+          "preco": 0
         }
       ]
     },
@@ -365,28 +360,30 @@
       "nome": "Banana Maçã",
       "apresentacoes": [
         {
-          "unid": "Cacho",
-          "preco": 50,
-          "fornecedor": "Fazenda São José"
+          "unid": "cac.",
+          "preco": 0
         }
       ]
     },
     {
-      "id": "p_esterco",
-      "setor": "Vendas",
-      "nome": "Esterco",
+      "id": "p1789066562691_0",
+      "setor": "Aviario",
+      "nome": "Frango Vivo",
       "apresentacoes": [
         {
-          "unid": "Sacos",
-          "preco": 0,
-          "fornecedor": "Fazenda São José"
+          "unid": "unid",
+          "preco": 0
+        },
+        {
+          "unid": "Unid.",
+          "preco": 50
         }
       ]
     },
     {
       "id": "p1789066561642_0",
       "setor": "Aviario",
-      "nome": "Galinha Viva",
+      "nome": "Galinha Abatida",
       "apresentacoes": [
         {
           "unid": "unid",
@@ -395,17 +392,17 @@
       ]
     },
     {
-      "id": "p_pinto",
+      "id": "p_esterco",
       "setor": "Vendas",
-      "nome": "Pinto",
-      "unid": "",
+      "nome": "Esterco de Galinha",
       "apresentacoes": [
         {
-          "unid": "Unid.",
-          "preco": 30
+          "unid": "Sc.",
+          "preco": 15,
+          "fornecedor": "Fazenda São José"
         },
         {
-          "unid": "unid",
+          "unid": "sacos",
           "preco": 0
         }
       ]
