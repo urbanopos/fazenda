@@ -429,9 +429,10 @@
     {
       "id": "p1789066562691_0",
       "setor": "Aviario",
-      "nome": "Frango Vivo",
+      "nome": "Frango",
       "apresentacoes": [
         {
+          "id": "amu2k1qtsbdryzl",
           "unid": "Unid.",
           "preco": 50,
           "fornecedor": "Fazenda São José",
