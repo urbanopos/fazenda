@@ -105,7 +105,12 @@
       "apresentacoes": [
         {
           "unid": "Unid.",
-          "preco": 2
+          "preco": 2,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ]
         }
       ]
     },
