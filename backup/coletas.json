@@ -1,6 +1,23 @@
 [
   {
     "data": "2026-09-15",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Campo",
+        "nome": "Banana Prata",
+        "unid": "Cacho",
+        "qtd": 4,
+        "preco": 0,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1789476698794
+  },
+  {
+    "data": "2026-09-15",
     "coletor": "Junior Desk",
     "itens": [
       {
