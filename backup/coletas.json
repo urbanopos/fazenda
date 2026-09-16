@@ -21,6 +21,23 @@
     "coletor": "Menininha",
     "itens": [
       {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "unid": "Unid.",
+        "qtd": 50,
+        "preco": 1,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1789510901128
+  },
+  {
+    "data": "2026-09-15",
+    "coletor": "Menininha",
+    "itens": [
+      {
         "setor": "Campo",
         "nome": "Banana Prata",
         "unid": "Cacho",
