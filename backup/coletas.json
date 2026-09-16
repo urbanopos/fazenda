@@ -1,6 +1,23 @@
 [
   {
     "data": "2026-09-16",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "unid": "Unid.",
+        "qtd": 45,
+        "preco": 1,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1789589246744
+  },
+  {
+    "data": "2026-09-16",
     "coletor": "Júnior",
     "itens": [
       {
