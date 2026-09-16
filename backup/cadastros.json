@@ -4,67 +4,689 @@
       "id": "p_ovo",
       "setor": "Vendas",
       "nome": "Ovos de Capoeira",
-      "unid": "",
-      "apresentacoes": []
+      "apresentacoes": [
+        {
+          "unid": "Bandeja c/30 ovos",
+          "preco": 30,
+          "abas": [
+            "Vendas"
+          ]
+        },
+        {
+          "unid": "Unid.",
+          "preco": 1
+        }
+      ]
     },
     {
       "id": "p_galinha",
       "setor": "Vendas",
-      "nome": "Galinha",
-      "unid": "",
-      "apresentacoes": []
+      "nome": "Galinha Abatida",
+      "unid": "Unid.",
+      "apresentacoes": [
+        {
+          "id": "amu2kcsk9kdfvro",
+          "unid": "Unid.",
+          "preco": 60,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Vendas"
+          ],
+          "_excluido": true,
+          "_excluidoEm": 1789470330532
+        },
+        {
+          "id": "amu2kegk0ky06vh",
+          "unid": "Unid. Viva",
+          "preco": 50,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ]
+        },
+        {
+          "id": "amu2kfc5yoera2u",
+          "unid": "Unid. Abatida",
+          "preco": 60,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Vendas"
+          ]
+        }
+      ]
     },
     {
       "id": "p_frango",
       "setor": "Vendas",
+      "nome": "Frango Abatido",
+      "unid": "Unid.",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 50
+        }
+      ],
+      "_excluido": true,
+      "_excluidoEm": 1789469955251
+    },
+    {
+      "id": "p_pintainha",
+      "setor": "Vendas",
+      "nome": "Pintainha",
+      "unid": "Unid.",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 0
+        },
+        {
+          "unid": "Unid",
+          "preco": 25,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p_coco",
+      "setor": "Vendas",
+      "nome": "Coco Seco",
+      "unid": "Unid.",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 2,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p_manga",
+      "setor": "Vendas",
+      "nome": "Manga",
+      "unid": "Caixa",
+      "apresentacoes": [
+        {
+          "unid": "Caixa",
+          "preco": 0
+        },
+        {
+          "unid": "unid",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p_abacate",
+      "setor": "Vendas",
+      "nome": "Abacate",
+      "unid": "Caixa",
+      "apresentacoes": [
+        {
+          "unid": "Caixa",
+          "preco": 0,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ]
+        },
+        {
+          "unid": "unid",
+          "preco": 0,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p1787993055897",
+      "setor": "Vendas",
+      "nome": "Galinha Viva",
+      "unid": "Unid.",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 50
+        }
+      ],
+      "_excluido": true,
+      "_excluidoEm": 1789470234199
+    },
+    {
+      "id": "p1789066565373_0",
+      "setor": "Aviario",
+      "nome": "Peru",
+      "apresentacoes": [
+        {
+          "unid": "Jovem",
+          "preco": 0
+        },
+        {
+          "unid": "Unid.",
+          "preco": 0,
+          "fornecedor": "Fazenda São José"
+        }
+      ]
+    },
+    {
+      "id": "p1789066568948_0",
+      "setor": "Campo",
+      "nome": "Banana Prata",
+      "apresentacoes": [
+        {
+          "unid": "Cacho",
+          "preco": 0,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p1789066569449_0",
+      "setor": "Campo",
+      "nome": "Pitomba",
+      "apresentacoes": [
+        {
+          "unid": "kg",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066569771_0",
+      "setor": "Campo",
+      "nome": "Banana Comprida",
+      "apresentacoes": [
+        {
+          "unid": "Cacho",
+          "preco": 0,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p1789066570054_0",
+      "setor": "Campo",
+      "nome": "Estacas de sabiá",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 0,
+          "abas": [
+            "Campo",
+            "Vendas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p1789066570296_0",
+      "setor": "Estoque",
+      "nome": "Postura",
+      "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0,
+          "abas": [
+            "Campo",
+            "Estoque",
+            "Vendas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p1789066570580_0",
+      "setor": "Estoque",
+      "nome": "Inicial",
+      "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066570829_0",
+      "setor": "Estoque",
+      "nome": "Pre-Inicial",
+      "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066571054_0",
+      "setor": "Estoque",
+      "nome": "Crescimento",
+      "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0,
+          "abas": [
+            "Estoque"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p1789066572352_0",
+      "setor": "Estoque",
+      "nome": "Engorda",
+      "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0,
+          "abas": [
+            "Estoque"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p1789066573418_0",
+      "setor": "Estoque",
+      "nome": "Milho",
+      "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066574484_0",
+      "setor": "Estoque",
+      "nome": "Farelo de Trigo",
+      "apresentacoes": [
+        {
+          "unid": "sc 30kg",
+          "preco": 0,
+          "abas": [
+            "Estoque"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p1789066575376_0",
+      "setor": "Estoque",
+      "nome": "Ração de peixe",
+      "apresentacoes": [
+        {
+          "unid": "Sc 25kg",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066579200_0",
+      "setor": "Estoque",
+      "nome": "Ração de Gado",
+      "apresentacoes": [
+        {
+          "unid": "Sc 40kg",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789066563591_0",
+      "setor": "Aviario",
+      "nome": "Pintos",
+      "apresentacoes": [
+        {
+          "unid": "unid",
+          "preco": 0
+        }
+      ]
+    },
+    {
+      "id": "p1789199978544_0",
+      "setor": "Campo",
+      "nome": "Banana Maçã",
+      "apresentacoes": [
+        {
+          "unid": "cac.",
+          "preco": 0,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ]
+        },
+        {
+          "unid": "Cacho",
+          "preco": 50,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p_esterco",
+      "setor": "Vendas",
+      "nome": "Esterco de Galinha",
+      "apresentacoes": [
+        {
+          "unid": "Sc.",
+          "preco": 15,
+          "fornecedor": "Fazenda São José"
+        },
+        {
+          "id": "amu2jtf0zeyp9y9",
+          "unid": "Saco",
+          "preco": 15,
+          "fornecedor": "Fazenda São José"
+        }
+      ]
+    },
+    {
+      "id": "p1787993157009",
+      "setor": "Vendas",
+      "nome": "Frango Vivo",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 50,
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ]
+        },
+        {
+          "unid": "Unid.",
+          "preco": 50
+        }
+      ],
+      "_excluido": true,
+      "_excluidoEm": 1789469258838
+    },
+    {
+      "id": "p1789066562691_0",
+      "setor": "Aviario",
       "nome": "Frango",
-      "unid": "",
-      "apresentacoes": []
+      "apresentacoes": [
+        {
+          "id": "amu2k1qtsbdryzl",
+          "unid": "Unid.",
+          "preco": 50,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ],
+          "_excluido": true
+        },
+        {
+          "id": "amu2k4a6nqk0dro",
+          "unid": "Unid. Viva",
+          "preco": 45,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ]
+        },
+        {
+          "id": "amu2k6f20gb7odl",
+          "unid": "Unid. Abatida",
+          "preco": 50,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Vendas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p1789184203486",
+      "setor": "Aviario",
+      "nome": "Esterco de Galinha",
+      "apresentacoes": [
+        {
+          "unid": "Saco",
+          "preco": 15,
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p1789066561642_0",
+      "setor": "Aviario",
+      "nome": "Galinha Viva",
+      "apresentacoes": [
+        {
+          "unid": "unid",
+          "preco": 0,
+          "abas": [
+            "Aviario",
+            "Vendas"
+          ]
+        }
+      ],
+      "_excluido": true,
+      "_excluidoEm": 1789469281439
     },
     {
       "id": "p_pinto",
       "setor": "Vendas",
       "nome": "Pinto",
       "unid": "",
-      "apresentacoes": []
-    },
-    {
-      "id": "p_pintainha",
-      "setor": "Vendas",
-      "nome": "Pintainha",
-      "unid": "",
-      "apresentacoes": []
-    },
-    {
-      "id": "p_esterco",
-      "setor": "Vendas",
-      "nome": "Esterco",
-      "unid": "",
-      "apresentacoes": []
-    },
-    {
-      "id": "p_coco",
-      "setor": "Vendas",
-      "nome": "Coco Seco",
-      "unid": "",
-      "apresentacoes": []
-    },
-    {
-      "id": "p_manga",
-      "setor": "Vendas",
-      "nome": "Manga",
-      "unid": "",
-      "apresentacoes": []
-    },
-    {
-      "id": "p_abacate",
-      "setor": "Vendas",
-      "nome": "Abacate",
-      "unid": "",
-      "apresentacoes": []
+      "apresentacoes": [],
+      "_excluido": true,
+      "_excluidoEm": 1789469349387
     }
   ],
-  "clientes": [],
-  "fornecedores": [],
-  "precos": []
+  "clientes": [
+    {
+      "id": "c_1787276555930_303",
+      "nome": "Léo Alencar",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_51",
+      "nome": "Raiane de Oliveira",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_608",
+      "nome": "Fátima",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_905",
+      "nome": "Wagner Vivaldo",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_841",
+      "nome": "Ariandne",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_52",
+      "nome": "Ana Porpino",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_232",
+      "nome": "Buiu (Casa Amarela)",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_100",
+      "nome": "Luiza Gomes",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_382",
+      "nome": "Jaime Baía de Guanabara",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_766",
+      "nome": "Josafá (Casa Amarela)",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_398",
+      "nome": "Carlos Alberto",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_794",
+      "nome": "João Brasiliano",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_511",
+      "nome": "Gilvando",
+      "contato": "",
+      "obs": ""
+    },
+    {
+      "id": "c_1787276555930_924",
+      "nome": "Son Albuquerque",
+      "contato": "",
+      "obs": ""
+    }
+  ],
+  "fornecedores": [
+    {
+      "id": "f1787994057987",
+      "nome": "IRCA",
+      "contato": "",
+      "obs": "Ração"
+    },
+    {
+      "id": "f1787994091935",
+      "nome": "Mauricéia",
+      "contato": "",
+      "obs": "Ração"
+    },
+    {
+      "id": "f1789336053094",
+      "nome": "Purina",
+      "contato": "",
+      "obs": "Ração de Peixe"
+    },
+    {
+      "id": "f1789385026714",
+      "nome": "Fazenda São José",
+      "contato": "",
+      "obs": ""
+    }
+  ],
+  "precos": [
+    {
+      "id": "r1787937435455",
+      "prodNome": "Ovos de Capoeira",
+      "preco": 30,
+      "unid": "Bandeja c/30 ovos",
+      "nome": "Ovos de Capoeira"
+    },
+    {
+      "id": "r1787937476404",
+      "prodNome": "Galinha Abatida",
+      "preco": 60,
+      "unid": "Unid.",
+      "nome": "Galinha Abatida"
+    },
+    {
+      "id": "r1787937504276",
+      "prodNome": "Galinha Viva",
+      "preco": 50,
+      "unid": "Unid.",
+      "nome": "Galinha Viva"
+    },
+    {
+      "id": "r1787937536104",
+      "prodNome": "Frango Abatido",
+      "preco": 50,
+      "unid": "Unid.",
+      "nome": "Frango Abatido"
+    },
+    {
+      "id": "r1787937561124",
+      "prodNome": "Pintos",
+      "preco": 30,
+      "unid": "Unid.",
+      "nome": "Pintos"
+    },
+    {
+      "id": "r1787937576401",
+      "prodNome": "Esterco",
+      "preco": 15,
+      "unid": "Sc.",
+      "nome": "Esterco"
+    },
+    {
+      "id": "r1787937595107",
+      "prodNome": "Coco Seco",
+      "preco": 2,
+      "unid": "Unid.",
+      "nome": "Coco Seco"
+    },
+    {
+      "id": "r1787937643264",
+      "prodNome": "Coco Seco",
+      "preco": 2.5,
+      "unid": "Unid.",
+      "nome": "Coco Seco"
+    },
+    {
+      "id": "r1787994271450",
+      "prodNome": "Frango Vivo",
+      "preco": 50,
+      "unid": "Unid.",
+      "nome": "Frango Vivo"
+    }
+  ]
 }
