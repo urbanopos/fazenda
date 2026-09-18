@@ -44,12 +44,25 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 60,
-        "data": "11/09/2026",
-        "prodId": "p_ovo"
+        "data": "11/09/2026"
+      },
+      {
+        "nome": "Ovos de Capoeira",
+        "col2": "Ovos de Capoeira",
+        "col1": "11/09/2026",
+        "col3": "2 Bandeja c/30 ovos",
+        "col4": "R$ 30,00 x 2",
+        "col5": "R$ 60,00",
+        "qtd": 2,
+        "unidade": "Bandeja c/30 ovos",
+        "preco": 30,
+        "sub": 60,
+        "data": "11/09/2026"
       }
     ],
-    "total": 60,
-    "ts": 1789133777107
+    "total": 120,
+    "ts": 1789133777107,
+    "_editadoEm": 1789692627616
   },
   {
     "num": "PED-0080",
