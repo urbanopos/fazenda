@@ -11596,7 +11596,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0b1fbfc64e';
+var _caFP = '1a0b6779c9c2';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -14336,16 +14336,17 @@ function _gerarPDFEspelhoTela(){
           if(it.temTipo){ totalSai += it.saida; totalSacos += (it.entrada-it.saida); }
           else { totalSacos += it.entrada; }
         });
-        var totalFmt = Number(totalSacos).toLocaleString('pt-BR',{maximumFractionDigits:2});
         var entFmt = Number(totalEnt).toLocaleString('pt-BR',{maximumFractionDigits:2});
         var saiFmt = Number(totalSai).toLocaleString('pt-BR',{maximumFractionDigits:2});
-        var txtTotal = 'Total: '+totalFmt+' sacos (Ent. '+entFmt+' \u2212 Sai. '+saiFmt+')';
+        var txtTotal = mes ? ('Ent. '+entFmt+' \u2212 Sai. '+saiFmt) : ('Total: '+Number(totalSacos).toLocaleString('pt-BR',{maximumFractionDigits:2})+' sacos (Ent. '+entFmt+' \u2212 Sai. '+saiFmt+')');
+        doc.setFontSize(mes ? 11 : 9);
         var larguraTotal = doc.getTextWidth(txtTotal)+8;
         var xTotal = margin+larguraSetor+4, yTotal = y;
         if(xTotal+larguraTotal > pageW-margin){ xTotal = margin; yTotal = y+9; y += 9; }
         doc.setFillColor(cor[0],cor[1],cor[2]);
         doc.roundedRect(xTotal, yTotal-4.8, larguraTotal, 7, 1.5, 1.5, 'F');
         doc.text(txtTotal, xTotal+4, yTotal);
+        doc.setFontSize(9);
       }
       doc.setTextColor(0); doc.setFont('helvetica','normal');
       y += 9;
@@ -15541,10 +15542,18 @@ function _renderHistColetaTotal(body, registros, ano, mes, setorFiltro){
           totalSacos += it.entrada;
         }
       });
-      var totalFmt = Number(totalSacos).toLocaleString('pt-BR',{maximumFractionDigits:2});
       var entFmt = Number(totalEnt).toLocaleString('pt-BR',{maximumFractionDigits:2});
       var saiFmt = Number(totalSai).toLocaleString('pt-BR',{maximumFractionDigits:2});
-      totalizacaoExtra = '<div style="font-family:\'DM Mono\',monospace;font-size:11px;font-weight:700;background:'+cor+';color:#fff;padding:5px 12px;border-radius:12px;display:inline-block;margin-top:2px">Total: '+totalFmt+' sacos (Ent. '+entFmt+' \u2212 Sai. '+saiFmt+')</div>';
+      if(mes){
+        // Com um mês específico filtrado, "Total" seria só a movimentação
+        // NETA daquele mês — não o saldo real de estoque acumulado — então
+        // pra não confundir os dois, mostra apenas Entrada/Saída (sem a
+        // palavra "Total"), em fonte maior.
+        totalizacaoExtra = '<div style="font-family:\'DM Mono\',monospace;font-size:15px;font-weight:700;background:'+cor+';color:#fff;padding:6px 14px;border-radius:12px;display:inline-block;margin-top:2px">Ent. '+entFmt+' \u2212 Sai. '+saiFmt+'</div>';
+      } else {
+        var totalFmt = Number(totalSacos).toLocaleString('pt-BR',{maximumFractionDigits:2});
+        totalizacaoExtra = '<div style="font-family:\'DM Mono\',monospace;font-size:11px;font-weight:700;background:'+cor+';color:#fff;padding:5px 12px;border-radius:12px;display:inline-block;margin-top:2px">Total: '+totalFmt+' sacos (Ent. '+entFmt+' \u2212 Sai. '+saiFmt+')</div>';
+      }
     }
     html += '<div class="hcol-secao"><span class="hcol-secao-titulo" style="background:'+cor+'">'+setor+'</span>'+(totalizacaoExtra?'<br>':'')+totalizacaoExtra;
     Object.keys(totais[setor]).forEach(function(nome){
@@ -15663,9 +15672,16 @@ function _renderHistColetaDetalhe(body, registros, setorFiltro){
       var nomeExib = setorFiltro ? it.nome : it.setor+' · '+it.nome;
       if(it.forn) nomeExib += ' <span style="font-weight:400;color:#999;font-size:11px">('+it.forn+')</span>';
       var qtdExib = it.qtd+' '+it.unid+(it.preco?' · R$ '+_fmt(it.preco):'');
+      // Mostra Entrada/Saída em CADA item, não só uma vez no cabeçalho do
+      // registro — um registro pode ter itens de tipos diferentes
+      // misturados, e sem essa etiqueta por item era fácil editar sem
+      // perceber que um item ficou com o tipo errado.
+      var tagTipoItem = it.tipo
+        ? '<span style="font-weight:700;font-size:9px;letter-spacing:.5px;margin-right:6px;padding:2px 6px;border-radius:8px;background:'+(it.tipo==='Saida'?'#fde8e8':'#e3edfd')+';color:'+(it.tipo==='Saida'?'#c0392b':'#1e5fbf')+'">'+(it.tipo==='Saida'?'SAÍDA':'ENTRADA')+'</span>'
+        : '';
       html += '<div class="hcol-entrada-item">'
         +'<span>'+nomeExib+'</span>'
-        +'<span style="font-weight:700;color:'+cor+'">'+qtdExib+'</span>'
+        +'<span style="display:flex;align-items:center">'+tagTipoItem+'<span style="font-weight:700;color:'+cor+'">'+qtdExib+'</span></span>'
         +'</div>';
     });
     // Linha de botões
