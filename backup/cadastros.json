@@ -402,21 +402,6 @@
       ]
     },
     {
-      "id": "p1789066579200_0",
-      "setor": "Estoque",
-      "nome": "Ração de Gado",
-      "apresentacoes": [
-        {
-          "unid": "Sc 40kg",
-          "preco": 0,
-          "fornecedor": "IRCA",
-          "abas": [
-            "Estoque"
-          ]
-        }
-      ]
-    },
-    {
       "id": "p1789066562691_0",
       "setor": "Aviario",
       "nome": "Frango",
