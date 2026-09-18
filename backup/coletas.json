@@ -2364,14 +2364,14 @@
         "nome": "Pre-Inicial",
         "qtd": 1,
         "unid": "sc 40kg",
-        "tipo": "Entrada",
+        "tipo": "Saida",
         "forn": "",
         "preco": 0
       }
     ],
     "ts": 1783688506163,
     "mov": "MOV-0011",
-    "_editadoEm": 1789767251821
+    "_editadoEm": 1789767832210
   },
   {
     "data": "2026-07-09",
