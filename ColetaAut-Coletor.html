@@ -1201,7 +1201,7 @@ function _iniciar(){
    nada salvo no aparelho — token, catálogo e coletas pendentes continuam
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
-var _caFP = '1a0a4d415ba8';
+var _caFP = '1a0b677cee48';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -2754,9 +2754,12 @@ function _renderHistColetaDetalhe(body, registros){
       +'<span class="hcol-entrada-col">'+(r.coletor||'')+'</span>'
       +'</div>';
     (r.itens||[]).forEach(function(it){
+      var tagTipoItem = it.tipo
+        ? '<span style="font-weight:700;font-size:9px;letter-spacing:.5px;margin-right:6px;padding:2px 6px;border-radius:8px;background:'+(it.tipo==='Saida'?'#fde8e8':'#e3edfd')+';color:'+(it.tipo==='Saida'?'#c0392b':'#1e5fbf')+'">'+(it.tipo==='Saida'?'SAÍDA':'ENTRADA')+'</span>'
+        : '';
       html += '<div class="hcol-entrada-item">'
         +'<span>'+it.setor+' · '+it.nome+'</span>'
-        +'<span style="font-weight:700;color:var(--vd)">'+it.qtd+' '+it.unid+'</span>'
+        +'<span style="display:flex;align-items:center">'+tagTipoItem+'<span style="font-weight:700;color:var(--vd)">'+it.qtd+' '+it.unid+'</span></span>'
         +'</div>';
     });
     html += '</div>';
