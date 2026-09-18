@@ -2825,14 +2825,14 @@
         "nome": "Farelo de Trigo",
         "qtd": 2,
         "unid": "sc 30kg",
-        "tipo": "Entrada",
+        "tipo": "Saida",
         "forn": "",
         "preco": 0
       }
     ],
     "ts": 1787091684915,
     "mov": "MOV-0004",
-    "_editadoEm": 1789766422090
+    "_editadoEm": 1789766451095
   },
   {
     "data": "2026-06-02",
