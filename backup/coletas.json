@@ -2954,7 +2954,7 @@
       {
         "setor": "Estoque",
         "nome": "Ração de peixe",
-        "qtd": 8,
+        "qtd": 10,
         "unid": "Sc 25kg",
         "tipo": "Entrada",
         "forn": "",
@@ -2981,6 +2981,6 @@
     ],
     "ts": 1788215323792,
     "mov": "MOV-0001",
-    "_editadoEm": 1789695545238
+    "_editadoEm": 1789695651872
   }
 ]
