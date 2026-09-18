@@ -347,6 +347,14 @@
             "Perda",
             "Estoque"
           ]
+        },
+        {
+          "id": "amu7jv8n8kwr2b0",
+          "unid": "40Kg Gado",
+          "preco": 0,
+          "abas": [
+            "Estoque"
+          ]
         }
       ]
     },
