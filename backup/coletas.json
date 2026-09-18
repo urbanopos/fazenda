@@ -2303,7 +2303,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -2312,7 +2312,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "Fazenda São José",
         "preco": 0
       },
       {
@@ -2321,7 +2321,7 @@
         "qtd": 2,
         "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -2354,7 +2354,7 @@
     ],
     "ts": 1783688506163,
     "mov": "MOV-0011",
-    "_editadoEm": 1789722643016
+    "_editadoEm": 1789767251821
   },
   {
     "data": "2026-07-09",
