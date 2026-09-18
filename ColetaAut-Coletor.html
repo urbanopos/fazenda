@@ -235,7 +235,7 @@ textarea{resize:none;height:72px;font-size:14px}
 .hcol-secao{margin-bottom:18px}
 .hcol-secao-titulo{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#fff;padding:6px 12px;border-radius:4px;display:inline-block;margin-bottom:8px}
 .hcol-item{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:#fff;border-radius:6px;margin-bottom:6px;border:1px solid var(--ce)}
-.hcol-item-nome{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--tx)}
+.hcol-item-nome{font-family:'DM Sans',sans-serif;font-size:17px;font-weight:800;color:var(--tx)}
 .hcol-item-det{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu);margin-top:2px}
 .hcol-item-qtd{font-family:'DM Mono',monospace;font-size:15px;font-weight:700;color:var(--vd);flex-shrink:0;text-align:right}
 .hcol-item-unid{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu)}
@@ -1201,7 +1201,7 @@ function _iniciar(){
    nada salvo no aparelho — token, catálogo e coletas pendentes continuam
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
-var _caFP = '1a0b677cee48';
+var _caFP = '1a0b67fe48b7';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -2758,7 +2758,7 @@ function _renderHistColetaDetalhe(body, registros){
         ? '<span style="font-weight:700;font-size:9px;letter-spacing:.5px;margin-right:6px;padding:2px 6px;border-radius:8px;background:'+(it.tipo==='Saida'?'#fde8e8':'#e3edfd')+';color:'+(it.tipo==='Saida'?'#c0392b':'#1e5fbf')+'">'+(it.tipo==='Saida'?'SAÍDA':'ENTRADA')+'</span>'
         : '';
       html += '<div class="hcol-entrada-item">'
-        +'<span>'+it.setor+' · '+it.nome+'</span>'
+        +'<span style="font-size:15px;font-weight:800">'+it.setor+' · '+it.nome+'</span>'
         +'<span style="display:flex;align-items:center">'+tagTipoItem+'<span style="font-weight:700;color:var(--vd)">'+it.qtd+' '+it.unid+'</span></span>'
         +'</div>';
     });
