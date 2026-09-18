@@ -246,7 +246,7 @@ body:has(#sec-vendas.at) #contador{
 .hcol-secao{margin-bottom:18px}
 .hcol-secao-titulo{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#fff;padding:6px 12px;border-radius:4px;display:inline-block;margin-bottom:8px}
 .hcol-item{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:#fff;border-radius:6px;margin-bottom:6px;border:1px solid var(--ce)}
-.hcol-item-nome{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--tx)}
+.hcol-item-nome{font-family:'DM Sans',sans-serif;font-size:17px;font-weight:800;color:var(--tx)}
 .hcol-item-det{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu);margin-top:2px}
 .hcol-item-qtd{font-family:'DM Mono',monospace;font-size:15px;font-weight:700;color:var(--vd);flex-shrink:0;text-align:right}
 .hcol-item-unid{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu)}
@@ -11420,7 +11420,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0b677f6012';
+var _caFP = '1a0b67fb91e0';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -15509,7 +15509,7 @@ function _renderHistColetaDetalhe(body, registros, setorFiltro){
         ? '<span style="font-weight:700;font-size:9px;letter-spacing:.5px;margin-right:6px;padding:2px 6px;border-radius:8px;background:'+(it.tipo==='Saida'?'#fde8e8':'#e3edfd')+';color:'+(it.tipo==='Saida'?'#c0392b':'#1e5fbf')+'">'+(it.tipo==='Saida'?'SAÍDA':'ENTRADA')+'</span>'
         : '';
       html += '<div class="hcol-entrada-item">'
-        +'<span>'+nomeExib+'</span>'
+        +'<span style="font-size:15px;font-weight:800">'+nomeExib+'</span>'
         +'<span style="display:flex;align-items:center">'+tagTipoItem+'<span style="font-weight:700;color:'+cor+'">'+qtdExib+'</span></span>'
         +'</div>';
     });
@@ -15659,7 +15659,7 @@ function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtua
   return '<div class="hcol-item-edit-wrap">'
     +'<div class="hcol-item-edit-row" style="flex-wrap:wrap">'
     +'<input type="hidden" value="'+_esc(setor)+'" id="hcol-ei-setor-'+ri+'-'+ii+'">'
-    +'<select class="hcol-edit-inp" style="flex:1 1 100%;width:100%" id="hcol-ei-nome-'+ri+'-'+ii+'" onchange="_onMudarNomeEditColeta('+ri+','+ii+')">'+optsNome+'</select>'
+    +'<select class="hcol-edit-inp" style="flex:1 1 100%;width:100%;font-size:16px;font-weight:800" id="hcol-ei-nome-'+ri+'-'+ii+'" onchange="_onMudarNomeEditColeta('+ri+','+ii+')">'+optsNome+'</select>'
     +'<input class="hcol-edit-inp" style="width:70px;min-width:70px;flex:none" type="number" min="0" step="0.5" placeholder="Qtd" value="'+qtd+'" id="hcol-ei-qtd-'+ri+'-'+ii+'">'
     +'<button class="hcol-del-item" onclick="_delItemEditColeta('+ri+','+ii+')" title="Remover item">\u00d7</button>'
     +'</div>'
