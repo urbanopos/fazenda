@@ -2900,28 +2900,28 @@
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "qtd": 35,
+        "qtd": 23,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "IRCA",
+        "forn": "",
         "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "qtd": 15,
+        "qtd": 12,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "IRCA",
+        "forn": "",
         "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "qtd": 12,
+        "qtd": 7,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "Fazenda São José",
+        "forn": "",
         "preco": 0
       },
       {
@@ -2930,7 +2930,7 @@
         "qtd": 0,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "IRCA",
+        "forn": "",
         "preco": 0
       },
       {
@@ -2945,7 +2945,7 @@
       {
         "setor": "Estoque",
         "nome": "Milho",
-        "qtd": 5,
+        "qtd": 3,
         "unid": "sc 40kg",
         "tipo": "Entrada",
         "forn": "",
@@ -2957,7 +2957,7 @@
         "qtd": 8,
         "unid": "Sc 25kg",
         "tipo": "Entrada",
-        "forn": "Purina",
+        "forn": "",
         "preco": 0
       },
       {
@@ -2975,11 +2975,12 @@
         "qtd": 12,
         "unid": "Sc 25kg",
         "tipo": "Saida",
-        "forn": "Purina",
+        "forn": "",
         "preco": 0
       }
     ],
     "ts": 1788215323792,
-    "mov": "MOV-0001"
+    "mov": "MOV-0001",
+    "_editadoEm": 1789695152258
   }
 ]
