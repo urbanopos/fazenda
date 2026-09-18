@@ -2926,20 +2926,11 @@
         "tipo": "Saida",
         "forn": "",
         "preco": 0
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Crescimento",
-        "qtd": 0,
-        "unid": "",
-        "tipo": "Entrada",
-        "forn": "",
-        "preco": 0
       }
     ],
     "ts": 1781094500821,
     "mov": "MOV-0002",
-    "_editadoEm": 1789766540300
+    "_editadoEm": 1789766554519
   },
   {
     "data": "2026-05-01",
