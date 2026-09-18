@@ -2958,7 +2958,7 @@
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "qtd": 0,
+        "qtd": 9,
         "unid": "sc 40kg",
         "tipo": "Entrada",
         "forn": "IRCA",
@@ -3030,6 +3030,6 @@
     ],
     "ts": 1788215323792,
     "mov": "MOV-0001",
-    "_editadoEm": 1789770915484
+    "_editadoEm": 1789770970014
   }
 ]
