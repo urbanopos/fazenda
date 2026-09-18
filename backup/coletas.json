@@ -1633,7 +1633,7 @@
       {
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
-        "qtd": 3,
+        "qtd": 2,
         "unid": "sc 30kg",
         "tipo": "Entrada",
         "forn": "",
@@ -1641,7 +1641,8 @@
       }
     ],
     "ts": 1787092426716,
-    "mov": "MOV-0018"
+    "mov": "MOV-0018",
+    "_editadoEm": 1789769231681
   },
   {
     "data": "2026-08-05",
