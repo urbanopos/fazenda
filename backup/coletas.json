@@ -3003,7 +3003,7 @@
       {
         "setor": "Estoque",
         "nome": "Ração de peixe",
-        "qtd": 10,
+        "qtd": 17,
         "unid": "Sc 25kg",
         "tipo": "Saida",
         "forn": "Purina",
@@ -3030,6 +3030,6 @@
     ],
     "ts": 1788215323792,
     "mov": "MOV-0001",
-    "_editadoEm": 1789770176820
+    "_editadoEm": 1789770246029
   }
 ]
