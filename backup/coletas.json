@@ -2819,11 +2819,20 @@
         "tipo": "Entrada",
         "forn": "",
         "preco": 0
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Farelo de Trigo",
+        "qtd": 2,
+        "unid": "sc 30kg",
+        "tipo": "Entrada",
+        "forn": "",
+        "preco": 0
       }
     ],
     "ts": 1787091684915,
     "mov": "MOV-0004",
-    "_editadoEm": 1789766084617
+    "_editadoEm": 1789766422090
   },
   {
     "data": "2026-06-02",
