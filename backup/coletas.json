@@ -2797,13 +2797,23 @@
         "nome": "Milho",
         "qtd": 10,
         "unid": "sc 40kg",
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Farelo de Trigo",
+        "qtd": 2,
+        "unid": "sc 30kg",
         "tipo": "Entrada",
         "forn": "",
         "preco": 0
       }
     ],
     "ts": 1787091684915,
-    "mov": "MOV-0004"
+    "mov": "MOV-0004",
+    "_editadoEm": 1789719887370
   },
   {
     "data": "2026-06-02",
