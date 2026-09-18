@@ -2952,7 +2952,7 @@
         "qtd": 22,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -2961,16 +2961,16 @@
         "qtd": 15,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "qtd": 7,
+        "qtd": 0,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "Fazenda São José",
         "preco": 0
       },
       {
@@ -2979,7 +2979,7 @@
         "qtd": 0,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -3006,7 +3006,7 @@
         "qtd": 10,
         "unid": "Sc 25kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "Purina",
         "preco": 0
       },
       {
@@ -3024,12 +3024,12 @@
         "qtd": 13,
         "unid": "Sc 25kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "Purina",
         "preco": 0
       }
     ],
     "ts": 1788215323792,
     "mov": "MOV-0001",
-    "_editadoEm": 1789697347422
+    "_editadoEm": 1789769608688
   }
 ]
