@@ -2917,10 +2917,29 @@
         "tipo": "Saida",
         "forn": "",
         "preco": 0
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Pre-Inicial",
+        "qtd": 1,
+        "unid": "sc 40kg",
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Crescimento",
+        "qtd": 0,
+        "unid": "",
+        "tipo": "Entrada",
+        "forn": "",
+        "preco": 0
       }
     ],
     "ts": 1781094500821,
-    "mov": "MOV-0002"
+    "mov": "MOV-0002",
+    "_editadoEm": 1789766540300
   },
   {
     "data": "2026-05-01",
