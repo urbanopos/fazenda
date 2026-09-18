@@ -993,7 +993,7 @@
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "qtd": 2,
+        "qtd": 3,
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
@@ -1028,7 +1028,7 @@
       }
     ],
     "ts": 1787567616906,
-    "_editadoEm": 1789428946584,
+    "_editadoEm": 1789768621301,
     "mov": "MOV-0023"
   },
   {
