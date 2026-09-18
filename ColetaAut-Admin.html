@@ -819,6 +819,7 @@ input[type="password"]:-webkit-autofill{
   <div class="topo-d" id="relogio">seg., 08 de jun.<br>05:34</div>
   <div class="topo-r" id="topo-r"></div>
 </div>
+<div id="sync-status" onclick="_sincronizarRegistrosGitHub(true)" style="padding:3px 14px;font-family:'DM Mono',monospace;font-size:9px;color:var(--mu);background:rgba(0,0,0,.04);text-align:right;cursor:pointer">Sincronizando...</div>
 
 <!-- CORPO -->
 <div class="corpo">
@@ -11419,7 +11420,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0a5058cc75';
+var _caFP = '1a0b1e057bd7';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -16372,6 +16373,7 @@ async function _salvarEditPedido(){
       }
     }
     _pedAtual = hist[idx];
+    hist[idx]._editadoEm = Date.now(); // usado na mesclagem pra saber qual versao e mais recente entre aparelhos
     await _gravarHist(hist);
   }
   _toast('✅ Pedido atualizado!');
@@ -16796,12 +16798,20 @@ async function _sincronizarRegistrosGitHub(manual){
     var coletasRemoto = await _ghLer(GH_BCK_COLETAS);
     if(coletasRemoto){
       var coletasMerge = _mesclarRegistros(coletasLocal, coletasRemoto);
-      if(JSON.stringify(coletasMerge) !== JSON.stringify(coletasLocal)){
+      var coletasMudouLocal  = JSON.stringify(coletasMerge) !== JSON.stringify(coletasLocal);
+      var coletasMudouRemoto = JSON.stringify(coletasMerge) !== JSON.stringify(coletasRemoto);
+      if(coletasMudouLocal){
         var jc = JSON.stringify(coletasMerge);
         try{ localStorage.setItem(CK, jc); }catch(e){}
         if(_caOpfs) await _caOpfsSalvar(FSJ_COLETAS, jc);
         if(typeof renderHistColeta==='function') renderHistColeta();
         houveMudanca = true;
+      }
+      // Publica sempre que o resultado mesclado tiver algo que o GitHub
+      // ainda não tem — inclusive quando essa "novidade" é uma edição feita
+      // só aqui (nesse caso local === mesclado, mas remoto ainda está
+      // desatualizado, e antes isso nunca era publicado).
+      if(coletasMudouRemoto){
         await _ghGravar(GH_BCK_COLETAS, coletasMerge, 'Sincronizacao automatica (coletas)');
       }
     }
@@ -16810,14 +16820,17 @@ async function _sincronizarRegistrosGitHub(manual){
     var pedidosRemoto = await _ghLer(GH_BCK_PEDIDOS);
     if(pedidosRemoto){
       var pedidosMerge = _mesclarRegistros(pedidosLocal, pedidosRemoto);
-      var mudouConteudo = JSON.stringify(pedidosMerge) !== JSON.stringify(pedidosLocal);
-      if(mudouConteudo){
+      var pedidosMudouLocal  = JSON.stringify(pedidosMerge) !== JSON.stringify(pedidosLocal);
+      var pedidosMudouRemoto = JSON.stringify(pedidosMerge) !== JSON.stringify(pedidosRemoto);
+      if(pedidosMudouLocal){
         var jp = JSON.stringify(pedidosMerge);
         try{ localStorage.setItem(HK, jp); }catch(e){}
         if(_caOpfs) await _caOpfsSalvar(FSJ_PEDIDOS, jp);
         _renderHist();
         _recalcularPedNumPeloHistorico();
         houveMudanca = true;
+      }
+      if(pedidosMudouRemoto){
         await _ghGravar(GH_BCK_PEDIDOS, pedidosMerge, 'Sincronizacao automatica (pedidos)');
       }
     }
@@ -16829,7 +16842,9 @@ async function _sincronizarRegistrosGitHub(manual){
     var cadRemoto = await _ghLer(GH_BCK_CADASTROS);
     if(cadRemoto){
       var cadMerge = _mesclarCadastros(cadLocal, cadRemoto);
-      if(JSON.stringify(cadMerge) !== JSON.stringify(cadLocal)){
+      var cadMudouLocal  = JSON.stringify(cadMerge) !== JSON.stringify(cadLocal);
+      var cadMudouRemoto = JSON.stringify(cadMerge) !== JSON.stringify(cadRemoto);
+      if(cadMudouLocal){
         _cadDados.produtos     = cadMerge.produtos;
         _cadDados.clientes     = cadMerge.clientes;
         _cadDados.fornecedores = cadMerge.fornecedores;
@@ -16837,6 +16852,8 @@ async function _sincronizarRegistrosGitHub(manual){
         await _cadSalvar();
         if(typeof _cadRenderAba==='function' && typeof _cadAbaAtual!=='undefined') _cadRenderAba(_cadAbaAtual);
         houveMudanca = true;
+      }
+      if(cadMudouRemoto){
         await _ghGravar(GH_BCK_CADASTROS, cadMerge, 'Sincronizacao automatica (cadastros)');
       }
     }
@@ -16844,6 +16861,8 @@ async function _sincronizarRegistrosGitHub(manual){
     if(houveMudanca) _toast('🔄 Novos registros sincronizados de outro dispositivo.');
     else if(manual) _toast('✅ Tudo já estava sincronizado.');
     _syncFalhasSeguidas = 0;
+    _ultimoSyncOk = Date.now();
+    _ultimoSyncErro = null;
   }catch(e){
     console.warn('_sincronizarRegistrosGitHub:', e.message);
     if(manual) _toast('⚠️ Erro ao sincronizar: '+e.message);
@@ -16851,15 +16870,49 @@ async function _sincronizarRegistrosGitHub(manual){
     // invisíveis antes — agora, depois de algumas falhas seguidas, avisa
     // sozinho, sem precisar que alguém entre no menu e clique em sincronizar.
     _syncFalhasSeguidas = (_syncFalhasSeguidas||0) + 1;
+    _ultimoSyncErro = e.message;
     if(!manual && _syncFalhasSeguidas === 3){
       _toast('⚠️ Sincronização falhando há alguns minutos: '+e.message);
     }
   } finally {
     _sincronizandoRegistros = false;
+    _atualizarIndicadorSync();
   }
 }
 
 var _syncFalhasSeguidas = 0;
+var _ultimoSyncOk = null;
+var _ultimoSyncErro = null;
+
+/* Indicador sempre visível (topo do app) de quando os dados foram
+   sincronizados por último — pra nunca precisar "confiar no escuro" se
+   o que está na tela é recente ou uma versão antiga presa no aparelho. */
+function _atualizarIndicadorSync(){
+  var el = document.getElementById('sync-status');
+  if(!el) return;
+  if(!_ghToken()){
+    el.textContent = 'Token GitHub não configurado';
+    el.style.color = '#c0392b';
+    return;
+  }
+  if(_ultimoSyncErro && !_ultimoSyncOk){
+    el.textContent = '⚠️ Falha ao sincronizar — toque para tentar de novo';
+    el.style.color = '#c0392b';
+    return;
+  }
+  if(!_ultimoSyncOk){
+    el.textContent = 'Sincronizando...';
+    el.style.color = 'var(--mu)';
+    return;
+  }
+  var minAtras = Math.max(0, Math.round((Date.now()-_ultimoSyncOk)/60000));
+  var txt = minAtras < 1 ? 'Sincronizado agora mesmo' : ('Sincronizado há '+minAtras+' min');
+  if(_ultimoSyncErro) txt += ' · última tentativa falhou';
+  el.textContent = txt;
+  el.style.color = _ultimoSyncErro ? '#a3742a' : 'var(--mu)';
+}
+setInterval(_atualizarIndicadorSync, 20000);
+_atualizarIndicadorSync();
 
 // Roda ao carregar, sempre que a aba/app volta a ficar visível (cobre o
 // caso comum em celular de o navegador suspender a aba em segundo plano
