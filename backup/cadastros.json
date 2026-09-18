@@ -25,12 +25,7 @@
       "id": "p_frango",
       "setor": "Vendas",
       "nome": "Frango Abatido",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 50
-        }
-      ],
+      "apresentacoes": [],
       "_excluido": true,
       "_excluidoEm": 1789469955251
     },
@@ -48,10 +43,6 @@
             "Perda",
             "Vendas"
           ]
-        },
-        {
-          "unid": "Unid.",
-          "preco": 0
         }
       ]
     },
@@ -197,10 +188,6 @@
             "Perda",
             "Vendas"
           ]
-        },
-        {
-          "unid": "Jovem",
-          "preco": 0
         }
       ]
     },
@@ -536,15 +523,6 @@
             "Campo",
             "Vendas"
           ]
-        },
-        {
-          "unid": "cac.",
-          "preco": 0,
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ]
         }
       ]
     },
@@ -556,11 +534,6 @@
         {
           "id": "amu2jtf0zeyp9y9",
           "unid": "Saco",
-          "preco": 15,
-          "fornecedor": "Fazenda São José"
-        },
-        {
-          "unid": "Sc.",
           "preco": 15,
           "fornecedor": "Fazenda São José"
         }
