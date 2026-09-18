@@ -11420,7 +11420,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0b1e349824';
+var _caFP = '1a0b1e7a6179';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -16745,9 +16745,13 @@ function _mesclarRegistros(local, remoto){
         // conhecida (_editadoEm), ele vence por inteiro — assim uma correção
         // feita num aparelho (ex: Admin) chega no outro (ex: Desk-Admin) na
         // próxima sincronização, em vez de ficar presa só onde foi editada.
+        // Registros de ANTES desse carimbo existir (os dois lados em 0) não
+        // têm como saber qual é mais novo — nesse empate específico, o
+        // remoto vence (é o que já foi publicado com sucesso), em vez de
+        // travar pra sempre com uma versão local desatualizada.
         var edLocal  = combinado[idx]._editadoEm || 0;
         var edRemoto = r._editadoEm || 0;
-        if(edRemoto > edLocal){
+        if(edRemoto > edLocal || (edLocal===0 && edRemoto===0)){
           var excluidoFinal = combinado[idx]._excluido || r._excluido;
           var pagoFinal     = combinado[idx].pago || r.pago;
           combinado[idx] = Object.assign({}, r);
