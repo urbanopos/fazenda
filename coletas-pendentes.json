@@ -4,6 +4,25 @@
     "coletor": "Menininha",
     "itens": [
       {
+        "setor": "Perda",
+        "nome": "Ovos de Capoeira",
+        "unid": "Unid.",
+        "qtd": 30,
+        "preco": 1,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1789839659973,
+    "status": "pendente",
+    "enviadoEm": "2026-09-19T17:41:00.596Z"
+  },
+  {
+    "data": "2026-09-19",
+    "coletor": "Menininha",
+    "itens": [
+      {
         "setor": "Estoque",
         "nome": "Crescimento",
         "unid": "sc 40kg",
