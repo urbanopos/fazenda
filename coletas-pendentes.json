@@ -4,35 +4,6 @@
     "coletor": "Menininha",
     "itens": [
       {
-        "setor": "Estoque",
-        "nome": "Crescimento",
-        "unid": "sc 40kg",
-        "qtd": 1,
-        "preco": 0,
-        "obs": "",
-        "forn": "",
-        "tipo": "Saida"
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Ração de peixe",
-        "unid": "Sc 25kg",
-        "qtd": 1,
-        "preco": 0,
-        "obs": "",
-        "forn": "",
-        "tipo": "Saida"
-      }
-    ],
-    "ts": 1789839598765,
-    "status": "pendente",
-    "enviadoEm": "2026-09-19T17:39:59.357Z"
-  },
-  {
-    "data": "2026-09-19",
-    "coletor": "Menininha",
-    "itens": [
-      {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
         "unid": "Unid.",
