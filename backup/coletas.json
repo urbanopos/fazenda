@@ -3114,10 +3114,19 @@
         "tipo": "Entrada",
         "forn": "",
         "preco": 0
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Ração de Gado",
+        "qtd": 1,
+        "unid": "Sc 40kg",
+        "tipo": "Saida",
+        "forn": "",
+        "preco": 0
       }
     ],
     "ts": 1788215323792,
     "mov": "MOV-0001",
-    "_editadoEm": 1789869734012
+    "_editadoEm": 1789869880861
   }
 ]
