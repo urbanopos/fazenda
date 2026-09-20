@@ -1,5 +1,22 @@
 [
   {
+    "data": "2026-09-19",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Campo",
+        "nome": "Estacas de sabiá",
+        "unid": "Unid.",
+        "qtd": 25,
+        "preco": 0,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1789868023876
+  },
+  {
     "data": "2026-09-18",
     "coletor": "Menininha",
     "itens": [
