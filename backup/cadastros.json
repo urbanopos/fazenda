@@ -510,6 +510,19 @@
       "apresentacoes": [],
       "_excluido": true,
       "_excluidoEm": 1789469349387
+    },
+    {
+      "id": "p1789868100584",
+      "setor": "Campo",
+      "nome": "Vara p/inhame",
+      "apresentacoes": [
+        {
+          "id": "amu957xdehi5iy7",
+          "unid": "Unid.",
+          "preco": 0,
+          "fornecedor": "Fazenda São José"
+        }
+      ]
     }
   ],
   "clientes": [
