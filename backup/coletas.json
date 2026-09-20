@@ -3082,7 +3082,7 @@
       {
         "setor": "Estoque",
         "nome": "Milho",
-        "qtd": 9,
+        "qtd": 12,
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "",
@@ -3118,6 +3118,6 @@
     ],
     "ts": 1788215323792,
     "mov": "MOV-0001",
-    "_editadoEm": 1789869334198
+    "_editadoEm": 1789869441142
   }
 ]
