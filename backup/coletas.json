@@ -1,44 +1,6 @@
 [
   {
     "data": "2026-09-21",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Estoque",
-        "nome": "Crescimento",
-        "unid": "sc 40kg",
-        "qtd": 3,
-        "preco": 0,
-        "obs": "",
-        "forn": "",
-        "tipo": "Saida"
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Engorda",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "preco": 0,
-        "obs": "",
-        "forn": "",
-        "tipo": "Saida"
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Postura",
-        "unid": "sc 40kg",
-        "qtd": 3,
-        "preco": 0,
-        "obs": "",
-        "forn": "",
-        "tipo": "Saida"
-      }
-    ],
-    "ts": 1789987441638,
-    "mov": "MOV-0031"
-  },
-  {
-    "data": "2026-09-21",
     "coletor": "Júnior",
     "itens": [
       {
@@ -80,6 +42,44 @@
       }
     ],
     "ts": 1790018730263
+  },
+  {
+    "data": "2026-09-21",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Crescimento",
+        "unid": "sc 40kg",
+        "qtd": 3,
+        "preco": 0,
+        "obs": "",
+        "forn": "",
+        "tipo": "Saida"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Engorda",
+        "unid": "sc 40kg",
+        "qtd": 2,
+        "preco": 0,
+        "obs": "",
+        "forn": "",
+        "tipo": "Saida"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Postura",
+        "unid": "sc 40kg",
+        "qtd": 3,
+        "preco": 0,
+        "obs": "",
+        "forn": "",
+        "tipo": "Saida"
+      }
+    ],
+    "ts": 1789987441638,
+    "mov": "MOV-0031"
   },
   {
     "data": "2026-09-20",
