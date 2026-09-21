@@ -25,45 +25,6 @@
       },
       {
         "setor": "Estoque",
-        "nome": "Postura",
-        "unid": "sc 40kg",
-        "qtd": 3,
-        "preco": 0,
-        "obs": "",
-        "forn": "",
-        "tipo": "Saida"
-      }
-    ],
-    "ts": 1789987441638,
-    "status": "pendente",
-    "enviadoEm": "2026-09-21T10:44:02.425Z"
-  },
-  {
-    "data": "2026-09-21",
-    "coletor": "Menininha",
-    "itens": [
-      {
-        "setor": "Estoque",
-        "nome": "Crescimento",
-        "unid": "sc 40kg",
-        "qtd": 3,
-        "preco": 0,
-        "obs": "",
-        "forn": "",
-        "tipo": "Saida"
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Engorda",
-        "unid": "sc 40kg",
-        "qtd": 2,
-        "preco": 0,
-        "obs": "",
-        "forn": "",
-        "tipo": "Saida"
-      },
-      {
-        "setor": "Estoque",
         "nome": "Engorda",
         "unid": "sc 40kg",
         "qtd": 3,
