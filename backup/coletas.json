@@ -6,25 +6,24 @@
       {
         "setor": "Campo",
         "nome": "Estacas de sabiá",
+        "qtd": 31,
         "unid": "Unid.",
-        "qtd": 36,
-        "preco": 0,
-        "obs": "",
+        "tipo": "",
         "forn": "",
-        "tipo": ""
+        "preco": 0
       },
       {
         "setor": "Campo",
         "nome": "Vara p/inhame",
+        "qtd": 46,
         "unid": "Unid.",
-        "qtd": 41,
-        "preco": 0,
-        "obs": "",
+        "tipo": "",
         "forn": "Fazenda São José",
-        "tipo": ""
+        "preco": 0
       }
     ],
-    "ts": 1790194814881
+    "ts": 1790194814881,
+    "_editadoEm": 1790194870503
   },
   {
     "data": "2026-09-23",
