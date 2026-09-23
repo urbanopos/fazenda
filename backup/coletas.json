@@ -6,6 +6,23 @@
       {
         "setor": "Campo",
         "nome": "Bovino",
+        "unid": "Fêmea Adulta",
+        "qtd": 1,
+        "preco": 0,
+        "obs": "Valentina comprado a Alan OLX",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1790202720046
+  },
+  {
+    "data": "2026-09-23",
+    "coletor": "Junior Desk",
+    "itens": [
+      {
+        "setor": "Campo",
+        "nome": "Bovino",
         "unid": "Macho Garrote",
         "qtd": 1,
         "preco": 0,
