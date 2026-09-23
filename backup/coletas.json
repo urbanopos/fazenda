@@ -1,20 +1,30 @@
 [
   {
     "data": "2026-09-23",
-    "coletor": "Menininha",
+    "coletor": "Júnior",
     "itens": [
       {
-        "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
+        "setor": "Campo",
+        "nome": "Estacas de sabiá",
         "unid": "Unid.",
-        "qtd": 47,
-        "preco": 1,
+        "qtd": 36,
+        "preco": 0,
         "obs": "",
         "forn": "",
         "tipo": ""
+      },
+      {
+        "setor": "Campo",
+        "nome": "Vara p/inhame",
+        "unid": "Unid.",
+        "qtd": 41,
+        "preco": 0,
+        "obs": "",
+        "forn": "Fazenda São José",
+        "tipo": ""
       }
     ],
-    "ts": 1790189687598
+    "ts": 1790194814881
   },
   {
     "data": "2026-09-23",
