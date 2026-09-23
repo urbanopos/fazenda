@@ -612,6 +612,43 @@
           "fornecedor": "Fazenda São José"
         }
       ]
+    },
+    {
+      "id": "p1790201944625",
+      "setor": "Campo",
+      "nome": "Bovino",
+      "apresentacoes": [
+        {
+          "id": "amuenyn1l3fxxy6",
+          "unid": "Macho Adulto",
+          "preco": 0
+        },
+        {
+          "id": "amuenz87g0ezem3",
+          "unid": "Macho Garrote",
+          "preco": 0
+        },
+        {
+          "id": "amuenzh03smto8z",
+          "unid": "Macho Bezerro",
+          "preco": 0
+        },
+        {
+          "id": "amuenzpa1uc2ye1",
+          "unid": "Fêmea Adulta",
+          "preco": 0
+        },
+        {
+          "id": "amuenzw2cc8o4xw",
+          "unid": "Fêmea Garrota",
+          "preco": 0
+        },
+        {
+          "id": "amueo05cvstgcdo",
+          "unid": "Fêmea Bezerra",
+          "preco": 0
+        }
+      ]
     }
   ],
   "clientes": [
