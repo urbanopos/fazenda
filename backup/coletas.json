@@ -2198,23 +2198,6 @@
   },
   {
     "data": "2026-07-30",
-    "coletor": "Junior Desk",
-    "itens": [
-      {
-        "setor": "Campo",
-        "nome": "Bovino",
-        "qtd": 1,
-        "unid": "Macho Garrote",
-        "tipo": "",
-        "forn": "",
-        "preco": 0
-      }
-    ],
-    "ts": 1790202102716,
-    "_editadoEm": 1790202991003
-  },
-  {
-    "data": "2026-07-30",
     "coletor": "Júnior",
     "itens": [
       {
@@ -2986,6 +2969,23 @@
       }
     ],
     "ts": 1781038271229
+  },
+  {
+    "data": "2026-06-30",
+    "coletor": "Junior Desk",
+    "itens": [
+      {
+        "setor": "Campo",
+        "nome": "Bovino",
+        "qtd": 1,
+        "unid": "Macho Garrote",
+        "tipo": "",
+        "forn": "",
+        "preco": 0
+      }
+    ],
+    "ts": 1790202102716,
+    "_editadoEm": 1790203030832
   },
   {
     "data": "2026-06-27",
