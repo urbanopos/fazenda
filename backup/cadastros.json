@@ -578,7 +578,9 @@
           "preco": 50,
           "fornecedor": "Fazenda São José"
         }
-      ]
+      ],
+      "_excluido": true,
+      "_excluidoEm": 1790274926187
     }
   ],
   "clientes": [
