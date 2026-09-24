@@ -21,8 +21,7 @@
     {
       "id": "p_galinha",
       "setor": "Vendas",
-      "nome": "Galinha Abatida",
-      "unid": "Unid.",
+      "nome": "Galinha",
       "apresentacoes": [
         {
           "id": "amu2kcsk9kdfvro",
@@ -32,8 +31,7 @@
           "abas": [
             "Vendas"
           ],
-          "_excluido": true,
-          "_excluidoEm": 1789470330532
+          "_excluido": true
         },
         {
           "id": "amu2kegk0ky06vh",
