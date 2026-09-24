@@ -6,24 +6,22 @@
     "data": "2026-09-24",
     "itens": [
       {
+        "nome": "Galinha",
+        "col2": "Galinha",
         "col1": "24/09/2026",
-        "col2": "Galinha Abatida",
         "col3": "10 Unid. Viva",
         "col4": "R$ 50,00 x 10",
         "col5": "R$ 500,00",
-        "val": 500,
-        "prodId": "p_galinha",
-        "nome": "Galinha Abatida",
-        "unidade": "Unid. Viva",
         "qtd": 10,
+        "unidade": "Unid. Viva",
         "preco": 50,
-        "desconto": 0,
         "sub": 500,
         "data": "24/09/2026"
       }
     ],
     "total": 500,
-    "ts": 1790274854696
+    "ts": 1790274854696,
+    "_editadoEm": 1790274947823
   },
   {
     "num": "PED-0083",
