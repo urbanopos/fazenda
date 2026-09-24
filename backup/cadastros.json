@@ -568,6 +568,19 @@
           "preco": 0
         }
       ]
+    },
+    {
+      "id": "p1790274774174",
+      "setor": "Aviario",
+      "nome": "Galinha Viva",
+      "apresentacoes": [
+        {
+          "id": "amufvcp6527mb1y",
+          "unid": "Unid.",
+          "preco": 50,
+          "fornecedor": "Fazenda São José"
+        }
+      ]
     }
   ],
   "clientes": [
