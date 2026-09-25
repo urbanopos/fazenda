@@ -4,6 +4,7 @@
       "id": "p_ovo",
       "setor": "Vendas",
       "nome": "Ovos de Capoeira",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Bandeja c/30 ovos",
@@ -22,6 +23,7 @@
       "id": "p_galinha",
       "setor": "Vendas",
       "nome": "Galinha",
+      "unid": "",
       "apresentacoes": [
         {
           "id": "amu2kcsk9kdfvro",
@@ -58,8 +60,8 @@
     {
       "id": "p_frango",
       "setor": "Vendas",
-      "nome": "Frango Abatido",
-      "unid": "Unid.",
+      "nome": "Frango",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -70,10 +72,19 @@
       "_excluidoEm": 1789469955251
     },
     {
+      "id": "p_pinto",
+      "setor": "Vendas",
+      "nome": "Pinto",
+      "unid": "",
+      "apresentacoes": [],
+      "_excluido": true,
+      "_excluidoEm": 1789469349387
+    },
+    {
       "id": "p_pintainha",
       "setor": "Vendas",
       "nome": "Pintainha",
-      "unid": "Unid.",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -92,10 +103,29 @@
       ]
     },
     {
+      "id": "p_esterco",
+      "setor": "Vendas",
+      "nome": "Esterco",
+      "unid": "",
+      "apresentacoes": [
+        {
+          "unid": "Sc.",
+          "preco": 15,
+          "fornecedor": "Fazenda São José"
+        },
+        {
+          "id": "amu2jtf0zeyp9y9",
+          "unid": "Saco",
+          "preco": 15,
+          "fornecedor": "Fazenda São José"
+        }
+      ]
+    },
+    {
       "id": "p_coco",
       "setor": "Vendas",
       "nome": "Coco Seco",
-      "unid": "Unid.",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -112,7 +142,7 @@
       "id": "p_manga",
       "setor": "Vendas",
       "nome": "Manga",
-      "unid": "Caixa",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Caixa",
@@ -128,7 +158,7 @@
       "id": "p_abacate",
       "setor": "Vendas",
       "nome": "Abacate",
-      "unid": "Caixa",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Caixa",
@@ -397,24 +427,6 @@
       ]
     },
     {
-      "id": "p_esterco",
-      "setor": "Vendas",
-      "nome": "Esterco de Galinha",
-      "apresentacoes": [
-        {
-          "unid": "Sc.",
-          "preco": 15,
-          "fornecedor": "Fazenda São José"
-        },
-        {
-          "id": "amu2jtf0zeyp9y9",
-          "unid": "Saco",
-          "preco": 15,
-          "fornecedor": "Fazenda São José"
-        }
-      ]
-    },
-    {
       "id": "p1787993157009",
       "setor": "Vendas",
       "nome": "Frango Vivo",
@@ -507,15 +519,6 @@
       ],
       "_excluido": true,
       "_excluidoEm": 1789469281439
-    },
-    {
-      "id": "p_pinto",
-      "setor": "Vendas",
-      "nome": "Pinto",
-      "unid": "",
-      "apresentacoes": [],
-      "_excluido": true,
-      "_excluidoEm": 1789469349387
     },
     {
       "id": "p1789868100584",
