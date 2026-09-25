@@ -232,8 +232,10 @@
       "nome": "Pitomba",
       "apresentacoes": [
         {
+          "id": "amug9ln845id3qz",
           "unid": "kg",
-          "preco": 0
+          "preco": 0,
+          "fornecedor": "Fazenda São José"
         }
       ]
     },
