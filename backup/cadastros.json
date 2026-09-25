@@ -408,8 +408,10 @@
       "nome": "Ração de peixe",
       "apresentacoes": [
         {
+          "id": "amug9kgp9vc7q1i",
           "unid": "Sc 25kg",
-          "preco": 0
+          "preco": 0,
+          "fornecedor": "IRCA"
         }
       ]
     },
