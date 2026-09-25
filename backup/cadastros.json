@@ -274,13 +274,21 @@
       "nome": "Postura",
       "apresentacoes": [
         {
+          "id": "amug9f25lyunk4e",
           "unid": "sc 40kg",
           "preco": 0,
+          "fornecedor": "IRCA",
           "abas": [
             "Campo",
             "Estoque",
             "Vendas"
           ]
+        },
+        {
+          "id": "amug9fsrqhclosu",
+          "unid": "sc 40Kg",
+          "preco": 0,
+          "fornecedor": "Mauricéia"
         }
       ]
     },
