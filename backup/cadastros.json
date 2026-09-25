@@ -298,8 +298,10 @@
       "nome": "Inicial",
       "apresentacoes": [
         {
+          "id": "amug9hb5p65gulo",
           "unid": "sc 40kg",
-          "preco": 0
+          "preco": 0,
+          "fornecedor": "IRCA"
         }
       ]
     },
