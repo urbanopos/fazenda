@@ -4,6 +4,23 @@
     "coletor": "Menininha",
     "itens": [
       {
+        "setor": "Perda",
+        "nome": "Ovos de Capoeira",
+        "unid": "Unid.",
+        "qtd": 27,
+        "preco": 1,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1790362081480
+  },
+  {
+    "data": "2026-09-25",
+    "coletor": "Menininha",
+    "itens": [
+      {
         "setor": "Estoque",
         "nome": "Ração de peixe",
         "unid": "Sc 25kg",
