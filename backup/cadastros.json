@@ -309,8 +309,16 @@
       "nome": "Pre-Inicial",
       "apresentacoes": [
         {
+          "id": "amug9gorfbfy02s",
           "unid": "sc 40kg",
-          "preco": 0
+          "preco": 0,
+          "fornecedor": "IRCA"
+        },
+        {
+          "id": "amug9gucivuue3i",
+          "unid": "sc 40kg",
+          "preco": 0,
+          "fornecedor": "Mauricéia"
         }
       ]
     },
