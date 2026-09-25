@@ -4,7 +4,6 @@
       "id": "p_ovo",
       "setor": "Vendas",
       "nome": "Ovos de Capoeira",
-      "unid": "",
       "apresentacoes": [
         {
           "unid": "Bandeja c/30 ovos",
@@ -23,7 +22,6 @@
       "id": "p_galinha",
       "setor": "Vendas",
       "nome": "Galinha",
-      "unid": "",
       "apresentacoes": [
         {
           "id": "amu2kcsk9kdfvro",
@@ -60,8 +58,8 @@
     {
       "id": "p_frango",
       "setor": "Vendas",
-      "nome": "Frango",
-      "unid": "",
+      "nome": "Frango Abatido",
+      "unid": "Unid.",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -72,19 +70,10 @@
       "_excluidoEm": 1789469955251
     },
     {
-      "id": "p_pinto",
-      "setor": "Vendas",
-      "nome": "Pinto",
-      "unid": "",
-      "apresentacoes": [],
-      "_excluido": true,
-      "_excluidoEm": 1789469349387
-    },
-    {
       "id": "p_pintainha",
       "setor": "Vendas",
       "nome": "Pintainha",
-      "unid": "",
+      "unid": "Unid.",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -103,29 +92,10 @@
       ]
     },
     {
-      "id": "p_esterco",
-      "setor": "Vendas",
-      "nome": "Esterco",
-      "unid": "",
-      "apresentacoes": [
-        {
-          "unid": "Sc.",
-          "preco": 15,
-          "fornecedor": "Fazenda São José"
-        },
-        {
-          "id": "amu2jtf0zeyp9y9",
-          "unid": "Saco",
-          "preco": 15,
-          "fornecedor": "Fazenda São José"
-        }
-      ]
-    },
-    {
       "id": "p_coco",
       "setor": "Vendas",
       "nome": "Coco Seco",
-      "unid": "",
+      "unid": "Unid.",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -142,7 +112,7 @@
       "id": "p_manga",
       "setor": "Vendas",
       "nome": "Manga",
-      "unid": "",
+      "unid": "Caixa",
       "apresentacoes": [
         {
           "unid": "Caixa",
@@ -158,7 +128,7 @@
       "id": "p_abacate",
       "setor": "Vendas",
       "nome": "Abacate",
-      "unid": "",
+      "unid": "Caixa",
       "apresentacoes": [
         {
           "unid": "Caixa",
@@ -232,6 +202,10 @@
       "nome": "Pitomba",
       "apresentacoes": [
         {
+          "unid": "kg",
+          "preco": 0
+        },
+        {
           "id": "amug9ln845id3qz",
           "unid": "kg",
           "preco": 0,
@@ -276,6 +250,15 @@
       "nome": "Postura",
       "apresentacoes": [
         {
+          "unid": "sc 40kg",
+          "preco": 0,
+          "abas": [
+            "Campo",
+            "Estoque",
+            "Vendas"
+          ]
+        },
+        {
           "id": "amug9f25lyunk4e",
           "unid": "sc 40kg",
           "preco": 0,
@@ -300,6 +283,10 @@
       "nome": "Inicial",
       "apresentacoes": [
         {
+          "unid": "sc 40kg",
+          "preco": 0
+        },
+        {
           "id": "amug9hb5p65gulo",
           "unid": "sc 40kg",
           "preco": 0,
@@ -312,6 +299,10 @@
       "setor": "Estoque",
       "nome": "Pre-Inicial",
       "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0
+        },
         {
           "id": "amug9gorfbfy02s",
           "unid": "sc 40kg",
@@ -331,6 +322,13 @@
       "setor": "Estoque",
       "nome": "Crescimento",
       "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0,
+          "abas": [
+            "Estoque"
+          ]
+        },
         {
           "id": "amug9izqgsktu1a",
           "unid": "sc 40kg",
@@ -354,17 +352,23 @@
       "nome": "Engorda",
       "apresentacoes": [
         {
-          "id": "amug9hpo6u3ul9c",
           "unid": "sc 40kg",
           "preco": 0,
-          "fornecedor": "IRCA",
           "abas": [
             "Estoque"
           ]
         },
         {
           "id": "amu7jv8n8kwr2b0",
-          "unid": "sc 40kg Gado",
+          "unid": "40Kg Gado",
+          "preco": 0,
+          "abas": [
+            "Estoque"
+          ]
+        },
+        {
+          "id": "amug9hpo6u3ul9c",
+          "unid": "sc 40kg",
           "preco": 0,
           "fornecedor": "IRCA",
           "abas": [
@@ -410,6 +414,10 @@
       "nome": "Ração de peixe",
       "apresentacoes": [
         {
+          "unid": "Sc 25kg",
+          "preco": 0
+        },
+        {
           "id": "amug9kgp9vc7q1i",
           "unid": "Sc 25kg",
           "preco": 0,
@@ -422,6 +430,10 @@
       "setor": "Estoque",
       "nome": "Ração de Gado",
       "apresentacoes": [
+        {
+          "unid": "Sc 40kg",
+          "preco": 0
+        },
         {
           "id": "amug9gd6hrsjpc4",
           "unid": "Sc 40kg",
@@ -464,6 +476,24 @@
             "Campo",
             "Vendas"
           ]
+        }
+      ]
+    },
+    {
+      "id": "p_esterco",
+      "setor": "Vendas",
+      "nome": "Esterco de Galinha",
+      "apresentacoes": [
+        {
+          "unid": "Sc.",
+          "preco": 15,
+          "fornecedor": "Fazenda São José"
+        },
+        {
+          "id": "amu2jtf0zeyp9y9",
+          "unid": "Saco",
+          "preco": 15,
+          "fornecedor": "Fazenda São José"
         }
       ]
     },
@@ -560,6 +590,15 @@
       ],
       "_excluido": true,
       "_excluidoEm": 1789469281439
+    },
+    {
+      "id": "p_pinto",
+      "setor": "Vendas",
+      "nome": "Pinto",
+      "unid": "",
+      "apresentacoes": [],
+      "_excluido": true,
+      "_excluidoEm": 1789469349387
     },
     {
       "id": "p1789868100584",
