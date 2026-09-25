@@ -392,8 +392,10 @@
       "nome": "Ração de Gado",
       "apresentacoes": [
         {
+          "id": "amug9gd6hrsjpc4",
           "unid": "Sc 40kg",
-          "preco": 0
+          "preco": 0,
+          "fornecedor": "IRCA"
         }
       ]
     },
