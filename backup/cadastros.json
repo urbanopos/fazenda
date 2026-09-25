@@ -344,19 +344,28 @@
       "nome": "Engorda",
       "apresentacoes": [
         {
+          "id": "amug9hpo6u3ul9c",
           "unid": "sc 40kg",
           "preco": 0,
+          "fornecedor": "IRCA",
           "abas": [
             "Estoque"
           ]
         },
         {
           "id": "amu7jv8n8kwr2b0",
-          "unid": "40Kg Gado",
+          "unid": "sc 40kg Gado",
           "preco": 0,
+          "fornecedor": "IRCA",
           "abas": [
             "Estoque"
           ]
+        },
+        {
+          "id": "amug9i8fdju1s8m",
+          "unid": "sc 40kg",
+          "preco": 0,
+          "fornecedor": "Mauricéia"
         }
       ]
     },
