@@ -204,12 +204,6 @@
         {
           "unid": "kg",
           "preco": 0
-        },
-        {
-          "id": "amug9ln845id3qz",
-          "unid": "kg",
-          "preco": 0,
-          "fornecedor": "Fazenda São José"
         }
       ]
     },
@@ -257,23 +251,6 @@
             "Estoque",
             "Vendas"
           ]
-        },
-        {
-          "id": "amug9f25lyunk4e",
-          "unid": "sc 40kg",
-          "preco": 0,
-          "fornecedor": "IRCA",
-          "abas": [
-            "Campo",
-            "Estoque",
-            "Vendas"
-          ]
-        },
-        {
-          "id": "amug9fsrqhclosu",
-          "unid": "sc 40Kg",
-          "preco": 0,
-          "fornecedor": "Mauricéia"
         }
       ]
     },
@@ -285,12 +262,6 @@
         {
           "unid": "sc 40kg",
           "preco": 0
-        },
-        {
-          "id": "amug9hb5p65gulo",
-          "unid": "sc 40kg",
-          "preco": 0,
-          "fornecedor": "IRCA"
         }
       ]
     },
@@ -302,18 +273,6 @@
         {
           "unid": "sc 40kg",
           "preco": 0
-        },
-        {
-          "id": "amug9gorfbfy02s",
-          "unid": "sc 40kg",
-          "preco": 0,
-          "fornecedor": "IRCA"
-        },
-        {
-          "id": "amug9gucivuue3i",
-          "unid": "sc 40kg",
-          "preco": 0,
-          "fornecedor": "Mauricéia"
         }
       ]
     },
@@ -328,21 +287,6 @@
           "abas": [
             "Estoque"
           ]
-        },
-        {
-          "id": "amug9izqgsktu1a",
-          "unid": "sc 40kg",
-          "preco": 0,
-          "fornecedor": "IRCA",
-          "abas": [
-            "Estoque"
-          ]
-        },
-        {
-          "id": "amug9j2nppg9ap5",
-          "unid": "sc 40kg",
-          "preco": 0,
-          "fornecedor": "Mauricéia"
         }
       ]
     },
@@ -365,21 +309,6 @@
           "abas": [
             "Estoque"
           ]
-        },
-        {
-          "id": "amug9hpo6u3ul9c",
-          "unid": "sc 40kg",
-          "preco": 0,
-          "fornecedor": "IRCA",
-          "abas": [
-            "Estoque"
-          ]
-        },
-        {
-          "id": "amug9i8fdju1s8m",
-          "unid": "sc 40kg",
-          "preco": 0,
-          "fornecedor": "Mauricéia"
         }
       ]
     },
@@ -416,12 +345,6 @@
         {
           "unid": "Sc 25kg",
           "preco": 0
-        },
-        {
-          "id": "amug9kgp9vc7q1i",
-          "unid": "Sc 25kg",
-          "preco": 0,
-          "fornecedor": "IRCA"
         }
       ]
     },
@@ -433,12 +356,6 @@
         {
           "unid": "Sc 40kg",
           "preco": 0
-        },
-        {
-          "id": "amug9gd6hrsjpc4",
-          "unid": "Sc 40kg",
-          "preco": 0,
-          "fornecedor": "IRCA"
         }
       ]
     },
