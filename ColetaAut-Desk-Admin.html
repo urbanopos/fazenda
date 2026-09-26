@@ -715,6 +715,34 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 *{font-synthesis-weight:none}
 input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 </style>
+<style>
+/* ═══ Cadastros com o mesmo layout das abas principais ═══
+   Fundo azul + painel bege arredondado; abas em "pílula"; listas
+   paginadas (1, 2, 3...) em vez de barra de rolagem. */
+.cad-tela{background:var(--vd) !important}
+.cad-corpo{flex:1;min-height:0;display:flex;flex-direction:column;background:var(--cr);border-radius:20px 20px 0 0;padding:16px 16px 10px;box-sizing:border-box;overflow:hidden}
+.cad-corpo .cad-abas{background:none !important;border:none !important;padding:0 0 12px !important;display:flex;flex-wrap:wrap;gap:8px;overflow:visible}
+.cad-corpo .cad-aba{flex:0 0 auto !important;min-width:0 !important;padding:9px 18px !important;border-radius:20px !important;border:2px solid var(--ce) !important;background:var(--br,#fff) !important;color:var(--mu) !important;font-family:'DM Mono',monospace;font-size:11px !important;font-weight:500;letter-spacing:1px;text-transform:uppercase;margin:0 !important}
+.cad-corpo .cad-aba.sel{background:var(--vd) !important;color:var(--ac) !important;border-color:var(--vd) !important}
+.cad-corpo .cad-painel{overflow:hidden}
+.cad-corpo .cad-painel.vis{display:flex;flex-direction:column;flex:1;min-height:0}
+.cad-corpo .cad-painel.cad-rolar{overflow-y:auto}
+.cad-corpo .cad-rodape{background:none !important;border:none !important;padding:0 0 12px !important}
+.cad-corpo .cad-lista{flex:1;min-height:0;overflow:hidden;padding:0 !important;align-content:start}
+.cad-pag{display:none;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;padding:10px 0 4px;flex-shrink:0}
+.cad-pag.vis{display:flex}
+.cad-pag button{min-width:36px;height:36px;padding:0 10px;border-radius:18px;border:2px solid var(--ce);background:#fff;color:var(--tx);font-family:'DM Mono',monospace;font-size:13px;font-weight:500;cursor:pointer}
+.cad-pag button.at{background:var(--vd);color:var(--ac);border-color:var(--vd)}
+.cad-pag button:disabled{opacity:.35;cursor:default}
+.cad-pag-info{width:100%;text-align:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--mu);letter-spacing:.5px}
+@media (min-width: 900px){
+  .cad-tela > .cad-corpo{max-width:none !important;width:auto !important;margin:0 10px 10px !important;border-radius:20px;padding:28px 40px 16px}
+  .cad-corpo .cad-lista{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .cad-corpo .cad-lista .cad-item{margin-bottom:0}
+  .cad-corpo .cad-abas{gap:10px;margin-bottom:6px}
+  .cad-corpo .cad-aba{padding:10px 22px !important;font-size:12px !important}
+}
+</style>
 </head>
 <body>
 
@@ -11608,7 +11636,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0dd14f1101';
+var _caFP = '1a0dd231e12c';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -18038,6 +18066,8 @@ async function _cadAbrir(){
   await _cadCarregar();
   _cadEdicaoLimpar();
   document.getElementById('cad-tela').classList.add('vis');
+  _cadMontarCorpo();
+  _cadPagina = {};
   _cadRenderAba(_cadAbaAtual);
   _navPush('cad-tela');
 }
@@ -18055,6 +18085,7 @@ function _cadTrocaAba(aba, btn){
   document.querySelectorAll('.cad-painel').forEach(function(p){ p.classList.remove('vis'); });
   btn.classList.add('sel');
   document.getElementById('cad-p-'+aba).classList.add('vis');
+  _cadPagina[aba] = 1;
   _cadRenderAba(aba);
 }
 
@@ -18184,6 +18215,103 @@ async function _cadUnificarSelecionados(){
   _cadToggleUnificacao(aba); // sai do modo de seleção e re-renderiza
 }
 
+
+/* Monta o painel bege dos Cadastros (mesmo layout das abas principais) */
+function _cadMontarCorpo(){
+  var tela = document.getElementById('cad-tela');
+  if(!tela || tela.querySelector(':scope > .cad-corpo')) return;
+  var corpo = document.createElement('div');
+  corpo.className = 'cad-corpo';
+  Array.prototype.slice.call(tela.children).forEach(function(el){
+    if(!el.classList.contains('topo')) corpo.appendChild(el);
+  });
+  tela.appendChild(corpo);
+  // barra de páginas em cada painel, logo depois da lista
+  corpo.querySelectorAll('.cad-lista').forEach(function(l){
+    var aba = l.id.replace('cad-lista-','');
+    if(document.getElementById('cad-pag-'+aba)) return;
+    var pg = document.createElement('div');
+    pg.className = 'cad-pag'; pg.id = 'cad-pag-'+aba;
+    l.parentNode.insertBefore(pg, l.nextSibling);
+  });
+}
+
+/* Paginação das listas de Cadastros: cabe o que couber no painel, sem
+   rolagem; o restante vai para as páginas 2, 3... (sempre na mesma ordem
+   alfabética da lista completa). */
+var _cadPagina = {};
+var _cadPagUltimo = {};
+function _cadIrPagina(aba, n){ _cadPagina[aba] = n; var u = _cadPagUltimo[aba]; if(u) _cadPaginar(aba, u.itens, u.prefixo); }
+function _cadPaginar(aba, itensHtml, prefixo){
+  _cadMontarCorpo();
+  prefixo = prefixo || '';
+  _cadPagUltimo[aba] = {itens:itensHtml, prefixo:prefixo};
+  var lista = document.getElementById('cad-lista-'+aba);
+  var pag = document.getElementById('cad-pag-'+aba);
+  var painel = lista ? lista.closest('.cad-painel') : null;
+  if(!lista) return;
+  // Se algum bloco extra (revisão, vínculos, unificação) estiver aberto no
+  // painel, ele pode passar da altura — só aí o painel rola.
+  if(painel){
+    var extraAberto = Array.prototype.some.call(painel.children, function(c){
+      return c!==lista && c!==pag && !c.classList.contains('cad-rodape') && !/^cad-form-/.test(c.id||'') && c.style.display!=='none' && c.offsetHeight>0;
+    });
+    painel.classList.toggle('cad-rolar', extraAberto);
+  }
+  var total = itensHtml.length;
+  // Mede quantos itens cabem: desenha um item de teste com a barra de páginas visível
+  var porPagina = 10;
+  if(pag){ pag.innerHTML = '<button>1</button><div class="cad-pag-info">&nbsp;</div>'; pag.classList.add('vis'); }
+  var alturaDisp = lista.clientHeight;
+  if(alturaDisp > 60 && total){
+    lista.innerHTML = prefixo + itensHtml.slice(0, Math.min(total, 6)).join('');
+    var itensEl = lista.querySelectorAll(':scope > .cad-item');
+    var alturaPref = 0, maxAlt = 0, colunas = 1, topo0 = null;
+    Array.prototype.forEach.call(lista.children, function(c){ if(!c.classList.contains('cad-item')) alturaPref += c.offsetHeight + 8; });
+    Array.prototype.forEach.call(itensEl, function(c){
+      if(c.offsetHeight > maxAlt) maxAlt = c.offsetHeight;
+      if(topo0===null) topo0 = c.offsetTop;
+      if(c.offsetTop === topo0 && c !== itensEl[0]) colunas++;
+    });
+    var gap = parseFloat(getComputedStyle(lista).rowGap) || 8;
+    if(!itensEl.length || !maxAlt){ porPagina = total; }
+    else {
+      var linhas = Math.max(1, Math.floor((alturaDisp - alturaPref + gap) / (maxAlt + gap)));
+      porPagina = Math.max(1, linhas * colunas);
+    }
+  }
+  var paginas = Math.max(1, Math.ceil(total / porPagina));
+  var atual = Math.min(Math.max(1, _cadPagina[aba]||1), paginas);
+  _cadPagina[aba] = atual;
+  lista.innerHTML = prefixo + itensHtml.slice((atual-1)*porPagina, atual*porPagina).join('');
+  if(!pag) return;
+  if(paginas <= 1){ pag.classList.remove('vis'); pag.innerHTML = ''; return; }
+  // Números das páginas (com "…" quando forem muitas)
+  var nums = [];
+  for(var i=1;i<=paginas;i++){
+    if(i===1 || i===paginas || Math.abs(i-atual)<=2) nums.push(i);
+    else if(nums[nums.length-1] !== '…') nums.push('…');
+  }
+  var h = '<button '+(atual===1?'disabled':'')+' onclick="_cadIrPagina(\''+aba+'\','+(atual-1)+')" title="Anterior">‹</button>';
+  nums.forEach(function(n){
+    h += (n==='…') ? '<span style="padding:0 4px;color:var(--mu)">…</span>'
+      : '<button class="'+(n===atual?'at':'')+'" onclick="_cadIrPagina(\''+aba+'\','+n+')">'+n+'</button>';
+  });
+  h += '<button '+(atual===paginas?'disabled':'')+' onclick="_cadIrPagina(\''+aba+'\','+(atual+1)+')" title="Próxima">›</button>';
+  var ini = (atual-1)*porPagina+1, fim = Math.min(total, atual*porPagina);
+  h += '<div class="cad-pag-info">'+ini+'–'+fim+' de '+total+' (ordem alfabética)</div>';
+  pag.innerHTML = h;
+}
+var _cadPagResizeT = null;
+window.addEventListener('resize', function(){
+  clearTimeout(_cadPagResizeT);
+  _cadPagResizeT = setTimeout(function(){
+    var t = document.getElementById('cad-tela');
+    if(t && t.classList.contains('vis') && typeof _cadAbaAtual!=='undefined') _cadRenderAba(_cadAbaAtual);
+  }, 150);
+});
+document.addEventListener('DOMContentLoaded', _cadMontarCorpo);
+
 function _cadRenderAba(aba){
   var lista = document.getElementById('cad-lista-'+aba);
 
@@ -18203,18 +18331,20 @@ function _cadRenderAba(aba){
       });
     });
     linhas.sort(function(x,y){
-      var c = (x.prodNome||'').localeCompare(y.prodNome||'','pt-BR');
-      return c!==0 ? c : (x.unid||'').localeCompare(y.unid||'','pt-BR');
+      var c = (x.prodNome||'').localeCompare(y.prodNome||'','pt-BR',{sensitivity:'base',numeric:true});
+      if(c!==0) return c;
+      c = (x.unid||'').localeCompare(y.unid||'','pt-BR',{sensitivity:'base',numeric:true});
+      return c!==0 ? c : (x.fornecedor||'').localeCompare(y.fornecedor||'','pt-BR',{sensitivity:'base'});
     });
     if(!linhas.length){
-      lista.innerHTML = '<div class="cad-vazia">Nenhuma apresentação com preço cadastrada ainda.<br>Toque em + para adicionar (buscando o produto na tabela única).</div>';
+      _cadPaginar('precos', [], ''); lista.innerHTML = '<div class="cad-vazia">Nenhuma apresentação com preço cadastrada ainda.<br>Toque em + para adicionar (buscando o produto na tabela única).</div>';
       return;
     }
     var semAut = linhas.filter(function(l){ return !l.abas.length; }).length;
     var avisoTopo = semAut
       ? '<div style="grid-column:1/-1;background:#fdecea;border:1px solid #f5c6c6;color:#a03030;border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:8px">⛔ <strong>'+semAut+'</strong> apresentação(ões) sem nenhuma aba autorizada — não aparecem na coleta nem em Pedidos até o Admin marcar as abas.</div>'
       : '';
-    lista.innerHTML = avisoTopo + linhas.map(function(l){
+    _cadPaginar('precos', linhas.map(function(l){
       var det = l.unid+(l.preco?' · R$ '+Number(l.preco).toFixed(2).replace('.',','):' · sem preço definido')+(l.fornecedor?' · '+l.fornecedor:'');
       var linhaAbas = l.abas.length
         ? '<div class="cad-item-det" style="color:#1a6b2a">Abas autorizadas: '+_escH(l.abas.join(', '))+'</div>'
@@ -18229,7 +18359,7 @@ function _cadRenderAba(aba){
         +'<button class="cad-btn-ed" onclick="_cadEditarPreco(\''+l.prodId+'\','+l.apresIdx+')" title="Editar">\u270e</button>'
         +'<button class="cad-btn-rm" onclick="_cadRemoverPreco(\''+l.prodId+'\','+l.apresIdx+')" title="Remover">\u00d7</button>'
         +'</div></div>';
-    }).join('');
+    }), avisoTopo);
     return;
   }
 
@@ -18237,16 +18367,16 @@ function _cadRenderAba(aba){
   var itensComIdx = itens.map(function(it, idx){ return {it:it, idx:idx}; })
     .filter(function(par){ return !par.it._excluido; });
   if(!itensComIdx.length){
-    lista.innerHTML = '<div class="cad-vazia">Nenhum item cadastrado.<br>Toque em + para adicionar.</div>';
+    _cadPaginar(aba, [], ''); lista.innerHTML = '<div class="cad-vazia">Nenhum item cadastrado.<br>Toque em + para adicionar.</div>';
     return;
   }
   // Ordena por nome para exibição, mas preserva o índice ORIGINAL de cada
   // item — editar/remover/unificar dependem desse índice para saber qual
   // item do array real (não da lista ordenada) está sendo referenciado.
   itensComIdx.sort(function(a,b){
-    return (a.it.nome||a.it.prodNome||'').localeCompare((b.it.nome||b.it.prodNome||''),'pt-BR');
+    return (a.it.nome||a.it.prodNome||'').localeCompare((b.it.nome||b.it.prodNome||''),'pt-BR',{sensitivity:'base',numeric:true});
   });
-  lista.innerHTML = itensComIdx.map(function(par){
+  _cadPaginar(aba, itensComIdx.map(function(par){
     var it = par.it, idx = par.idx;
     var det = '';
     if(aba==='produtos'){
@@ -18280,7 +18410,7 @@ function _cadRenderAba(aba){
       +'<button class="cad-btn-ed" onclick="_cadEditar(\''+aba+'\','+idx+')" title="Editar">\u270e</button>'
       +'<button class="cad-btn-rm" onclick="_cadRemover(\''+aba+'\','+idx+')" title="Remover">\u00d7</button>'
       +'</div></div>';
-  }).join('');
+  }), '');
 }
 
 function _escH(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -18391,7 +18521,10 @@ function _cadMostrarForm(aba, dados){
   // Clicar no fundo escurecido (fora da caixa) também fecha o formulário.
   container.style.cssText = 'display:flex;position:fixed;inset:0;z-index:9600;background:rgba(0,0,0,.55);align-items:center;justify-content:center;padding:20px;overflow-y:auto';
   container.onclick = function(){ _cadEdicaoLimpar(); };
-  if(aba==='produtos') _cadRenderApresentacoes();
+  if(aba==='produtos'){
+    _formApresentacoes.sort(function(x,y){ return (x.unid||'').localeCompare(y.unid||'','pt-BR',{sensitivity:'base',numeric:true}); });
+    _cadRenderApresentacoes();
+  }
   var first = container.querySelector('input');
   if(first) setTimeout(function(){ first.focus(); },50);
 }
@@ -18554,7 +18687,8 @@ function _cadAbrirVinculoOrfaos(){
   }
 
   var optsProdutos = '<option value="">— Escolha o produto certo —</option>'
-    + (_cadDados.produtos||[]).map(function(p){ return '<option value="'+p.id+'">'+_escH(p.nome)+'</option>'; }).join('');
+    + (_cadDados.produtos||[]).filter(function(p){ return !p._excluido; }).slice().sort(function(a,b){ return (a.nome||'').localeCompare(b.nome||'','pt-BR',{sensitivity:'base',numeric:true}); })
+      .map(function(p){ return '<option value="'+p.id+'">'+_escH(p.nome)+'</option>'; }).join('');
 
   cont.innerHTML = '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--ce)">'
     +'<div style="font-family:DM Mono,monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:10px">'
