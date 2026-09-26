@@ -889,9 +889,9 @@
           "id": "amuenzh03smto8z",
           "unid": "Macho Bezerro",
           "preco": 0,
-          "_editadoEm": 1790417211692,
+          "_editadoEm": 1790417294024,
           "abas": [
-            "Vendas"
+            "Estoque"
           ]
         },
         {
@@ -922,7 +922,7 @@
           ]
         }
       ],
-      "_editadoEm": 1790417284068
+      "_editadoEm": 1790417294024
     },
     {
       "id": "p1790274774174",
