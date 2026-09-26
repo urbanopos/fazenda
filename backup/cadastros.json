@@ -56,9 +56,15 @@
         {
           "unid": "Unid.",
           "preco": 0,
-          "id": "l_unid_"
+          "id": "l_unid_",
+          "_editadoEm": 1790412551264,
+          "abas": [
+            "Aviario",
+            "Vendas"
+          ]
         }
-      ]
+      ],
+      "_editadoEm": 1790412551264
     },
     {
       "id": "p_coco",
