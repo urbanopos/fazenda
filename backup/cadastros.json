@@ -594,9 +594,12 @@
           "unid": "Sc.",
           "preco": 15,
           "fornecedor": "Fazenda São José",
-          "id": "l_sc_fazenda-sao-jose"
+          "id": "l_sc_fazenda-sao-jose",
+          "_excluido": true,
+          "_excluidoEm": 1790412373720
         }
-      ]
+      ],
+      "_editadoEm": 1790412373720
     },
     {
       "id": "p1789066561642_0",
