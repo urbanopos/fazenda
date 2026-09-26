@@ -47,18 +47,18 @@
     "coletor": "Menininha",
     "itens": [
       {
-        "setor": "Estoque",
+        "setor": "Aviario",
         "nome": "Ovos de Capoeira",
-        "unid": "Unid.",
         "qtd": 47,
-        "preco": 1,
-        "obs": "",
+        "unid": "Unid.",
+        "tipo": "",
         "forn": "",
-        "tipo": "Saida"
+        "preco": 1
       }
     ],
     "ts": 1790362029468,
-    "mov": "MOV-0034"
+    "mov": "MOV-0034",
+    "_editadoEm": 1790408892104
   },
   {
     "data": "2026-09-25",
