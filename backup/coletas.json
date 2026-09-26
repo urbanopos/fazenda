@@ -1,23 +1,6 @@
 [
   {
     "data": "2026-09-26",
-    "coletor": "Júnior",
-    "itens": [
-      {
-        "setor": "Aviario",
-        "nome": "Galinha",
-        "unid": "Unid. Abatida",
-        "qtd": 2,
-        "preco": 60,
-        "obs": "",
-        "forn": "Fazenda São José",
-        "tipo": ""
-      }
-    ],
-    "ts": 1790449047166
-  },
-  {
-    "data": "2026-09-26",
     "coletor": "Menininha",
     "itens": [
       {
@@ -129,6 +112,23 @@
     ],
     "ts": 1790337843438,
     "mov": "MOV-0033"
+  },
+  {
+    "data": "2026-09-24",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Galinha",
+        "qtd": 2,
+        "unid": "Unid. Abatida",
+        "tipo": "",
+        "forn": "Fazenda São José",
+        "preco": 60
+      }
+    ],
+    "ts": 1790449047166,
+    "_editadoEm": 1790449070276
   },
   {
     "data": "2026-09-24",
