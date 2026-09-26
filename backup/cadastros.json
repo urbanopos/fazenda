@@ -376,15 +376,6 @@
       "nome": "Banana Maçã",
       "apresentacoes": [
         {
-          "unid": "cac.",
-          "preco": 0,
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ]
-        },
-        {
           "unid": "Cacho",
           "preco": 50,
           "fornecedor": "Fazenda São José",
@@ -393,8 +384,18 @@
             "Campo",
             "Vendas"
           ]
+        },
+        {
+          "unid": "cac.",
+          "preco": 0,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ]
         }
-      ]
+      ],
+      "_editadoEm": 1790411145546
     },
     {
       "id": "p_esterco",
