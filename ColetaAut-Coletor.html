@@ -672,6 +672,90 @@ function _catalogoBuscarExato(setor, nome, unid){
 }
 function _esc(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 
+/* Regra ÚNICA (a mesma dos apps Admin): uma apresentação só aparece nas
+   abas EXPLICITAMENTE autorizadas pelo Admin em "Aparece nas abas".
+   Sem nenhuma aba marcada = não aparece em lugar nenhum. Antes, sem
+   marcação aparecia em TODAS as abas (ex.: Ovos lançado em Estoque). */
+function _normAba(x){ return String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase(); }
+/* ── Apresentações: identidade estável e "versão vigente" ─────────────
+   Apresentações antigas não tinham id; cada aparelho, ao salvar o produto,
+   inventava um id aleatório diferente para a MESMA apresentação — na
+   sincronização elas viravam duas ("versão antiga" + "versão nova"), e a
+   exclusão feita num aparelho não casava com a do outro (a excluída
+   "voltava"). Agora o id de uma apresentação antiga é sempre o mesmo em
+   qualquer aparelho (derivado da unidade + fornecedor). */
+function _slugApres(t){ return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+function _idApresEstavel(a){ return 'l_'+_slugApres(a.unid)+'_'+_slugApres(a.fornecedor); }
+function _apresGarantirIds(produtos){
+  (produtos||[]).forEach(function(pr){
+    var usados = {};
+    (pr.apresentacoes||[]).forEach(function(a){ if(a && a.id) usados[a.id] = true; });
+    (pr.apresentacoes||[]).forEach(function(a){
+      if(!a || a.id) return;
+      var id = _idApresEstavel(a), base = id, n = 2;
+      while(usados[id]) id = base+'_'+(n++);
+      a.id = id; usados[id] = true;
+    });
+  });
+  return produtos;
+}
+/* Momento em que a apresentação foi criada/alterada pela última vez */
+function _apresMomento(a){
+  if(a._editadoEm) return a._editadoEm;
+  if(a._criadoEm) return a._criadoEm;
+  var m = /^a([0-9a-z]+)[0-9a-z]{6}$/.exec(a.id||'');
+  if(m){ var t = parseInt(m[1],36); if(t > 1500000000000 && t < 4000000000000) return t; }
+  return 0; // antiga, sem data: sempre a mais velha
+}
+/* Versões VIGENTES de um produto: excluídas nunca entram; entre várias
+   apresentações com a mesma unidade + fornecedor, vale só a mais recente
+   (as anteriores são versões substituídas). Uma versão mais antiga só
+   continua valendo se atende alguma aba que a mais nova não atende.
+   Os registros já lançados (coletas/pedidos) guardam seus próprios dados,
+   então não são afetados. */
+function _apresVigentes(prod){
+  var grupos = {};
+  (prod && prod.apresentacoes || []).forEach(function(a){
+    if(!a || a._excluido) return;
+    var k = _slugApres(a.unid)+'|'+_slugApres(a.fornecedor);
+    (grupos[k] = grupos[k] || []).push(a);
+  });
+  var vig = [];
+  Object.keys(grupos).forEach(function(k){
+    var g = grupos[k].slice().sort(function(x,y){ return _apresMomento(y) - _apresMomento(x); });
+    var mantidas = [];
+    g.forEach(function(a){
+      if(!mantidas.length){ mantidas.push(a); return; }
+      if(!Array.isArray(a.abas) || !a.abas.length) return; // versão antiga sem abas: substituída
+      var cobertas = a.abas.every(function(x){
+        return mantidas.some(function(mk){ return Array.isArray(mk.abas) && mk.abas.some(function(y){ return _normAba(y)===_normAba(x); }); });
+      });
+      if(!cobertas) mantidas.push(a);
+    });
+    vig = vig.concat(mantidas);
+  });
+  return vig;
+}
+function _apresEhVigente(prod, a){ return _apresVigentes(prod).indexOf(a) > -1; }
+
+function _apresHabilitadaNaAba(prod, a, label){
+  if(!a || a._excluido) return false;
+  if(prod && !_apresEhVigente(prod, a)) return false; // versão substituída nunca aparece
+  if(!Array.isArray(a.abas)) return false;
+  return a.abas.some(function(x){ return _normAba(x) === _normAba(label); });
+}
+function _itemHabilitadoNaAba(setorKeyOuLabel, nome){
+  var label = (SETORES[setorKeyOuLabel]||{}).label || setorKeyOuLabel;
+  var alvo = String(nome||'').trim().toLowerCase();
+  if(!alvo) return false;
+  var cad = _produtosCadastro || _produtosCadastroLocal();
+  return (cad||[]).some(function(pr){
+    if(pr._excluido || (pr.nome||'').trim().toLowerCase() !== alvo) return false;
+    return (pr.apresentacoes||[]).some(function(a){ return _apresHabilitadaNaAba(pr, a, label); });
+  });
+}
+function _escC(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+
 function _catalogoNomesUnicos(setor){
   // Fonte única: Cadastros → Produtos do Admin (só leitura, buscada do
   // GitHub). Um produto aparece na aba se TIVER AO MENOS UMA apresentação
@@ -683,11 +767,7 @@ function _catalogoNomesUnicos(setor){
   var vistos = {}, out = [];
   (cadRemoto||[]).forEach(function(p){
     if(p._excluido) return;
-    var habilitado = (p.apresentacoes||[]).some(function(a){
-      if(a._excluido) return false;
-      if(!Array.isArray(a.abas)) return true;
-      return a.abas.indexOf(label)>-1;
-    });
+    var habilitado = (p.apresentacoes||[]).some(function(a){ return _apresHabilitadaNaAba(p, a, label); });
     if(!habilitado) return;
     var chave = (p.nome||'').trim().toLowerCase();
     if(chave && !vistos[chave]){ vistos[chave]=true; out.push(p.nome); }
@@ -706,7 +786,7 @@ function _catalogoUnidadesPara(setor, nome){
         if(a._excluido) return;
         // Se a apresentação tiver abas restritas, só entra se este setor
         // estiver na lista; sem restrição (campo ausente ou vazio), aparece sempre.
-        if(Array.isArray(a.abas) && a.abas.indexOf(label)===-1) return;
+        if(!_apresHabilitadaNaAba(p, a, label)) return;
         var u = (a.unid||'').trim();
         if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
       });
@@ -957,7 +1037,8 @@ function _cardColetaSetor(setor, cl, forn){
     +'</div></div>'
     +'<div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-'+k+'" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:15px;box-sizing:border-box;background:#f0ede6"></div>'
     +'<div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-'+k+'" placeholder="Ex: lote A, qualidade boa..."></textarea></div>'
-    +'<div class="card-acoes"><button class="btn-con" onclick="_adicionarItemSessao(\''+setor+'\')">+ Adicionar item</button></div>'
+    +'<div class="card-acoes"><button type="button" class="btn-con" onclick="_adicionarItemSessao(\''+setor+'\')">+ Adicionar item</button></div>'
+    +'<div id="aviso-add-'+k+'" style="display:none;margin-top:8px;padding:8px 10px;border-radius:6px;background:#e7f5ea;border:1px solid #b7dfc0;color:#1a6b2a;font-size:12px;line-height:1.4"></div>'
     +'</div>'
     +'</div>'
     +'</div></div>'
@@ -979,7 +1060,7 @@ function _catalogoApresentacoesPara(setor, nome){
     if(p.nome.trim().toLowerCase()===alvo){
       (p.apresentacoes||[]).forEach(function(a){
         if(a._excluido) return;
-        if(Array.isArray(a.abas) && a.abas.indexOf(label)===-1) return;
+        if(!_apresHabilitadaNaAba(p, a, label)) return;
         out.push({unid:(a.unid||'').trim(), preco:Number(a.preco)||0, fornecedor:a.fornecedor||''});
       });
     }
@@ -1045,6 +1126,8 @@ function _onSelecionarItem(setor){
   var wrapColeta = document.getElementById('wrap-coleta-'+k);
   var nomeEl = document.getElementById('enome-'+k);
   if(!sel) return;
+  var avisoAddSel = document.getElementById('aviso-add-'+k);
+  if(avisoAddSel) avisoAddSel.style.display = 'none';
   var val = sel.value;
   if(val){
     wrapColeta.style.display = 'block';
@@ -1056,6 +1139,7 @@ function _onSelecionarItem(setor){
   }
 }
 
+var _ultimoItemAdicionadoEm = 0;
 function _adicionarItemSessao(setor){
   var k = setor+'_novo';
   var nomeEl = document.getElementById('enome-'+k);
@@ -1069,6 +1153,10 @@ function _adicionarItemSessao(setor){
   var unid = (unidEl?unidEl.value:'').trim();
   var preco = parseFloat(precoEl?precoEl.value:0)||0; // nunca mostrado ao coletor
   if(!nome){ _toast('Selecione um item da lista.'); return; }
+  if(!_itemHabilitadoNaAba(setor, nome)){
+    _toast('⛔ '+nome+' não está autorizado para a aba '+((SETORES[setor]||{}).label||setor)+'.');
+    return;
+  }
   if(qtd<=0){ _toast('Informe a quantidade antes de adicionar.'); return; }
   var forn = (forEl?forEl.value:'')||'';
   if(forn==='—') forn='';
@@ -1079,12 +1167,20 @@ function _adicionarItemSessao(setor){
   // saidas (consumo) — entradas ficam exclusivas do painel Administrador.
   _sessaoInit();
   _sessaoItens[setor].push({nome:nome, unid:unid, qtd:qtd, preco:preco, obs:obs.trim(), forn:forn.trim(), tipo:tipo});
-  var sel = document.getElementById('sel-'+k);
-  var wrapColeta = document.getElementById('wrap-coleta-'+k);
-  nomeEl.value=''; qtdEl.value=0;
+  // Prepara para o PRÓXIMO item sem recolher o card — antes o card
+  // fechava, a tela "encolhia" e o botão de enviar ia parar embaixo do
+  // dedo, fazendo a coleta sair com um item só.
+  _ultimoItemAdicionadoEm = Date.now();
+  qtdEl.value=0;
   if(obsEl) obsEl.value='';
-  if(wrapColeta) wrapColeta.style.display='none';
-  if(sel) sel.value = '';
+  if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  var avisoAdd = document.getElementById('aviso-add-'+k);
+  if(avisoAdd){
+    avisoAdd.innerHTML = '✅ <strong>'+_escC(nome)+'</strong> ('+qtd+' '+_escC(unid)+') adicionado à lista.<br>'
+      +'Para lançar outro item, escolha-o no campo acima (ou informe outra quantidade). '
+      +'Quando terminar, toque em <strong>Enviar coleta</strong>.';
+    avisoAdd.style.display = 'block';
+  }
   _renderListaSessao(setor);
   _atualizarContador();
   _sessaoSalvarLocal();
@@ -1124,7 +1220,9 @@ function _iniciar(){
   // produtos/preços novos que o Admin cadastrar depois.
   _atualizarDatalistFornecedores(); // já preenche com o cache, se houver, antes da rede responder
   _buscarProdutosCadastro();
-  setInterval(_buscarProdutosCadastro, 3*60*1000);
+  setInterval(_buscarProdutosCadastro, 60*1000); // antes 3 min
+  // Ao voltar para o app (celular tira da suspensão), busca na hora
+  document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') _buscarProdutosCadastro(); });
 
   // Migracao unica: corrige nomes/coletor/observacao salvos com problema
   // de codificacao (ex: "RaÃ§Ã£o" em vez de "Ração"). Mesma correção já
@@ -1201,7 +1299,7 @@ function _iniciar(){
    nada salvo no aparelho — token, catálogo e coletas pendentes continuam
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
-var _caFP = '1a0b67fe48b7';
+var _caFP = '1a0dcdfa8a4a';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -1752,8 +1850,20 @@ function enviarTudo(){
   if(_enviandoColeta) return; // ja esta processando um envio — ignora toques repetidos
   var itens = _coletarItens();
   if(!itens.length){ _toast('Conclua ao menos um item antes de enviar.'); return; }
+  if(Date.now() - (_ultimoItemAdicionadoEm||0) < 1500){
+    _toast('Item adicionado. Para enviar, toque em "Enviar coleta" novamente.');
+    return;
+  }
   var n = _getNum();
   if(!n){ _toast('Numero nao configurado. Contacte o administrador.'); return; }
+  // Última checagem: todo item precisa estar autorizado na sua aba
+  var foraDaAba = itens.filter(function(it){ return !_itemHabilitadoNaAba(it.setor, it.nome); });
+  if(foraDaAba.length){
+    _toast('⛔ Não autorizado na aba: '+foraDaAba.map(function(it){ return it.nome+' ('+it.setor+')'; }).join(', ')+'. Remova da lista.');
+    return;
+  }
+  var resumoItens = itens.map(function(it){ return '• '+it.setor+' — '+it.nome+': '+it.qtd+' '+(it.unid||''); }).join('\n');
+  if(!confirm('Enviar coleta com '+itens.length+' item(ns)?\n\n'+resumoItens+'\n\nConfirmar?')) return;
 
   _enviandoColeta = true;
   var btnEnviar = document.getElementById('btn-enviar-coleta');
@@ -1950,11 +2060,19 @@ async function _buscarProdutosCadastro(){
       {headers:headers, cache:'no-store'});
     if(!resp.ok) return _produtosCadastroLocal();
     var meta = await resp.json();
-    var dados = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g,'')))));
+    var b64cad = (meta.content||'').replace(/\n/g,'');
+    if(!b64cad && meta.sha){
+      // Arquivo acima de 1 MB: a API não devolve o texto — busca pelo blob
+      var rb = await fetch('https://api.github.com/repos/'+GH_REPO+'/git/blobs/'+meta.sha+'?t='+Date.now(), {headers:headers, cache:'no-store'});
+      if(rb.ok){ var mb = await rb.json(); b64cad = (mb.content||'').replace(/\n/g,''); }
+    }
+    var dados = JSON.parse(decodeURIComponent(escape(atob(b64cad))));
     var produtos = (dados && Array.isArray(dados.produtos)) ? dados.produtos : [];
     produtos.forEach(function(p){ if(p.nome) p.nome = _corrigirMojibake(p.nome); });
+    var mudouCad = JSON.stringify(produtos) !== JSON.stringify(_produtosCadastro || _produtosCadastroLocal());
     _produtosCadastro = produtos;
     try{ localStorage.setItem(CACHE_PRODUTOS_KEY, JSON.stringify(produtos)); }catch(e){}
+    if(mudouCad && typeof _atualizarFormulariosComCatalogo==='function') _atualizarFormulariosComCatalogo();
 
     var fornecedores = (dados && Array.isArray(dados.fornecedores)) ? dados.fornecedores : [];
     fornecedores.forEach(function(f){ if(f.nome) f.nome = _corrigirMojibake(f.nome); });
@@ -1999,7 +2117,10 @@ function _produtosCadastroLocal(){
    cai de volta na lista antiga PROD_VENDA, pra nunca travar o coletor. */
 function _listaProdutosVenda(){
   var cad = _produtosCadastro || _produtosCadastroLocal();
-  if(cad && cad.length) return cad;
+  // Só produtos com ao menos uma apresentação autorizada para Vendas
+  if(cad && cad.length) return cad.filter(function(p){
+    return !p._excluido && (p.apresentacoes||[]).some(function(a){ return _apresHabilitadaNaAba(p, a, 'Vendas'); });
+  });
   return PROD_VENDA.filter(function(p){ return p.id!=='_edit'; }).map(function(p){
     return {id:p.id, nome:p.nome, apresentacoes:[]};
   });
@@ -2026,7 +2147,7 @@ function _optsApresentacao(prodId, selIdx){
   // (não a posição na lista filtrada), pois é esse índice original que
   // setApresV() usa depois para encontrar a apresentação certa.
   var opts = apres.map(function(a,i){ return {a:a, i:i}; })
-    .filter(function(par){ return !Array.isArray(par.a.abas) || par.a.abas.indexOf('Vendas')>-1; });
+    .filter(function(par){ return _apresHabilitadaNaAba(prod, par.a, 'Vendas'); });
   if(!opts.length){
     return '<option value="">— nenhuma apresentação disponível para venda —</option>';
   }
@@ -2414,8 +2535,32 @@ function _salvarColeta(reg){
      e a base OFICIAL/aprovada mantida exclusivamente pelo Admin (_fazerBackup).
      Deixar o Coletor escrever ali sobrescrevia a base aprovada com dados locais
      ainda nao aprovados, quebrando a paridade entre os dois apps. */
+  _filaPendAdicionar(reg);
   _enviarColetaGitHub(reg);
 }
+
+/* Fila de reenvio: se o envio ao Admin falhar (sem internet, conflito,
+   erro do GitHub), a coleta fica guardada aqui e é reenviada sozinha
+   quando a conexão voltar — antes ela ficava "só neste aparelho" para
+   sempre, e o Admin nunca recebia. */
+var FILA_PEND_KEY = 'fsj_fila_envio_pendentes';
+function _filaPendLer(){ try{ return JSON.parse(localStorage.getItem(FILA_PEND_KEY)||'[]'); }catch(e){ return []; } }
+function _filaPendGravar(l){ try{ localStorage.setItem(FILA_PEND_KEY, JSON.stringify(l)); }catch(e){} }
+function _filaPendAdicionar(reg){ var l=_filaPendLer(); if(!l.some(function(r){ return r.ts===reg.ts; })){ l.push(reg); _filaPendGravar(l); } }
+function _filaPendRemover(ts){ _filaPendGravar(_filaPendLer().filter(function(r){ return r.ts!==ts; })); }
+var _filaPendRodando = false;
+async function _filaPendReenviar(){
+  if(_filaPendRodando || !_ghToken()) return;
+  _filaPendRodando = true;
+  try{
+    var l = _filaPendLer();
+    for(var i=0;i<l.length;i++){ await _enviarColetaGitHub(l[i]); }
+  } finally { _filaPendRodando = false; }
+}
+setInterval(_filaPendReenviar, 60000);
+window.addEventListener('online', _filaPendReenviar);
+document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') _filaPendReenviar(); });
+setTimeout(_filaPendReenviar, 5000);
 
 function _carregarHistColeta(){
   try{ return JSON.parse(localStorage.getItem(CK)||'[]'); }catch(e){ return []; }
@@ -2438,7 +2583,7 @@ async function _enviarColetaGitHub(reg,tentativa){
     };
     var pendentes = [];
     var sha = null;
-    var resp = await fetch(GH_API+'?t='+Date.now(), {headers:headers});
+    var resp = await fetch(GH_API+'?t='+Date.now(), {headers:headers, cache:'no-store'});
     if(resp.ok){
       var meta = await resp.json();
       sha = meta.sha;
@@ -2447,6 +2592,12 @@ async function _enviarColetaGitHub(reg,tentativa){
       console.warn('GitHub leitura:', resp.status);
     }
 
+    if(!resp.ok && resp.status !== 404) throw new Error('GitHub leitura HTTP '+resp.status);
+    /* Já chegou lá numa tentativa anterior (resposta perdida)? Não duplica. */
+    if(pendentes.some(function(r){ return r && r.ts === reg.ts; })){
+      _filaPendRemover(reg.ts);
+      return;
+    }
     /* 2. Adiciona o novo registro com status pendente */
     reg.status   = 'pendente';
     reg.enviadoEm = new Date().toISOString();
@@ -2467,20 +2618,21 @@ async function _enviarColetaGitHub(reg,tentativa){
     });
 
     if(put.ok){
+      _filaPendRemover(reg.ts);
       console.log('✅ Coleta enviada ao GitHub');
       try{ localStorage.setItem('fsj_gh_ultimo_status','✅ Última coleta enviada em '+new Date().toLocaleString('pt-BR')); }catch(e){}
-    } else if(put.status===409 && tentativa<3){
+    } else if((put.status===409 || put.status===422) && tentativa<3){
       // Conflito de versão (outro dispositivo gravou ao mesmo tempo) — tenta de novo com o SHA mais recente
       console.warn('GitHub gravação: conflito (409), tentando novamente...');
       return _enviarColetaGitHub(reg, tentativa+1);
     } else {
       var err = await put.json().catch(function(){ return {}; });
       console.warn('GitHub gravação:', put.status, err.message||'');
-      try{ localStorage.setItem('fsj_gh_ultimo_status','❌ Falha ao enviar (HTTP '+put.status+'). A coleta ficou salva só neste aparelho.'); }catch(e){}
+      try{ localStorage.setItem('fsj_gh_ultimo_status','❌ Falha ao enviar (HTTP '+put.status+'). Guardada para reenvio automático.'); }catch(e){}
     }
   } catch(e){
     console.warn('_enviarColetaGitHub:', e.message);
-    try{ localStorage.setItem('fsj_gh_ultimo_status','❌ Sem conexão — a coleta ficou salva só neste aparelho.'); }catch(e2){}
+    try{ localStorage.setItem('fsj_gh_ultimo_status','❌ Sem conexão — a coleta será reenviada automaticamente quando a internet voltar.'); }catch(e2){}
     /* Falha silenciosa na tela, mas registrada para consulta no painel — coleta já foi salva localmente */
   }
 }
