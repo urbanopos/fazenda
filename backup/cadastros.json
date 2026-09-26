@@ -10,14 +10,16 @@
           "preco": 30,
           "abas": [
             "Vendas"
-          ]
+          ],
+          "id": "l_bandeja-c-30-ovos_"
         },
         {
           "unid": "Unid.",
           "preco": 1,
           "abas": [
             "Aviario"
-          ]
+          ],
+          "id": "l_unid_"
         }
       ]
     },
@@ -28,7 +30,8 @@
       "apresentacoes": [
         {
           "unid": "Unid.",
-          "preco": 50
+          "preco": 50,
+          "id": "l_unid_"
         }
       ],
       "_excluido": true,
@@ -47,11 +50,13 @@
             "Aviario",
             "Perda",
             "Vendas"
-          ]
+          ],
+          "id": "l_unid_fazenda-sao-jose"
         },
         {
           "unid": "Unid.",
-          "preco": 0
+          "preco": 0,
+          "id": "l_unid_"
         }
       ]
     },
@@ -68,7 +73,8 @@
             "Perda",
             "Campo",
             "Vendas"
-          ]
+          ],
+          "id": "l_unid_fazenda-sao-jose"
         }
       ]
     },
@@ -84,7 +90,8 @@
           "abas": [
             "Campo",
             "Vendas"
-          ]
+          ],
+          "id": "l_caixa_fazenda-sao-jose"
         },
         {
           "unid": "Unid",
@@ -94,7 +101,8 @@
             "Perda",
             "Campo",
             "Vendas"
-          ]
+          ],
+          "id": "l_unid_fazenda-sao-jose"
         }
       ]
     },
@@ -111,7 +119,8 @@
             "Perda",
             "Campo",
             "Vendas"
-          ]
+          ],
+          "id": "l_caixa_fazenda-sao-jose"
         },
         {
           "unid": "unid",
@@ -121,7 +130,8 @@
             "Perda",
             "Campo",
             "Vendas"
-          ]
+          ],
+          "id": "l_unid_fazenda-sao-jose"
         }
       ]
     },
@@ -138,7 +148,8 @@
             "Aviario",
             "Perda",
             "Vendas"
-          ]
+          ],
+          "id": "l_unid_fazenda-sao-jose"
         }
       ],
       "_excluido": true,
@@ -156,11 +167,13 @@
             "Aviario",
             "Perda",
             "Vendas"
-          ]
+          ],
+          "id": "l_unid_"
         },
         {
           "unid": "Unid.",
-          "preco": 50
+          "preco": 50,
+          "id": "l_unid__2"
         }
       ],
       "_excluido": true,
@@ -179,7 +192,8 @@
             "Aviario",
             "Perda",
             "Vendas"
-          ]
+          ],
+          "id": "l_unid_fazenda-sao-jose"
         }
       ]
     },
@@ -196,11 +210,13 @@
             "Aviario",
             "Perda",
             "Vendas"
-          ]
+          ],
+          "id": "l_unid_fazenda-sao-jose"
         },
         {
           "unid": "Jovem",
-          "preco": 0
+          "preco": 0,
+          "id": "l_jovem_"
         }
       ]
     },
@@ -217,7 +233,8 @@
             "Perda",
             "Campo",
             "Vendas"
-          ]
+          ],
+          "id": "l_cacho_fazenda-sao-jose"
         },
         {
           "unid": "Cacho",
@@ -227,7 +244,8 @@
             "Perda",
             "Campo",
             "Vendas"
-          ]
+          ],
+          "id": "l_cacho_fazenda-sao-jose_2"
         }
       ]
     },
@@ -243,7 +261,8 @@
             "Perda",
             "Campo",
             "Vendas"
-          ]
+          ],
+          "id": "l_kg_"
         }
       ]
     },
@@ -260,7 +279,8 @@
             "Perda",
             "Campo",
             "Vendas"
-          ]
+          ],
+          "id": "l_cacho_fazenda-sao-jose"
         }
       ]
     },
@@ -276,7 +296,8 @@
           "abas": [
             "Campo",
             "Vendas"
-          ]
+          ],
+          "id": "l_unid_fazenda-sao-jose"
         }
       ]
     },
@@ -291,7 +312,8 @@
           "fornecedor": "IRCA",
           "abas": [
             "Estoque"
-          ]
+          ],
+          "id": "l_sc-40kg_irca"
         },
         {
           "unid": "sc 40kg",
@@ -299,7 +321,8 @@
           "fornecedor": "Mauricéia",
           "abas": [
             "Estoque"
-          ]
+          ],
+          "id": "l_sc-40kg_mauriceia"
         }
       ]
     },
@@ -314,7 +337,8 @@
           "fornecedor": "IRCA",
           "abas": [
             "Estoque"
-          ]
+          ],
+          "id": "l_sc-40kg_irca"
         }
       ]
     },
@@ -328,7 +352,8 @@
           "preco": 0,
           "abas": [
             "Estoque"
-          ]
+          ],
+          "id": "l_sc-40kg_"
         }
       ]
     },
@@ -343,7 +368,8 @@
           "fornecedor": "Fazenda São José",
           "abas": [
             "Estoque"
-          ]
+          ],
+          "id": "l_sc-40kg_fazenda-sao-jose"
         }
       ]
     },
@@ -359,7 +385,8 @@
           "abas": [
             "Perda",
             "Estoque"
-          ]
+          ],
+          "id": "l_sc-40kg_irca"
         },
         {
           "id": "amu7jv8n8kwr2b0",
@@ -381,7 +408,8 @@
           "preco": 0,
           "abas": [
             "Estoque"
-          ]
+          ],
+          "id": "l_sc-40kg_"
         }
       ]
     },
@@ -395,7 +423,8 @@
           "preco": 0,
           "abas": [
             "Estoque"
-          ]
+          ],
+          "id": "l_sc-30kg_"
         }
       ]
     },
@@ -410,7 +439,8 @@
           "fornecedor": "Purina",
           "abas": [
             "Estoque"
-          ]
+          ],
+          "id": "l_sc-25kg_purina"
         },
         {
           "unid": "Sc 25kg",
@@ -418,7 +448,8 @@
           "fornecedor": "IRCA",
           "abas": [
             "Estoque"
-          ]
+          ],
+          "id": "l_sc-25kg_irca"
         }
       ]
     },
@@ -511,7 +542,8 @@
             "Aviario",
             "Perda",
             "Vendas"
-          ]
+          ],
+          "id": "l_saco_"
         }
       ],
       "_editadoEm": 1790411213079
@@ -529,7 +561,8 @@
             "Perda",
             "Campo",
             "Vendas"
-          ]
+          ],
+          "id": "l_cacho_fazenda-sao-jose"
         },
         {
           "unid": "cac.",
@@ -538,10 +571,13 @@
             "Perda",
             "Campo",
             "Vendas"
-          ]
+          ],
+          "id": "l_cac_",
+          "_excluido": true,
+          "_excluidoEm": 1790412324560
         }
       ],
-      "_editadoEm": 1790411145546
+      "_editadoEm": 1790412324560
     },
     {
       "id": "p_esterco",
@@ -557,7 +593,8 @@
         {
           "unid": "Sc.",
           "preco": 15,
-          "fornecedor": "Fazenda São José"
+          "fornecedor": "Fazenda São José",
+          "id": "l_sc_fazenda-sao-jose"
         }
       ]
     },
@@ -572,7 +609,8 @@
           "abas": [
             "Aviario",
             "Vendas"
-          ]
+          ],
+          "id": "l_unid_"
         }
       ],
       "_excluido": true,
@@ -598,7 +636,8 @@
           "fornecedor": "IRCA",
           "abas": [
             "Estoque"
-          ]
+          ],
+          "id": "l_sc-40kg_irca"
         }
       ]
     },
