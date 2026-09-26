@@ -216,9 +216,12 @@
         {
           "unid": "Jovem",
           "preco": 0,
-          "id": "l_jovem_"
+          "id": "l_jovem_",
+          "_excluido": true,
+          "_excluidoEm": 1790412474279
         }
-      ]
+      ],
+      "_editadoEm": 1790412474279
     },
     {
       "id": "p1789066568948_0",
