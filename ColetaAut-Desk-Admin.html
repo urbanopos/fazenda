@@ -11636,7 +11636,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0dd231e12c';
+var _caFP = '1a0dd3aa11a7';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -16021,17 +16021,25 @@ function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtua
   var apres = nomeAtual ? _catalogoApresentacoesPara(setorKey, nomeAtual) : [];
   var blocoApresUnid, linhaForn;
   if(apres.length){
-    var idxMatch = 0;
+    var idxMatch = -1;
     for(var i=0;i<apres.length;i++){
       if((apres[i].unid||'').toLowerCase() === (unidAtual||'').toLowerCase()){ idxMatch = i; break; }
     }
-    var optsApres = apres.map(function(a,ai){
-      return '<option value="'+ai+'"'+(ai===idxMatch?' selected':'')+'>'+_esc(_labelApres(a))+'</option>';
+    // Registro já lançado cuja unidade não existe mais (ou não está mais
+    // autorizada) no cadastro: a opção inicial é EXATAMENTE o que foi
+    // gravado — nada muda no registro a menos que o Admin escolha outra.
+    var usaGravado = !!(unidAtual && idxMatch === -1);
+    if(idxMatch === -1) idxMatch = 0;
+    var optGravado = usaGravado
+      ? '<option value="reg" selected data-unid="'+_esc(unidAtual)+'" data-preco="'+(precoAtual||0)+'" data-forn="'+_esc(fornAtual||'')+'">📌 Gravado: '+_esc(unidAtual)+(fornAtual?' — '+_esc(fornAtual):'')+(precoAtual?' — R$ '+_fmt(precoAtual):'')+'</option>'
+      : '';
+    var optsApres = optGravado + apres.map(function(a,ai){
+      return '<option value="'+ai+'"'+(!usaGravado && ai===idxMatch?' selected':'')+'>'+_esc(_labelApres(a))+'</option>';
     }).join('');
     // Registro já lançado: mantém o preço/fornecedor GRAVADOS nele (valores da
     // época), mesmo que a apresentação vigente hoje tenha outro preço — só
     // muda se o usuário escolher outra apresentação na lista.
-    var mesmoUnid = unidAtual && (apres[idxMatch].unid||'').toLowerCase() === String(unidAtual).toLowerCase();
+    var mesmoUnid = !usaGravado && unidAtual && (apres[idxMatch].unid||'').toLowerCase() === String(unidAtual).toLowerCase();
     var precoUsado = (mesmoUnid && precoAtual) ? precoAtual : (apres[idxMatch].preco||0);
     var fornUsado  = (mesmoUnid && fornAtual) ? fornAtual : (apres[idxMatch].fornecedor||'');
     var notaPreco = (mesmoUnid && precoAtual && Number(precoAtual) !== Number(apres[idxMatch].preco||0))
@@ -16039,9 +16047,9 @@ function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtua
       : '';
     blocoApresUnid =
       '<select class="hcol-edit-inp" style="flex:1 1 100%;width:100%" id="hcol-ei-apres-'+ri+'-'+ii+'" onchange="_onApresEditColetaChange('+ri+','+ii+')">'+optsApres+'</select>'
-      +'<input type="hidden" id="hcol-ei-unid-'+ri+'-'+ii+'" value="'+_esc(apres[idxMatch].unid||'')+'">'
-      +'<input type="hidden" id="hcol-ei-preco-'+ri+'-'+ii+'" value="'+precoUsado+'">';
-    linhaForn = '<input type="hidden" value="'+_esc(fornUsado)+'" id="hcol-ei-forn-'+ri+'-'+ii+'">'+notaPreco;
+      +'<input type="hidden" id="hcol-ei-unid-'+ri+'-'+ii+'" value="'+_esc(usaGravado ? unidAtual : (apres[idxMatch].unid||''))+'">'
+      +'<input type="hidden" id="hcol-ei-preco-'+ri+'-'+ii+'" value="'+(usaGravado ? (precoAtual||0) : precoUsado)+'">';
+    linhaForn = '<input type="hidden" value="'+_esc(usaGravado ? (fornAtual||'') : fornUsado)+'" id="hcol-ei-forn-'+ri+'-'+ii+'">'+notaPreco;
   } else {
     var unidades = _catalogoUnidadesPara(setorKey, nomeAtual);
     if(unidAtual && unidades.indexOf(unidAtual)===-1) unidades.push(unidAtual);
@@ -16060,7 +16068,7 @@ function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtua
   }
 
   var avisoAba = naoHabilitado
-    ? '<div style="font-size:11px;color:#a03030;margin:4px 0;font-weight:700">⛔ '+_esc(nomeAtual)+' não está habilitado para a aba '+_esc(setor)+' — corrija o setor ou o item.</div>'
+    ? '<div style="font-size:11px;color:#a03030;margin:4px 0;font-weight:700">⚠️ '+_esc(nomeAtual)+' não está autorizado hoje na aba '+_esc(setor)+'. O registro fica como foi lançado; corrija o setor ou o item só se este lançamento estiver errado.</div>'
     : '';
   return '<div class="hcol-item-edit-wrap"'+(naoHabilitado?' style="background:#fdecea;border-radius:6px;padding:4px"':'')+'>'
     +avisoAba
@@ -16087,6 +16095,13 @@ function _onApresEditColetaChange(ri, ii){
   var precoHid = document.getElementById('hcol-ei-preco-'+ri+'-'+ii);
   var fornEl = document.getElementById('hcol-ei-forn-'+ri+'-'+ii);
   if(!setorEl || !nomeEl || !apresEl) return;
+  if(apresEl.value === 'reg'){ // voltou para os valores gravados no registro
+    var og = apresEl.options[apresEl.selectedIndex];
+    if(unidHid) unidHid.value = og.getAttribute('data-unid')||'';
+    if(precoHid) precoHid.value = og.getAttribute('data-preco')||0;
+    if(fornEl) fornEl.value = og.getAttribute('data-forn')||'';
+    return;
+  }
   var apres = _catalogoApresentacoesPara(_setorKeyFromLabel(setorEl.value), nomeEl.value);
   var a = apres[parseInt(apresEl.value,10)];
   if(!a) return;
@@ -16211,7 +16226,14 @@ async function _salvarEditColeta(ri){
   }
   if(!novosItens.length){ _toast('Inclua ao menos um item (para apagar o registro use 🗑 Excluir).'); return; }
   // (itens cujo produto nem existe mais no cadastro não bloqueiam — registro antigo)
+  // Itens que JÁ estavam no registro (mesmo setor + nome) nunca são
+  // bloqueados por mudanças posteriores nos critérios do cadastro — só um
+  // item novo ou alterado precisa estar autorizado na aba hoje.
+  var regOriginal = _buscarColetaPorTs(ctx.ts) || {itens:[]};
+  var chaveIt = function(it){ return String(it.setor||'').toLowerCase()+'|'+String(it.nome||'').trim().toLowerCase(); };
+  var originais = (regOriginal.itens||[]).map(chaveIt);
   var invalidos = novosItens.filter(function(it){
+    if(originais.indexOf(chaveIt(it)) > -1) return false;
     var existe = (_cadDados.produtos||[]).some(function(pr){ return !pr._excluido && (pr.nome||'').trim().toLowerCase()===it.nome.trim().toLowerCase(); });
     return existe && !_itemHabilitadoNaAba(it.setor, it.nome);
   });
@@ -18141,7 +18163,7 @@ async function _cadUnificarSelecionados(){
   var idsRemovidos = selecionados.slice(1).map(function(p){ return p.id; });
 
   if(aba==='produtos'){
-    if(!confirm('Unificar estes produtos num só?\n\n'+nomes.join('\n')+'\n\nVai manter o nome "'+sobrevivente.nome+'" e juntar todas as apresentações (unidade+preço). Pedidos já registrados com os outros produtos serão atualizados para apontar para este. Esta ação não pode ser desfeita.')) return;
+    if(!confirm('Unificar estes produtos num só?\n\n'+nomes.join('\n')+'\n\nVai manter o nome "'+sobrevivente.nome+'" e juntar todas as apresentações (unidade+preço). Coletas e pedidos já registrados NÃO são alterados — continuam exatamente como foram lançados.')) return;
 
     // Junta as apresentações de todos, sem duplicar a mesma unidade
     if(!sobrevivente.apresentacoes) sobrevivente.apresentacoes = [];
@@ -18155,32 +18177,17 @@ async function _cadUnificarSelecionados(){
       });
     });
 
-    _cadDados.produtos = _cadDados.produtos.filter(function(p){ return idsRemovidos.indexOf(p.id)===-1; });
-
-    // Atualiza pedidos já registrados: qualquer item que apontava para um dos
-    // produtos removidos passa a apontar para o sobrevivente
-    var hist = _carregarHistRaw();
-    var mudouPedidos = false;
-    hist.forEach(function(ped){
-      (ped.itens||[]).forEach(function(it){
-        if(idsRemovidos.indexOf(it.prodId)>-1){
-          it.prodId = sobrevivente.id;
-          it.nome = sobrevivente.nome;
-          mudouPedidos = true;
-        }
-      });
+    // Os unificados saem do cadastro por exclusão lógica (não "voltam" na
+    // sincronização). Registros já lançados NÃO são reescritos — cada um
+    // guarda os próprios dados; correção de registro só individualmente.
+    _cadDados.produtos.forEach(function(p){
+      if(idsRemovidos.indexOf(p.id)>-1){ p._excluido = true; p._excluidoEm = Date.now(); p._unificadoCom = sobrevivente.id; }
     });
-    if(mudouPedidos){
-      var jp = JSON.stringify(hist);
-      try{ localStorage.setItem(HK, jp); }catch(e){}
-      if(_caOpfs) await _caOpfsSalvar(FSJ_PEDIDOS, jp);
-      _renderHist();
-    }
     await _cadSalvar();
     _toast('✅ Produtos unificados em "'+sobrevivente.nome+'"!');
   } else {
     // Clientes
-    if(!confirm('Unificar estes clientes num só?\n\n'+nomes.join('\n')+'\n\nVai manter o nome "'+sobrevivente.nome+'". Pedidos já registrados com os outros cadastros serão atualizados para apontar para este. Esta ação não pode ser desfeita.')) return;
+    if(!confirm('Unificar estes clientes num só?\n\n'+nomes.join('\n')+'\n\nVai manter o nome "'+sobrevivente.nome+'". Pedidos já registrados NÃO são alterados — continuam exatamente como foram lançados.')) return;
 
     // Preenche contato/observação vazios do sobrevivente com o que houver
     // nos outros, sem sobrescrever o que ele já tiver preenchido
@@ -18189,25 +18196,10 @@ async function _cadUnificarSelecionados(){
       if(!sobrevivente.obs && c.obs) sobrevivente.obs = c.obs;
     });
 
-    _cadDados.clientes = _cadDados.clientes.filter(function(c){ return idsRemovidos.indexOf(c.id)===-1; });
-
-    // Atualiza pedidos já registrados: qualquer um que apontava pra um dos
-    // clientes removidos passa a apontar pro sobrevivente
-    var hist2 = _carregarHistRaw();
-    var mudouPedidos2 = false;
-    hist2.forEach(function(ped){
-      if(idsRemovidos.indexOf(ped.clienteId)>-1){
-        ped.clienteId = sobrevivente.id;
-        ped.cliente = sobrevivente.nome;
-        mudouPedidos2 = true;
-      }
+    // Idem: só o cadastro muda; pedidos já lançados ficam como estão.
+    _cadDados.clientes.forEach(function(c){
+      if(idsRemovidos.indexOf(c.id)>-1){ c._excluido = true; c._excluidoEm = Date.now(); c._unificadoCom = sobrevivente.id; }
     });
-    if(mudouPedidos2){
-      var jp2 = JSON.stringify(hist2);
-      try{ localStorage.setItem(HK, jp2); }catch(e){}
-      if(_caOpfs) await _caOpfsSalvar(FSJ_PEDIDOS, jp2);
-      _renderHist();
-    }
     await _cadSalvar();
     _toast('✅ Clientes unificados em "'+sobrevivente.nome+'"!');
   }
@@ -18342,14 +18334,14 @@ function _cadRenderAba(aba){
     }
     var semAut = linhas.filter(function(l){ return !l.abas.length; }).length;
     var avisoTopo = semAut
-      ? '<div style="grid-column:1/-1;background:#fdecea;border:1px solid #f5c6c6;color:#a03030;border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:8px">⛔ <strong>'+semAut+'</strong> apresentação(ões) sem nenhuma aba autorizada — não aparecem na coleta nem em Pedidos até o Admin marcar as abas.</div>'
+      ? '<div style="grid-column:1/-1;background:#fbf4e2;border:1px solid #ecdcae;color:#8a6d1f;border-radius:8px;padding:8px 12px;font-size:12px;margin-bottom:8px">ℹ️ <strong>'+semAut+'</strong> apresentação(ões) sem nenhuma aba marcada — ficam só no cadastro e não aparecem nas listas das abas.</div>'
       : '';
     _cadPaginar('precos', linhas.map(function(l){
       var det = l.unid+(l.preco?' · R$ '+Number(l.preco).toFixed(2).replace('.',','):' · sem preço definido')+(l.fornecedor?' · '+l.fornecedor:'');
       var linhaAbas = l.abas.length
         ? '<div class="cad-item-det" style="color:#1a6b2a">Abas autorizadas: '+_escH(l.abas.join(', '))+'</div>'
-        : '<div class="cad-item-det" style="color:#a03030;font-weight:700">⛔ Nenhuma aba autorizada — não aparece em lugar nenhum. Toque em editar e marque as abas.</div>';
-      return '<div class="cad-item"'+(l.abas.length?'':' style="border-color:#f5c6c6;background:#fdf3f3"')+'>'
+        : '<div class="cad-item-det" style="color:#8a6d1f">Nenhuma aba — fica só no cadastro, não aparece nas listas das abas.</div>';
+      return '<div class="cad-item">'
         +'<div class="cad-item-info">'
         +'<div class="cad-item-nm">'+_escH(l.prodNome)+'</div>'
         +'<div class="cad-item-det">'+_escH(det)+'</div>'
@@ -18708,6 +18700,10 @@ function _cadAbrirVinculoOrfaos(){
 }
 
 async function _cadVincularOrfao(i){
+  // Desativado: alterava em massa itens de pedidos já lançados. Correções
+  // de registros existentes agora só individualmente, pela edição de cada um.
+  _toast('Correção em massa desativada — edite cada pedido individualmente.');
+  return;
   var cont = document.getElementById('cad-vinculo-orfaos');
   var g = cont._grupos && cont._grupos[i];
   if(!g) return;
@@ -18808,7 +18804,7 @@ function _cadPrecoApresChange(){
     precoInp.value = '';
     if(fornInp) fornInp.value = '';
     // Nenhuma aba vem marcada: o Admin autoriza, uma a uma, onde a
-    // apresentação pode aparecer (obrigatório marcar ao menos uma).
+    // apresentação pode aparecer (pode deixar nenhuma = só no cadastro).
     chks.forEach(function(c){ c.checked = false; });
   } else {
     var apres = prod && prod.apresentacoes && prod.apresentacoes[parseInt(selApres.value,10)];
@@ -18890,8 +18886,9 @@ async function _cadSalvarItem(aba){
     // admin desmarque tudo sem perceber.
     // Sempre grava a lista explícita de abas marcadas (antes "todas marcadas"
     // ou "nenhuma" viravam "sem restrição" = aparecia em qualquer aba).
-    if(!chksMarcados.length){ _toast('\u26a0\ufe0f Marque ao menos uma aba em "Aparece nas abas".'); return; }
-    var abasEscolhidas = chksMarcados;
+    // Nenhuma aba marcada é permitido: a apresentação fica só no cadastro
+    // e não aparece em nenhuma aba (coleta nem Pedidos).
+    var abasEscolhidas = chksMarcados; // [] = nenhuma aba
     if(!prod.apresentacoes) prod.apresentacoes = [];
     if(selApres && selApres.value !== '_nova'){
       // Editando o preço/abas de uma apresentação já existente do produto
