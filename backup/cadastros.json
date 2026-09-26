@@ -894,7 +894,11 @@
         {
           "id": "amuenzw2cc8o4xw",
           "unid": "Fêmea Garrota",
-          "preco": 0
+          "preco": 0,
+          "_editadoEm": 1790417202260,
+          "abas": [
+            "Vendas"
+          ]
         },
         {
           "id": "amueo05cvstgcdo",
@@ -902,7 +906,7 @@
           "preco": 0
         }
       ],
-      "_editadoEm": 1790417194074
+      "_editadoEm": 1790417202260
     },
     {
       "id": "p1790274774174",
