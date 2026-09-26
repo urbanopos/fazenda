@@ -11596,7 +11596,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0dcad4193b';
+var _caFP = '1a0dcdf7b15e';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -12026,6 +12026,94 @@ function _catalogoBuscarExato(setor, nome, unid){
   var an = String(nome).trim().toLowerCase(), au = String(unid).trim().toLowerCase();
   return cat.find(function(it){ return it.nome.trim().toLowerCase()===an && it.unid.trim().toLowerCase()===au; });
 }
+/* Regra ÚNICA que decide se uma apresentação pode ser usada numa aba
+   (Aviario, Perda, Campo, Estoque e Vendas/Pedidos): somente as abas
+   marcadas pelo Admin em "Aparece nas abas". Antes, apresentação sem essa
+   marcação aparecia em TODAS as abas (ex.: "Ovos de Capoeira" lançado em
+   Estoque). */
+function _normAba(x){ return String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase(); }
+/* ── Apresentações: identidade estável e "versão vigente" ─────────────
+   Apresentações antigas não tinham id; cada aparelho, ao salvar o produto,
+   inventava um id aleatório diferente para a MESMA apresentação — na
+   sincronização elas viravam duas ("versão antiga" + "versão nova"), e a
+   exclusão feita num aparelho não casava com a do outro (a excluída
+   "voltava"). Agora o id de uma apresentação antiga é sempre o mesmo em
+   qualquer aparelho (derivado da unidade + fornecedor). */
+function _slugApres(t){ return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+function _idApresEstavel(a){ return 'l_'+_slugApres(a.unid)+'_'+_slugApres(a.fornecedor); }
+function _apresGarantirIds(produtos){
+  (produtos||[]).forEach(function(pr){
+    var usados = {};
+    (pr.apresentacoes||[]).forEach(function(a){ if(a && a.id) usados[a.id] = true; });
+    (pr.apresentacoes||[]).forEach(function(a){
+      if(!a || a.id) return;
+      var id = _idApresEstavel(a), base = id, n = 2;
+      while(usados[id]) id = base+'_'+(n++);
+      a.id = id; usados[id] = true;
+    });
+  });
+  return produtos;
+}
+/* Momento em que a apresentação foi criada/alterada pela última vez */
+function _apresMomento(a){
+  if(a._editadoEm) return a._editadoEm;
+  if(a._criadoEm) return a._criadoEm;
+  var m = /^a([0-9a-z]+)[0-9a-z]{6}$/.exec(a.id||'');
+  if(m){ var t = parseInt(m[1],36); if(t > 1500000000000 && t < 4000000000000) return t; }
+  return 0; // antiga, sem data: sempre a mais velha
+}
+/* Versões VIGENTES de um produto: excluídas nunca entram; entre várias
+   apresentações com a mesma unidade + fornecedor, vale só a mais recente
+   (as anteriores são versões substituídas). Uma versão mais antiga só
+   continua valendo se atende alguma aba que a mais nova não atende.
+   Os registros já lançados (coletas/pedidos) guardam seus próprios dados,
+   então não são afetados. */
+function _apresVigentes(prod){
+  var grupos = {};
+  (prod && prod.apresentacoes || []).forEach(function(a){
+    if(!a || a._excluido) return;
+    var k = _slugApres(a.unid)+'|'+_slugApres(a.fornecedor);
+    (grupos[k] = grupos[k] || []).push(a);
+  });
+  var vig = [];
+  Object.keys(grupos).forEach(function(k){
+    var g = grupos[k].slice().sort(function(x,y){ return _apresMomento(y) - _apresMomento(x); });
+    var mantidas = [];
+    g.forEach(function(a){
+      if(!mantidas.length){ mantidas.push(a); return; }
+      if(!Array.isArray(a.abas) || !a.abas.length) return; // versão antiga sem abas: substituída
+      var cobertas = a.abas.every(function(x){
+        return mantidas.some(function(mk){ return Array.isArray(mk.abas) && mk.abas.some(function(y){ return _normAba(y)===_normAba(x); }); });
+      });
+      if(!cobertas) mantidas.push(a);
+    });
+    vig = vig.concat(mantidas);
+  });
+  return vig;
+}
+function _apresEhVigente(prod, a){ return _apresVigentes(prod).indexOf(a) > -1; }
+
+function _apresHabilitadaNaAba(prod, a, label){
+  if(!a || a._excluido) return false;
+  if(prod && !_apresEhVigente(prod, a)) return false; // versão substituída nunca aparece
+  // Só aparece nas abas EXPLICITAMENTE autorizadas pelo Admin. Apresentação
+  // sem nenhuma aba marcada não aparece em lugar nenhum (coleta nem Pedidos)
+  // até ser autorizada em Cadastros → Apresentação.
+  if(!Array.isArray(a.abas)) return false;
+  return a.abas.some(function(x){ return _normAba(x) === _normAba(label); });
+}
+/* O item (pelo nome) pode ser coletado nesta aba? (usado para BLOQUEAR
+   lançamentos em aba não autorizada, não só para esconder da lista) */
+function _itemHabilitadoNaAba(setorKeyOuLabel, nome){
+  var label = (SETORES[setorKeyOuLabel]||{}).label || setorKeyOuLabel;
+  var alvo = String(nome||'').trim().toLowerCase();
+  if(!alvo) return false;
+  return (_cadDados.produtos||[]).some(function(pr){
+    if(pr._excluido || (pr.nome||'').trim().toLowerCase() !== alvo) return false;
+    return (pr.apresentacoes||[]).some(function(a){ return _apresHabilitadaNaAba(pr, a, label); });
+  });
+}
+
 function _catalogoNomesUnicos(setor){
   // Fonte única: Cadastros → Produtos. Um produto aparece na aba se
   // TIVER AO MENOS UMA apresentação habilitada para ela — quem decide
@@ -12036,11 +12124,7 @@ function _catalogoNomesUnicos(setor){
   var vistos = {}, out = [];
   (_cadDados.produtos||[]).forEach(function(p){
     if(p._excluido) return;
-    var habilitado = (p.apresentacoes||[]).some(function(a){
-      if(a._excluido) return false;
-      if(!Array.isArray(a.abas)) return true; // campo nunca definido = sem restrição, aparece em todas
-      return a.abas.indexOf(label)>-1;
-    });
+    var habilitado = (p.apresentacoes||[]).some(function(a){ return _apresHabilitadaNaAba(p, a, label); });
     if(!habilitado) return;
     var chave = (p.nome||'').trim().toLowerCase();
     if(chave && !vistos[chave]){ vistos[chave]=true; out.push(p.nome); }
@@ -12062,7 +12146,7 @@ function _catalogoUnidadesPara(setor, nome){
         if(a._excluido) return;
         // Se a apresentação tiver abas restritas, só entra se este setor
         // estiver na lista; sem restrição (campo ausente), aparece sempre.
-        if(Array.isArray(a.abas) && a.abas.indexOf(label)===-1) return;
+        if(!_apresHabilitadaNaAba(p, a, label)) return;
         var u = (a.unid||'').trim();
         if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
       });
@@ -12222,7 +12306,10 @@ var PROD_VENDA = [
 ];
 
 function _prodVenda(){
-  var out = (_cadDados.produtos||[]).filter(function(p){ return !p._excluido; }).map(function(p){ return {id:p.id, nome:p.nome}; });
+  // Só produtos com ao menos uma apresentação autorizada para Vendas/Pedidos
+  var out = (_cadDados.produtos||[]).filter(function(p){
+    return !p._excluido && (p.apresentacoes||[]).some(function(a){ return _apresHabilitadaNaAba(p, a, 'Vendas'); });
+  }).map(function(p){ return {id:p.id, nome:p.nome}; });
   out.sort(function(a,b){ return (a.nome||'').localeCompare(b.nome||'','pt-BR'); });
   out.push({id:'_edit', nome:'Editavel'});
   return out;
@@ -12505,7 +12592,7 @@ function _catalogoApresentacoesPara(setor, nome){
     if(p.nome.trim().toLowerCase()===alvo){
       (p.apresentacoes||[]).forEach(function(a){
         if(a._excluido) return;
-        if(Array.isArray(a.abas) && a.abas.indexOf(label)===-1) return;
+        if(!_apresHabilitadaNaAba(p, a, label)) return;
         out.push({unid:(a.unid||'').trim(), preco:Number(a.preco)||0, fornecedor:a.fornecedor||''});
       });
     }
@@ -12620,13 +12707,13 @@ async function _cadastrarItemCatalogo(setor){
     var jaTemUnid = (existente.apresentacoes||[]).some(function(a){ return !a._excluido && (a.unid||'').trim().toLowerCase()===unidNorm; });
     if(jaTemUnid){ _toast('Esse item com essa unidade já existe no cadastro.'); return; }
     if(!existente.apresentacoes) existente.apresentacoes = [];
-    existente.apresentacoes.push({id:_gerarIdApres(), unid:unid, preco:0});
+    existente.apresentacoes.push({id:_gerarIdApres(), unid:unid, preco:0, abas:[label]}); // só nesta aba
   } else {
     _cadDados.produtos.push({
       id: 'p'+Date.now(),
       setor: label,
       nome: nome,
-      apresentacoes: [{id:_gerarIdApres(), unid:unid, preco:0}]
+      apresentacoes: [{id:_gerarIdApres(), unid:unid, preco:0, abas:[label]}] // só nesta aba
     });
   }
   await _cadSalvar();
@@ -12690,6 +12777,10 @@ function _adicionarItemSessao(setor){
   var unid = (unidEl?unidEl.value:'').trim();
   var preco = parseFloat(precoEl?precoEl.value:0)||0;
   if(!nome){ _toast('Selecione um item da lista.'); return; }
+  if(!_itemHabilitadoNaAba(setor, nome)){
+    _toast('⛔ '+nome+' não está habilitado para a aba '+((SETORES[setor]||{}).label||setor)+'. Ajuste em Cadastros → Apresentação.');
+    return;
+  }
   if(qtd<=0){ _toast('Informe a quantidade antes de adicionar.'); return; }
   var forn = (forEl?forEl.value:'')||'';
   if(forn==='—') forn='';
@@ -13622,7 +13713,9 @@ function _nextPedNum(){
 function addItemVenda(){
   var idx = _vIdx++;
   var hoje = _dataLocalHoje();
-  _vItens.push({idx:idx, prodId:'ovo', unidade:'', data:hoje, qtd:0, preco:0, desconto:0, sub:0, concluido:false});
+  var primeiroProd = (_prodVenda()[0]||{id:'_edit'}).id; // 1º produto AUTORIZADO (antes era sempre 'ovo')
+  _vItens.push({idx:idx, prodId:primeiroProd, unidade:'', data:hoje, qtd:0, preco:0, desconto:0, sub:0, concluido:false});
+  setProdV(_vItens.length-1, primeiroProd);
   _renderVItens();
 }
 
@@ -13655,7 +13748,7 @@ function _renderVItens(){
       // como lista de opções — trocar a unidade também atualiza o preço.
       var prodSel = isEdit ? null : (_cadDados.produtos||[]).find(function(p){ return p.id===it.prodId; });
       var apresentacoes = (prodSel && prodSel.apresentacoes && prodSel.apresentacoes.length)
-        ? prodSel.apresentacoes.filter(function(a){ return !a._excluido && (!Array.isArray(a.abas) || a.abas.indexOf('Vendas')>-1); })
+        ? prodSel.apresentacoes.filter(function(a){ return _apresHabilitadaNaAba(prodSel, a, 'Vendas'); })
           .sort(function(x,y){ return (x.unid||'').localeCompare(y.unid||'','pt-BR'); })
         : [];
       var campoUnidade;
@@ -13702,7 +13795,7 @@ function setProdV(i,v){
   if(v && v!=='_edit'){
     var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===v; });
     var apresVendas = (prod && prod.apresentacoes)
-      ? prod.apresentacoes.filter(function(a){ return !Array.isArray(a.abas) || a.abas.indexOf('Vendas')>-1; })
+      ? prod.apresentacoes.filter(function(a){ return _apresHabilitadaNaAba(prod, a, 'Vendas'); })
       : [];
     if(apresVendas.length){
       _vItens[i].unidade = apresVendas[0].unid;
@@ -15829,10 +15922,12 @@ function _setorKeyFromLabel(label){
 function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtual, fornAtual, precoAtual){
   var setorKey = _setorKeyFromLabel(setor);
   var nomes = _catalogoNomesUnicos(setorKey);
-  if(nomeAtual && nomes.indexOf(nomeAtual)===-1) nomes.push(nomeAtual); // preserva item legado fora do catalogo
+  var naoHabilitado = !!(nomeAtual && nomes.indexOf(nomeAtual)===-1);
+  if(naoHabilitado) nomes.push(nomeAtual); // preserva o valor gravado, mas sinaliza
   var optsNome = (nomeAtual ? '' : '<option value="" selected>— Escolha o item —</option>')
     + nomes.map(function(n){
-    return '<option value="'+_esc(n)+'"'+(n===nomeAtual?' selected':'')+'>'+_esc(n)+'</option>';
+    var rot = (naoHabilitado && n===nomeAtual) ? n+' (não habilitado nesta aba)' : n;
+    return '<option value="'+_esc(n)+'"'+(n===nomeAtual?' selected':'')+'>'+_esc(rot)+'</option>';
   }).join('');
 
   // Setor (aba) do item — editável, para corrigir um lançamento feito na aba errada
@@ -15865,11 +15960,20 @@ function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtua
     var optsApres = apres.map(function(a,ai){
       return '<option value="'+ai+'"'+(ai===idxMatch?' selected':'')+'>'+_esc(_labelApres(a))+'</option>';
     }).join('');
+    // Registro já lançado: mantém o preço/fornecedor GRAVADOS nele (valores da
+    // época), mesmo que a apresentação vigente hoje tenha outro preço — só
+    // muda se o usuário escolher outra apresentação na lista.
+    var mesmoUnid = unidAtual && (apres[idxMatch].unid||'').toLowerCase() === String(unidAtual).toLowerCase();
+    var precoUsado = (mesmoUnid && precoAtual) ? precoAtual : (apres[idxMatch].preco||0);
+    var fornUsado  = (mesmoUnid && fornAtual) ? fornAtual : (apres[idxMatch].fornecedor||'');
+    var notaPreco = (mesmoUnid && precoAtual && Number(precoAtual) !== Number(apres[idxMatch].preco||0))
+      ? '<div style="font-size:11px;color:var(--mu);margin-top:2px">Preço do registro mantido: R$ '+_fmt(precoAtual)+' (vigente hoje: R$ '+_fmt(apres[idxMatch].preco||0)+')</div>'
+      : '';
     blocoApresUnid =
       '<select class="hcol-edit-inp" style="flex:1 1 100%;width:100%" id="hcol-ei-apres-'+ri+'-'+ii+'" onchange="_onApresEditColetaChange('+ri+','+ii+')">'+optsApres+'</select>'
       +'<input type="hidden" id="hcol-ei-unid-'+ri+'-'+ii+'" value="'+_esc(apres[idxMatch].unid||'')+'">'
-      +'<input type="hidden" id="hcol-ei-preco-'+ri+'-'+ii+'" value="'+(apres[idxMatch].preco||0)+'">';
-    linhaForn = '<input type="hidden" value="'+_esc(apres[idxMatch].fornecedor||'')+'" id="hcol-ei-forn-'+ri+'-'+ii+'">';
+      +'<input type="hidden" id="hcol-ei-preco-'+ri+'-'+ii+'" value="'+precoUsado+'">';
+    linhaForn = '<input type="hidden" value="'+_esc(fornUsado)+'" id="hcol-ei-forn-'+ri+'-'+ii+'">'+notaPreco;
   } else {
     var unidades = _catalogoUnidadesPara(setorKey, nomeAtual);
     if(unidAtual && unidades.indexOf(unidAtual)===-1) unidades.push(unidAtual);
@@ -15887,7 +15991,11 @@ function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtua
     }
   }
 
-  return '<div class="hcol-item-edit-wrap">'
+  var avisoAba = naoHabilitado
+    ? '<div style="font-size:11px;color:#a03030;margin:4px 0;font-weight:700">⛔ '+_esc(nomeAtual)+' não está habilitado para a aba '+_esc(setor)+' — corrija o setor ou o item.</div>'
+    : '';
+  return '<div class="hcol-item-edit-wrap"'+(naoHabilitado?' style="background:#fdecea;border-radius:6px;padding:4px"':'')+'>'
+    +avisoAba
     +'<div class="hcol-item-edit-row" style="flex-wrap:wrap">'
     +'<div style="flex:1 1 100%;display:flex;align-items:center;gap:8px;margin-bottom:2px">'
     +'<span style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);flex-shrink:0">Setor (aba)</span>'
@@ -16034,6 +16142,15 @@ async function _salvarEditColeta(ri){
     });
   }
   if(!novosItens.length){ _toast('Inclua ao menos um item (para apagar o registro use 🗑 Excluir).'); return; }
+  // (itens cujo produto nem existe mais no cadastro não bloqueiam — registro antigo)
+  var invalidos = novosItens.filter(function(it){
+    var existe = (_cadDados.produtos||[]).some(function(pr){ return !pr._excluido && (pr.nome||'').trim().toLowerCase()===it.nome.trim().toLowerCase(); });
+    return existe && !_itemHabilitadoNaAba(it.setor, it.nome);
+  });
+  if(invalidos.length){
+    _toast('⛔ Não habilitado na aba: '+invalidos.map(function(it){ return it.nome+' ('+it.setor+')'; }).join(', ')+'. Corrija o setor ou o item.');
+    return;
+  }
   if(semQtd.length){ _toast('Informe a quantidade de: '+semQtd.join(', ')); return; }
 
   var btnSalvar = document.querySelector('#modal-edit-coleta .hcol-edit-save');
@@ -16444,6 +16561,8 @@ function _isoParaDataQuit(iso, dataQuitOriginal){
 function _nomeSelectHtml(ii, nomeAtual){
   var nomes = [], vistos = {};
   (_cadDados.produtos||[]).forEach(function(p){
+    if(p._excluido) return;
+    if(!(p.apresentacoes||[]).some(function(a){ return _apresHabilitadaNaAba(p, a, 'Vendas'); })) return;
     var n = (p.nome||'').trim();
     if(n && !vistos[n.toLowerCase()]){ vistos[n.toLowerCase()]=true; nomes.push(n); }
   });
@@ -16506,7 +16625,7 @@ function _unidadesParaProdutoNome(nome){
     if(p._excluido) return;
     if((p.nome||'').trim().toLowerCase()!==nome) return;
     (p.apresentacoes||[]).forEach(function(a){
-      if(a._excluido) return;
+      if(!_apresHabilitadaNaAba(p, a, 'Vendas')) return;
       var u = (a.unid||'').trim();
       if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; unids.push(u); }
     });
@@ -16519,9 +16638,9 @@ function _unidadesParaProdutoNome(nome){
 function _precoParaProdutoUnidade(nome, unid){
   nome = (nome||'').trim().toLowerCase();
   unid = (unid||'').trim().toLowerCase();
-  var prod = (_cadDados.produtos||[]).find(function(p){ return (p.nome||'').trim().toLowerCase()===nome; });
+  var prod = (_cadDados.produtos||[]).find(function(p){ return !p._excluido && (p.nome||'').trim().toLowerCase()===nome; });
   if(!prod) return null;
-  var apres = (prod.apresentacoes||[]).find(function(a){ return (a.unid||'').trim().toLowerCase()===unid; });
+  var apres = _apresVigentes(prod).find(function(a){ return (a.unid||'').trim().toLowerCase()===unid && _apresHabilitadaNaAba(prod, a, 'Vendas'); });
   return apres ? apres.preco : null;
 }
 
@@ -16888,6 +17007,15 @@ async function _aprovarColeta(idx){
   // Numera aqui, na aprovação — é o único ponto que grava no histórico
   // oficial, então evita duas coletas pendentes (de aparelhos diferentes)
   // ganharem o mesmo MOV-XXXX.
+  if(hist.some(function(h){ return h.ts === novo.ts; })){
+    // Já aprovada antes (ex.: a baixa da fila falhou na 1ª vez) — não duplica,
+    // só tira da fila de pendentes.
+    reg.status = 'aprovada';
+    await _salvarPendentesGitHub(window._mpdTodos);
+    _toast('ℹ️ Esta coleta já estava aprovada — removida da fila.');
+    abrirPendentes();
+    return;
+  }
   _atribuirNumeroMovRegistro(novo);
   hist.unshift(novo);
   try{ localStorage.setItem(CK, JSON.stringify(hist)); }catch(e){}
@@ -16911,16 +17039,27 @@ async function _rejeitarColeta(idx){
 }
 
 async function _salvarPendentesGitHub(todos){
+  // Decisões tomadas aqui (aprovada/rejeitada), por ts
+  var decididos = {};
+  (todos||[]).forEach(function(r){ if(r && r.status && r.status!=='pendente') decididos[r.ts] = r.status; });
   try{
-    var h = {'Authorization':'token '+_ghToken(),'Accept':'application/vnd.github+json','Content-Type':'application/json','X-GitHub-Api-Version':'2022-11-28'};
-    var restantes = todos.filter(function(r){ return r.status==='pendente'; });
-    var conteudo  = btoa(unescape(encodeURIComponent(JSON.stringify(restantes,null,2))));
-    var body = {message:'Admin: atualiza coletas-pendentes.json',content:conteudo};
-    if(window._mpdSHA) body.sha = window._mpdSHA;
-    var put = await fetch(GH_API,{method:'PUT',headers:h,body:JSON.stringify(body)});
-    if(put.ok){ var r=await put.json(); if(r.content) window._mpdSHA=r.content.sha; }
-    else{ var e=await put.json().catch(function(){ return {}; }); _toast('⚠️ Erro: '+(e.message||put.status)); }
-  }catch(e){ _toast('⚠️ Conexão: '+e.message); }
+    for(var tentativa=0; tentativa<3; tentativa++){
+      // Relê a fila ATUAL antes de gravar — um coletor pode ter enviado uma
+      // coleta nova depois que a tela abriu; antes ela era apagada aqui.
+      var atual = await _ghLerComSha(GH_FILE);
+      var lista = (atual && Array.isArray(atual.dados)) ? atual.dados : [];
+      var restantes = lista.filter(function(r){ return r && r.status==='pendente' && !decididos[r.ts]; });
+      try{
+        await _ghGravar(GH_FILE, restantes, 'Admin: atualiza coletas-pendentes.json', atual ? atual.sha : null);
+        return true;
+      }catch(e){
+        if(e.conflito) continue;
+        throw e;
+      }
+    }
+    _toast('⚠️ Fila de pendentes muito movimentada — tente de novo.');
+  }catch(e){ _toast('⚠️ Erro ao atualizar pendentes: '+e.message); }
+  return false;
 }
 
 /* Verifica pendentes 3s após abrir e depois a cada 5min */
@@ -17031,6 +17170,8 @@ function _corrigirMojibake(str){
 }
 
 function _mesclarCadastros(local, remoto){
+  _apresGarantirIds(local && local.produtos);
+  _apresGarantirIds(remoto && remoto.produtos);
   var resultado = {produtos:[], clientes:[], fornecedores:[], precos:[]};
   ['produtos','clientes','fornecedores','precos'].forEach(function(categoria){
     var vistos = {};
@@ -17749,6 +17890,7 @@ async function _cadCarregar(){
     if(d.fornecedores)_cadDados.fornecedores= d.fornecedores;
     if(d.precos)      _cadDados.precos      = d.precos;
   }catch(e){}
+  _apresGarantirIds(_cadDados.produtos);
   _cadSnapAtualizar();
   _atualizarDatalistFornecedores();
 }
@@ -18010,9 +18152,12 @@ function _cadRenderAba(aba){
     var linhas = [];
     (_cadDados.produtos||[]).forEach(function(p){
       if(p._excluido) return;
+      var vigP = _apresVigentes(p);
       (p.apresentacoes||[]).forEach(function(a, ai){
         if(a._excluido) return;
-        linhas.push({prodId:p.id, prodNome:p.nome, apresIdx:ai, unid:a.unid, preco:a.preco, fornecedor:a.fornecedor||''});
+        if(vigP.indexOf(a) === -1) return; // versão antiga/substituída: não lista
+        linhas.push({prodId:p.id, prodNome:p.nome, apresIdx:ai, unid:a.unid, preco:a.preco, fornecedor:a.fornecedor||'',
+          abas:(Array.isArray(a.abas) ? a.abas : [])});
       });
     });
     linhas.sort(function(x,y){
@@ -18023,12 +18168,20 @@ function _cadRenderAba(aba){
       lista.innerHTML = '<div class="cad-vazia">Nenhuma apresentação com preço cadastrada ainda.<br>Toque em + para adicionar (buscando o produto na tabela única).</div>';
       return;
     }
-    lista.innerHTML = linhas.map(function(l){
+    var semAut = linhas.filter(function(l){ return !l.abas.length; }).length;
+    var avisoTopo = semAut
+      ? '<div style="grid-column:1/-1;background:#fdecea;border:1px solid #f5c6c6;color:#a03030;border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:8px">⛔ <strong>'+semAut+'</strong> apresentação(ões) sem nenhuma aba autorizada — não aparecem na coleta nem em Pedidos até o Admin marcar as abas.</div>'
+      : '';
+    lista.innerHTML = avisoTopo + linhas.map(function(l){
       var det = l.unid+(l.preco?' · R$ '+Number(l.preco).toFixed(2).replace('.',','):' · sem preço definido')+(l.fornecedor?' · '+l.fornecedor:'');
-      return '<div class="cad-item">'
+      var linhaAbas = l.abas.length
+        ? '<div class="cad-item-det" style="color:#1a6b2a">Abas autorizadas: '+_escH(l.abas.join(', '))+'</div>'
+        : '<div class="cad-item-det" style="color:#a03030;font-weight:700">⛔ Nenhuma aba autorizada — não aparece em lugar nenhum. Toque em editar e marque as abas.</div>';
+      return '<div class="cad-item"'+(l.abas.length?'':' style="border-color:#f5c6c6;background:#fdf3f3"')+'>'
         +'<div class="cad-item-info">'
         +'<div class="cad-item-nm">'+_escH(l.prodNome)+'</div>'
         +'<div class="cad-item-det">'+_escH(det)+'</div>'
+        +linhaAbas
         +'</div>'
         +'<div class="cad-item-btns">'
         +'<button class="cad-btn-ed" onclick="_cadEditarPreco(\''+l.prodId+'\','+l.apresIdx+')" title="Editar">\u270e</button>'
@@ -18115,12 +18268,19 @@ async function _cadRemoverPreco(prodId, apresIdx){
   if(!prod || !prod.apresentacoes || !prod.apresentacoes[apresIdx]) return;
   // Exclusão lógica (nunca some de vez) — assim não "ressuscita" numa
   // sincronização com outro aparelho que ainda não recebeu a remoção.
-  if(prod.apresentacoes[apresIdx].id){
-    prod.apresentacoes[apresIdx]._excluido = true;
-    prod.apresentacoes[apresIdx]._excluidoEm = Date.now();
-  } else {
-    prod.apresentacoes.splice(apresIdx,1);
-  }
+  // Sempre exclusão lógica — inclusive das apresentações antigas (sem id),
+  // que antes eram apagadas de vez e VOLTAVAM na sincronização seguinte.
+  _apresGarantirIds([prod]);
+  var alvoEx = prod.apresentacoes[apresIdx];
+  var chaveEx = _slugApres(alvoEx.unid)+'|'+_slugApres(alvoEx.fornecedor);
+  // Exclui também versões antigas (substituídas) da mesma apresentação,
+  // para nenhuma delas "assumir o lugar" e reaparecer na lista.
+  prod.apresentacoes.forEach(function(a){
+    if(a === alvoEx || (!a._excluido && _slugApres(a.unid)+'|'+_slugApres(a.fornecedor) === chaveEx && _apresMomento(a) <= _apresMomento(alvoEx))){
+      a._excluido = true;
+      a._excluidoEm = Date.now();
+    }
+  });
   await _cadSalvar();
   _cadRenderAba('precos');
   _toast('✅ Removido');
@@ -18133,7 +18293,7 @@ function _cadMostrarForm(aba, dados){
   var campos = '';
   if(aba==='produtos'){
     _formApresentacoes = (d.apresentacoes && d.apresentacoes.length)
-      ? JSON.parse(JSON.stringify(d.apresentacoes)).map(function(a){ if(!a.id) a.id = _gerarIdApres(); return a; })
+      ? _apresGarantirIds([{apresentacoes:JSON.parse(JSON.stringify(d.apresentacoes))}])[0].apresentacoes
       : [{id:_gerarIdApres(), unid:d.unid||'', preco:0, fornecedor:''}];
     campos =
       '<div><label class="cad-inp-lbl">Setor</label>'
@@ -18202,8 +18362,11 @@ function _cadRenderApresentacoes(){
   var cont = document.getElementById('cad-apresentacoes-lista');
   if(!cont) return;
   var visiveis = _formApresentacoes.filter(function(a){ return !a._excluido; }).length;
+  var prodForm = {apresentacoes:_formApresentacoes};
+  var vigForm = _apresVigentes(prodForm);
   cont.innerHTML = _formApresentacoes.map(function(a, i){
     if(a._excluido) return '';
+    if(a.id && (a.unid||'').trim() && vigForm.indexOf(a) === -1) return ''; // versão antiga: oculta
     return '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;align-items:center">'
       +'<input class="cad-inp" style="flex:1;min-width:110px" placeholder="unid, kg, sc 40kg..." value="'+_escH(a.unid||'')+'" oninput="_formApresentacoes['+i+'].unid=this.value">'
       +'<input class="cad-inp" style="width:110px" type="number" min="0" step="0.01" placeholder="Preço R$" value="'+(a.preco||'')+'" oninput="_formApresentacoes['+i+'].preco=parseFloat(this.value)||0">'
@@ -18213,7 +18376,7 @@ function _cadRenderApresentacoes(){
   }).join('');
 }
 function _cadAdicionarApresentacao(){
-  _formApresentacoes.push({id:_gerarIdApres(), unid:'', preco:0, fornecedor:''});
+  _formApresentacoes.push({id:_gerarIdApres(), unid:'', preco:0, fornecedor:'', _criadoEm:Date.now()});
   _cadRenderApresentacoes();
 }
 function _cadRemoverApresentacao(i){
@@ -18223,6 +18386,7 @@ function _cadRemoverApresentacao(i){
   // rascunho (nunca salva, sem id) pode ser removida direto.
   if(_formApresentacoes[i] && _formApresentacoes[i].id){
     _formApresentacoes[i]._excluido = true;
+    _formApresentacoes[i]._excluidoEm = Date.now();
   } else {
     _formApresentacoes.splice(i,1);
   }
@@ -18415,7 +18579,7 @@ function _cadPrecoMontarApresentacoes(dPre){
   }
   var apresOpts = '<option value="_nova">+ Nova apresentação</option>'
     + (prod.apresentacoes||[]).map(function(a,i){ return {a:a, i:i}; })
-      .filter(function(p){ return !p.a._excluido; })
+      .filter(function(p){ return !p.a._excluido && _apresEhVigente(prod, p.a); })
       .sort(function(x,y){ return (x.a.unid||'').localeCompare(y.a.unid||'','pt-BR'); })
       .map(function(p){
         var a = p.a, i = p.i;
@@ -18424,7 +18588,7 @@ function _cadPrecoMontarApresentacoes(dPre){
   var ABAS_APRES = ['Aviario','Perda','Campo','Estoque','Vendas'];
   var abasCheckboxes = ABAS_APRES.map(function(ab){
     return '<label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">'
-      +'<input type="checkbox" class="cf-aba-chk" value="'+ab+'" checked style="width:16px;height:16px">'+ab+'</label>';
+      +'<input type="checkbox" class="cf-aba-chk" value="'+ab+'" style="width:16px;height:16px">'+ab+'</label>';
   }).join('');
   wrap.innerHTML =
     '<div><label class="cad-inp-lbl">Apresentação</label>'
@@ -18467,7 +18631,9 @@ function _cadPrecoApresChange(){
     document.getElementById('cf-unid-nova').value = '';
     precoInp.value = '';
     if(fornInp) fornInp.value = '';
-    chks.forEach(function(c){ c.checked = true; }); // padrão: aparece em todas as abas
+    // Nenhuma aba vem marcada: o Admin autoriza, uma a uma, onde a
+    // apresentação pode aparecer (obrigatório marcar ao menos uma).
+    chks.forEach(function(c){ c.checked = false; });
   } else {
     var apres = prod && prod.apresentacoes && prod.apresentacoes[parseInt(selApres.value,10)];
     if(unidNovaWrap) unidNovaWrap.style.display = 'none';
@@ -18477,7 +18643,8 @@ function _cadPrecoApresChange(){
     // essa informação (apresentação antiga), marca todas — mantendo o
     // comportamento de sempre aparecer em qualquer lugar.
     var abasSalvas = (apres && Array.isArray(apres.abas)) ? apres.abas : null;
-    chks.forEach(function(c){ c.checked = abasSalvas ? (abasSalvas.indexOf(c.value)>-1) : true; });
+    // Sem abas salvas (apresentação antiga): mostra onde ela REALMENTE aparece hoje
+    chks.forEach(function(c){ c.checked = abasSalvas ? (abasSalvas.indexOf(c.value)>-1) : _apresHabilitadaNaAba(prod, apres||{}, c.value); });
   }
 }
 
@@ -18501,7 +18668,9 @@ async function _cadSalvarItem(aba){
         var obj = {id:a.id||_gerarIdApres(), unid:(a.unid||'').trim(), preco:parseFloat(a.preco)||0};
         if((a.fornecedor||'').trim()) obj.fornecedor = a.fornecedor.trim();
         if(Array.isArray(a.abas)) obj.abas = a.abas;
-        if(a._excluido) obj._excluido = true;
+        if(a._criadoEm) obj._criadoEm = a._criadoEm;
+        if(a._editadoEm) obj._editadoEm = a._editadoEm;
+        if(a._excluido){ obj._excluido = true; obj._excluidoEm = a._excluidoEm || Date.now(); }
         return obj;
       });
     item = {
@@ -18543,13 +18712,17 @@ async function _cadSalvarItem(aba){
     // restrição (aparece em qualquer lugar). Isso evita que uma
     // apresentação fique invisível em todo lugar por engano, caso o
     // admin desmarque tudo sem perceber.
-    var abasEscolhidas = (chksMarcados.length===TODAS_ABAS.length) ? undefined : chksMarcados;
+    // Sempre grava a lista explícita de abas marcadas (antes "todas marcadas"
+    // ou "nenhuma" viravam "sem restrição" = aparecia em qualquer aba).
+    if(!chksMarcados.length){ _toast('\u26a0\ufe0f Marque ao menos uma aba em "Aparece nas abas".'); return; }
+    var abasEscolhidas = chksMarcados;
     if(!prod.apresentacoes) prod.apresentacoes = [];
     if(selApres && selApres.value !== '_nova'){
       // Editando o preço/abas de uma apresentação já existente do produto
       var idxA = parseInt(selApres.value,10);
       if(prod.apresentacoes[idxA]){
         prod.apresentacoes[idxA].preco = precoVal;
+        prod.apresentacoes[idxA]._editadoEm = Date.now();
         if(fornVal) prod.apresentacoes[idxA].fornecedor = fornVal;
         else delete prod.apresentacoes[idxA].fornecedor;
         if(abasEscolhidas) prod.apresentacoes[idxA].abas = abasEscolhidas;
@@ -18559,7 +18732,7 @@ async function _cadSalvarItem(aba){
       // Nova apresentação (Unidade, Bandeja, Caixa, Kg, Sacos...)
       var unidNova = (document.getElementById('cf-unid-nova')||{value:''}).value.trim();
       if(!unidNova){ _toast('\u26a0\ufe0f Informe a unidade/apresentação'); return; }
-      var novaApres = {id:_gerarIdApres(), unid:unidNova, preco:precoVal};
+      var novaApres = {id:_gerarIdApres(), unid:unidNova, preco:precoVal, _criadoEm:Date.now()};
       if(fornVal) novaApres.fornecedor = fornVal;
       if(abasEscolhidas) novaApres.abas = abasEscolhidas;
       prod.apresentacoes.push(novaApres);
