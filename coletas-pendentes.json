@@ -1,1 +1,21 @@
-[]
+[
+  {
+    "data": "2026-09-26",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Crescimento",
+        "unid": "sc 40kg",
+        "qtd": 1,
+        "preco": 0,
+        "obs": "",
+        "forn": "",
+        "tipo": "Saida"
+      }
+    ],
+    "ts": 1790446922422,
+    "status": "pendente",
+    "enviadoEm": "2026-09-26T18:22:03.063Z"
+  }
+]
