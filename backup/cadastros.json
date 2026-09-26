@@ -885,7 +885,11 @@
         {
           "id": "amuenzpa1uc2ye1",
           "unid": "Fêmea Adulta",
-          "preco": 0
+          "preco": 0,
+          "_editadoEm": 1790417194073,
+          "abas": [
+            "Vendas"
+          ]
         },
         {
           "id": "amuenzw2cc8o4xw",
@@ -897,7 +901,8 @@
           "unid": "Fêmea Bezerra",
           "preco": 0
         }
-      ]
+      ],
+      "_editadoEm": 1790417194074
     },
     {
       "id": "p1790274774174",
