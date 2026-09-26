@@ -68,10 +68,13 @@
           "preco": 60,
           "fornecedor": "Fazenda São José",
           "abas": [
+            "Aviario",
             "Vendas"
-          ]
+          ],
+          "_editadoEm": 1790448990275
         }
-      ]
+      ],
+      "_editadoEm": 1790448990275
     },
     {
       "id": "p_frango",
