@@ -597,7 +597,13 @@
           "id": "amu2jtf0zeyp9y9",
           "unid": "Saco",
           "preco": 15,
-          "fornecedor": "Fazenda São José"
+          "fornecedor": "Fazenda São José",
+          "_editadoEm": 1790412582265,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ]
         },
         {
           "unid": "Sc.",
@@ -608,7 +614,7 @@
           "_excluidoEm": 1790412373720
         }
       ],
-      "_editadoEm": 1790412373720
+      "_editadoEm": 1790412582265
     },
     {
       "id": "p1789066561642_0",
