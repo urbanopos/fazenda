@@ -4,6 +4,24 @@
     "coletor": "Menininha",
     "itens": [
       {
+        "setor": "Estoque",
+        "nome": "Crescimento",
+        "unid": "sc 40kg",
+        "qtd": 1,
+        "preco": 0,
+        "obs": "",
+        "forn": "",
+        "tipo": "Saida"
+      }
+    ],
+    "ts": 1790446922422,
+    "mov": "MOV-0035"
+  },
+  {
+    "data": "2026-09-26",
+    "coletor": "Menininha",
+    "itens": [
+      {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
         "unid": "Unid.",
