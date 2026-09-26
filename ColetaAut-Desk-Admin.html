@@ -11596,7 +11596,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0b680186d3';
+var _caFP = '1a0dcad4193b';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -12484,7 +12484,8 @@ function _cardColetaSetor(setor, cl, forn){
     +'<div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-'+k+'" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:15px;box-sizing:border-box;background:#f0ede6"></div>'
     +'<div class="cg"><span class="cl">Preço (R$)</span><input type="text" id="preco-vis-'+k+'" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6"></div>'
     +'<div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-'+k+'" placeholder="Ex: lote A, qualidade boa..."></textarea></div>'
-    +'<div class="card-acoes"><button class="btn-con" onclick="_adicionarItemSessao(\''+setor+'\')">+ Adicionar item</button></div>'
+    +'<div class="card-acoes"><button type="button" class="btn-con" onclick="_adicionarItemSessao(\''+setor+'\')">+ Adicionar item</button></div>'
+    +'<div id="aviso-add-'+k+'" style="display:none;margin-top:8px;padding:8px 10px;border-radius:6px;background:#e7f5ea;border:1px solid #b7dfc0;color:#1a6b2a;font-size:12px;line-height:1.4"></div>'
     +'</div>'
     +'</div>'
 
@@ -12576,6 +12577,8 @@ function _onSelecionarItem(setor){
   var nomeVisEl = document.getElementById('nomevis-'+k);
   var btnDel = document.getElementById('del-cat-'+k);
   if(!sel) return;
+  var avisoAddSel = document.getElementById('aviso-add-'+k);
+  if(avisoAddSel) avisoAddSel.style.display = 'none';
   var val = sel.value;
   if(val === '__novo__'){
     // Cadastro de item novo — so pede nome, unidade e observacao do PRODUTO (sem quantidade, nao eh coleta)
@@ -12673,6 +12676,7 @@ async function _confirmarRemoverCatalogo(setor, k){
   _onSelecionarItem(setor);
 }
 
+var _ultimoItemAdicionadoEm = 0;
 function _adicionarItemSessao(setor){
   var k = setor+'_novo';
   var nomeEl = document.getElementById('enome-'+k);
@@ -12697,16 +12701,22 @@ function _adicionarItemSessao(setor){
   }
   _sessaoInit();
   _sessaoItens[setor].push({nome:nome, unid:unid, qtd:qtd, preco:preco, obs:obs.trim(), forn:forn.trim(), tipo:tipo});
-  // Limpa o formulario para o proximo item
-  var sel = document.getElementById('sel-'+k);
-  var wrapColeta = document.getElementById('wrap-coleta-'+k);
+  // Prepara o formulario para o PROXIMO item SEM recolher o card.
+  // Antes o card inteiro fechava aqui: a tela "encolhia" de uma vez e o
+  // botão "Enviar coleta" subia para baixo do dedo — o toque seguinte (ou o
+  // toque atrasado quando o teclado do celular fecha) acabava enviando a
+  // coleta com um item só, sem deixar lançar o segundo.
+  _ultimoItemAdicionadoEm = Date.now();
   qtdEl.value=0;
   if(obsEl) obsEl.value='';
-  var tipoEntradaEl = document.getElementById('tipo-entrada-'+k);
-  if(tipoEntradaEl) tipoEntradaEl.checked = true;
-  if(wrapColeta) wrapColeta.style.display='none';
-  nomeEl.value='';
-  if(sel) sel.value = '';
+  if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  var avisoAdd = document.getElementById('aviso-add-'+k);
+  if(avisoAdd){
+    avisoAdd.innerHTML = '✅ <strong>'+_escH(nome)+'</strong> ('+qtd+' '+_escH(unid)+') adicionado à lista.<br>'
+      +'Para lançar outro item, escolha-o no campo <strong>Item coletado</strong> acima (ou informe outra quantidade). '
+      +'Quando terminar, toque em <strong>Enviar coleta</strong>.';
+    avisoAdd.style.display = 'block';
+  }
   _renderListaSessao(setor);
   _atualizarContador();
   _sessaoSalvarLocal();
@@ -13401,8 +13411,25 @@ function _atribuirNumeroMovRegistro(reg){
 function enviarTudo(){
   var itens = _coletarItens();
   if(!itens.length){ _toast('Conclua ao menos um item antes de enviar.'); return; }
+  // Toque logo depois de "+ Adicionar item" é quase sempre acidental (a tela
+  // se mexeu sob o dedo) — ignora, em vez de fechar a coleta com 1 item só.
+  if(Date.now() - (_ultimoItemAdicionadoEm||0) < 1500){
+    _toast('Item adicionado. Para enviar, toque em "Enviar coleta" novamente.');
+    return;
+  }
   var n = _getNum();
   if(!n){ _toast('Numero nao configurado. Contacte o administrador.'); return; }
+
+  // Bloqueia envio se numero nao estiver configurado (antes de gravar qualquer coisa)
+  var numSalvo = (localStorage.getItem('wpp_numero')||'').replace(/\D/g,'');
+  if(!numSalvo || numSalvo !== n){
+    _toast('\u26a0\ufe0f Numero nao configurado. Envio bloqueado.');
+    return;
+  }
+  // Confirma ANTES de gravar no histórico — antes a coleta era gravada e só
+  // depois vinha a pergunta, então "Cancelar" não cancelava nada.
+  var resumoItens = itens.map(function(it){ return '• '+it.setor+' — '+it.nome+': '+it.qtd+' '+(it.unid||''); }).join('\n');
+  if(!confirm('Enviar coleta com '+itens.length+' item(ns) para:\n'+_fmtFone(numSalvo)+'\n\n'+resumoItens+'\n\nConfirmar?')) return;
 
   // GRAVA coleta no historico (antes de limpar)
   var _dataColeta = document.getElementById('data-global').value||_dataLocalHoje();
@@ -13432,22 +13459,13 @@ function enviarTudo(){
     return NOMES_SETOR_TITULO[s] || String(s).toUpperCase();
   }).join(' / ');
 
-  // Bloqueia envio se numero nao estiver configurado
-  var numSalvo = (localStorage.getItem('wpp_numero')||'').replace(/\D/g,'');
-  if(!numSalvo || numSalvo !== n){
-    _toast('\u26a0\ufe0f Numero nao configurado. Envio bloqueado.');
-    return;
-  }
-
   _qrPayloadAtual = payload; // QR na imagem usa este payload
   _gerarImagem('BOLETIM DE COLETA'+(_regColeta.mov?' · '+_regColeta.mov:''), linhas, null, function(blob){
     if(!blob){ _toast('Erro ao gerar imagem.'); return; }
     var data = document.getElementById('data-global').value||_dataLocalHoje();
     var nome = (localStorage.getItem('wpp_nome')||'').trim();
     var dfL  = data ? new Date(data+'T12:00').toLocaleDateString('pt-BR') : data;
-    // Confirmacao com numero formatado antes de enviar
-    var fone = _fmtFone(numSalvo);
-    if(!confirm('Enviar coleta para:\n' + fone + '\n\nConfirmar?')){ return; }
+    // (confirmação já feita no início, antes de gravar)
     // Mostra a imagem gerada na tela — confirmacao visual garantida de que o
     // registro foi salvo, independente do compartilhamento funcionar ou nao
     _mostrarConfirmacaoEnvio(blob, 'coleta-'+data+'.jpg', n);
@@ -13832,7 +13850,7 @@ async function _gravarHist(hist){
   /* Toda gravação já dispara sincronização com o GitHub — primeiro traz o
      que houver de novo de outro aparelho e mescla, depois garante que o
      resultado final fica salvo lá. Assíncrono, não bloqueia o fluxo. */
-  setTimeout(function(){ _sincronizarRegistrosGitHub().then(function(){ _fazerBackup(false); }); }, 800);
+  setTimeout(function(){ _sincronizarRegistrosGitHub(); }, 800);
 }
 
 function _carregarHistRaw(){
@@ -14209,7 +14227,7 @@ function _salvarColeta(reg){
   /* Toda gravação já dispara sincronização com o GitHub — primeiro traz o
      que houver de novo de outro aparelho e mescla, depois garante que o
      resultado final fica salvo lá. Assíncrono, não bloqueia o fluxo. */
-  setTimeout(function(){ _sincronizarRegistrosGitHub().then(function(){ _fazerBackup(false); }); }, 800);
+  setTimeout(function(){ _sincronizarRegistrosGitHub(); }, 800);
 }
 
 function _carregarHistColetaRaw(){
@@ -15381,6 +15399,7 @@ function abrirHistColetaSetor(setor){
 }
 
 function abrirHistColeta(setorInicial){
+  _sincronizarRegistrosGitHub(); // nunca mostrar só a cópia local antiga — redesenha se vier algo novo
   // Preenche anos disponiveis
   var hist = _carregarHistColeta();
   var anos = {};
@@ -15731,11 +15750,38 @@ function _reenviarColeta(ri){
     }
   }, undefined, undefined, faixaSufixoColeta);
 }
-function _abrirEditColeta(ri){
+var _editColetaCtx = null; // {ts, editadoEm, ri} — versão que estava na tela quando o formulário abriu
+
+function _buscarColetaPorTs(ts){
+  var h = _carregarHistColetaRaw();
+  for(var i=0;i<h.length;i++){ if(h[i].ts === ts) return h[i]; }
+  return null;
+}
+
+async function _abrirEditColeta(ri){
   var body = document.getElementById('hcol-body');
   var regs = body._regRefs;
   if(!regs || !regs[ri]) return;
-  var r = regs[ri];
+  var tsAlvo = regs[ri].ts;
+  // Antes de abrir para edição, busca a versão mais recente no GitHub —
+  // outro aparelho pode ter alterado este registro depois que a lista foi
+  // desenhada. Sem isto, a edição partia de uma leitura desatualizada.
+  var syncOk = true;
+  if(_ghToken()){
+    _toast('🔃 Buscando a versão mais recente...');
+    syncOk = await _syncAntesDeEditar();
+  }
+  var r = _buscarColetaPorTs(tsAlvo);
+  if(!r || r._excluido){
+    _toast('⚠️ Este registro foi excluído em outro aparelho.');
+    renderHistColeta();
+    return;
+  }
+  // A lista pode ter sido redesenhada pela sincronização — acha o índice atual
+  var regsNovos = document.getElementById('hcol-body')._regRefs || [];
+  for(var q=0;q<regsNovos.length;q++){ if(regsNovos[q].ts === tsAlvo){ ri = q; break; } }
+  r = JSON.parse(JSON.stringify(r));
+  _editColetaCtx = {ts:tsAlvo, editadoEm:r._editadoEm||0, ri:ri};
 
   var itensHtml = '';
   (r.itens||[]).forEach(function(it, ii){
@@ -15748,9 +15794,14 @@ function _abrirEditColeta(ri){
       +'<div style="font-size:10px;color:var(--mu);margin:-4px 0 8px">Editável só pra corrigir a ordem cronológica — mude com cuidado pra não repetir um número já usado em outro registro.</div>'
     : '';
 
+  var avisoSync = syncOk ? '' :
+    '<div style="background:#fdecea;border:1px solid #f5c6c6;color:#a03030;border-radius:6px;padding:8px 10px;font-size:12px;margin-bottom:10px">'
+    +'⚠️ Não foi possível confirmar com o GitHub se esta é a versão mais recente (sem conexão?). '
+    +'Ao salvar, o app verifica de novo antes de gravar.</div>';
   var corpo = document.getElementById('modal-edit-coleta-corpo');
   corpo.innerHTML =
-    movBadge
+    avisoSync
+    +movBadge
     +'<div class="hcol-edit-row"><span class="hcol-edit-lbl">Data</span>'
     +'<input class="hcol-edit-inp" type="date" id="hcol-ei-data-'+ri+'" value="'+(r.data||'')+'"></div>'
     +'<div class="hcol-edit-row"><span class="hcol-edit-lbl">Coletor</span>'
@@ -15779,8 +15830,17 @@ function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtua
   var setorKey = _setorKeyFromLabel(setor);
   var nomes = _catalogoNomesUnicos(setorKey);
   if(nomeAtual && nomes.indexOf(nomeAtual)===-1) nomes.push(nomeAtual); // preserva item legado fora do catalogo
-  var optsNome = nomes.map(function(n){
+  var optsNome = (nomeAtual ? '' : '<option value="" selected>— Escolha o item —</option>')
+    + nomes.map(function(n){
     return '<option value="'+_esc(n)+'"'+(n===nomeAtual?' selected':'')+'>'+_esc(n)+'</option>';
+  }).join('');
+
+  // Setor (aba) do item — editável, para corrigir um lançamento feito na aba errada
+  var NOMES_ABA_EDIT = {Aviario:'Aviário', Perda:'Perda', Campo:'Campo', Estoque:'Estoque'};
+  var labelsSetor = Object.keys(SETORES).map(function(k){ return SETORES[k].label; });
+  if(setor && labelsSetor.indexOf(setor)===-1) labelsSetor.push(setor); // preserva valor legado
+  var optsSetor = labelsSetor.map(function(l){
+    return '<option value="'+_esc(l)+'"'+(l===setor?' selected':'')+'>'+_esc(NOMES_ABA_EDIT[l]||l)+'</option>';
   }).join('');
 
   var linhaTipo = '';
@@ -15829,7 +15889,10 @@ function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtua
 
   return '<div class="hcol-item-edit-wrap">'
     +'<div class="hcol-item-edit-row" style="flex-wrap:wrap">'
-    +'<input type="hidden" value="'+_esc(setor)+'" id="hcol-ei-setor-'+ri+'-'+ii+'">'
+    +'<div style="flex:1 1 100%;display:flex;align-items:center;gap:8px;margin-bottom:2px">'
+    +'<span style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);flex-shrink:0">Setor (aba)</span>'
+    +'<select class="hcol-edit-inp" style="flex:1;font-weight:700" id="hcol-ei-setor-'+ri+'-'+ii+'" onchange="_onMudarSetorEditColeta('+ri+','+ii+')">'+optsSetor+'</select>'
+    +'</div>'
     +'<select class="hcol-edit-inp" style="flex:1 1 100%;width:100%;font-size:16px;font-weight:800" id="hcol-ei-nome-'+ri+'-'+ii+'" onchange="_onMudarNomeEditColeta('+ri+','+ii+')">'+optsNome+'</select>'
     +'<input class="hcol-edit-inp" style="width:70px;min-width:70px;flex:none" type="number" min="0" step="0.5" placeholder="Qtd" value="'+qtd+'" id="hcol-ei-qtd-'+ri+'-'+ii+'">'
     +'<button class="hcol-del-item" onclick="_delItemEditColeta('+ri+','+ii+')" title="Remover item">\u00d7</button>'
@@ -15872,9 +15935,33 @@ function _onMudarNomeEditColeta(ri, ii){
   rowWrap.parentElement.replaceChild(temp.firstElementChild, rowWrap);
 }
 
+/* Troca o setor (aba) de um item já coletado. Mantém nome, quantidade e
+   unidade — só recalcula as opções (itens/apresentações) da nova aba. */
+function _onMudarSetorEditColeta(ri, ii){
+  var setorEl = document.getElementById('hcol-ei-setor-'+ri+'-'+ii);
+  var nomeEl  = document.getElementById('hcol-ei-nome-'+ri+'-'+ii);
+  if(!setorEl || !nomeEl) return;
+  var rowWrap = nomeEl.closest('.hcol-item-edit-wrap');
+  if(!rowWrap) return;
+  var qtdEl   = document.getElementById('hcol-ei-qtd-'+ri+'-'+ii);
+  var unidEl  = document.getElementById('hcol-ei-unid-'+ri+'-'+ii);
+  var fornEl  = document.getElementById('hcol-ei-forn-'+ri+'-'+ii);
+  var precoEl = document.getElementById('hcol-ei-preco-'+ri+'-'+ii);
+  var tipoEl  = document.querySelector('input[name="hcol-ei-tipo-'+ri+'-'+ii+'"]:checked');
+  var forn = fornEl ? fornEl.value : '';
+  if(forn==='—') forn='';
+  var novoHtml = _linhaEditItemColeta(ri, ii, setorEl.value, nomeEl.value,
+    qtdEl ? qtdEl.value : 0, unidEl ? unidEl.value : '', tipoEl ? tipoEl.value : '',
+    forn, precoEl ? parseFloat(precoEl.value)||0 : 0);
+  var temp = document.createElement('div');
+  temp.innerHTML = novoHtml;
+  rowWrap.parentElement.replaceChild(temp.firstElementChild, rowWrap);
+}
+
 function _esc(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 
 function _fecharEditColeta(){
+  _editColetaCtx = null;
   var modal = document.getElementById('modal-edit-coleta');
   modal.style.display = 'none';
   document.getElementById('modal-edit-coleta-corpo').innerHTML = '';
@@ -15892,8 +15979,10 @@ function _delItemEditColeta(ri, ii){
     rowWrap.querySelectorAll('input,select,button').forEach(function(el){
       if(el.id) el.id = el.id.replace(/-\d+$/, '-'+newii);
       if(el.name) el.name = el.name.replace(/-\d+$/, '-'+newii);
-      if(el.getAttribute && el.getAttribute('onclick'))
-        el.setAttribute('onclick', el.getAttribute('onclick').replace(/,\d+\)/, ','+newii+')'));
+      ['onclick','onchange'].forEach(function(att){
+        if(el.getAttribute && el.getAttribute(att))
+          el.setAttribute(att, el.getAttribute(att).replace(/,\d+\)/, ','+newii+')'));
+      });
     });
   });
 }
@@ -15901,7 +15990,7 @@ function _delItemEditColeta(ri, ii){
 function _addItemEditColeta(ri){
   var wrap = document.getElementById('hcol-ei-itens-'+ri);
   if(!wrap) return;
-  var ii = wrap.querySelectorAll('.hcol-item-edit-row').length;
+  var ii = wrap.querySelectorAll('.hcol-item-edit-wrap').length; // 1 por item (cada item tem 2 linhas .hcol-item-edit-row)
   // Setor padrao para o item novo: usa o do primeiro item ja existente no registro,
   // ou o filtro de aba ativo no momento, ou Aviario como ultimo recurso.
   var setorPadrao = '';
@@ -15914,19 +16003,20 @@ function _addItemEditColeta(ri){
   wrap.insertAdjacentHTML('beforeend', _linhaEditItemColeta(ri, ii, setorPadrao, '', 0, ''));
 }
 
-function _salvarEditColeta(ri){
-  var body = document.getElementById('hcol-body');
-  var regs = body._regRefs;
-  if(!regs || !regs[ri]) return;
+async function _salvarEditColeta(ri){
+  var ctx = _editColetaCtx;
+  if(!ctx){ _fecharEditColeta(); return; }
 
-  // Le campos do formulario
+  // Le campos do formulario (um bloco .hcol-item-edit-wrap por item)
   var novaData    = (document.getElementById('hcol-ei-data-'+ri)||{value:''}).value;
   var novoColetor = (document.getElementById('hcol-ei-coletor-'+ri)||{value:''}).value.trim();
+  var movEl = document.getElementById('hcol-ei-mov-'+ri);
+  var movDigitado = movEl ? movEl.value.trim() : '';
   var wrap = document.getElementById('hcol-ei-itens-'+ri);
   var novosItens = [];
+  var semQtd = [];
   if(wrap){
-    var rows = wrap.querySelectorAll('.hcol-item-edit-row');
-    rows.forEach(function(row, ii){
+    wrap.querySelectorAll('.hcol-item-edit-wrap').forEach(function(bloco, ii){
       var setor = (document.getElementById('hcol-ei-setor-'+ri+'-'+ii)||{value:''}).value.trim();
       var nome  = (document.getElementById('hcol-ei-nome-'+ri+'-'+ii)||{value:''}).value.trim();
       var qtd   = parseFloat((document.getElementById('hcol-ei-qtd-'+ri+'-'+ii)||{value:0}).value)||0;
@@ -15938,42 +16028,65 @@ function _salvarEditColeta(ri){
       if(forn==='—') forn='';
       var precoEl = document.getElementById('hcol-ei-preco-'+ri+'-'+ii);
       var preco = precoEl ? parseFloat(precoEl.value)||0 : 0;
-      var item = {setor:setor, nome:nome, qtd:qtd, unid:unid, tipo:tipo, forn:forn, preco:preco};
-      if(nome) novosItens.push(item);
+      if(!nome) return;
+      if(qtd <= 0) semQtd.push(nome);
+      novosItens.push({setor:setor, nome:nome, qtd:qtd, unid:unid, tipo:tipo, forn:forn, preco:preco});
     });
   }
+  if(!novosItens.length){ _toast('Inclua ao menos um item (para apagar o registro use 🗑 Excluir).'); return; }
+  if(semQtd.length){ _toast('Informe a quantidade de: '+semQtd.join(', ')); return; }
 
-  // Atualiza o registro na memoria
-  regs[ri].data    = novaData;
-  regs[ri].coletor = novoColetor;
-  regs[ri].itens   = novosItens;
-  regs[ri].ts      = regs[ri].ts || Date.now();
-  regs[ri]._editadoEm = Date.now(); // usado na mesclagem pra saber qual versao e mais recente entre aparelhos
-  var movEl = document.getElementById('hcol-ei-mov-'+ri);
-  if(movEl){
-    var movDigitado = movEl.value.trim();
-    if(movDigitado) regs[ri].mov = movDigitado; // respeita correcao manual (ex: trocar a ordem entre dois registros)
+  var btnSalvar = document.querySelector('#modal-edit-coleta .hcol-edit-save');
+  if(btnSalvar){ btnSalvar.disabled = true; btnSalvar.textContent = 'Verificando versão mais recente...'; }
+
+  // Antes de gravar, traz o que houver de novo de outro aparelho e confere
+  // se ESTE registro foi alterado enquanto o formulário estava aberto.
+  if(_ghToken()) await _syncAntesDeEditar();
+  var atual = _buscarColetaPorTs(ctx.ts);
+  if(!atual || atual._excluido){
+    alert('Este registro foi excluído em outro aparelho enquanto você editava. Nada foi gravado.');
+    _fecharEditColeta(); renderHistColeta(); return;
   }
-  _atribuirNumeroMovRegistro(regs[ri]); // so numera se o registro tiver Estoque e ainda nao tiver MOV-XXXX
+  if((atual._editadoEm||0) !== (ctx.editadoEm||0)){
+    var recarregar = confirm('⚠️ Este registro foi ALTERADO em outro aparelho enquanto você editava.\n\n'
+      +'OK = descartar o que você digitou e abrir a versão mais recente\n'
+      +'Cancelar = gravar a SUA versão por cima da outra alteração');
+    if(recarregar){
+      var tsR = ctx.ts;
+      _fecharEditColeta();
+      renderHistColeta();
+      var regsR = document.getElementById('hcol-body')._regRefs || [];
+      for(var q=0;q<regsR.length;q++){ if(regsR[q].ts === tsR){ _abrirEditColeta(q); break; } }
+      return;
+    }
+  }
 
-  // Persiste: recarrega TODO o historico (incluindo excluidos, para nao
-  // perder tombstones ainda nao sincronizados), encontra pelo ts e substitui
+  // Aplica a edição sobre a versão MAIS RECENTE do registro (não sobre a
+  // cópia que estava na tela), preservando campos que não estão no formulário
   var hist = _carregarHistColetaRaw();
-  var ts = regs[ri].ts;
-  var found = false;
-  for(var i=0; i<hist.length; i++){
-    if(hist[i].ts === ts){ hist[i] = regs[ri]; found = true; break; }
-  }
-  if(!found){ hist.unshift(regs[ri]); } // segurança
+  var idx = -1;
+  for(var i=0;i<hist.length;i++){ if(hist[i].ts === ctx.ts){ idx = i; break; } }
+  if(idx < 0){ _toast('⚠️ Registro não encontrado.'); _fecharEditColeta(); return; }
+  var reg = Object.assign({}, hist[idx]);
+  reg.data    = novaData;
+  reg.coletor = novoColetor;
+  reg.itens   = novosItens;
+  // Carimbo sempre maior que o da versão anterior (mesmo com relógios de
+  // aparelhos levemente diferentes) — é ele que decide qual versão vence
+  reg._editadoEm = Math.max(Date.now(), (atual._editadoEm||0)+1);
+  if(movDigitado) reg.mov = movDigitado; // respeita correcao manual (ex: trocar a ordem entre dois registros)
+  _atribuirNumeroMovRegistro(reg); // so numera se o registro tiver Estoque e ainda nao tiver MOV-XXXX
+  hist[idx] = reg;
+
   var jsonEdit = JSON.stringify(hist);
   try{ localStorage.setItem(CK, jsonEdit); }catch(e){}
   if(_caOpfs) _caOpfsSalvar(FSJ_COLETAS, jsonEdit); // grava a edição na pasta real (OPFS/servidor local)
-  setTimeout(function(){ _sincronizarRegistrosGitHub().then(function(){ _fazerBackup(false); }); }, 800);
 
-  _toast('\u2705 Registro atualizado!');
-  // Fecha o popup e re-renderiza a lista por trás
+  _toast('✅ Registro atualizado!');
   _fecharEditColeta();
   renderHistColeta();
+  // Publica já (sem esperar o ciclo automático) para o outro aparelho ler a versão nova
+  _sincronizarRegistrosGitHub();
 }
 
 /* ── ADMIN: EDITAR / EXCLUIR PEDIDO ──────────────────────────────────── */
@@ -16042,6 +16155,7 @@ async function _executarReversaoIdx(i){
   var idxH = hist.findIndex(function(h){ return h.ts === p.ts; });
   if(idxH < 0) return;
   hist[idxH].pago = false;
+  hist[idxH]._editadoEm = Date.now();
   await _gravarHist(hist);
   _toast('↩ Quitação removida pelo administrador.');
   _renderHist();
@@ -16053,6 +16167,7 @@ async function _executarReversaoModal(){
   var idx  = hist.findIndex(function(p){ return p.ts === _pedAtual.ts; });
   if(idx < 0) return;
   hist[idx].pago = false;
+  hist[idx]._editadoEm = Date.now();
   _pedAtual = hist[idx];
   await _gravarHist(hist);
   var btnPago = document.getElementById('mp-btn-pago');
@@ -16121,6 +16236,7 @@ async function _executarQuitacaoIdx(i){
   var idxH = hist.findIndex(function(h){ return h.ts === p.ts; });
   if(idxH < 0) return;
   hist[idxH].pago = true;
+  hist[idxH]._editadoEm = Date.now();
   hist[idxH].dataQuit = new Date().toLocaleString('pt-BR');
   await _gravarHist(hist);
   _gerarImagemComPago(hist[idxH]);
@@ -16134,6 +16250,7 @@ async function _executarQuitacaoModal(){
   var idx  = hist.findIndex(function(p){ return p.ts === _pedAtual.ts; });
   if(idx < 0) return;
   hist[idx].pago = true;
+  hist[idx]._editadoEm = Date.now();
   hist[idx].dataQuit = new Date().toLocaleString('pt-BR');
   _pedAtual = hist[idx];
   await _gravarHist(hist);
@@ -16237,13 +16354,26 @@ function _abrirEditPedidoIdx(i){
   _abrirEditPedido();
 }
 
-function _abrirEditPedido(){
+var _pedEditBase = null; // {ts, editadoEm} da versão que estava na tela ao abrir a edição
+async function _abrirEditPedido(){
   if(!_pedAtual) return;
-  var p = _pedAtual;
   var ef = document.getElementById('mp-edit-form');
   if(!ef) return;
   // Alterna
   if(ef.style.display !== 'none'){ ef.style.display='none'; ef.innerHTML=''; return; }
+  // Busca a versão mais recente antes de editar (outro aparelho pode ter alterado)
+  if(_ghToken()){
+    _toast('🔃 Buscando a versão mais recente...');
+    await _syncAntesDeEditar();
+    var frescoP = _carregarHistRaw().find(function(x){ return x.ts === _pedAtual.ts; });
+    if(frescoP){
+      if(frescoP._excluido){ _toast('⚠️ Este pedido foi excluído em outro aparelho.'); return; }
+      _pedAtual = frescoP;
+      if(typeof _atualizarPreviewPedido==='function') _atualizarPreviewPedido(_pedAtual);
+    }
+  }
+  _pedEditBase = {ts:_pedAtual.ts, editadoEm:_pedAtual._editadoEm||0};
+  var p = _pedAtual;
 
   var itensHtml = (p.itens||[]).map(function(it,ii){
     var qtd = it.qtd || (parseFloat((it.col3||'').split(' ')[0])||0);
@@ -16541,6 +16671,25 @@ async function _salvarEditPedido(){
     if(!confirmou) return;
   }
 
+  // Confere se o pedido foi alterado em outro aparelho enquanto o formulário estava aberto
+  if(_ghToken() && _pedEditBase && _pedEditBase.ts === _pedAtual.ts){
+    await _syncAntesDeEditar();
+    var frescoS = _carregarHistRaw().find(function(x){ return x.ts === _pedAtual.ts; });
+    if(frescoS && (frescoS._editadoEm||0) !== (_pedEditBase.editadoEm||0)){
+      var recarregarP = confirm('⚠️ Este pedido foi ALTERADO em outro aparelho enquanto você editava.\n\n'
+        +'OK = descartar o que você digitou e abrir a versão mais recente\n'
+        +'Cancelar = gravar a SUA versão por cima da outra alteração');
+      if(recarregarP){
+        var efR = document.getElementById('mp-edit-form');
+        if(efR){ efR.style.display='none'; efR.innerHTML=''; }
+        _pedAtual = frescoS;
+        if(typeof _atualizarPreviewPedido==='function') _atualizarPreviewPedido(_pedAtual);
+        _abrirEditPedido();
+        return;
+      }
+    }
+  }
+
   // Atualiza no localStorage
   var hist = _carregarHistRaw();
   var idx = hist.findIndex(function(p){ return p.ts === _pedAtual.ts; });
@@ -16567,7 +16716,8 @@ async function _salvarEditPedido(){
       }
     }
     _pedAtual = hist[idx];
-    hist[idx]._editadoEm = Date.now(); // usado na mesclagem pra saber qual versao e mais recente entre aparelhos
+    hist[idx]._editadoEm = Math.max(Date.now(), (hist[idx]._editadoEm||0)+1); // usado na mesclagem pra saber qual versao e mais recente entre aparelhos
+    _pedEditBase = null;
     await _gravarHist(hist);
   }
   _toast('✅ Pedido atualizado!');
@@ -16596,12 +16746,13 @@ function _excluirColeta(ri){
   var json = JSON.stringify(hist);
   try{ localStorage.setItem(CK, json); }catch(e){}
   if(_caOpfs) _caOpfsSalvar(FSJ_COLETAS, json); // grava a exclusão na pasta real (OPFS/servidor local)
-  setTimeout(function(){ _sincronizarRegistrosGitHub().then(function(){ _fazerBackup(false); }); }, 800);
+  setTimeout(function(){ _sincronizarRegistrosGitHub(); }, 800);
   _toast('✅ Coleta excluida.');
   renderHistColeta();
 }
 
 function abrirHistPedidos(){
+  _sincronizarRegistrosGitHub(); // idem para pedidos
   trocarAba('vendas');
   var selAno = document.getElementById('hped-ano');
   if(selAno) selAno.dataset.built='';
@@ -16745,7 +16896,7 @@ async function _aprovarColeta(idx){
   reg.status = 'aprovada';
   await _salvarPendentesGitHub(window._mpdTodos);
   _toast('✅ Coleta aprovada e importada!');
-  setTimeout(function(){ _sincronizarRegistrosGitHub().then(function(){ _fazerBackup(false); }); }, 800);
+  setTimeout(function(){ _sincronizarRegistrosGitHub(); }, 800);
   abrirPendentes();
 }
 
@@ -16798,8 +16949,38 @@ async function _ghLerSHA(caminho){
   return null;
 }
 
-async function _ghGravar(caminho, dados, mensagem){
-  var sha = await _ghLerSHA(caminho);
+/* Lê um arquivo do repositório devolvendo {dados, sha}; null se não existir.
+   - Erros de rede/permissão LANÇAM exceção (antes viravam "arquivo vazio" e
+     a sincronização seguia achando que estava tudo certo).
+   - Arquivos acima de 1 MB: a API de conteúdo do GitHub não devolve o texto
+     (vem vazio) — nesse caso busca pelo blob, que aceita até 100 MB. Sem isto,
+     quando o histórico crescesse, a sincronização parava em silêncio. */
+async function _ghLerComSha(caminho){
+  var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+caminho+'?t='+Date.now(),
+    {headers:_bkpH(), cache:'no-store'});
+  if(r.status === 404) return null;
+  if(!r.ok) throw new Error('GitHub respondeu '+r.status+' ao ler '+caminho);
+  var m = await r.json();
+  var b64 = (m.content||'').replace(/\n/g,'');
+  if(!b64 && m.sha && (m.size||0) > 0){
+    var rb = await fetch('https://api.github.com/repos/'+GH_REPO+'/git/blobs/'+m.sha+'?t='+Date.now(),
+      {headers:_bkpH(), cache:'no-store'});
+    if(!rb.ok) throw new Error('GitHub respondeu '+rb.status+' ao ler '+caminho+' (blob)');
+    var mb = await rb.json();
+    b64 = (mb.content||'').replace(/\n/g,'');
+  }
+  var dados = b64 ? JSON.parse(decodeURIComponent(escape(atob(b64)))) : null;
+  return {dados:dados, sha:m.sha||null};
+}
+
+/* Grava um arquivo. Se "shaBase" for informado (inclusive null = arquivo
+   novo), grava SOMENTE se o arquivo no GitHub ainda for aquela versão —
+   se outro aparelho gravou no meio tempo, o GitHub recusa (409/422) e a
+   exceção vem marcada com .conflito, para quem chamou reler e mesclar de
+   novo. Antes, o sha era relido na hora de gravar, o que fazia uma gravação
+   apagar em silêncio o que o outro aparelho tinha acabado de publicar. */
+async function _ghGravar(caminho, dados, mensagem, shaBase){
+  var sha = (shaBase === undefined) ? await _ghLerSHA(caminho) : shaBase;
   var conteudo = btoa(unescape(encodeURIComponent(JSON.stringify(dados, null, 2))));
   var body = {message: mensagem, content: conteudo};
   if(sha) body.sha = sha;
@@ -16808,16 +16989,19 @@ async function _ghGravar(caminho, dados, mensagem){
     headers:_bkpH({'Content-Type':'application/json'}),
     body:JSON.stringify(body)
   });
-  if(!r.ok){ var e=await r.json().catch(function(){return{};}); throw new Error(e.message||r.status); }
-  return true;
+  if(!r.ok){
+    var e=await r.json().catch(function(){return{};});
+    var err = new Error(e.message||r.status);
+    if(r.status===409 || r.status===422) err.conflito = true;
+    throw err;
+  }
+  var resp = await r.json().catch(function(){ return {}; });
+  return (resp && resp.content && resp.content.sha) || true;
 }
 
 async function _ghLer(caminho){
-  var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+caminho+'?t='+Date.now(),
-    {headers:_bkpH(), cache:'no-store'});
-  if(!r.ok) return null;
-  var m = await r.json();
-  return JSON.parse(decodeURIComponent(escape(atob(m.content.replace(/\n/g,'')))));
+  var x = await _ghLerComSha(caminho);
+  return x ? x.dados : null;
 }
 
 function _bkpSetStatus(msg, cls){
@@ -16866,6 +17050,18 @@ function _mesclarCadastros(local, remoto){
       } else {
         var idx = combinado.findIndex(function(x){ return String(x.id||JSON.stringify(x))===chave; });
         if(idx>-1){
+          // Qual versão vence: a EDITADA MAIS RECENTEMENTE (_editadoEm).
+          // Antes o lado local sempre vencia, então uma alteração de preço,
+          // nome, fornecedor etc. feita num aparelho nunca chegava no outro
+          // (só exclusões propagavam) — o outro aparelho ficava lendo dado velho.
+          var edLocalCad  = combinado[idx]._editadoEm || 0;
+          var edRemotoCad = item._editadoEm || 0;
+          var perdedor = item;
+          if(edRemotoCad > edLocalCad){
+            perdedor = combinado[idx];
+            combinado[idx] = JSON.parse(JSON.stringify(item));
+          }
+          item = perdedor; // a partir daqui "item" = versão que NÃO venceu (só contribui com exclusões/apresentações novas)
           // Exclusão lógica nunca "ressuscita" — se qualquer lado marcou
           // excluído, o resultado fica excluído, não importa de qual
           // aparelho a exclusão veio nem qual lado foi visto primeiro.
@@ -16948,11 +17144,14 @@ function _mesclarRegistros(local, remoto){
         var edLocal  = combinado[idx]._editadoEm || 0;
         var edRemoto = r._editadoEm || 0;
         if(edRemoto > 0 && edRemoto > edLocal){
+          // O lado mais recente vence por inteiro — inclusive o "pago": antes
+          // o pago era sempre somado, então uma quitação revertida (ou um
+          // pedido que voltou a "não pago" por mudança de valor) "voltava"
+          // a aparecer como pago na sincronização seguinte.
           var excluidoFinal = combinado[idx]._excluido || r._excluido;
-          var pagoFinal     = combinado[idx].pago || r.pago;
+          var excluidoEmFinal = combinado[idx]._excluidoEm || r._excluidoEm;
           combinado[idx] = Object.assign({}, r);
-          if(excluidoFinal) combinado[idx]._excluido = true;
-          if(pagoFinal) combinado[idx].pago = true;
+          if(excluidoFinal){ combinado[idx]._excluido = true; if(excluidoEmFinal) combinado[idx]._excluidoEm = excluidoEmFinal; }
         } else {
           // Se qualquer um dos dois lados marcou como excluído, o resultado
           // fica excluído — uma exclusão intencional nunca "ressuscita" numa
@@ -16964,7 +17163,8 @@ function _mesclarRegistros(local, remoto){
           // Se um dos dois marca como pago e o outro nao, mantem PAGO (uma vez
           // quitado, nunca "desquita" sozinho numa mesclagem — evita perder
           // uma confirmacao de pagamento).
-          if(r.pago && !combinado[idx].pago) combinado[idx] = Object.assign({}, r, {_excluido: combinado[idx]._excluido||r._excluido});
+          // (Só no empate — quando o lado local é mais novo, o "não pago" dele vale.)
+          if(edLocal === edRemoto && r.pago && !combinado[idx].pago) combinado[idx] = Object.assign({}, r, {_excluido: combinado[idx]._excluido||r._excluido});
         }
       }
     }
@@ -16976,17 +17176,73 @@ function _mesclarRegistros(local, remoto){
   return combinado;
 }
 
-var _sincronizandoRegistros = false;
-async function _sincronizarRegistrosGitHub(manual){
+/* Sincroniza UM arquivo (coletas, pedidos ou cadastros):
+   1) lê o GitHub (com o sha da versão lida);
+   2) SÓ ENTÃO lê o local — assim nenhuma gravação feita neste aparelho
+      enquanto a rede respondia é sobrescrita pela mesclagem (antes o local
+      era lido ANTES da espera, e uma edição salva nesse intervalo sumia);
+   3) grava o resultado mesclado localmente e, se preciso, no GitHub —
+      condicionado ao sha lido. Se outro aparelho gravou no meio tempo, relê
+      e mescla de novo (até 3 vezes), em vez de apagar o que ele publicou. */
+async function _syncArquivo(caminho, lerLocal, mesclar, gravarLocal, msg){
+  var mudouLocal = false;
+  for(var tentativa=0; tentativa<3; tentativa++){
+    var remoto = await _ghLerComSha(caminho);
+    var local = lerLocal();
+    var temRemoto = !!(remoto && remoto.dados != null);
+    var merge = temRemoto ? mesclar(local, remoto.dados) : local;
+    var jm = JSON.stringify(merge);
+    if(jm !== JSON.stringify(local)){
+      await gravarLocal(merge, jm);
+      mudouLocal = true;
+    }
+    if(!temRemoto || jm !== JSON.stringify(remoto.dados)){
+      try{
+        await _ghGravar(caminho, merge, msg, remoto ? remoto.sha : null);
+      }catch(e){
+        if(e.conflito) continue; // outro aparelho gravou agora — relê e mescla de novo
+        throw e;
+      }
+    }
+    return {mudouLocal:mudouLocal};
+  }
+  throw new Error('conflito repetido ao gravar '+caminho+' (outro aparelho gravando ao mesmo tempo)');
+}
+
+/* Fila de sincronização: no máximo 1 rodando + 1 aguardando. Quem pede
+   uma sincronização enquanto outra roda NÃO é mais descartado (antes, uma
+   edição salva durante uma sincronização só era publicada no ciclo
+   seguinte) — entra na próxima rodada, que relê tudo do zero. Devolve uma
+   Promise que resolve true (sucesso) ou false (falha). */
+var _syncFila = Promise.resolve(true);
+var _syncNaFila = 0;
+var _syncUltimaPromessa = null;
+function _sincronizarRegistrosGitHub(manual){
   if(!_ghToken()){
     if(manual) _toast('⚠️ Token do GitHub não configurado — não é possível sincronizar.');
-    return;
+    return Promise.resolve(false);
   }
-  if(_sincronizandoRegistros){
-    if(manual) _toast('🔃 Já existe uma sincronização em andamento...');
-    return;
+  if(_syncNaFila >= 2 && _syncUltimaPromessa){
+    if(manual) _toast('🔃 Sincronização já agendada...');
+    return _syncUltimaPromessa;
   }
-  _sincronizandoRegistros = true;
+  _syncNaFila++;
+  _syncUltimaPromessa = _syncFila = _syncFila.then(function(){
+    return _sincronizarAgora(manual);
+  }).then(function(ok){ _syncNaFila--; return ok; }, function(){ _syncNaFila--; return false; });
+  return _syncUltimaPromessa;
+}
+
+/* Usado antes de abrir/salvar uma edição: espera a sincronização terminar
+   (no máximo 10 s). true = confirmou a versão mais recente com o GitHub. */
+async function _syncAntesDeEditar(){
+  if(!_ghToken()) return false;
+  var limite = new Promise(function(res){ setTimeout(function(){ res(false); }, 10000); });
+  try{ return !!(await Promise.race([_sincronizarRegistrosGitHub(false), limite])); }
+  catch(e){ return false; }
+}
+
+async function _sincronizarAgora(manual){
   if(manual) _toast('🔃 Sincronizando com o GitHub...');
   try{
     var houveMudanca = false;
@@ -16994,75 +17250,54 @@ async function _sincronizarRegistrosGitHub(manual){
     // Usa as versões CRUAS (incluindo tombstones de itens excluídos) — se
     // usássemos a versão filtrada aqui, um registro excluído localmente
     // pareceria "novo, vindo do outro lado" e voltaria sozinho.
-    var coletasLocal = _carregarHistColetaRaw();
-    var coletasRemoto = await _ghLer(GH_BCK_COLETAS);
-    if(coletasRemoto){
-      var coletasMerge = _mesclarRegistros(coletasLocal, coletasRemoto);
-      var coletasMudouLocal  = JSON.stringify(coletasMerge) !== JSON.stringify(coletasLocal);
-      var coletasMudouRemoto = JSON.stringify(coletasMerge) !== JSON.stringify(coletasRemoto);
-      if(coletasMudouLocal){
-        var jc = JSON.stringify(coletasMerge);
-        try{ localStorage.setItem(CK, jc); }catch(e){}
-        if(_caOpfs) await _caOpfsSalvar(FSJ_COLETAS, jc);
-        if(typeof renderHistColeta==='function') renderHistColeta();
-        houveMudanca = true;
-      }
-      // Publica sempre que o resultado mesclado tiver algo que o GitHub
-      // ainda não tem — inclusive quando essa "novidade" é uma edição feita
-      // só aqui (nesse caso local === mesclado, mas remoto ainda está
-      // desatualizado, e antes isso nunca era publicado).
-      if(coletasMudouRemoto){
-        await _ghGravar(GH_BCK_COLETAS, coletasMerge, 'Sincronizacao automatica (coletas)');
-      }
+    var rc = await _syncArquivo(GH_BCK_COLETAS, _carregarHistColetaRaw, _mesclarRegistros,
+      async function(merge, json){
+        try{ localStorage.setItem(CK, json); }catch(e){}
+        if(_caOpfs) await _caOpfsSalvar(FSJ_COLETAS, json);
+      }, 'Sincronizacao automatica (coletas)');
+    if(rc.mudouLocal){
+      if(typeof renderHistColeta==='function') renderHistColeta();
+      houveMudanca = true;
     }
 
-    var pedidosLocal = _carregarHistRaw();
-    var pedidosRemoto = await _ghLer(GH_BCK_PEDIDOS);
-    if(pedidosRemoto){
-      var pedidosMerge = _mesclarRegistros(pedidosLocal, pedidosRemoto);
-      var pedidosMudouLocal  = JSON.stringify(pedidosMerge) !== JSON.stringify(pedidosLocal);
-      var pedidosMudouRemoto = JSON.stringify(pedidosMerge) !== JSON.stringify(pedidosRemoto);
-      if(pedidosMudouLocal){
-        var jp = JSON.stringify(pedidosMerge);
-        try{ localStorage.setItem(HK, jp); }catch(e){}
-        if(_caOpfs) await _caOpfsSalvar(FSJ_PEDIDOS, jp);
-        _renderHist();
-        _recalcularPedNumPeloHistorico();
-        houveMudanca = true;
-      }
-      if(pedidosMudouRemoto){
-        await _ghGravar(GH_BCK_PEDIDOS, pedidosMerge, 'Sincronizacao automatica (pedidos)');
-      }
+    var rp = await _syncArquivo(GH_BCK_PEDIDOS, _carregarHistRaw, _mesclarRegistros,
+      async function(merge, json){
+        try{ localStorage.setItem(HK, json); }catch(e){}
+        if(_caOpfs) await _caOpfsSalvar(FSJ_PEDIDOS, json);
+      }, 'Sincronizacao automatica (pedidos)');
+    if(rp.mudouLocal){
+      _renderHist();
+      _recalcularPedNumPeloHistorico();
+      houveMudanca = true;
     }
 
-    // Cadastros (Produtos, Clientes, Fornecedores, Preços) — mescla por id,
-    // sem apagar o que o outro aparelho cadastrou. Para Produtos, mescla
-    // também as apresentações (unidade+preço) de cada lado, sem duplicar.
-    var cadLocal = JSON.parse(JSON.stringify(_cadDados));
-    var cadRemoto = await _ghLer(GH_BCK_CADASTROS);
-    if(cadRemoto){
-      var cadMerge = _mesclarCadastros(cadLocal, cadRemoto);
-      var cadMudouLocal  = JSON.stringify(cadMerge) !== JSON.stringify(cadLocal);
-      var cadMudouRemoto = JSON.stringify(cadMerge) !== JSON.stringify(cadRemoto);
-      if(cadMudouLocal){
-        _cadDados.produtos     = cadMerge.produtos;
-        _cadDados.clientes     = cadMerge.clientes;
-        _cadDados.fornecedores = cadMerge.fornecedores;
-        _cadDados.precos       = cadMerge.precos;
-        await _cadSalvar();
-        if(typeof _cadRenderAba==='function' && typeof _cadAbaAtual!=='undefined') _cadRenderAba(_cadAbaAtual);
-        houveMudanca = true;
-      }
-      if(cadMudouRemoto){
-        await _ghGravar(GH_BCK_CADASTROS, cadMerge, 'Sincronizacao automatica (cadastros)');
-      }
+    // Cadastros (Produtos, Clientes, Fornecedores, Preços) — mescla por id;
+    // a versão editada mais recentemente de cada item vence.
+    var rcad = await _syncArquivo(GH_BCK_CADASTROS,
+      function(){ return JSON.parse(JSON.stringify(_cadDados)); },
+      _mesclarCadastros,
+      async function(merge, json){
+        _cadDados.produtos     = merge.produtos;
+        _cadDados.clientes     = merge.clientes;
+        _cadDados.fornecedores = merge.fornecedores;
+        _cadDados.precos       = merge.precos;
+        _cadSnapAtualizar(); // o que veio de outro aparelho não é "edição local" — não recarimba
+        try{ localStorage.setItem('ca_cad', JSON.stringify(_cadDados)); }catch(e){}
+        if(_caOpfs) await _caOpfsSalvar(FSJ_CAD, JSON.stringify(_cadDados));
+      }, 'Sincronizacao automatica (cadastros)');
+    if(rcad.mudouLocal){
+      _atualizarDatalistFornecedores();
+      if(typeof _cadRenderAba==='function' && typeof _cadAbaAtual!=='undefined'
+         && document.getElementById('cad-tela') && document.getElementById('cad-tela').classList.contains('vis')) _cadRenderAba(_cadAbaAtual);
+      houveMudanca = true;
     }
 
-    if(houveMudanca) _toast('🔄 Novos registros sincronizados de outro dispositivo.');
+    if(houveMudanca) _toast('🔄 Dados atualizados com a versão mais recente de outro dispositivo.');
     else if(manual) _toast('✅ Tudo já estava sincronizado.');
     _syncFalhasSeguidas = 0;
     _ultimoSyncOk = Date.now();
     _ultimoSyncErro = null;
+    return true;
   }catch(e){
     console.warn('_sincronizarRegistrosGitHub:', e.message);
     if(manual) _toast('⚠️ Erro ao sincronizar: '+e.message);
@@ -17074,8 +17309,8 @@ async function _sincronizarRegistrosGitHub(manual){
     if(!manual && _syncFalhasSeguidas === 3){
       _toast('⚠️ Sincronização falhando há alguns minutos: '+e.message);
     }
+    return false;
   } finally {
-    _sincronizandoRegistros = false;
     _atualizarIndicadorSync();
   }
 }
@@ -17108,8 +17343,9 @@ function _atualizarIndicadorSync(){
   var minAtras = Math.max(0, Math.round((Date.now()-_ultimoSyncOk)/60000));
   var txt = minAtras < 1 ? 'Sincronizado agora mesmo' : ('Sincronizado há '+minAtras+' min');
   if(_ultimoSyncErro) txt += ' · última tentativa falhou';
+  if(minAtras >= 3) txt = '⚠️ '+txt+' — dados podem estar desatualizados (toque para atualizar)';
   el.textContent = txt;
-  el.style.color = _ultimoSyncErro ? '#a3742a' : 'var(--mu)';
+  el.style.color = minAtras >= 3 ? '#c0392b' : (_ultimoSyncErro ? '#a3742a' : 'var(--mu)');
 }
 setInterval(_atualizarIndicadorSync, 20000);
 _atualizarIndicadorSync();
@@ -17119,8 +17355,8 @@ _atualizarIndicadorSync();
 // e o setInterval nunca chegar a disparar), e a cada 60s enquanto ativo.
 setTimeout(function(){
   _sincronizarRegistrosGitHub();
-  setInterval(_sincronizarRegistrosGitHub, 60000);
-}, 8000);
+  setInterval(function(){ _sincronizarRegistrosGitHub(); }, 30000);
+}, 2000);
 
 document.addEventListener('visibilitychange', function(){
   if(document.visibilityState === 'visible') _sincronizarRegistrosGitHub();
@@ -17132,26 +17368,20 @@ async function _fazerBackup(manual){
     if(manual) _toast('Configure o token GitHub primeiro.');
     return;
   }
-  var ts = new Date().toLocaleString('pt-BR');
+  // O backup agora é a própria sincronização: MESCLA com o que está no
+  // GitHub e só então grava. Antes o backup gravava a cópia local por cima
+  // de tudo (a cada edição e a cada 30 min) — um aparelho com dados antigos
+  // apagava do GitHub o que o outro tinha acabado de publicar.
   _bkpSetStatus('<span class="bkp-spin">⏳</span> Fazendo backup...','');
-  try{
-    /* Coletas */
-    var coletas = _carregarHistColetaRaw();
-    await _ghGravar(GH_BCK_COLETAS, coletas, 'Backup coletas — '+ts);
-    /* Pedidos */
-    var pedidos = _carregarHistRaw();
-    await _ghGravar(GH_BCK_PEDIDOS, pedidos, 'Backup pedidos — '+ts);
-    /* Cadastros */
-    var cads = {};
-    try{ cads = JSON.parse(localStorage.getItem('ca_cad')||'{}'); }catch(e){}
-    await _ghGravar(GH_BCK_CADASTROS, cads, 'Backup cadastros — '+ts);
-
-    localStorage.setItem(BKP_TS_KEY, ts);
+  var ok = await _sincronizarRegistrosGitHub(false);
+  var ts = new Date().toLocaleString('pt-BR');
+  if(ok){
+    try{ localStorage.setItem(BKP_TS_KEY, ts); }catch(e){}
     _bkpSetStatus('☁️ <span class="bkp-ok">Último backup: '+ts+'</span>');
     if(manual) _toast('✅ Backup concluído!');
-  }catch(e){
-    _bkpSetStatus('☁️ <span class="bkp-err">Erro no backup: '+e.message+'</span>');
-    if(manual) _toast('⚠️ Erro no backup: '+e.message);
+  } else {
+    _bkpSetStatus('☁️ <span class="bkp-err">Erro no backup: '+(_ultimoSyncErro||'falha de conexão')+'</span>');
+    if(manual) _toast('⚠️ Erro no backup: '+(_ultimoSyncErro||'falha de conexão'));
   }
 }
 
@@ -17519,6 +17749,7 @@ async function _cadCarregar(){
     if(d.fornecedores)_cadDados.fornecedores= d.fornecedores;
     if(d.precos)      _cadDados.precos      = d.precos;
   }catch(e){}
+  _cadSnapAtualizar();
   _atualizarDatalistFornecedores();
 }
 
@@ -17534,23 +17765,40 @@ function _atualizarDatalistFornecedores(){
   dl.innerHTML = nomes.map(function(n){ return '<option value="'+_escH(n)+'">'; }).join('');
 }
 
+/* Carimbo de edição por item do cadastro (_editadoEm): compara cada item
+   com a última versão conhecida e carimba só o que mudou AQUI — é o que
+   permite a mesclagem saber qual versão é a mais recente. */
+var _cadSnap = {};
+var _CAD_CATS = ['produtos','clientes','fornecedores','precos'];
+function _cadSemCarimbo(it){ var c = Object.assign({}, it); delete c._editadoEm; return JSON.stringify(c); }
+function _cadSnapAtualizar(){
+  _cadSnap = {};
+  _CAD_CATS.forEach(function(cat){
+    (_cadDados[cat]||[]).forEach(function(it){ if(it && it.id!=null) _cadSnap[cat+'|'+it.id] = _cadSemCarimbo(it); });
+  });
+}
+function _cadCarimbarAlterados(){
+  var agora = Date.now();
+  _CAD_CATS.forEach(function(cat){
+    (_cadDados[cat]||[]).forEach(function(it){
+      if(!it || it.id==null) return;
+      var k = cat+'|'+it.id;
+      if(_cadSnap[k] !== _cadSemCarimbo(it)) it._editadoEm = Math.max(agora, (it._editadoEm||0)+1);
+    });
+  });
+  _cadSnapAtualizar();
+}
+
 async function _cadSalvar(){
+  _cadCarimbarAlterados();
   var json = JSON.stringify(_cadDados);
-  if(_caOpfs) await _caOpfsSalvar(FSJ_CAD, json);
   try{ localStorage.setItem('ca_cad', json); }catch(e){}
+  if(_caOpfs) await _caOpfsSalvar(FSJ_CAD, json);
   _atualizarDatalistFornecedores();
-  // Publica no GitHub JÁ, sem esperar a sincronização periódica — aquela só
-  // grava quando a MESCLAGEM resulta em algo diferente do que já estava
-  // localmente, o que nunca acontece para uma edição feita só neste
-  // aparelho (ex: uma exclusão) — sem isto, a mudança nunca saía daqui, e
-  // um recarregamento puro do outro lado trazia de volta a versão antiga.
-  if(_ghToken()){
-    try{ await _ghGravar(GH_BCK_CADASTROS, _cadDados, 'Atualização de cadastros'); }catch(e){}
-  }
-  /* Toda gravação já dispara sincronização com o GitHub — primeiro traz o
-     que houver de novo de outro aparelho e mescla, depois garante que o
-     resultado final fica salvo lá. Assíncrono, não bloqueia o fluxo. */
-  setTimeout(function(){ _sincronizarRegistrosGitHub().then(function(){ _fazerBackup(false); _atualizarDatalistFornecedores(); }); }, 800);
+  // Publica já — mas MESCLANDO com o GitHub (a sincronização), nunca
+  // sobrescrevendo: antes gravava o cadastro local por cima, apagando o
+  // que outro aparelho tivesse cadastrado/alterado nesse meio tempo.
+  _sincronizarRegistrosGitHub();
 }
 
 /* Garante que um nome de cliente exista em Cadastros → Clientes, sem
@@ -18146,7 +18394,7 @@ async function _cadVincularOrfao(i){
     try{ localStorage.setItem(HK, jp); }catch(e){}
     if(_caOpfs) await _caOpfsSalvar(FSJ_PEDIDOS, jp);
     _renderHist();
-    setTimeout(function(){ _sincronizarRegistrosGitHub().then(function(){ _fazerBackup(false); }); }, 800);
+    setTimeout(function(){ _sincronizarRegistrosGitHub(); }, 800);
   }
   _toast('✅ "'+g.textoOriginal+'" vinculado a "'+prod.nome+'"! ('+g.qtd+' item(ns) corrigido(s))');
   _cadAbrirVinculoOrfaos(); // atualiza a lista, removendo o grupo ja vinculado
