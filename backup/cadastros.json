@@ -880,10 +880,9 @@
           "id": "amuenz87g0ezem3",
           "unid": "Macho Garrote",
           "preco": 0,
-          "_editadoEm": 1790417302836,
+          "_editadoEm": 1790417309184,
           "abas": [
-            "Estoque",
-            "Vendas"
+            "Estoque"
           ]
         },
         {
@@ -923,7 +922,7 @@
           ]
         }
       ],
-      "_editadoEm": 1790417302836
+      "_editadoEm": 1790417309184
     },
     {
       "id": "p1790274774174",
