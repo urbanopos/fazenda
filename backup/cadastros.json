@@ -880,7 +880,11 @@
         {
           "id": "amuenzh03smto8z",
           "unid": "Macho Bezerro",
-          "preco": 0
+          "preco": 0,
+          "_editadoEm": 1790417211692,
+          "abas": [
+            "Vendas"
+          ]
         },
         {
           "id": "amuenzpa1uc2ye1",
@@ -906,7 +910,7 @@
           "preco": 0
         }
       ],
-      "_editadoEm": 1790417202260
+      "_editadoEm": 1790417211692
     },
     {
       "id": "p1790274774174",
