@@ -915,10 +915,14 @@
         {
           "id": "amueo05cvstgcdo",
           "unid": "Fêmea Bezerra",
-          "preco": 0
+          "preco": 0,
+          "_editadoEm": 1790417278408,
+          "abas": [
+            "Estoque"
+          ]
         }
       ],
-      "_editadoEm": 1790417251176
+      "_editadoEm": 1790417278408
     },
     {
       "id": "p1790274774174",
