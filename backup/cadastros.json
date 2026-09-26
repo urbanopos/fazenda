@@ -870,7 +870,11 @@
         {
           "id": "amuenyn1l3fxxy6",
           "unid": "Macho Adulto",
-          "preco": 0
+          "preco": 0,
+          "_editadoEm": 1790417251176,
+          "abas": [
+            "Vendas"
+          ]
         },
         {
           "id": "amuenz87g0ezem3",
@@ -914,7 +918,7 @@
           "preco": 0
         }
       ],
-      "_editadoEm": 1790417223868
+      "_editadoEm": 1790417251176
     },
     {
       "id": "p1790274774174",
