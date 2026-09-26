@@ -14,8 +14,8 @@
 <title>ColetaAut Admin</title>
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
-:root{--vd:#1c2e22;--vm:#2d4a38;--vc:#4a8c6f;--ac:#b8943f;--cr:#f5f0e8;--ce:#e8dfc8;--br:#fff;--tx:#1a1a1a;--mu:#888;--r:8px}
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600;700;800&display=swap');
+:root{--vd:#1c2e22;--vm:#2d4a38;--vc:#4a8c6f;--ac:#b8943f;--cr:#f5f0e8;--ce:#e8dfc8;--br:#fff;--tx:#1a1a1a;--mu:#6b655b;--r:8px}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{height:100%;background:var(--vd)}
 body{font-family:'DM Sans',sans-serif;background:var(--vd);min-height:100vh;color:var(--tx);padding-bottom:env(safe-area-inset-bottom)}
@@ -60,7 +60,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--vd);min-height:100vh;colo
 .ad-box{background:var(--vd);width:92%;max-width:360px;border-radius:16px;border:2px solid var(--ac);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
 .ad-hd{background:rgba(184,148,63,.1);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(184,148,63,.2)}
 .ad-hd-t{font-family:'DM Serif Display',serif;font-size:17px;color:#fff}
-.ad-hd-s{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ac);margin-top:2px}
+.ad-hd-s{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ac);margin-top:2px}
 .ad-x{background:none;border:none;color:rgba(255,255,255,.4);font-size:22px;cursor:pointer;line-height:1;padding:0}
 .ad-corpo{padding:20px 18px 24px;max-height:80vh;overflow-y:auto}
 .ad-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:8px;display:block}
@@ -165,7 +165,7 @@ body:has(#sec-vendas.at) #contador{
 .cdata{display:flex;gap:8px;margin-top:6px}
 .btn-hj{padding:8px 14px;border-radius:6px;background:var(--vm);color:var(--ac);border:none;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;white-space:nowrap}
 /* TOAST */
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--vd);color:#fff;font-family:'DM Mono',monospace;font-size:12px;padding:12px 20px;border-radius:20px;border:1px solid var(--ac);opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999;white-space:nowrap}
+.toast{position:fixed;bottom:90px;left:0;right:0;margin:0 auto;width:max-content;max-width:calc(100% - 32px);box-sizing:border-box;text-align:center;white-space:normal !important;line-height:1.4;background:var(--vd);color:#fff;font-family:'DM Mono',monospace;font-size:12px;padding:12px 20px;border-radius:20px;border:1px solid var(--ac);opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999;white-space:nowrap}
 .toast.vis{opacity:1}
 /* VENDAS */
 #sec-vendas{display:none}
@@ -174,7 +174,7 @@ body:has(#sec-vendas.at) #contador{
 .talao-num strong{font-size:15px}
 .vi{background:var(--br);border-radius:var(--r);border:2px solid var(--ce);padding:14px;margin-bottom:10px}
 .vi.con{background:#fffbf0;border-color:var(--ac)}
-.vi-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);display:block;margin-bottom:6px}
+.vi-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);display:block;margin-bottom:6px}
 .vi-sel{width:100%;padding:10px 12px;border:2px solid var(--ce);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:15px;background:var(--cr);color:var(--tx);outline:none;-webkit-appearance:none;appearance:none;margin-bottom:12px}
 .vi-sel:focus{border-color:var(--ac)}
 .vi-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
@@ -214,7 +214,7 @@ body:has(#sec-vendas.at) #contador{
 .mp-body{padding:16px}
 .mp-meta{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--ce)}
 .mp-meta-item{display:flex;flex-direction:column;gap:2px}
-.mp-meta-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu)}
+.mp-meta-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu)}
 .mp-meta-val{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--tx)}
 .mp-linha{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--ce)}
 .mp-linha:last-child{border:none}
@@ -251,7 +251,7 @@ body:has(#sec-vendas.at) #contador{
 .hcol-item-qtd{font-family:'DM Mono',monospace;font-size:15px;font-weight:700;color:var(--vd);flex-shrink:0;text-align:right}
 .hcol-item-unid{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu)}
 .hcol-total{background:var(--vd);border-radius:var(--r);padding:12px 16px;margin-top:4px;display:flex;justify-content:space-between;align-items:center}
-.hcol-total-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#7aa88a}
+.hcol-total-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7aa88a}
 .hcol-total-val{font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:var(--ac)}
 .hcol-entrada{background:#fff;border:1px solid var(--ce);border-radius:6px;padding:10px 12px;margin-bottom:8px}
 .hcol-entrada-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
@@ -265,7 +265,7 @@ body:has(#sec-vendas.at) #contador{
 .hcol-edit-btn:active{opacity:.7}
 .hcol-edit-form{padding:10px 12px;background:#fff;border-top:1px solid var(--ce)}
 .hcol-edit-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
-.hcol-edit-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);flex-shrink:0;width:54px}
+.hcol-edit-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);flex-shrink:0;width:54px}
 .hcol-edit-inp{flex:1;padding:6px 8px;border:1.5px solid var(--ce);border-radius:6px;font-family:'DM Mono',monospace;font-size:12px;color:var(--tx);background:var(--cr);outline:none}
 .hcol-edit-inp:focus{border-color:var(--vc)}
 .hcol-item-edit-row{display:flex;gap:6px;padding:6px 0;border-bottom:1px solid var(--ce);align-items:center}
@@ -279,7 +279,7 @@ body:has(#sec-vendas.at) #contador{
 .mp-btn-del{padding:10px 14px;border:none;border-radius:var(--r);background:#fde8e8;color:#a03030;font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;font-weight:700}
 .mp-edit-form{padding:14px 16px;background:#f5f0e8;border-top:1px solid var(--ce)}
 .mp-edit-row{display:flex;gap:8px;margin-bottom:10px;align-items:center}
-.mp-edit-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);width:56px;flex-shrink:0}
+.mp-edit-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);width:56px;flex-shrink:0}
 .mp-edit-inp{flex:1;padding:7px 10px;border:1.5px solid var(--ce);border-radius:6px;font-family:'DM Mono',monospace;font-size:13px;color:var(--tx);background:#fff;outline:none}
 .mp-edit-inp:focus{border-color:#7a3a00}
 .mp-edit-row-2col{display:flex;gap:10px;margin-bottom:10px}
@@ -288,7 +288,7 @@ body:has(#sec-vendas.at) #contador{
 .mp-item-edit-card{border:1.5px solid var(--ce);border-radius:8px;padding:9px 10px;margin-bottom:8px;background:#faf8f3}
 .mp-item-edit-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px}
 .mp-item-edit-row{display:flex;gap:6px;padding:4px 0;align-items:center}
-.mp-item-edit-dlbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--mu);flex-shrink:0}
+.mp-item-edit-dlbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu);flex-shrink:0}
 .mp-item-edit-sub{flex:1;text-align:right;font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:#7a3a00}
 .mp-edit-save{width:100%;margin-top:10px;padding:10px;background:#27ae60;border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
 .mp-edit-cancel{width:100%;margin-top:6px;padding:8px;background:none;border:1px solid var(--ce);border-radius:6px;color:var(--mu);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer}
@@ -307,7 +307,7 @@ body:has(#sec-vendas.at) #contador{
 .mrq-hd-s{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.45);letter-spacing:1px;margin-top:2px}
 .mrq-body{padding:18px}
 .mrq-aviso{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.55);line-height:1.5;margin-bottom:14px;padding:10px 12px;background:rgba(192,57,43,.1);border-radius:8px;border:1px solid rgba(192,57,43,.25)}
-.mrq-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:6px}
+.mrq-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:6px}
 .mrq-iw{position:relative}
 .mrq-inp{width:100%;padding:12px 44px 12px 12px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);border-radius:var(--r);color:#fff;font-family:'DM Mono',monospace;font-size:16px;letter-spacing:3px;outline:none}
 .mrq-inp:focus{border-color:rgba(192,57,43,.7)}
@@ -339,7 +339,7 @@ body:has(#sec-vendas.at) #contador{
 #modal-pendentes.vis{display:flex}
 .mpd-hd{background:var(--vd);border-bottom:2px solid var(--ac);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .mpd-hd-t{font-family:'DM Serif Display',serif;font-size:18px;color:#fff}
-.mpd-hd-s{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--ac);margin-top:2px}
+.mpd-hd-s{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--ac);margin-top:2px}
 .mpd-hd-x{background:none;border:none;color:rgba(255,255,255,.4);font-size:24px;cursor:pointer;line-height:1}
 .mpd-body{flex:1;overflow-y:auto;padding:14px 16px;background:#f5f0e8}
 .mpd-vazia{text-align:center;padding:48px 24px;font-family:'DM Mono',monospace;font-size:12px;color:#999}
@@ -352,7 +352,7 @@ body:has(#sec-vendas.at) #contador{
 .mpd-linha{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f0ebe0;font-family:'DM Sans',sans-serif;font-size:13px;color:#333}
 .mpd-linha:last-child{border:none}
 .mpd-linha-nome{font-weight:600}
-.mpd-linha-setor{font-family:'DM Mono',monospace;font-size:9px;color:#999;letter-spacing:1px;text-transform:uppercase}
+.mpd-linha-setor{font-family:'DM Mono',monospace;font-size:10px;color:#999;letter-spacing:1px;text-transform:uppercase}
 .mpd-linha-qtd{font-family:'DM Mono',monospace;font-size:13px;color:#1c2e22;font-weight:700}
 .mpd-item-btns{display:flex;gap:8px;padding:10px 14px;background:#faf7f0;border-top:1px solid #eee}
 .mpd-btn-ok{flex:1;padding:11px;border:none;border-radius:var(--r);background:#1a6b2a;color:#fff;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.5px}
@@ -494,12 +494,12 @@ input[type="password"]:-webkit-autofill{
 .cad-row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
 .cad-inp{flex:1;min-width:100px;padding:9px 11px;border:1.5px solid var(--ce);border-radius:7px;font-size:13px;color:var(--tx);background:#fff;outline:none;font-family:'DM Mono',monospace}
 .cad-inp:focus{border-color:var(--vc)}
-.cad-inp-lbl{font-size:9px;font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;color:var(--mu);display:block;margin-bottom:3px}
+.cad-inp-lbl{font-size:10px;font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;color:var(--mu);display:block;margin-bottom:3px}
 .cad-form-btns{display:flex;gap:8px;margin-top:10px}
 .cad-form-ok{flex:1;padding:10px;background:var(--vc);border:none;border-radius:7px;color:#fff;font-weight:700;font-size:13px;cursor:pointer}
 .cad-form-cancel{padding:10px 14px;background:none;border:1px solid var(--ce);border-radius:7px;color:var(--mu);font-size:12px;cursor:pointer}
 /* Badge exportar listas no menu */
-.cad-menu-badge{display:inline-block;background:var(--ac);color:#fff;border-radius:8px;font-size:9px;padding:2px 6px;margin-left:6px;font-family:'DM Mono',monospace;vertical-align:middle}
+.cad-menu-badge{display:inline-block;background:var(--ac);color:#fff;border-radius:8px;font-size:10px;padding:2px 6px;margin-left:6px;font-family:'DM Mono',monospace;vertical-align:middle}
 /* Autocomplete nos formulários de coleta/pedido */
 .ac-wrap{position:relative;flex:1}
 .ac-list{display:none;position:absolute;left:0;right:0;top:100%;background:#fff;border:1.5px solid var(--ac);border-top:none;border-radius:0 0 8px 8px;z-index:999;max-height:180px;overflow-y:auto;box-shadow:0 4px 12px rgba(0,0,0,.15)}
@@ -522,11 +522,20 @@ input[type="password"]:-webkit-autofill{
 }
 .hist-pago-badge{
   display:inline-block;padding:2px 7px;border-radius:10px;
-  background:#e6f4ea;color:#1a6b2a;font-size:9px;font-weight:700;
+  background:#e6f4ea;color:#1a6b2a;font-size:10px;font-weight:700;
   font-family:DM Mono,monospace;letter-spacing:1px;margin-left:6px;
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/* Nitidez das fontes */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;font-kerning:normal;font-optical-sizing:auto}
+/* Nunca "engordar" artificialmente uma fonte que não tem o peso pedido
+   (o navegador borra o desenho) — usa o peso real mais próximo. */
+*{font-synthesis-weight:none}
+input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+</style>
 </head>
 <body>
 
@@ -819,7 +828,7 @@ input[type="password"]:-webkit-autofill{
   <div class="topo-d" id="relogio">seg., 08 de jun.<br>05:34</div>
   <div class="topo-r" id="topo-r"></div>
 </div>
-<div id="sync-status" onclick="_sincronizarRegistrosGitHub(true)" style="padding:3px 14px;font-family:'DM Mono',monospace;font-size:9px;color:var(--mu);background:rgba(0,0,0,.04);text-align:right;cursor:pointer">Sincronizando...</div>
+<div id="sync-status" onclick="_sincronizarRegistrosGitHub(true)" style="padding:3px 14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--mu);background:rgba(0,0,0,.04);text-align:right;cursor:pointer">Sincronizando...</div>
 
 <!-- CORPO -->
 <div class="corpo">
@@ -1025,7 +1034,7 @@ input[type="password"]:-webkit-autofill{
 <div id="modal-pendentes">
   <div class="mpd-hd">
     <div>
-      <div class="mpd-hd-t">📥 Coletas Pendentes <span id="mpd-badge" style="display:none;background:var(--ac);color:var(--vd);font-family:'DM Mono',monospace;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:4px"></span></div>
+      <div class="mpd-hd-t">📥 Coletas Pendentes <span id="mpd-badge" style="display:none;background:var(--ac);color:var(--vd);font-family:'DM Mono',monospace;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:4px"></span></div>
       <div class="mpd-hd-s">AGUARDANDO APROVAÇÃO DO ADMINISTRADOR</div>
     </div>
     <button class="mpd-hd-x" onclick="_mpdFechar()">✕</button>
@@ -11420,7 +11429,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0dcdfdd779';
+var _caFP = '1a0dcfc94702';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -12922,7 +12931,35 @@ function apagarCard(k, cl){
   _atualizarContador();
 }
 
+
+/* Mantém a lista "Item coletado" de cada aba SEMPRE igual às autorizações
+   atuais do Admin: produto sem nenhuma apresentação autorizada na aba não
+   aparece. Roda quando o cadastro muda (neste ou em outro aparelho) e ao
+   trocar de aba — antes a lista só era refeita se estivesse sem item
+   escolhido, então um produto desautorizado podia continuar na tela. */
+function _atualizarOpcoesItens(){
+  Object.keys(SETORES).forEach(function(s){
+    var k = s+'_novo';
+    var sel = document.getElementById('sel-'+k);
+    if(!sel) return;
+    var atual = sel.value;
+    var nomes = _catalogoNomesUnicos(s);
+    var esc = function(n){ return String(n).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); };
+    var ph = (sel.options[0] && sel.options[0].value==='') ? sel.options[0].outerHTML : '<option value="">— Escolha um item —</option>';
+    var novo = sel.querySelector('option[value="__novo__"]');
+    var html = ph + nomes.map(function(n){ return '<option value="'+esc(n)+'">'+esc(n)+'</option>'; }).join('') + (novo ? novo.outerHTML : '');
+    if(sel.innerHTML === html) return;
+    sel.innerHTML = html;
+    if(!atual || atual==='__novo__' || nomes.indexOf(atual) > -1){ sel.value = atual; return; }
+    // O item que estava escolhido deixou de ser autorizado nesta aba
+    sel.value = '';
+    if(typeof _onSelecionarItem==='function') _onSelecionarItem(s);
+    _toast('⚠️ '+atual+' não está mais autorizado na aba '+((SETORES[s]||{}).label||s)+'.');
+  });
+}
+
 function trocarAba(s){
+  try{ _atualizarOpcoesItens(); }catch(e){}
   document.querySelectorAll('.secao').forEach(function(x){ x.classList.remove('at'); });
   document.querySelectorAll('.aba').forEach(function(x){ x.classList.remove('at'); });
   var secV = document.getElementById('sec-vendas');
@@ -15561,7 +15598,7 @@ function _toggleDetalheItem(btn, idx){
           +(r.coletor?'<div style="color:var(--mu);margin-top:2px">'+r.coletor+'</div>':'')
           +'</div>'
           +'<div style="text-align:right">'
-          +(r.tipo?'<div style="font-size:9px;font-weight:700;color:'+corValor+'">'+(r.tipo==='Saida'?'SAÍDA':'ENTRADA')+'</div>':'')
+          +(r.tipo?'<div style="font-size:10px;font-weight:700;color:'+corValor+'">'+(r.tipo==='Saida'?'SAÍDA':'ENTRADA')+'</div>':'')
           +'<div style="font-weight:700;color:'+corValor+'">'+r.qtd+' '+r.unid+'</div>'
           +'</div>'
           +'</div>';
@@ -15618,7 +15655,7 @@ function _renderHistColetaDetalhe(body, registros, setorFiltro){
       // misturados, e sem essa etiqueta por item era fácil editar sem
       // perceber que um item ficou com o tipo errado.
       var tagTipoItem = it.tipo
-        ? '<span style="font-weight:700;font-size:9px;letter-spacing:.5px;margin-right:6px;padding:2px 6px;border-radius:8px;background:'+(it.tipo==='Saida'?'#fde8e8':'#e3edfd')+';color:'+(it.tipo==='Saida'?'#c0392b':'#1e5fbf')+'">'+(it.tipo==='Saida'?'SAÍDA':'ENTRADA')+'</span>'
+        ? '<span style="font-weight:700;font-size:10px;letter-spacing:.5px;margin-right:6px;padding:2px 6px;border-radius:8px;background:'+(it.tipo==='Saida'?'#fde8e8':'#e3edfd')+';color:'+(it.tipo==='Saida'?'#c0392b':'#1e5fbf')+'">'+(it.tipo==='Saida'?'SAÍDA':'ENTRADA')+'</span>'
         : '';
       html += '<div class="hcol-entrada-item">'
         +'<span style="font-size:15px;font-weight:800">'+nomeExib+'</span>'
@@ -15728,7 +15765,7 @@ async function _abrirEditColeta(ri){
     +'<input class="hcol-edit-inp" type="date" id="hcol-ei-data-'+ri+'" value="'+(r.data||'')+'"></div>'
     +'<div class="hcol-edit-row"><span class="hcol-edit-lbl">Coletor</span>'
     +'<input class="hcol-edit-inp" id="hcol-ei-coletor-'+ri+'" value="'+_esc(r.coletor||'')+'"></div>'
-    +'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin:8px 0 4px">Itens</div>'
+    +'<div style="font-family:DM Mono,monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin:8px 0 4px">Itens</div>'
     +'<div id="hcol-ei-itens-'+ri+'">'+ itensHtml +'</div>'
     +'<button style="width:100%;margin-top:8px;padding:7px;background:rgba(184,148,63,.1);border:1px dashed var(--ac);border-radius:6px;color:var(--ac);font-family:DM Mono,monospace;font-size:11px;cursor:pointer" onclick="_addItemEditColeta('+ri+')">'
     +'+ Adicionar item</button>'
@@ -15827,7 +15864,7 @@ function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtua
     +avisoAba
     +'<div class="hcol-item-edit-row" style="flex-wrap:wrap">'
     +'<div style="flex:1 1 100%;display:flex;align-items:center;gap:8px;margin-bottom:2px">'
-    +'<span style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);flex-shrink:0">Setor (aba)</span>'
+    +'<span style="font-family:DM Mono,monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);flex-shrink:0">Setor (aba)</span>'
     +'<select class="hcol-edit-inp" style="flex:1;font-weight:700" id="hcol-ei-setor-'+ri+'-'+ii+'" onchange="_onMudarSetorEditColeta('+ri+','+ii+')">'+optsSetor+'</select>'
     +'</div>'
     +'<select class="hcol-edit-inp" style="flex:1 1 100%;width:100%;font-size:16px;font-weight:800" id="hcol-ei-nome-'+ri+'-'+ii+'" onchange="_onMudarNomeEditColeta('+ri+','+ii+')">'+optsNome+'</select>'
@@ -16339,7 +16376,7 @@ async function _abrirEditPedido(){
         +'<span class="mp-edit-lbl">Data do pagamento</span>'
         +'<input class="mp-edit-inp" type="date" id="mpe-data-pagamento" value="'+_dataQuitParaIso(p.dataQuit)+'"></div></div>'
       : '')
-    +'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;'
+    +'<div style="font-family:DM Mono,monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;'
     +'color:var(--mu);margin:8px 0 4px">Itens · cada item pode ter sua propria data</div>'
     +'<div id="mpe-itens">'+itensHtml+'</div>'
     +'<button style="width:100%;margin-top:8px;padding:7px;background:rgba(122,58,0,.1);border:1px dashed #7a3a00;'
@@ -17253,6 +17290,7 @@ async function _sincronizarAgora(manual){
       }, 'Sincronizacao automatica (cadastros)');
     if(rcad.mudouLocal){
       _atualizarDatalistFornecedores();
+      _atualizarOpcoesItens();
       if(typeof _cadRenderAba==='function' && typeof _cadAbaAtual!=='undefined'
          && document.getElementById('cad-tela') && document.getElementById('cad-tela').classList.contains('vis')) _cadRenderAba(_cadAbaAtual);
       houveMudanca = true;
@@ -17758,6 +17796,7 @@ function _cadCarimbarAlterados(){
 
 async function _cadSalvar(){
   _cadCarimbarAlterados();
+  try{ _atualizarOpcoesItens(); }catch(e){}
   var json = JSON.stringify(_cadDados);
   try{ localStorage.setItem('ca_cad', json); }catch(e){}
   if(_caOpfs) await _caOpfsSalvar(FSJ_CAD, json);
