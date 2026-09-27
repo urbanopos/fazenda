@@ -1,5 +1,66 @@
 [
   {
+    "ts": 1790553086169,
+    "data": "2026-09-27",
+    "coletor": "Junior Desk",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Crescimento",
+        "unid": "sc 40kg",
+        "qtd": 10,
+        "preco": 92.38,
+        "forn": "IRCA",
+        "tipo": "Entrada",
+        "obs": "Compra CMP-0001"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Engorda",
+        "unid": "sc 40kg",
+        "qtd": 15,
+        "preco": 89.94,
+        "forn": "IRCA",
+        "tipo": "Entrada",
+        "obs": "Compra CMP-0001"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Ração de peixe",
+        "unid": "Sc 25kg",
+        "qtd": 15,
+        "preco": 74.71,
+        "forn": "IRCA",
+        "tipo": "Entrada",
+        "obs": "Compra CMP-0001"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Inicial",
+        "unid": "sc 40kg",
+        "qtd": 3,
+        "preco": 108.21,
+        "forn": "IRCA",
+        "tipo": "Entrada",
+        "obs": "Compra CMP-0001"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Ração de Gado",
+        "unid": "Sc 40kg",
+        "qtd": 10,
+        "preco": 91.21,
+        "forn": "IRCA",
+        "tipo": "Entrada",
+        "obs": "Compra CMP-0001"
+      }
+    ],
+    "origem": "compra",
+    "compraTs": 1790553086168,
+    "compraNum": "CMP-0001",
+    "mov": "MOV-0036"
+  },
+  {
     "data": "2026-09-26",
     "coletor": "Menininha",
     "itens": [
