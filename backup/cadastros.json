@@ -857,9 +857,15 @@
         {
           "unid": "Sc 40kg",
           "preco": 0,
-          "id": "l_sc-40kg_"
+          "id": "l_sc-40kg_",
+          "_editadoEm": 1790552275694,
+          "abas": [
+            "Estoque",
+            "Compras"
+          ]
         }
-      ]
+      ],
+      "_editadoEm": 1790552275694
     },
     {
       "id": "p1789868100584",
