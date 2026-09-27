@@ -275,9 +275,11 @@
           "abas": [
             "Aviario",
             "Perda",
-            "Vendas"
+            "Vendas",
+            "Compras"
           ],
-          "id": "l_unid_fazenda-sao-jose"
+          "id": "l_unid_fazenda-sao-jose",
+          "_editadoEm": 1790552520211
         },
         {
           "unid": "unid",
@@ -291,7 +293,7 @@
           ]
         }
       ],
-      "_editadoEm": 1790552331243
+      "_editadoEm": 1790552520211
     },
     {
       "id": "p1789066565373_0",
