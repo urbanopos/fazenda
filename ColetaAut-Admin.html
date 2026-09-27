@@ -557,6 +557,28 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
 .cad-pag button:disabled{opacity:.35;cursor:default}
 .cad-pag-info{width:100%;text-align:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--mu);letter-spacing:.5px}
 </style>
+<style>
+/* ═══ Aba Compras ═══ */
+.aba-cp.at{background:#4b2e83 !important;border-color:#4b2e83 !important;color:#e2d6ff !important}
+body:has(#sec-compras.at) #wrap-pendentes-btn,
+body:has(#sec-compras.at) #btn-enviar-coleta-global,
+body:has(#sec-compras.at) #contador{display:none}
+#hcmp-modal{display:none;position:fixed;inset:0;z-index:9991;background:rgba(0,0,0,.78);align-items:flex-end}
+#hcmp-modal.vis{display:flex}
+@media (min-width: 900px){
+  #hcmp-modal{align-items:center;justify-content:center;padding:32px}
+  #sec-compras{max-width:900px;margin-left:auto;margin-right:auto}
+}
+</style>
+<style>
+/* Coletas Pendentes no mesmo padrão das demais janelas (Histórico etc.) */
+#modal-pendentes{display:none;position:fixed;inset:0;z-index:9991;background:rgba(0,0,0,.78);align-items:flex-end;flex-direction:row}
+#modal-pendentes.vis{display:flex}
+#modal-pendentes .mpd-body{padding:14px 16px 24px !important;background:none}
+@media (min-width: 900px){
+  #modal-pendentes{align-items:center;justify-content:center;padding:32px}
+}
+</style>
 </head>
 <body>
 
@@ -869,6 +891,7 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
     <button class="aba aba-c" onclick="trocarAba(&#39;campo&#39;)" id="aba-campo">Campo</button>
     <button class="aba aba-e" onclick="trocarAba(&#39;estoque&#39;)" id="aba-estoque">Estoque</button>
     <button class="aba aba-v" onclick="trocarAba(&#39;vendas&#39;)" id="aba-vendas">Pedidos</button>
+    <button class="aba aba-cp" onclick="trocarAba(&#39;compras&#39;)" id="aba-compras">Compras</button>
   </div>
   <div class="secao at" id="sec-aviario"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="sec-t">Aviario</div><div style="display:flex;gap:6px"><button onclick="abrirHistColetaSetor('Aviario')" style="padding:5px 12px;width:96px;background:rgba(28,78,34,.1);border:1.5px solid var(--vc);border-radius:6px;color:var(--vc);font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📋 Histórico</button><button onclick="_gerarRelatorioProducaoMensal()" style="padding:5px 12px;width:96px;background:rgba(28,78,34,.1);border:1.5px solid var(--vc);border-radius:6px;color:var(--vc);font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📄 Relatório</button></div></div><div class="sec-d">Producao e movimentacao</div><div class="pgrid" id="grid-aviario"><div class="pc" id="card-aviario_ovo"><div class="ph"><div onclick="toggleCard(&#39;aviario_ovo&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Ovos de Capoeira</span><span class="pb" id="badge-aviario_ovo">+ Registrar</span></div></div><div class="res-con" id="res-aviario_ovo"></div><div class="pbd" id="body-aviario_ovo"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_ovo&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_ovo" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_ovo&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-aviario_ovo" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_ovo&#39;,&#39;unid&#39;,&#39;Ovos de Capoeira&#39;)">Concluir</button></div></div></div><div class="pc" id="card-aviario_esterco"><div class="ph"><div onclick="toggleCard(&#39;aviario_esterco&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Esterco</span><span class="pb" id="badge-aviario_esterco">+ Registrar</span></div></div><div class="res-con" id="res-aviario_esterco"></div><div class="pbd" id="body-aviario_esterco"><div class="cg"><span class="cl">Quantidade (sacos)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_esterco&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_esterco" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_esterco&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-aviario_esterco" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_esterco&#39;,&#39;sacos&#39;,&#39;Esterco&#39;)">Concluir</button></div></div></div><div class="pc" id="card-aviario_galinha"><div class="ph"><div onclick="toggleCard(&#39;aviario_galinha&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Galinha</span><span class="pb" id="badge-aviario_galinha">+ Registrar</span></div></div><div class="res-con" id="res-aviario_galinha"></div><div class="pbd" id="body-aviario_galinha"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_galinha&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_galinha" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_galinha&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-aviario_galinha" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_galinha&#39;,&#39;unid&#39;,&#39;Galinha&#39;)">Concluir</button></div></div></div><div class="pc" id="card-aviario_frango"><div class="ph"><div onclick="toggleCard(&#39;aviario_frango&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Frango</span><span class="pb" id="badge-aviario_frango">+ Registrar</span></div></div><div class="res-con" id="res-aviario_frango"></div><div class="pbd" id="body-aviario_frango"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_frango&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_frango" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_frango&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-aviario_frango" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_frango&#39;,&#39;unid&#39;,&#39;Frango&#39;)">Concluir</button></div></div></div><div class="pc" id="card-aviario_pinto"><div class="ph"><div onclick="toggleCard(&#39;aviario_pinto&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pinto</span><span class="pb" id="badge-aviario_pinto">+ Registrar</span></div></div><div class="res-con" id="res-aviario_pinto"></div><div class="pbd" id="body-aviario_pinto"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_pinto&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_pinto" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_pinto&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-aviario_pinto" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_pinto&#39;,&#39;unid&#39;,&#39;Pinto&#39;)">Concluir</button></div></div></div><div class="pc" id="card-aviario_pintainha"><div class="ph"><div onclick="toggleCard(&#39;aviario_pintainha&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pintainha</span><span class="pb" id="badge-aviario_pintainha">+ Registrar</span></div></div><div class="res-con" id="res-aviario_pintainha"></div><div class="pbd" id="body-aviario_pintainha"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_pintainha&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_pintainha" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_pintainha&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-aviario_pintainha" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_pintainha&#39;,&#39;unid&#39;,&#39;Pintainha&#39;)">Concluir</button></div></div></div></div></div>
   <div class="secao" id="sec-perda"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="sec-t" style="color:#7f1d1d">Perda / Baixa</div><div style="display:flex;gap:6px"><button onclick="abrirHistColetaSetor('Perda')" style="padding:5px 12px;width:96px;background:rgba(127,29,29,.1);border:1.5px solid #7f1d1d;border-radius:6px;color:#7f1d1d;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📋 Histórico</button><button onclick="_gerarRelatorioProducaoMensal()" style="padding:5px 12px;width:96px;background:rgba(127,29,29,.1);border:1.5px solid #7f1d1d;border-radius:6px;color:#7f1d1d;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📄 Relatório</button></div></div><div class="sec-d">Mortalidade ou descarte</div><div class="pgrid" id="grid-perda"><div class="pc pc-p" id="card-perda_ovo"><div class="ph"><div onclick="toggleCard(&#39;perda_ovo&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Ovos de Capoeira</span><span class="pb" id="badge-perda_ovo">+ Registrar</span></div></div><div class="res-con" id="res-perda_ovo"></div><div class="pbd" id="body-perda_ovo"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_ovo&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_ovo" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_ovo&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-perda_ovo" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_ovo&#39;,&#39;unid&#39;,&#39;Ovos de Capoeira&#39;)">Concluir</button></div></div></div><div class="pc pc-p" id="card-perda_esterco"><div class="ph"><div onclick="toggleCard(&#39;perda_esterco&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Esterco</span><span class="pb" id="badge-perda_esterco">+ Registrar</span></div></div><div class="res-con" id="res-perda_esterco"></div><div class="pbd" id="body-perda_esterco"><div class="cg"><span class="cl">Quantidade (sacos)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_esterco&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_esterco" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_esterco&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-perda_esterco" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_esterco&#39;,&#39;sacos&#39;,&#39;Esterco&#39;)">Concluir</button></div></div></div><div class="pc pc-p" id="card-perda_galinha"><div class="ph"><div onclick="toggleCard(&#39;perda_galinha&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Galinha</span><span class="pb" id="badge-perda_galinha">+ Registrar</span></div></div><div class="res-con" id="res-perda_galinha"></div><div class="pbd" id="body-perda_galinha"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_galinha&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_galinha" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_galinha&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-perda_galinha" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_galinha&#39;,&#39;unid&#39;,&#39;Galinha&#39;)">Concluir</button></div></div></div><div class="pc pc-p" id="card-perda_frango"><div class="ph"><div onclick="toggleCard(&#39;perda_frango&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Frango</span><span class="pb" id="badge-perda_frango">+ Registrar</span></div></div><div class="res-con" id="res-perda_frango"></div><div class="pbd" id="body-perda_frango"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_frango&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_frango" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_frango&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-perda_frango" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_frango&#39;,&#39;unid&#39;,&#39;Frango&#39;)">Concluir</button></div></div></div><div class="pc pc-p" id="card-perda_pinto"><div class="ph"><div onclick="toggleCard(&#39;perda_pinto&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pinto</span><span class="pb" id="badge-perda_pinto">+ Registrar</span></div></div><div class="res-con" id="res-perda_pinto"></div><div class="pbd" id="body-perda_pinto"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_pinto&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_pinto" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_pinto&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-perda_pinto" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_pinto&#39;,&#39;unid&#39;,&#39;Pinto&#39;)">Concluir</button></div></div></div><div class="pc pc-p" id="card-perda_pintainha"><div class="ph"><div onclick="toggleCard(&#39;perda_pintainha&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pintainha</span><span class="pb" id="badge-perda_pintainha">+ Registrar</span></div></div><div class="res-con" id="res-perda_pintainha"></div><div class="pbd" id="body-perda_pintainha"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_pintainha&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_pintainha" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_pintainha&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-perda_pintainha" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_pintainha&#39;,&#39;unid&#39;,&#39;Pintainha&#39;)">Concluir</button></div></div></div></div></div>
@@ -1009,6 +1032,29 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
   </div>
 </div>
 
+<div class="secao" id="sec-compras">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+    <div class="sec-t" style="color:#4b2e83">Compras</div>
+    <button onclick="_cmpAbrirHist()" style="padding:5px 12px;width:96px;background:rgba(75,46,131,.1);border:1.5px solid #4b2e83;border-radius:6px;color:#4b2e83;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📋 Histórico</button>
+  </div>
+  <div class="sec-d">Registro de compras · cada compra entra no Estoque</div>
+  <div class="talao-num" id="cmp-num">Compra <strong>CMP-0001</strong></div>
+  <div class="vi-row2">
+    <div class="vi-campo"><span class="vi-lbl">Setor</span>
+      <select class="vi-sel" id="cmp-setor"><option value="">— Escolha —</option><option value="Aviario">Aviário</option><option value="Campo">Campo</option></select></div>
+    <div class="vi-campo"><span class="vi-lbl">Fornecedor</span>
+      <input class="vi-inp" id="cmp-fornecedor" list="fornecedores-datalist" placeholder="Nome do fornecedor..." style="font-weight:500"></div>
+  </div>
+  <div id="cmp-itens"></div>
+  <button class="btn-add" onclick="_cmpNovoItem()">+ Adicionar item</button>
+  <div class="vt"><div><div class="vt-lbl">Total da compra</div></div><div class="vt-val" id="cmp-total">R$ 0,00</div></div>
+  <div class="vi-row2" style="margin-top:12px">
+    <div class="vi-campo"><span class="vi-lbl">Responsável</span><input class="vi-inp" id="cmp-resp" placeholder="Quem fez a compra" style="font-weight:500"></div>
+    <div class="vi-campo"><span class="vi-lbl">Observações</span><textarea class="vi-inp" id="cmp-obs" rows="1" placeholder="Nota fiscal, forma de pagamento..." style="font-weight:500;resize:vertical"></textarea></div>
+  </div>
+  <button class="btn-wpp" onclick="_cmpRegistrar()" style="background:linear-gradient(135deg,#6a4bb0,#4b2e83);box-shadow:0 4px 16px rgba(75,46,131,.3)">🧾 Salvar compra</button>
+</div>
+
 <div id="sec-vendas">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
     <div class="sec-t" style="color:#7a3a00">Vendas</div>
@@ -1049,22 +1095,40 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
   <div class="cont" id="contador">Nenhum item preenchido</div>
   <button class="btn-wpp" id="btn-enviar-coleta-global" onclick="enviarTudo()">💬 Enviar coleta</button>
 </div>
+<!-- MODAL HISTÓRICO DE COMPRAS -->
+<div id="hcmp-modal" onclick="_cmpFecharHist()">
+  <div class="hcol-box" onclick="event.stopPropagation()">
+    <div class="hcol-hd">
+      <div><div class="hcol-hd-t">Histórico de Compras</div><div class="hcol-hd-s">Acesso restrito — Administrador</div></div>
+      <button class="hcol-x" onclick="_cmpFecharHist()">✕</button>
+    </div>
+    <div class="hcol-filtros">
+      <div><div class="hcol-lbl">Ano</div><select class="hcol-sel" id="hcmp-ano" onchange="_cmpRenderHist()"></select></div>
+      <div><div class="hcol-lbl">Mês</div><select class="hcol-sel" id="hcmp-mes" onchange="_cmpRenderHist()">
+        <option value="">Todos</option><option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
+        <option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option>
+        <option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
+      <div><div class="hcol-lbl">Setor</div><select class="hcol-sel" id="hcmp-setor" onchange="_cmpRenderHist()"><option value="">Todos</option><option value="Aviario">Aviário</option><option value="Campo">Campo</option></select></div>
+      <div><div class="hcol-lbl">Visão</div><select class="hcol-sel" id="hcmp-visao" onchange="_cmpRenderHist()"><option value="detalhe">Compras detalhadas</option><option value="total">Totalização por item</option></select></div>
+      <div><div class="hcol-lbl">Valor</div><div id="hcmp-valor" style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:#4b2e83;padding:6px 0">R$ 0,00</div></div>
+      <div><div class="hcol-lbl">&nbsp;</div><button onclick="_cmpPdf()" style="padding:8px 14px;border:none;border-radius:var(--r);background:#1f6b35;color:#fff;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer">📄 Gerar PDF</button></div>
+    </div>
+    <div class="hcol-body" id="hcmp-body"></div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <!-- MODAL COLETAS PENDENTES -->
-<div id="modal-pendentes">
-  <div class="mpd-hd">
-    <div>
-      <div class="mpd-hd-t">📥 Coletas Pendentes <span id="mpd-badge" style="display:none;background:var(--ac);color:var(--vd);font-family:'DM Mono',monospace;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:4px"></span></div>
-      <div class="mpd-hd-s">AGUARDANDO APROVAÇÃO DO ADMINISTRADOR</div>
+<div id="modal-pendentes" onclick="_mpdFechar()">
+  <div class="hcol-box" onclick="event.stopPropagation()">
+    <div class="hcol-hd">
+      <div><div class="hcol-hd-t">📥 Coletas Pendentes <span id="mpd-badge" style="display:none;background:var(--ac);color:var(--vd);font-family:'DM Mono',monospace;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:4px"></span></div>
+      <div class="hcol-hd-s">Aguardando aprovação do administrador</div></div>
+      <button class="hcol-x" onclick="_mpdFechar()">✕</button>
     </div>
-    <button class="mpd-hd-x" onclick="_mpdFechar()">✕</button>
-  </div>
-  <div class="mpd-body" id="mpd-body">
-    <div class="mpd-loading">Carregando...</div>
-  </div>
-  <div style="padding:12px 16px;border-top:1px solid rgba(255,255,255,.12);background:var(--vd);flex-shrink:0">
-    <button class="cad-btn-add" style="width:100%;background:rgba(255,255,255,.1);color:#fff" onclick="_mpdFechar()">Voltar ao aplicativo</button>
+    <div class="hcol-body mpd-body" id="mpd-body">
+      <div class="mpd-loading">Carregando...</div>
+    </div>
   </div>
 </div>
 
@@ -11450,7 +11514,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0e4ec81812';
+var _caFP = '1a0e51c5a1bf';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -12708,6 +12772,10 @@ async function _iniciar(){
       var rp = await _caOpfsLer(FSJ_PEDIDOS);
       if(rp) try{ localStorage.setItem(HK, rp); }catch(e){}
     }catch(e){}
+    try{
+      var rcp = await _caOpfsLer(FSJ_COMPRAS);
+      if(rcp) try{ localStorage.setItem(CMP_KEY, rcp); }catch(e){}
+    }catch(e){}
     await _catalogoCarregarOPFS();
   }
 
@@ -12774,6 +12842,7 @@ var _navFechar = {
   'modal-hcol'      : fecharHistColeta,
   'modal-edit-coleta' : _fecharEditColeta,
   'modal-hist-pedidos' : fecharHistPedidos,
+  'hcmp-modal'      : _cmpFecharHist,
   'modal-rev-quit'  : _mrqFechar,
   'modal-conf-quit' : _mcqFechar,
   'modal-pendentes' : _mpdFechar,
@@ -12791,7 +12860,7 @@ var _navFechar = {
 
 /* Retorna a aba atualmente ativa */
 function _navAbaAtual(){
-  var abas = ['aviario','perda','campo','estoque','vendas'];
+  var abas = ['aviario','perda','campo','estoque','vendas','compras'];
   for(var i=0;i<abas.length;i++){
     var el = document.getElementById('aba-'+abas[i]);
     if(el && el.classList.contains('at')) return abas[i];
@@ -12989,7 +13058,8 @@ function trocarAba(s){
   else { var sec = document.getElementById('sec-'+s); if(sec) sec.classList.add('at'); }
   var ab = document.getElementById('aba-'+s); if(ab) ab.classList.add('at');
   var lbl = document.getElementById('lbl-data');
-  if(lbl) lbl.textContent = s==='vendas' ? 'Data da Venda' : 'Data da Coleta';
+  if(lbl) lbl.textContent = s==='vendas' ? 'Data da Venda' : (s==='compras' ? 'Data da Compra' : 'Data da Coleta');
+  if(s==='compras'){ try{ _cmpRender(); }catch(e){} }
 
   /* Gerencia pilha de navegação das abas:
      - aviario → remove 'aba' da pilha (é a tela inicial, permite sair)
@@ -14070,15 +14140,51 @@ function _renderHPedTotal(lista, pedidos, ano, mes){
 
 /* ═══ PDF da movimentação de UM item no período (botão 📄 PDF da
    Totalização, em Coletas e em Pedidos) ═══ */
+/* Colunas lado a lado, TODAS alinhadas à esquerda, com larguras fixas
+   (modelo: Qtde | Apresentação | Descrição | ...) — nada "voando" para a
+   margem direita. cols = [{t:'Titulo', w:mm}] */
+function _pdfCortar(doc, v, w){ v = String(v==null?'':v); if(!w) return v; while(v.length>1 && doc.getTextWidth(v) > w-1.5) v = v.slice(0,-2)+'…'; return v; }
+function _pdfCabCols(doc, x, y, cols){
+  doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(90);
+  var cx = x; cols.forEach(function(c){ doc.text(c.t, cx, y); cx += c.w; });
+  doc.setDrawColor(200); doc.line(x, y+1.6, cx, y+1.6);
+  doc.setFont('helvetica','normal'); doc.setTextColor(0);
+}
+function _pdfLinhaCols(doc, x, y, cols, vals, estilos){
+  var cx = x;
+  cols.forEach(function(c, i){
+    var e = (estilos && estilos[i]) || {};
+    doc.setFont('helvetica', e.bold ? 'bold' : 'normal');
+    if(e.cor) doc.setTextColor(e.cor[0], e.cor[1], e.cor[2]); else doc.setTextColor(0);
+    doc.text(_pdfCortar(doc, vals[i], c.w), cx, y);
+    cx += c.w;
+  });
+  doc.setFont('helvetica','normal'); doc.setTextColor(0);
+}
+function _pdfQtd(n){ return Number(n||0).toLocaleString('pt-BR',{maximumFractionDigits:2}); }
+
 function _pdfTabelaItem(titulo, subtitulo, colunas, linhas, totais, nomeArq){
   if(!window.jspdf || !window.jspdf.jsPDF){ _toast('Gerador de PDF indisponível (sem internet?).'); return; }
   var doc = new window.jspdf.jsPDF({unit:'mm', format:'a4'}); _pdfAcentuar(doc);
   var pageW = doc.internal.pageSize.getWidth(), pageH = doc.internal.pageSize.getHeight();
   var margin = 14, y = 18;
+  // Larguras pelo conteúdo (títulos e valores), todas alinhadas à esquerda
+  doc.setFontSize(8.5);
+  var larg = colunas.map(function(c, ci){
+    var w = doc.getTextWidth(c.t);
+    linhas.forEach(function(l){ var tw = doc.getTextWidth(String(l[ci]==null?'':l[ci])); if(tw > w) w = tw; });
+    w += 5;
+    if(c.max) w = Math.min(w, c.max+4);
+    return w;
+  });
+  var somaL = larg.reduce(function(a,b){ return a+b; },0), disp = pageW-2*margin;
+  if(somaL > disp){ var f = disp/somaL; larg = larg.map(function(w){ return w*f; }); }
+  var xs = []; var acc = margin; larg.forEach(function(w){ xs.push(acc); acc += w; });
+  var largTabela = acc - margin;
   function cab(){
     doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(255);
-    doc.setFillColor(28,46,34); doc.rect(margin, y-4.5, pageW-2*margin, 7, 'F');
-    colunas.forEach(function(c){ doc.text(c.t, c.a==='right' ? c.x : margin+c.x, y, {align:c.a||'left'}); });
+    doc.setFillColor(28,46,34); doc.rect(margin, y-4.5, largTabela, 7, 'F');
+    colunas.forEach(function(c, ci){ doc.text(c.t, xs[ci]+1, y); });
     doc.setTextColor(0); doc.setFont('helvetica','normal'); y += 7;
   }
   doc.setFont('helvetica','bold'); doc.setFontSize(14);
@@ -14092,22 +14198,23 @@ function _pdfTabelaItem(titulo, subtitulo, colunas, linhas, totais, nomeArq){
   doc.setFontSize(8.5);
   linhas.forEach(function(l, i){
     if(y > pageH-22){ doc.addPage(); y = 18; cab(); doc.setFontSize(8.5); }
-    if(i%2===0){ doc.setFillColor(245,240,232); doc.rect(margin, y-4.2, pageW-2*margin, 6.2, 'F'); }
+    if(i%2===0){ doc.setFillColor(245,240,232); doc.rect(margin, y-4.2, largTabela, 6.2, 'F'); }
     colunas.forEach(function(c, ci){
-      var v = String(l[ci]==null?'':l[ci]);
-      if(c.max){ while(doc.getTextWidth(v) > c.max && v.length > 3) v = v.slice(0,-2)+'…'; }
+      var v = _pdfCortar(doc, l[ci], larg[ci]);
       if(l._cor && l._cor[ci]) doc.setTextColor(l._cor[ci][0], l._cor[ci][1], l._cor[ci][2]);
-      doc.text(v, c.a==='right' ? c.x : margin+c.x, y, {align:c.a||'left'});
+      doc.text(v, xs[ci]+1, y);
       doc.setTextColor(0);
     });
     y += 6.2;
   });
   y += 3;
-  doc.setDrawColor(180); doc.line(margin, y-3, pageW-margin, y-3);
-  doc.setFont('helvetica','bold'); doc.setFontSize(9.5);
+  doc.setDrawColor(180); doc.line(margin, y-3, margin+largTabela, y-3);
+  doc.setFontSize(9.5);
+  var wRot = 0; totais.forEach(function(t){ doc.setFont('helvetica','normal'); var w = doc.getTextWidth(t[0]); if(w > wRot) wRot = w; });
   totais.forEach(function(t){
     if(y > pageH-14){ doc.addPage(); y = 18; }
-    doc.text(t[0], margin, y+2); doc.text(t[1], pageW-margin, y+2, {align:'right'}); y += 6;
+    doc.setFont('helvetica','normal'); doc.text(t[0]+':', margin, y+2);
+    doc.setFont('helvetica','bold'); doc.text(t[1], margin+wRot+6, y+2); y += 6;
   });
   doc.save(nomeArq);
 }
@@ -14122,18 +14229,18 @@ function _pdfMovItemColeta(idx){
   var ord = regs.slice().sort(function(a,b){ return (a.dataIso||'').localeCompare(b.dataIso||''); }); // cronológico
   var PW = 210;
   var colunas = meta.temTipo
-    ? [{t:'Data',x:2},{t:'Mov.',x:26},{t:'Coletor',x:48,max:36},{t:'Fornecedor',x:88,max:34},{t:'Tipo',x:125},{t:'Qtd',x:PW-38,a:'right'},{t:'Saldo',x:PW-16,a:'right'}]
-    : [{t:'Data',x:2},{t:'Mov.',x:28},{t:'Coletor',x:52,max:70},{t:'Quantidade',x:PW-16,a:'right'}];
+    ? [{t:'Data',x:0},{t:'Mov.',x:0},{t:'Tipo',x:0},{t:'Qtde',x:0},{t:'Apresentação',x:0,max:30},{t:'Saldo',x:0},{t:'Coletor',x:0,max:34},{t:'Fornecedor',x:0,max:34}]
+    : [{t:'Data',x:0},{t:'Mov.',x:0},{t:'Qtde',x:0},{t:'Apresentação',x:0,max:30},{t:'Coletor',x:0,max:60}];
   var saldo = 0;
   var linhas = ord.map(function(r){
     var q = Number(r.qtd)||0;
     if(meta.temTipo){
       saldo += (r.tipo==='Saida' ? -q : q);
-      var l = [r.data, r.mov||'', r.coletor||'', r.forn||'', r.tipo==='Saida'?'Saida':'Entrada', (r.tipo==='Saida'?'-':'+')+_fmtNum(q)+' '+(r.unid||''), _fmtNum(saldo)];
-      l._cor = {4: r.tipo==='Saida'?[192,57,43]:[30,95,191], 5: r.tipo==='Saida'?[192,57,43]:[30,95,191]};
+      var l = [r.data, r.mov||'', r.tipo==='Saida'?'Saida':'Entrada', (r.tipo==='Saida'?'-':'+')+_fmtNum(q), r.unid||'', _fmtNum(saldo), r.coletor||'', r.forn||''];
+      l._cor = {2: r.tipo==='Saida'?[192,57,43]:[30,95,191], 3: r.tipo==='Saida'?[192,57,43]:[30,95,191]};
       return l;
     }
-    return [r.data, r.mov||'', r.coletor||'', _fmtNum(q)+' '+(r.unid||'')];
+    return [r.data, r.mov||'', _fmtNum(q), r.unid||'', r.coletor||''];
   });
   var totais = meta.temTipo
     ? [['Entradas', _fmtNum(meta.entrada)+' '+meta.unid], ['Saidas', _fmtNum(meta.saida)+' '+meta.unid], ['Saldo do periodo', _fmtNum(meta.entrada-meta.saida)+' '+meta.unid]]
@@ -14149,12 +14256,12 @@ function _pdfMovItemPedido(el, idx){
   var MESES_A = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   var ord = eventos.slice().sort(function(a,b){ return (a.dataIso||'').localeCompare(b.dataIso||''); });
   var PW = 210;
-  var colunas = [{t:'Data',x:2},{t:'Pedido',x:28},{t:'Cliente',x:52,max:52},{t:'Situacao',x:106},{t:'Qtd',x:PW-62,a:'right'},{t:'Preco',x:PW-38,a:'right'},{t:'Subtotal',x:PW-16,a:'right'}];
+  var colunas = [{t:'Data',x:0},{t:'Pedido',x:0},{t:'Qtde',x:0},{t:'Apresentação',x:0,max:34},{t:'Preço',x:0},{t:'Subtotal',x:0},{t:'Cliente',x:0,max:40},{t:'Situação',x:0}];
   var linhas = ord.map(function(ev){
     var d = ev.dataIso ? new Date(ev.dataIso+'T12:00') : null;
     var dFmt = d ? String(d.getDate()).padStart(2,'0')+' '+MESES_A[d.getMonth()]+' '+d.getFullYear() : '-';
-    var l = [dFmt, ev.num||'', ev.cliente||'(sem cliente)', ev.pago?'Pago':'Em aberto', _fmtNum(ev.qtd)+' '+(ev.unid||''), ev.preco?'R$ '+_fmt(ev.preco):'', 'R$ '+_fmt(ev.sub)];
-    l._cor = {3: ev.pago?[26,107,42]:[163,116,42]};
+    var l = [dFmt, ev.num||'', _fmtNum(ev.qtd), ev.unid||'', ev.preco?'R$ '+_fmt(ev.preco):'', 'R$ '+_fmt(ev.sub), ev.cliente||'(sem cliente)', ev.pago?'Pago':'Em aberto'];
+    l._cor = {7: ev.pago?[26,107,42]:[163,116,42]};
     return l;
   });
   var totAberto = ord.filter(function(x){ return !x.pago; }).reduce(function(s,x){ return s+x.sub; },0);
@@ -14406,7 +14513,7 @@ function _gerarPDFEspelhoTela(){
   var visao      = (document.getElementById('hcol-visao')||{}).value||'detalhe';
   var setorFiltro = (document.getElementById('hcol-setor')||{}).value||'';
 
-  var hist = _carregarHistColeta();
+  var hist = _histComSaidas(_carregarHistColeta(), _carregarHist(), _cadDados.produtos);
   var registros = hist.filter(function(r){
     if(!r.data) return false;
     if(ano && r.data.slice(0,4)!==ano) return false;
@@ -14503,15 +14610,21 @@ function _gerarPDFEspelhoTela(){
       doc.setTextColor(0); doc.setFont('helvetica','normal');
       y += 9;
 
-      Object.keys(totais[setor]).sort(function(a,b){ return a.localeCompare(b,'pt-BR'); }).forEach(function(nome){
-        novaPaginaSeNecessario(14);
+      // Modelo de colunas: Qtde | Apresentação | Descrição (| Entrada | Saída)
+      var temTipoSec = Object.keys(totais[setor]).some(function(n){ return totais[setor][n].temTipo; });
+      var colsT = temTipoSec
+        ? [{t:'Saldo',w:20},{t:'Apresentação',w:32},{t:'Descrição',w:72},{t:'Entrada',w:24},{t:'Saída',w:24}]
+        : [{t:'Qtde',w:22},{t:'Apresentação',w:36},{t:'Descrição',w:90}];
+      _pdfCabCols(doc, margin, y, colsT); y += 6.5;
+      doc.setFontSize(9);
+      Object.keys(totais[setor]).sort(function(a,b){ return a.localeCompare(b,'pt-BR',{sensitivity:'base',numeric:true}); }).forEach(function(nome){
+        if(novaPaginaSeNecessario(14)){ _pdfCabCols(doc, margin, y, colsT); y += 6.5; doc.setFontSize(9); }
         var it = totais[setor][nome];
-        doc.setFontSize(9);
-        doc.text(nome, margin, y);
         var qtdEstoque = it.temTipo ? (it.entrada - it.saida) : it.entrada;
-        doc.setFont('helvetica','bold'); doc.setTextColor(qtdEstoque<0?192:0,0,0);
-        doc.text(String(qtdEstoque)+' '+it.unid, pageW-margin, y, {align:'right'});
-        doc.setFont('helvetica','normal'); doc.setTextColor(0);
+        var vals = temTipoSec
+          ? [_pdfQtd(qtdEstoque), it.unid, nome, it.temTipo?_pdfQtd(it.entrada):'', it.temTipo?_pdfQtd(it.saida):'']
+          : [_pdfQtd(qtdEstoque), it.unid, nome];
+        _pdfLinhaCols(doc, margin, y, colsT, vals, [{bold:true, cor: qtdEstoque<0?[192,0,0]:null}, {}, {}, {cor:[30,95,191]}, {cor:[192,57,43]}]);
         y += 6;
       });
       y += 4;
@@ -14537,34 +14650,25 @@ function _gerarPDFEspelhoTela(){
         doc.setTextColor(tipoUnico==='Saida'?192:30, tipoUnico==='Saida'?57:95, tipoUnico==='Saida'?43:191);
         doc.text(tipoUnico==='Saida'?'- Saida':'- Entrada', margin+larguraData+4, y);
       }
-      doc.setTextColor(0); doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(120);
-      doc.text(r.coletor||'', pageW-margin, y, {align:'right'});
+      doc.setTextColor(0); doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(110);
+      var xCol = margin + doc.getTextWidth(dtComMov) + (tipoUnico ? 26 : 6);
+      if(r.coletor) doc.text('· '+r.coletor, xCol, y);
       doc.setTextColor(0);
-      y += 3.5;
-      doc.setDrawColor(220); doc.line(margin, y, pageW-margin, y);
-      y += 4.5;
-
+      y += 5.5;
+      // Modelo de colunas: Qtde | Apresentação | Descrição | Fornecedor · Preço
+      var colsD = [{t:'Qtde',w:20},{t:'Apresentação',w:32},{t:'Descrição',w:70},{t:'Fornecedor · Preço',w:58}];
+      _pdfCabCols(doc, margin+2, y, colsD); y += 5.5;
+      doc.setFontSize(9);
       itensVisiveis.forEach(function(it){
-        novaPaginaSeNecessario((it.forn||it.preco) ? 14 : 10);
+        if(novaPaginaSeNecessario(10)){ _pdfCabCols(doc, margin+2, y, colsD); y += 5.5; doc.setFontSize(9); }
         var cor = CORES_PDF[it.setor] || [0,0,0];
         var nomeExib = setorFiltro ? it.nome : it.setor+' - '+it.nome;
-        doc.setFontSize(9); doc.setTextColor(0);
-        doc.text(nomeExib, margin+2, y);
-        doc.setFont('helvetica','bold'); doc.setTextColor(cor[0],cor[1],cor[2]);
-        doc.text(String(it.qtd)+' '+it.unid, pageW-margin, y, {align:'right'});
-        doc.setFont('helvetica','normal'); doc.setTextColor(0);
+        var extra = [it.forn||'', it.preco?'R$ '+_fmt(it.preco):''].filter(Boolean).join(' · ');
+        var qTxt = (it.tipo==='Saida'?'-':'')+_pdfQtd(it.qtd);
+        _pdfLinhaCols(doc, margin+2, y, colsD, [qTxt, it.unid||'', nomeExib, extra], [{bold:true, cor: it.tipo==='Saida'?[192,57,43]:cor}, {}, {}, {cor:[110,110,110]}]);
         y += 5.5;
-        if(it.forn || it.preco){
-          var detalheLinha = [];
-          if(it.forn) detalheLinha.push(it.forn);
-          if(it.preco) detalheLinha.push('R$ '+_fmt(it.preco));
-          doc.setFontSize(7.5); doc.setTextColor(120);
-          doc.text(detalheLinha.join(' · '), margin+2, y);
-          doc.setTextColor(0);
-          y += 4;
-        }
       });
-      y += 3;
+      y += 4;
     });
   }
 
@@ -14673,20 +14777,13 @@ function _gerarRelatorioPedidosPDF(){
     doc.setTextColor(0); doc.setFont('helvetica','normal');
     y += 9;
 
-    Object.keys(totais).sort(function(a,b){ return totais[a].nomeExibicao.localeCompare(totais[b].nomeExibicao,'pt-BR'); }).forEach(function(chave){
-      novaPaginaSeNecessario(14);
+    var colsP = [{t:'Qtde',w:20},{t:'Apresentação',w:40},{t:'Descrição',w:80},{t:'Valor',w:34}];
+    _pdfCabCols(doc, margin, y, colsP); y += 6.5; doc.setFontSize(9);
+    Object.keys(totais).sort(function(a,b){ return totais[a].nomeExibicao.localeCompare(totais[b].nomeExibicao,'pt-BR',{sensitivity:'base',numeric:true}); }).forEach(function(chave){
+      if(novaPaginaSeNecessario(14)){ _pdfCabCols(doc, margin, y, colsP); y += 6.5; doc.setFontSize(9); }
       var it = totais[chave];
-      doc.setFontSize(9); doc.setTextColor(0);
-      doc.text(it.nomeExibicao, margin, y);
-      doc.setFont('helvetica','bold'); doc.setTextColor(122,58,0);
-      doc.text('R$ '+_fmt(it.total), pageW-margin, y, {align:'right'});
-      doc.setFont('helvetica','normal'); doc.setTextColor(0);
-      y += 5.5;
-      var qtdFmt = Number(it.qtd).toLocaleString('pt-BR',{maximumFractionDigits:2});
-      doc.setFontSize(7.5); doc.setTextColor(120);
-      doc.text(qtdFmt+' '+it.unid, margin, y);
-      doc.setTextColor(0);
-      y += 5;
+      _pdfLinhaCols(doc, margin, y, colsP, [_pdfQtd(it.qtd), it.unid, it.nomeExibicao, 'R$ '+_fmt(it.total)], [{bold:true}, {}, {}, {bold:true, cor:[122,58,0]}]);
+      y += 6;
     });
     y += 3;
   } else {
@@ -14706,34 +14803,24 @@ function _gerarRelatorioPedidosPDF(){
         doc.setTextColor(26,107,42);
         doc.text('- PAGO', margin+largNum+4, y);
       }
-      doc.setTextColor(0); doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(120);
-      doc.text(p.cliente||'(sem cliente)', pageW-margin, y, {align:'right'});
+      doc.setTextColor(0); doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(110);
+      doc.text('· '+(p.cliente||'(sem cliente)'), margin + doc.getTextWidth(numData) + (p.pago ? 24 : 6), y);
       doc.setTextColor(0);
-      y += 3.5;
-      doc.setDrawColor(220); doc.line(margin, y, pageW-margin, y);
-      y += 4.5;
-
+      y += 5.5;
+      var colsI = [{t:'Qtde',w:18},{t:'Apresentação',w:36},{t:'Descrição',w:66},{t:'Preço',w:26},{t:'Subtotal',w:28}];
+      _pdfCabCols(doc, margin+2, y, colsI); y += 5.5; doc.setFontSize(9);
       itens.forEach(function(it){
-        novaPaginaSeNecessario(10);
+        if(novaPaginaSeNecessario(10)){ _pdfCabCols(doc, margin+2, y, colsI); y += 5.5; doc.setFontSize(9); }
         var nome = it.nome||it.col2||'—';
-        var qtdUnid = it.col3||(((it.qtd||0))+' '+(it.unidade||it.unid||''));
+        var partesQ = String(it.col3||'').split(' ');
+        var qtdI = Number(it.qtd) || parseFloat(partesQ[0]) || 0;
+        var unidI = it.unidade || it.unid || partesQ.slice(1).join(' ');
         var sub = Number(it.sub||it.val||0);
-        doc.setFontSize(9); doc.setTextColor(0);
-        doc.text(nome, margin+2, y);
-        doc.setFont('helvetica','bold'); doc.setTextColor(122,58,0);
-        doc.text('R$ '+_fmt(sub), pageW-margin, y, {align:'right'});
-        doc.setFont('helvetica','normal'); doc.setTextColor(0);
-        y += 5;
-        doc.setFontSize(7.5); doc.setTextColor(120);
-        doc.text(qtdUnid, margin+2, y);
-        doc.setTextColor(0);
-        y += 4.5;
+        _pdfLinhaCols(doc, margin+2, y, colsI, [_pdfQtd(qtdI), unidI, nome, it.preco?'R$ '+_fmt(it.preco):'', 'R$ '+_fmt(sub)], [{bold:true}, {}, {}, {cor:[110,110,110]}, {bold:true, cor:[122,58,0]}]);
+        y += 5.5;
       });
-      doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(0);
-      doc.text('Total do pedido', margin+2, y);
-      doc.text('R$ '+_fmt(p.total), pageW-margin, y, {align:'right'});
-      doc.setFont('helvetica','normal');
-      y += 7;
+      _pdfLinhaCols(doc, margin+2, y, colsI, ['', '', 'Total do pedido', '', 'R$ '+_fmt(p.total)], [{}, {}, {bold:true}, {}, {bold:true}]);
+      y += 8;
     });
   }
 
@@ -14741,8 +14828,7 @@ function _gerarRelatorioPedidosPDF(){
   doc.setDrawColor(180); doc.line(margin, y, pageW-margin, y);
   y += 6;
   doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(0);
-  doc.text('Total do período', margin, y);
-  doc.text('R$ '+_fmt(totalGeral), pageW-margin, y, {align:'right'});
+  doc.text('Total do período: R$ '+_fmt(totalGeral), margin, y);
 
   doc.save('historico-pedidos-'+_dataLocalHoje()+'.pdf');
   _toast('✅ PDF gerado!');
@@ -14844,7 +14930,7 @@ function _gerarRelatorioProducaoMensal(){
   var margin = 12;
   var y = 18;
   var primeiraSecao = true;
-  var colX = {estoque:margin, origem:margin+16, item:margin+36, mov:margin+70, qtd:margin+90, unid:margin+107, bal:margin+132, saldo:margin+156};
+  var colX = {estoque:margin, origem:margin+16, mov:margin+34, qtd:margin+52, unid:margin+68, item:margin+100, bal:margin+138, saldo:margin+160}; // Qtde | Apresentação | Descrição
   var linksParaCriar = [];
   var mesesComMovimento = [];
 
@@ -14852,10 +14938,10 @@ function _gerarRelatorioProducaoMensal(){
     doc.setFont('helvetica','bold'); doc.setFontSize(8);
     doc.text('Estoque', colX.estoque, y);
     doc.text('Origem', colX.origem, y);
-    doc.text('Item', colX.item, y);
+    doc.text('Descrição', colX.item, y);
     doc.text('Mov.', colX.mov, y);
-    doc.text('Qtd', colX.qtd, y);
-    doc.text('Unid', colX.unid, y);
+    doc.text('Qtde', colX.qtd, y);
+    doc.text('Apresentação', colX.unid, y);
     doc.text('Balanco', colX.bal, y);
     doc.text('Saldo', colX.saldo, y);
     y += 2; doc.setDrawColor(180); doc.line(margin, y, pageW-margin, y); y += 5.5;
@@ -14979,7 +15065,7 @@ function _gerarRelatorioProducaoMensal(){
         doc.setTextColor(0);
         doc.text(ehPrimeira && !regra ? String(Math.round(ab*100)/100) : '', colX.estoque, y);
         doc.setFontSize(7); doc.text(linha.origem.slice(0,10), colX.origem, y); doc.setFontSize(8);
-        doc.text(ehPrimeira ? disp.nome.slice(0,15) : '', colX.item, y);
+        doc.text(ehPrimeira ? disp.nome.slice(0,22) : '', colX.item, y);
         doc.setTextColor(linha.cor[0],linha.cor[1],linha.cor[2]);
         doc.setFont('helvetica','bolditalic');
         doc.text(linha.mov, colX.mov, y);
@@ -15001,7 +15087,7 @@ function _gerarRelatorioProducaoMensal(){
       if(regra){
         novaLinhaSeNecessario();
         doc.setFontSize(6.8); doc.setTextColor(120);
-        doc.text('   -> '+balancoUnid+' unid / '+regra.fator+' = '+(Math.round((balancoUnid/regra.fator)*1000)/1000)+' '+regra.unidadeAlvo+'  |  estoque anterior: '+(Math.round(ab*1000)/1000)+' '+regra.unidadeAlvo, colX.item, y);
+        doc.text('   -> '+balancoUnid+' unid / '+regra.fator+' = '+(Math.round((balancoUnid/regra.fator)*1000)/1000)+' '+regra.unidadeAlvo+'  |  estoque anterior: '+(Math.round(ab*1000)/1000)+' '+regra.unidadeAlvo, colX.origem, y);
         doc.setTextColor(0); doc.setFontSize(8);
         y += 4;
       }
@@ -15172,17 +15258,17 @@ function _gerarRelatorioEstoqueMensal(){
   var margin = 14;
   var y = 18;
   var primeiraSecao = true;
-  var colX = {estoque:margin, item:margin+18, mov:margin+58, qtd:margin+82, unid:margin+100, bal:margin+138, saldo:margin+162};
+  var colX = {estoque:margin, mov:margin+18, qtd:margin+36, unid:margin+52, item:margin+82, bal:margin+138, saldo:margin+162}; // Qtde | Apresentação | Descrição
   var linksParaCriar = []; // {pagina, x, y, w, h, mesIdx} — criados depois que sabemos a pagina do detalhe
   var mesesComMovimento = []; // mantém a ordem dos meses que realmente entraram no relatorio
 
   function cabecalhoTabela(){
     doc.setFont('helvetica','bold'); doc.setFontSize(9);
     doc.text('Estoque', colX.estoque, y);
-    doc.text('Item', colX.item, y);
+    doc.text('Descrição', colX.item, y);
     doc.text('Mov.', colX.mov, y);
-    doc.text('Qtd', colX.qtd, y);
-    doc.text('Unid', colX.unid, y);
+    doc.text('Qtde', colX.qtd, y);
+    doc.text('Apresentação', colX.unid, y);
     doc.text('Balanço', colX.bal, y);
     doc.text('Saldo', colX.saldo, y);
     y += 2; doc.setDrawColor(180); doc.line(margin, y, pageW-margin, y); y += 5.5;
@@ -15376,7 +15462,7 @@ function _gerarRelatorioPDF(setorLabel, anoFiltro, mesFiltro){
   if(anoFiltro === undefined) anoFiltro = '';
   if(mesFiltro === undefined) mesFiltro = '';
 
-  var hist = _carregarHistColeta();
+  var hist = _histComSaidas(_carregarHistColeta(), _carregarHist(), _cadDados.produtos);
   var filtrado = hist.filter(function(r){
     if(!r.data) return false;
     if(anoFiltro && r.data.slice(0,4)!==anoFiltro) return false;
@@ -15417,17 +15503,17 @@ function _gerarRelatorioPDF(setorLabel, anoFiltro, mesFiltro){
     cabecalhoTabela();
   }
 
-  var colX = {data:margin, coletor:margin+20, item:margin+48, qtd:margin+108, unid:margin+122, obs:margin+146};
+  var colX = {data:margin, qtd:margin+22, unid:margin+38, item:margin+64, coletor:margin+116, obs:margin+146}; // Qtde | Apresentação | Descrição
   var mostrarTipo = (setorLabel === 'Estoque');
-  if(mostrarTipo){ colX = {data:margin, coletor:margin+18, item:margin+42, tipo:margin+92, qtd:margin+112, unid:margin+126, obs:margin+146}; }
+  if(mostrarTipo){ colX = {data:margin, tipo:margin+36, qtd:margin+54, unid:margin+68, item:margin+94, coletor:margin+140, obs:margin+164}; }
   function cabecalhoTabela(){
     doc.setFont('helvetica','bold'); doc.setFontSize(8.5);
     doc.text('Data', colX.data, y);
     doc.text('Coletor', colX.coletor, y);
-    doc.text('Item', colX.item, y);
+    doc.text('Descrição', colX.item, y);
     if(mostrarTipo) doc.text('Mov.', colX.tipo, y);
-    doc.text('Qtd', colX.qtd, y);
-    doc.text('Unid', colX.unid, y);
+    doc.text('Qtde', colX.qtd, y);
+    doc.text('Apresentação', colX.unid, y);
     doc.text('Obs', colX.obs, y);
     y += 2;
     doc.setDrawColor(210); doc.line(margin, y, pageW-margin, y);
@@ -15456,12 +15542,12 @@ function _gerarRelatorioPDF(setorLabel, anoFiltro, mesFiltro){
       novaLinhaSeNecessario();
       qtdRegistros++;
       doc.text(mostrarTipo && r.mov ? dataFmt+' '+r.mov : dataFmt, colX.data, y);
-      doc.text(String(r.coletor||'-').slice(0,14), colX.coletor, y);
-      doc.text(String(it.nome||'').slice(0,mostrarTipo?18:24), colX.item, y);
+      doc.text(String(r.coletor||'-').slice(0,mostrarTipo?12:14), colX.coletor, y);
+      doc.text(String(it.nome||'').slice(0,mostrarTipo?22:26), colX.item, y);
       if(mostrarTipo) doc.text(it.tipo==='Saida' ? 'Saida' : 'Entrada', colX.tipo, y);
       doc.text(String(it.qtd), colX.qtd, y);
-      doc.text(String(it.unid||''), colX.unid, y);
-      doc.text(String(it.obs||'').slice(0,18), colX.obs, y);
+      doc.text(String(it.unid||'').slice(0,mostrarTipo?12:13), colX.unid, y);
+      doc.text(String(it.obs||'').slice(0,mostrarTipo?12:18), colX.obs, y);
       y += 5;
       var chave = (it.setor||'-')+'|'+(it.nome||'-')+'|'+(it.unid||'');
       totaisPorItem[chave] = (totaisPorItem[chave]||0) + (parseFloat(it.qtd)||0);
@@ -15606,7 +15692,7 @@ function renderHistColeta(){
   var ano   = document.getElementById('hcol-ano').value;
   var mes   = document.getElementById('hcol-mes').value;
   var visao = document.getElementById('hcol-visao').value;
-  var hist  = _carregarHistColeta();
+  var hist  = _histComSaidas(_carregarHistColeta(), _carregarHist(), _cadDados.produtos); // + saídas de Perda/Pedidos em Aviário/Campo
   var body  = document.getElementById('hcol-body');
 
   // Filtra por ano/mes
@@ -15635,6 +15721,8 @@ function renderHistColeta(){
   } else {
     _renderHistColetaDetalhe(body, filtrado, setor);
   }
+  var avSd = _sdAvisosHtml(ano, mes, setor);
+  if(avSd) body.insertAdjacentHTML('afterbegin', avSd);
 }
 
 function _renderHistColetaTotal(body, registros, ano, mes, setorFiltro){
@@ -15843,11 +15931,16 @@ function _renderHistColetaDetalhe(body, registros, setorFiltro){
         +'</div>';
     });
     // Linha de botões
+    if(r._virtual){
+      // Saída automática (Perda/Pedido) — não é um registro próprio: corrige-se no lançamento de origem
+      html += '<div class="hcol-entrada-btns" style="font-family:DM Mono,monospace;font-size:10px;color:var(--mu)">↳ Saída automática de '+(r._virtual==='Perda'?'Perda':'Pedido')+(r.itens&&r.itens[0]&&r.itens[0].obs&&/\(/.test(r.itens[0].obs)?' · '+r.itens[0].obs.replace(/^\w+ /,''):'')+' — para corrigir, edite o lançamento de origem.</div>';
+    } else {
     html += '<div class="hcol-entrada-btns">';
     html += '<button class="hcol-btn-edit" onclick="_abrirEditColeta('+ri+')">✎ Editar</button>';
     html += '<button class="hcol-btn-dl" onclick="_reenviarColeta('+ri+')" title="Reenviar">📤</button>';
     html += '<button class="hcol-btn-del" onclick="_excluirColeta('+ri+')" title="Excluir">🗑</button>';
     html += '</div>';
+    }
     html += '</div>';
   });
   body.innerHTML = html;
@@ -15857,8 +15950,8 @@ function _renderHistColetaDetalhe(body, registros, setorFiltro){
 function _reenviarColeta(ri){
   var body = document.getElementById('hcol-body');
   var regs = body._regRefs;
-  if(!regs || !regs[ri]) return;
-  var r = regs[ri];
+  if(!regs || !regs[ri] || regs[ri]._virtual) return;
+  var r = _buscarColetaPorTs(regs[ri].ts) || regs[ri];
   var n = _getNum();
   if(!n){ _toast('Numero nao configurado.'); return; }
   var linhas = (r.itens||[]).map(function(it){
@@ -17068,6 +17161,17 @@ async function _aprovarColeta(idx){
   var hist = _carregarHistColetaRaw();
   var novo = Object.assign({},reg);
   delete novo.status; delete novo.enviadoEm;
+  // Garantia: coleta vinda do Coletor nunca traz saída em Aviário/Campo.
+  // Se trouxer (versão antiga do app), vira lançamento de PERDA — que é o
+  // único caminho de perda para o Coletor e é abatido no balanço do setor.
+  novo.itens = (novo.itens||[]).map(function(it){
+    var c = Object.assign({}, it, {qtd: Math.abs(Number(it.qtd)||0)});
+    if(c.setor==='Aviario' || c.setor==='Campo'){
+      if(c.tipo==='Saida'){ c.setor = 'Perda'; c.obs = ((c.obs||'')+' (enviado como saída em '+it.setor+')').trim(); }
+      c.tipo = '';
+    }
+    return c;
+  });
   // Numera aqui, na aprovação — é o único ponto que grava no histórico
   // oficial, então evita duas coletas pendentes (de aparelhos diferentes)
   // ganharem o mesmo MOV-XXXX.
@@ -17473,6 +17577,19 @@ async function _sincronizarAgora(manual){
     if(rp.mudouLocal){
       _renderHist();
       _recalcularPedNumPeloHistorico();
+      houveMudanca = true;
+    }
+
+    // Compras — mesma mesclagem de coletas/pedidos (por ts, edição mais recente vence)
+    var rcmp = await _syncArquivo(GH_BCK_COMPRAS, _cmpCarregarRaw, _mesclarRegistros,
+      async function(merge, json){
+        try{ localStorage.setItem(CMP_KEY, json); }catch(e){}
+        if(_caOpfs) await _caOpfsSalvar(FSJ_COMPRAS, json);
+      }, 'Sincronizacao automatica (compras)');
+    if(rcmp.mudouLocal){
+      var mh = document.getElementById('hcmp-modal');
+      if(mh && mh.classList.contains('vis')) _cmpRenderHist();
+      if(!_cmpEditTs) _cmpRenderNum();
       houveMudanca = true;
     }
 
@@ -17942,6 +18059,8 @@ var _ACENTOS_PDF = [
 ];
 function _acentuarTexto(t){
   if(typeof t !== 'string') return t;
+  t = t.replace(/\u2212/g,'-').replace(/\u2192/g,'->').replace(/\u00a0/g,' ')
+       .replace(/[^\u0000-\u00ff\u2013\u2014\u2018\u2019\u201c\u201d\u2022\u2026\u20ac]/g,''); // emojis etc. não existem na fonte do PDF
   for(var i=0;i<_ACENTOS_PDF.length;i++) t = t.replace(_ACENTOS_PDF[i][0], _ACENTOS_PDF[i][1]);
   return t;
 }
@@ -17954,6 +18073,496 @@ function _pdfAcentuar(doc){
   if(doc.splitTextToSize){ var sp = doc.splitTextToSize.bind(doc); doc.splitTextToSize = function(t){ var a = Array.prototype.slice.call(arguments); a[0] = fx(t); return sp.apply(null, a); }; }
   doc._acentuado = true;
   return doc;
+}
+
+
+/* ═════════════════════════════════════════════════════════════════
+   ABA COMPRAS (somente apps Admin)
+   Uma compra = cabeçalho (data, setor, fornecedor, responsável, obs)
+   + vários itens (item, apresentação, qtde, preço unit., total).
+   Registro próprio — não mexe no Estoque. Sincroniza com os outros
+   aparelhos Admin pelo GitHub (backup/compras.json), igual a coletas
+   e pedidos. Itens: só produtos com apresentação autorizada na aba
+   "Compras" (Cadastros → Apresentação).
+   ═════════════════════════════════════════════════════════════════ */
+var CMP_KEY = 'fsj_hist_compras';
+var FSJ_COMPRAS = 'compras.json';
+var GH_BCK_COMPRAS = 'backup/compras.json';
+var CMP_SETORES = [{v:'Aviario', t:'Aviário'}, {v:'Campo', t:'Campo'}];
+var _cmpItens = [];
+var _cmpEditTs = null; // ts da compra em edição (null = compra nova)
+
+function _cmpCarregarRaw(){ try{ return JSON.parse(localStorage.getItem(CMP_KEY)||'[]'); }catch(e){ return []; } }
+function _cmpCarregar(){ return _cmpCarregarRaw().filter(function(r){ return !r._excluido; }); }
+async function _cmpGravar(hist){
+  var json = JSON.stringify(hist);
+  try{ localStorage.setItem(CMP_KEY, json); }catch(e){}
+  if(_caOpfs){ try{ await _caOpfsSalvar(FSJ_COMPRAS, json); }catch(e){} }
+  _sincronizarRegistrosGitHub();
+}
+function _cmpSetorTxt(v){ var s = CMP_SETORES.find(function(x){ return x.v===v; }); return s ? s.t : (v||''); }
+
+/* Produtos/apresentações autorizados para a aba Compras (em ordem alfabética) */
+function _cmpProdutos(){
+  return (_cadDados.produtos||[]).filter(function(p){
+    return !p._excluido && (p.apresentacoes||[]).some(function(a){ return _apresHabilitadaNaAba(p, a, 'Compras'); });
+  }).sort(function(a,b){ return (a.nome||'').localeCompare(b.nome||'','pt-BR',{sensitivity:'base',numeric:true}); });
+}
+function _cmpApres(prod){
+  return (prod && prod.apresentacoes || []).filter(function(a){ return _apresHabilitadaNaAba(prod, a, 'Compras'); })
+    .sort(function(x,y){ return (x.unid||'').localeCompare(y.unid||'','pt-BR',{sensitivity:'base',numeric:true}); });
+}
+function _cmpProximoNum(){
+  var maior = 0;
+  _cmpCarregarRaw().forEach(function(r){ var m = String(r.num||'').match(/(\d+)/); if(m) maior = Math.max(maior, parseInt(m[1],10)); });
+  return 'CMP-'+String(maior+1).padStart(4,'0');
+}
+function _cmpRenderNum(){
+  var el = document.getElementById('cmp-num'); if(!el) return;
+  if(_cmpEditTs){
+    var r = _cmpCarregarRaw().find(function(x){ return x.ts===_cmpEditTs; });
+    el.innerHTML = 'Editando <strong>'+_escH(r ? r.num : '')+'</strong> <button onclick="_cmpCancelarEdicao()" style="margin-left:8px;padding:2px 8px;border-radius:10px;border:1px solid var(--ac);background:none;color:var(--ac);font-size:10px;cursor:pointer">cancelar edição</button>';
+  } else el.innerHTML = 'Compra <strong>'+_cmpProximoNum()+'</strong>';
+}
+
+function _cmpNovoItem(){ _cmpItens.push({prodId:'', apresId:'', nome:'', unid:'', qtd:0, preco:0}); _cmpRender(); }
+function _cmpRemoverItem(i){ _cmpItens.splice(i,1); if(!_cmpItens.length) _cmpItens.push({prodId:'', apresId:'', nome:'', unid:'', qtd:0, preco:0}); _cmpRender(); }
+
+function _cmpRender(){
+  var cont = document.getElementById('cmp-itens'); if(!cont) return;
+  if(!_cmpItens.length) _cmpItens.push({prodId:'', apresId:'', nome:'', unid:'', qtd:0, preco:0});
+  var prods = _cmpProdutos();
+  cont.innerHTML = _cmpItens.map(function(it, i){
+    var prod = prods.find(function(p){ return p.id===it.prodId; });
+    var optsP = '<option value="">— Escolha o item —</option>'
+      + (it.prodId && !prod ? '<option value="'+_escH(it.prodId)+'" selected>'+_escH(it.nome)+' (registro)</option>' : '')
+      + prods.map(function(p){ return '<option value="'+_escH(p.id)+'"'+(p.id===it.prodId?' selected':'')+'>'+_escH(p.nome)+'</option>'; }).join('');
+    var aps = _cmpApres(prod);
+    var temAp = aps.some(function(a){ return a.id===it.apresId; });
+    var optsA = (it.unid && !temAp ? '<option value="" selected>'+_escH(it.unid)+' (registro)</option>' : '')
+      + aps.map(function(a){ return '<option value="'+_escH(a.id)+'"'+(a.id===it.apresId?' selected':'')+'>'+_escH(a.unid)+(a.fornecedor?' — '+_escH(a.fornecedor):'')+'</option>'; }).join('');
+    var sub = Math.round((Number(it.qtd)||0)*(Number(it.preco)||0)*100)/100;
+    return '<div class="vi">'
+      +'<span class="vi-lbl">Item</span>'
+      +'<select class="vi-sel" onchange="_cmpSetProd('+i+',this.value)" style="margin-bottom:10px">'+optsP+'</select>'
+      +'<span class="vi-lbl">Apresentação</span>'
+      +'<select class="vi-sel" onchange="_cmpSetApres('+i+',this.value)" style="margin-bottom:12px"'+(prod||it.unid?'':' disabled')+'>'+(optsA||'<option value="">— escolha o item primeiro —</option>')+'</select>'
+      +'<div class="vi-row2">'
+      +'<div class="vi-campo"><span class="vi-lbl">Qtde</span><input class="vi-inp" type="number" min="0" step="0.5" inputmode="decimal" placeholder="0" value="'+(it.qtd||'')+'" oninput="_cmpSetNum('+i+',\'qtd\',this.value)"></div>'
+      +'<div class="vi-campo"><span class="vi-lbl">Preço Unit. (R$)</span><input class="vi-inp" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00" value="'+(it.preco||'')+'" oninput="_cmpSetNum('+i+',\'preco\',this.value)"></div>'
+      +'</div>'
+      +'<div style="display:flex;gap:8px;align-items:flex-end">'
+      +'<div class="vi-campo" style="flex:1"><span class="vi-lbl">Total</span><div class="vi-sub-box">R$ <span id="cmp-sub-'+i+'">'+_fmt(sub)+'</span></div></div>'
+      +'<button class="vi-del" onclick="_cmpRemoverItem('+i+')" title="Remover item">×</button>'
+      +'</div></div>';
+  }).join('');
+  _cmpAtualizarTotal();
+  _cmpRenderNum();
+}
+function _cmpSetProd(i, v){
+  var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===v; });
+  var it = _cmpItens[i];
+  it.prodId = v; it.nome = prod ? prod.nome : ''; it.apresId = ''; it.unid = ''; it.preco = 0;
+  var aps = _cmpApres(prod);
+  if(aps.length) _cmpAplicarApres(it, aps[0]);
+  _cmpRender();
+}
+function _cmpSetApres(i, id){
+  var it = _cmpItens[i];
+  var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===it.prodId; });
+  var a = _cmpApres(prod).find(function(x){ return x.id===id; });
+  if(a) _cmpAplicarApres(it, a);
+  _cmpRender();
+}
+function _cmpAplicarApres(it, a){
+  it.apresId = a.id; it.unid = a.unid||''; it.preco = Number(a.preco)||0;
+  var f = document.getElementById('cmp-fornecedor');
+  if(f && !f.value.trim() && a.fornecedor) f.value = a.fornecedor; // sugere o fornecedor da apresentação
+}
+function _cmpSetNum(i, campo, v){
+  _cmpItens[i][campo] = parseFloat(v)||0;
+  var it = _cmpItens[i];
+  var sp = document.getElementById('cmp-sub-'+i);
+  if(sp) sp.textContent = _fmt(Math.round((Number(it.qtd)||0)*(Number(it.preco)||0)*100)/100);
+  _cmpAtualizarTotal();
+}
+function _cmpAtualizarTotal(){
+  var t = _cmpItens.reduce(function(s,it){ return s + Math.round((Number(it.qtd)||0)*(Number(it.preco)||0)*100)/100; }, 0);
+  var el = document.getElementById('cmp-total'); if(el) el.textContent = 'R$ '+_fmt(t);
+  return t;
+}
+function _cmpLimpar(){
+  _cmpItens = []; _cmpEditTs = null;
+  ['cmp-fornecedor','cmp-obs'].forEach(function(id){ var e = document.getElementById(id); if(e) e.value=''; });
+  var r = document.getElementById('cmp-resp'); if(r) r.value = (localStorage.getItem('wpp_nome')||'').trim();
+  var s = document.getElementById('cmp-setor'); if(s) s.value = '';
+  _cmpRender();
+}
+function _cmpCancelarEdicao(){ _cmpLimpar(); _toast('Edição cancelada.'); }
+
+/* Cada compra gera (ou atualiza) uma ENTRADA no Estoque — um registro de
+   coleta na aba Estoque, ligado à compra (origem:'compra', compraTs). As
+   entradas manuais do Estoque continuam existindo normalmente. */
+function _cmpEntradaEstoque(compra, excluir){
+  var hist = _carregarHistColetaRaw();
+  var idx = hist.findIndex(function(r){ return r.compraTs === compra.ts; });
+  if(excluir){
+    if(idx > -1 && !hist[idx]._excluido){ hist[idx]._excluido = true; hist[idx]._excluidoEm = Date.now(); }
+  } else {
+    var itens = (compra.itens||[]).map(function(it){
+      return {setor:'Estoque', nome:it.nome, unid:it.unid||'', qtd:Number(it.qtd)||0, preco:Number(it.preco)||0,
+              forn:compra.fornecedor||'', tipo:'Entrada', obs:'Compra '+(compra.num||'')};
+    });
+    if(idx > -1){
+      hist[idx] = Object.assign({}, hist[idx], {data:compra.data, coletor:compra.responsavel||'', itens:itens,
+        _editadoEm: Math.max(Date.now(), (hist[idx]._editadoEm||0)+1)});
+      delete hist[idx]._excluido;
+    } else {
+      var reg = {ts:compra.ts+1, data:compra.data, coletor:compra.responsavel||'', itens:itens,
+                 origem:'compra', compraTs:compra.ts, compraNum:compra.num||''};
+      _atribuirNumeroMovRegistro(reg); // MOV-XXXX, como qualquer movimentação de Estoque
+      hist.unshift(reg);
+    }
+  }
+  var json = JSON.stringify(hist);
+  try{ localStorage.setItem(CK, json); }catch(e){}
+  if(_caOpfs) _caOpfsSalvar(FSJ_COLETAS, json);
+  if(typeof renderHistColeta==='function'){ try{ renderHistColeta(); }catch(e){} }
+}
+
+async function _cmpRegistrar(){
+  var setor = (document.getElementById('cmp-setor')||{}).value||'';
+  var forn  = ((document.getElementById('cmp-fornecedor')||{}).value||'').trim();
+  var resp  = ((document.getElementById('cmp-resp')||{}).value||'').trim();
+  var obs   = ((document.getElementById('cmp-obs')||{}).value||'').trim();
+  var data  = (document.getElementById('data-global')||{}).value || _dataLocalHoje();
+  if(!setor){ _toast('Escolha o setor (Aviário ou Campo).'); return; }
+  if(!forn){ _toast('Informe o fornecedor.'); return; }
+  if(!resp){ _toast('Informe o responsável.'); return; }
+  var itens = _cmpItens.filter(function(it){ return it.prodId; });
+  if(!itens.length){ _toast('Inclua ao menos um item.'); return; }
+  var semQtd = itens.filter(function(it){ return !(Number(it.qtd)>0); });
+  if(semQtd.length){ _toast('Informe a quantidade de: '+semQtd.map(function(it){ return it.nome; }).join(', ')); return; }
+  var linhas = itens.map(function(it){
+    var sub = Math.round(it.qtd*it.preco*100)/100;
+    return {prodId:it.prodId, apresId:it.apresId||'', nome:it.nome, unid:it.unid, qtd:Number(it.qtd), preco:Number(it.preco)||0, sub:sub};
+  });
+  var total = linhas.reduce(function(s,l){ return s+l.sub; }, 0);
+  var resumo = linhas.map(function(l){ return '• '+l.nome+': '+_fmtNum(l.qtd)+' '+l.unid+' × R$ '+_fmt(l.preco)+' = R$ '+_fmt(l.sub); }).join('\n');
+  if(!confirm((_cmpEditTs?'Salvar alterações da compra':'Registrar compra')+' (também entra no Estoque como Entrada)\n\nSetor: '+_cmpSetorTxt(setor)+'\nFornecedor: '+forn+'\nResponsável: '+resp+'\n\n'+resumo+'\n\nTotal: R$ '+_fmt(total)+'\n\nConfirmar?')) return;
+
+  // Antes de gravar, traz o que houver de novo de outro aparelho (numeração e edições)
+  if(_ghToken()) await _syncAntesDeEditar();
+  var hist = _cmpCarregarRaw();
+  if(_cmpEditTs){
+    var idx = hist.findIndex(function(r){ return r.ts===_cmpEditTs; });
+    if(idx < 0 || hist[idx]._excluido){ alert('Esta compra foi excluída em outro aparelho. Nada foi gravado.'); _cmpLimpar(); return; }
+    hist[idx] = Object.assign({}, hist[idx], {data:data, setor:setor, fornecedor:forn, responsavel:resp, obs:obs, itens:linhas, total:total,
+      _editadoEm: Math.max(Date.now(), (hist[idx]._editadoEm||0)+1)});
+    _cmpEntradaEstoque(hist[idx]);
+    await _cmpGravar(hist);
+    _toast('✅ Compra '+hist[idx].num+' atualizada (Entrada no Estoque atualizada)!');
+  } else {
+    var reg = {ts:Date.now(), num:_cmpProximoNum(), data:data, setor:setor, fornecedor:forn, responsavel:resp, obs:obs, itens:linhas, total:total};
+    hist.unshift(reg);
+    _cmpEntradaEstoque(reg);
+    await _cmpGravar(hist);
+    _toast('✅ Compra '+reg.num+' registrada e lançada como Entrada no Estoque!');
+  }
+  _cmpLimpar();
+}
+
+/* ── Histórico de Compras ── */
+function _cmpAbrirHist(){
+  _sincronizarRegistrosGitHub();
+  var hist = _cmpCarregar();
+  var anos = {}; hist.forEach(function(r){ if(r.data) anos[r.data.slice(0,4)] = 1; });
+  var anoAtual = new Date().getFullYear().toString(); anos[anoAtual] = 1;
+  var selAno = document.getElementById('hcmp-ano');
+  selAno.innerHTML = '<option value="">Todos</option>'+Object.keys(anos).sort().reverse().map(function(a){ return '<option value="'+a+'"'+(a===anoAtual?' selected':'')+'>'+a+'</option>'; }).join('');
+  document.getElementById('hcmp-modal').classList.add('vis');
+  _navPush('hcmp-modal');
+  _cmpRenderHist();
+}
+function _cmpFecharHist(){ document.getElementById('hcmp-modal').classList.remove('vis'); _navPop(); }
+function _cmpFiltrados(){
+  var ano = document.getElementById('hcmp-ano').value, mes = document.getElementById('hcmp-mes').value, setor = document.getElementById('hcmp-setor').value;
+  return _cmpCarregar().filter(function(r){
+    if(ano && (r.data||'').slice(0,4)!==ano) return false;
+    if(mes && (r.data||'').slice(5,7)!==mes) return false;
+    if(setor && r.setor!==setor) return false;
+    return true;
+  }).sort(function(a,b){ if(a.data!==b.data) return (a.data||'') < (b.data||'') ? 1 : -1; return (b.ts||0)-(a.ts||0); });
+}
+function _cmpPeriodoLabel(){
+  var ano = document.getElementById('hcmp-ano').value, mes = document.getElementById('hcmp-mes').value, setor = document.getElementById('hcmp-setor').value;
+  var M = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  return (mes ? M[parseInt(mes,10)-1]+' '+(ano||'') : (ano ? 'Ano '+ano : 'Todos os períodos')) + (setor ? ' · '+_cmpSetorTxt(setor) : '');
+}
+function _cmpDataFmt(iso){
+  var M = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  var d = iso ? new Date(iso+'T12:00') : null;
+  return d ? String(d.getDate()).padStart(2,'0')+' '+M[d.getMonth()]+' '+d.getFullYear() : '—';
+}
+function _cmpTotais(lista){
+  var tot = {};
+  lista.forEach(function(r){ (r.itens||[]).forEach(function(it){
+    var k = (it.nome||'')+'|'+(it.unid||'');
+    if(!tot[k]) tot[k] = {nome:it.nome, unid:it.unid, qtd:0, total:0, eventos:[]};
+    tot[k].qtd += Number(it.qtd)||0; tot[k].total += Number(it.sub)||0;
+    tot[k].eventos.push({dataIso:r.data, num:r.num, fornecedor:r.fornecedor, setor:r.setor, responsavel:r.responsavel, qtd:it.qtd, unid:it.unid, preco:it.preco, sub:it.sub});
+  }); });
+  return Object.keys(tot).map(function(k){ return tot[k]; }).sort(function(a,b){ return (a.nome||'').localeCompare(b.nome||'','pt-BR',{sensitivity:'base',numeric:true}) || (a.unid||'').localeCompare(b.unid||'','pt-BR'); });
+}
+function _cmpRenderHist(){
+  var body = document.getElementById('hcmp-body');
+  var lista = _cmpFiltrados();
+  var visao = document.getElementById('hcmp-visao').value;
+  var total = lista.reduce(function(s,r){ return s+(Number(r.total)||0); }, 0);
+  document.getElementById('hcmp-valor').textContent = 'R$ '+_fmt(total);
+  if(!lista.length){ body.innerHTML = '<div class="hcol-vazia">Nenhuma compra no período selecionado.</div>'; return; }
+  var h = '<div style="font-family:DM Mono,monospace;font-size:10px;color:var(--mu);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">'+_escH(_cmpPeriodoLabel())+' · '+lista.length+' compra(s)</div>';
+  if(visao === 'total'){
+    var tots = _cmpTotais(lista);
+    body._cmpTot = tots;
+    h += '<div class="hcol-secao"><span class="hcol-secao-titulo" style="background:#4b2e83">Compras</span>';
+    tots.forEach(function(t, i){
+      h += '<div class="hcol-item" style="flex-direction:column;align-items:stretch;padding:0;overflow:hidden">'
+        +'<button onclick="_cmpToggleItem(this,'+i+')" style="display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:none;padding:10px 12px;cursor:pointer;text-align:left">'
+        +'<div><div class="hcol-item-nome">'+_escH(t.nome)+'</div><div class="hcol-item-det">R$ '+_fmt(t.total)+'</div></div>'
+        +'<div style="display:flex;align-items:center;gap:10px"><div style="text-align:right"><div class="hcol-item-qtd">'+_fmtNum(t.qtd)+'</div><div class="hcol-item-unid">'+_escH(t.unid)+'</div></div>'
+        +'<span role="button" tabindex="0" title="Gerar PDF deste item" onclick="event.stopPropagation();_cmpPdfItem('+i+')" style="display:inline-flex;align-items:center;gap:4px;padding:5px 9px;border-radius:14px;background:#1f6b35;color:#fff;font-family:DM Mono,monospace;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap">📄 PDF</span>'
+        +'<span class="hcol-chevron" style="font-size:16px;color:var(--mu)">▸</span></div></button>'
+        +'<div class="hcol-detalhe-lista" style="display:none;border-top:1px solid var(--ce);background:#f8f6f1"></div></div>';
+    });
+    h += '</div>';
+  } else {
+    lista.forEach(function(r){
+      h += '<div class="hcol-entrada">'
+        +'<div class="hcol-entrada-hd"><span class="hcol-entrada-data">'+_cmpDataFmt(r.data)+' · '+_escH(r.num||'')+' · '+_escH(_cmpSetorTxt(r.setor))+'</span>'
+        +'<span class="hcol-entrada-col">'+_escH(r.responsavel||'')+'</span></div>'
+        +'<div style="font-family:DM Mono,monospace;font-size:11px;color:var(--mu);margin-bottom:6px">Fornecedor: <strong style="color:var(--tx)">'+_escH(r.fornecedor||'—')+'</strong></div>'
+        +(r.itens||[]).map(function(it){
+          return '<div class="hcol-entrada-item" style="display:flex;justify-content:space-between;gap:8px;padding:3px 0">'
+            +'<span style="font-weight:800">'+_escH(it.nome)+'</span>'
+            +'<span style="font-family:DM Mono,monospace;font-size:12px;text-align:right">'+_fmtNum(it.qtd)+' '+_escH(it.unid||'')+' × R$ '+_fmt(it.preco)+' = <strong>R$ '+_fmt(it.sub)+'</strong></span></div>';
+        }).join('')
+        +(r.obs?'<div style="font-size:12px;color:var(--mu);margin-top:4px">Obs.: '+_escH(r.obs)+'</div>':'')
+        +'<div style="text-align:right;font-family:DM Mono,monospace;font-weight:700;color:#4b2e83;margin-top:6px">Total: R$ '+_fmt(r.total)+'</div>'
+        +'<div class="hcol-entrada-btns"><button class="hcol-btn-edit" onclick="_cmpEditar('+r.ts+')">✎ Editar</button>'
+        +'<button class="hcol-btn-del" onclick="_cmpExcluir('+r.ts+')" title="Excluir">🗑</button></div>'
+        +'</div>';
+    });
+  }
+  h += '<div class="hcol-total"><span class="hcol-total-lbl">Total do período</span><span class="hcol-total-val">R$ '+_fmt(total)+'</span></div>';
+  body.innerHTML = h;
+}
+function _cmpToggleItem(btn, i){
+  var t = (document.getElementById('hcmp-body')._cmpTot||[])[i]; if(!t) return;
+  var det = btn.parentElement.querySelector('.hcol-detalhe-lista'), ch = btn.querySelector('.hcol-chevron');
+  if(det.style.display !== 'none'){ det.style.display='none'; ch.textContent='▸'; return; }
+  det.innerHTML = t.eventos.slice().sort(function(a,b){ return (b.dataIso||'').localeCompare(a.dataIso||''); }).map(function(e){
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:1px solid var(--ce);font-family:DM Mono,monospace;font-size:11px">'
+      +'<div><div style="font-weight:700;color:var(--vd)">'+_cmpDataFmt(e.dataIso)+' · '+_escH(e.num||'')+'</div>'
+      +'<div style="color:var(--mu);margin-top:2px">'+_escH(e.fornecedor||'')+' · '+_escH(_cmpSetorTxt(e.setor))+'</div></div>'
+      +'<div style="text-align:right"><div style="font-weight:700;color:#4b2e83">'+_fmtNum(e.qtd)+' '+_escH(e.unid||'')+'</div>'
+      +'<div style="color:var(--mu);margin-top:2px">R$ '+_fmt(e.preco)+' · R$ '+_fmt(e.sub)+'</div></div></div>';
+  }).join('');
+  det.style.display = 'block'; ch.textContent = '▾';
+}
+function _cmpEditar(ts){
+  var r = _cmpCarregar().find(function(x){ return x.ts===ts; }); if(!r) return;
+  _cmpEditTs = ts;
+  _cmpItens = (r.itens||[]).map(function(it){ return {prodId:it.prodId, apresId:it.apresId||'', nome:it.nome, unid:it.unid, qtd:it.qtd, preco:it.preco}; });
+  document.getElementById('cmp-setor').value = r.setor||'';
+  document.getElementById('cmp-fornecedor').value = r.fornecedor||'';
+  document.getElementById('cmp-resp').value = r.responsavel||'';
+  document.getElementById('cmp-obs').value = r.obs||'';
+  var dg = document.getElementById('data-global'); if(dg && r.data) dg.value = r.data;
+  _cmpFecharHist();
+  trocarAba('compras');
+  _cmpRender();
+  _toast('Editando '+r.num+' — altere e toque em "Salvar compra".');
+}
+async function _cmpExcluir(ts){
+  var hist = _cmpCarregarRaw();
+  var r = hist.find(function(x){ return x.ts===ts; }); if(!r) return;
+  if(!confirm('Excluir a compra '+r.num+' ('+_cmpDataFmt(r.data)+', R$ '+_fmt(r.total)+')?\n\nA Entrada no Estoque gerada por ela também será excluída.')) return;
+  r._excluido = true; r._excluidoEm = Date.now();
+  _cmpEntradaEstoque(r, true);
+  await _cmpGravar(hist);
+  _cmpRenderHist();
+  _toast('🗑 Compra '+r.num+' excluída.');
+}
+function _cmpPdf(){
+  var lista = _cmpFiltrados(); if(!lista.length){ _toast('Nenhuma compra no período.'); return; }
+  var visao = document.getElementById('hcmp-visao').value;
+  var PW = 210, linhas, colunas, total = lista.reduce(function(s,r){ return s+(Number(r.total)||0); },0);
+  if(visao === 'total'){
+    colunas = [{t:'Qtde',x:0},{t:'Apresentação',x:0,max:40},{t:'Descrição',x:0,max:80},{t:'Total',x:0}];
+    linhas = _cmpTotais(lista).map(function(t){ return [_fmtNum(t.qtd), t.unid, t.nome, 'R$ '+_fmt(t.total)]; });
+  } else {
+    colunas = [{t:'Data',x:0},{t:'Compra',x:0},{t:'Qtde',x:0},{t:'Apresentação',x:0,max:30},{t:'Descrição',x:0,max:40},{t:'Preço',x:0},{t:'Total',x:0},{t:'Fornecedor',x:0,max:30}];
+    linhas = [];
+    lista.slice().reverse().forEach(function(r){ (r.itens||[]).forEach(function(it){
+      linhas.push([_cmpDataFmt(r.data), r.num||'', _fmtNum(it.qtd), it.unid||'', it.nome, 'R$ '+_fmt(it.preco), 'R$ '+_fmt(it.sub), r.fornecedor||'']);
+    }); });
+  }
+  _pdfTabelaItem('Histórico de Compras', _cmpPeriodoLabel()+' · '+lista.length+' compra(s) · '+(visao==='total'?'Totalização por item':'Compras detalhadas'),
+    colunas, linhas, [['Total do período', 'R$ '+_fmt(total)]], 'compras-'+_dataLocalHoje()+'.pdf');
+}
+function _cmpPdfItem(i){
+  var t = (document.getElementById('hcmp-body')._cmpTot||[])[i]; if(!t) return;
+  var PW = 210;
+  var ev = t.eventos.slice().sort(function(a,b){ return (a.dataIso||'').localeCompare(b.dataIso||''); });
+  _pdfTabelaItem('Compras: '+t.nome+' ('+t.unid+')', _cmpPeriodoLabel()+' · '+ev.length+' lançamento(s)',
+    [{t:'Data',x:0},{t:'Compra',x:0},{t:'Qtde',x:0},{t:'Apresentação',x:0,max:30},{t:'Preço',x:0},{t:'Total',x:0},{t:'Fornecedor',x:0,max:40},{t:'Setor',x:0}],
+    ev.map(function(e){ return [_cmpDataFmt(e.dataIso), e.num||'', _fmtNum(e.qtd), e.unid||'', 'R$ '+_fmt(e.preco), 'R$ '+_fmt(e.sub), e.fornecedor||'', _cmpSetorTxt(e.setor)]; }),
+    [['Quantidade total', _fmtNum(t.qtd)+' '+t.unid], ['Valor total no período', 'R$ '+_fmt(t.total)]],
+    'compras-'+_slugArq(t.nome)+'-'+_dataLocalHoje()+'.pdf');
+}
+document.addEventListener('DOMContentLoaded', function(){
+  setTimeout(function(){ try{ _cmpLimpar(); }catch(e){} }, 1500);
+});
+
+
+/* ═════════════════════════════════════════════════════════════════
+   SAÍDAS DE AVIÁRIO / CAMPO (balanço Entrada × Saída, como no Estoque)
+   - Coleta em Aviário/Campo = ENTRADA.
+   - Item lançado em PERDA  = SAÍDA no setor do item.
+   - Item vendido em PEDIDO = SAÍDA no setor do item.
+   Setor do item (sempre UM só): pelas abas autorizadas no cadastro —
+   só Aviário → Aviário; só Campo → Campo; nos dois ou em nenhum → a
+   saída NÃO é aplicada e aparece um aviso para o Admin ajustar.
+   Unidade: a saída é convertida para a unidade da coleta do item
+   (ex.: 3 "bandeja c/30" = 90 unid; dúzia = 12). Sem conversão segura
+   → fica fora do saldo, com aviso.
+   Nada disso grava ou altera registros — é calculado na hora de exibir.
+   ═════════════════════════════════════════════════════════════════ */
+function _sdNorm(t){ return String(t||'').normalize('NFD').replace(/[̀-ͯ]/g,'').trim().toLowerCase(); }
+function _sdIsoData(d){
+  if(!d) return '';
+  if(/^\d{4}-\d{2}-\d{2}/.test(d)) return d.slice(0,10);
+  var m = String(d).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  return m ? m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0') : '';
+}
+function _sdSetorDoItem(produtos, nome, prodId, contSetor){
+  var lista = (produtos||[]).filter(function(p){ return !p._excluido && prodId && p.id===prodId; });
+  if(!lista.length) lista = (produtos||[]).filter(function(p){ return !p._excluido && _sdNorm(p.nome)===_sdNorm(nome); });
+  if(!lista.length) return {erro:'sem cadastro de produto'};
+  var av = false, ca = false;
+  lista.forEach(function(p){ (p.apresentacoes||[]).forEach(function(a){
+    if(_apresHabilitadaNaAba(p, a, 'Aviario')) av = true;
+    if(_apresHabilitadaNaAba(p, a, 'Campo')) ca = true;
+  }); });
+  if(av && !ca) return {setor:'Aviario'};
+  if(ca && !av) return {setor:'Campo'};
+  // Autorizado nos dois (ou em nenhum): vai para o setor onde o item é
+  // de fato COLETADO (o que tem mais coletas dele) — nunca para os dois.
+  var cAv = (contSetor && contSetor['Aviario|'+_sdNorm(nome)]) || 0;
+  var cCa = (contSetor && contSetor['Campo|'+_sdNorm(nome)]) || 0;
+  if(cAv > cCa) return {setor:'Aviario'};
+  if(cCa > cAv) return {setor:'Campo'};
+  // Sem coleta que desempate: usa o Setor do cadastro do produto, se for um dos dois
+  var ps = lista.map(function(p){ return _sdNorm(p.setor); });
+  var pAv = ps.indexOf('aviario') > -1, pCa = ps.indexOf('campo') > -1;
+  if(pAv && !pCa) return {setor:'Aviario'};
+  if(pCa && !pAv) return {setor:'Campo'};
+  return {erro: (av && ca) ? 'autorizado em Aviário e em Campo, sem coleta que indique o setor' : 'não autorizado em Aviário nem em Campo'};
+}
+/* Nome "base" da unidade: unid/un/und/unidade → unid; cx → caixa; bdj → bandeja; dz → duzia */
+function _sdBaseUnid(u){
+  var t = _sdNorm(u).replace(/[.\s]+$/,'');
+  if(/^(un|und|unid|unids|unidade|unidades|u)\b/.test(t)) return 'unid';
+  if(/^(cx|caixa|caixas)\b/.test(t)) return 'caixa';
+  if(/^(bdj|bandeja|bandejas)\b/.test(t)) return 'bandeja';
+  if(/^(dz|duzia|duzias)\b/.test(t)) return 'duzia';
+  return t;
+}
+function _sdFator(unidAlvo, unidSaida){
+  var uc = _sdNorm(unidAlvo), uv = _sdNorm(unidSaida);
+  if(!uc || !uv) return (uc===uv) ? 1 : null;
+  if(uc === uv) return 1;
+  var bc = _sdBaseUnid(uc), bv = _sdBaseUnid(uv);
+  if(bc === bv && !/\d/.test(uc) && !/\d/.test(uv)) return 1;   // "unid" x "unidade", "cx" x "caixa"
+  if(bc !== 'unid') return null;         // só converte PARA unidade (coleta em unid)
+  // quantidade escrita na embalagem (ignora pesos/volumes: 40kg, 5 l...)
+  var m = uv.match(/(\d+)(?!\s*(kg|g|l|lt|ml)\b)(?!\d)/);
+  if(m) return parseInt(m[1],10);        // "bandeja c/30" → 30, "caixa c/12" → 12
+  if(bv === 'bandeja') return 30;         // padrão da fazenda: bandeja = 30 unidades
+  if(bv === 'caixa') return 12;           // padrão da fazenda: caixa = 12 unidades
+  if(bv === 'duzia') return 12;
+  return null;
+}
+var _sdUltimosAvisos = [];
+function _histComSaidas(histColetas, pedidos, produtos){
+  var avisos = [];
+  // unidade da coleta por setor+item (a mais usada)
+  var contUnid = {}, contSetor = {};
+  (histColetas||[]).forEach(function(r){ (r.itens||[]).forEach(function(it){
+    if(it.setor!=='Aviario' && it.setor!=='Campo') return;
+    var k = it.setor+'|'+_sdNorm(it.nome), u = (it.unid||'').trim();
+    contUnid[k] = contUnid[k] || {}; contUnid[k][u] = (contUnid[k][u]||0)+1;
+    contSetor[k] = (contSetor[k]||0)+1;
+  }); });
+  function unidAlvo(setor, nome, unidSaida){
+    var c = contUnid[setor+'|'+_sdNorm(nome)];
+    if(c){ return Object.keys(c).sort(function(a,b){ return c[b]-c[a]; })[0]; }
+    if(setor==='Aviario') return 'unid'; // Aviário é coletado por unidade
+    return unidSaida; // item ainda sem coleta nesse setor: usa a própria unidade da saída
+  }
+  var saida = [];
+  function registrarSaida(origem, dataIso, ts, rotulo, it, prodId, tsOrig){
+    var sd = _sdSetorDoItem(produtos, it.nome, prodId, contSetor);
+    if(sd.erro){ avisos.push({data:dataIso, origem:origem, rotulo:rotulo, nome:it.nome, qtd:it.qtd, unid:it.unid, motivo:sd.erro}); return; }
+    var alvo = unidAlvo(sd.setor, it.nome, it.unid);
+    var f = _sdFator(alvo, it.unid);
+    var q = Number(it.qtd)||0;
+    if(f === null){ avisos.push({data:dataIso, origem:origem, rotulo:rotulo, nome:it.nome, qtd:q, unid:it.unid, motivo:'unidade "'+(it.unid||'')+'" não convertível para "'+alvo+'"'}); return; }
+    saida.push({data:dataIso, ts:ts, coletor:rotulo, _virtual:origem, _tsOrigem:tsOrig,
+      itens:[{setor:sd.setor, nome:it.nome, qtd:Math.round(q*f*1000)/1000, unid:alvo, tipo:'Saida',
+              obs: origem+(f!==1 ? ' ('+q+' '+(it.unid||'')+')' : '')}]});
+  }
+  // Perdas → saída no setor do item
+  (histColetas||[]).forEach(function(r){ (r.itens||[]).forEach(function(it){
+    if(it.setor==='Perda') registrarSaida('Perda', r.data, (r.ts||0)+0.1, (r.coletor||'')+' · Perda', it, null, r.ts);
+  }); });
+  // Pedidos → saída no setor do item
+  (pedidos||[]).forEach(function(p){ if(p._excluido) return; (p.itens||[]).forEach(function(it){
+    var nome = it.nome||it.col2||''; if(!nome) return;
+    var partes = String(it.col3||'').split(' ');
+    var qtd = Number(it.qtd) || parseFloat(partes[0]) || 0;
+    var unid = it.unidade || it.unid || partes.slice(1).join(' ');
+    var d = _sdIsoData(it.data||it.col1) || p.data || '';
+    registrarSaida('Pedido', d, (p.ts||0)+0.2, 'Pedido '+(p.num||'')+(p.cliente?' · '+p.cliente:''), {nome:nome, qtd:qtd, unid:unid}, it.prodId, p.ts);
+  }); });
+  // Coletas de Aviário/Campo passam a ser ENTRADA (cópia só para exibir)
+  var base = (histColetas||[]).map(function(r){
+    if(!(r.itens||[]).some(function(it){ return (it.setor==='Aviario'||it.setor==='Campo') && !it.tipo; })) return r;
+    var c = Object.assign({}, r);
+    c.itens = r.itens.map(function(it){ return ((it.setor==='Aviario'||it.setor==='Campo') && !it.tipo) ? Object.assign({}, it, {tipo:'Entrada'}) : it; });
+    return c;
+  });
+  _sdUltimosAvisos = avisos;
+  return base.concat(saida.filter(function(s){ return s.data; }));
+}
+/* Aviso (no topo do histórico) das saídas que não puderam ser aplicadas */
+function _sdAvisosHtml(ano, mes, setor, limiteIso){
+  if(setor && setor!=='Aviario' && setor!=='Campo') return '';
+  var lista = _sdUltimosAvisos.filter(function(a){
+    if(!a.data) return false;
+    if(limiteIso && a.data < limiteIso) return false;
+    if(ano && a.data.slice(0,4)!==ano) return false;
+    if(mes && a.data.slice(5,7)!==mes) return false;
+    return true;
+  });
+  if(!lista.length) return '';
+  var porItem = {};
+  lista.forEach(function(a){ var k = a.nome+' — '+a.motivo; porItem[k] = (porItem[k]||0)+1; });
+  return '<div style="background:#fdf3e2;border:1px solid #ecd4a8;color:#8a5a12;border-radius:8px;padding:9px 12px;font-size:12px;margin-bottom:12px;line-height:1.45">'
+    +'⚠️ <strong>'+lista.length+'</strong> saída(s) de Perda/Pedidos não entraram no balanço:<br>'
+    +Object.keys(porItem).map(function(k){ return '• '+k.replace(/&/g,'&amp;').replace(/</g,'&lt;')+(porItem[k]>1?' ('+porItem[k]+'×)':''); }).join('<br>')
+    +'<br><span style="font-size:11px">Ajuste em Cadastros → Apresentação (autorize o item em Aviário ou Campo) ou use uma unidade com a quantidade escrita (ex.: "Caixa c/12").</span></div>';
 }
 
 function _toast(msg){
@@ -18791,7 +19400,7 @@ function _cadPrecoMontarApresentacoes(dPre){
         var a = p.a, i = p.i;
         return '<option value="'+i+'"'+(dPre && dPre._apresIdx===i?' selected':'')+'>'+_escH(a.unid)+(a.preco?' — R$ '+Number(a.preco).toFixed(2).replace('.',','):'')+'</option>';
       }).join('');
-  var ABAS_APRES = ['Aviario','Perda','Campo','Estoque','Vendas'];
+  var ABAS_APRES = ['Aviario','Perda','Campo','Estoque','Vendas','Compras'];
   var abasCheckboxes = ABAS_APRES.map(function(ab){
     return '<label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">'
       +'<input type="checkbox" class="cf-aba-chk" value="'+ab+'" style="width:16px;height:16px">'+ab+'</label>';
@@ -18910,7 +19519,7 @@ async function _cadSalvarItem(aba){
     var selApres = document.getElementById('cf-apres-select');
     var precoVal = parseFloat((document.getElementById('cf-preco')||{value:0}).value)||0;
     var fornVal = (document.getElementById('cf-fornecedor')||{value:''}).value.trim();
-    var TODAS_ABAS = ['Aviario','Perda','Campo','Estoque','Vendas'];
+    var TODAS_ABAS = ['Aviario','Perda','Campo','Estoque','Vendas','Compras'];
     var chksMarcados = Array.prototype.slice.call(document.querySelectorAll('.cf-aba-chk:checked')).map(function(c){ return c.value; });
     // Sempre grava a lista explícita de abas marcadas (antes "todas marcadas"
     // ou "nenhuma" viravam "sem restrição" = aparecia em qualquer aba).
