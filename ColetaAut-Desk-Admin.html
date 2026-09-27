@@ -1229,8 +1229,10 @@ body:has(#sec-compras.at) #contador{display:none}
     <div class="vi-campo"><span class="vi-lbl">Setor</span>
       <select class="vi-sel" id="cmp-setor"><option value="">— Escolha —</option><option value="Aviario">Aviário</option><option value="Campo">Campo</option></select></div>
     <div class="vi-campo"><span class="vi-lbl">Fornecedor</span>
-      <input class="vi-inp" id="cmp-fornecedor" list="fornecedores-datalist" placeholder="Nome do fornecedor..." style="font-weight:500"></div>
+      <select class="vi-sel" id="cmp-forn-sel" onchange="_cmpOnFornChange()"><option value="">— Escolha o fornecedor —</option></select>
+      <input class="vi-inp" id="cmp-fornecedor" placeholder="Nome do fornecedor (avulso)..." style="font-weight:500;display:none;margin-top:6px" oninput="_cmpRender()"></div>
   </div>
+  <div id="cmp-aviso-forn" style="display:none;margin:-4px 0 10px;padding:8px 10px;border-radius:6px;background:#fbf4e2;border:1px solid #ecd4a8;color:#8a5a12;font-size:12px"></div>
   <div id="cmp-itens"></div>
   <button class="btn-add" onclick="_cmpNovoItem()">+ Adicionar item</button>
   <div class="vt"><div><div class="vt-lbl">Total da compra</div></div><div class="vt-val" id="cmp-total">R$ 0,00</div></div>
@@ -11700,7 +11702,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0e51ca8771';
+var _caFP = '1a0e535fa8e9';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -18288,14 +18290,96 @@ async function _cmpGravar(hist){
 function _cmpSetorTxt(v){ var s = CMP_SETORES.find(function(x){ return x.v===v; }); return s ? s.t : (v||''); }
 
 /* Produtos/apresentações autorizados para a aba Compras (em ordem alfabética) */
+/* Fornecedor escolhido (do cadastro ou digitado como avulso) */
+var CMP_FORN_AVULSO = '__avulso__';
+function _cmpFornAtual(){
+  var sel = document.getElementById('cmp-forn-sel'), inp = document.getElementById('cmp-fornecedor');
+  if(sel && sel.value && sel.value !== CMP_FORN_AVULSO) return sel.value;
+  return inp ? inp.value.trim() : '';
+}
+/* Só filtra por fornecedor quando ele veio do cadastro (avulso = sem filtro) */
+function _cmpFornFiltro(){ var sel = document.getElementById('cmp-forn-sel'); return (sel && sel.value && sel.value !== CMP_FORN_AVULSO) ? sel.value : ''; }
+function _cmpMesmoForn(a, forn){ return _sdNorm(a && a.fornecedor) === _sdNorm(forn); }
+function _cmpFornecedores(){
+  var vistos = {}, out = [];
+  (_cadDados.fornecedores||[]).forEach(function(f){ if(f._excluido || !f.nome) return; var k = _sdNorm(f.nome); if(!vistos[k]){ vistos[k]=1; out.push(f.nome.trim()); } });
+  return out.sort(function(a,b){ return a.localeCompare(b,'pt-BR',{sensitivity:'base',numeric:true}); });
+}
+function _cmpRenderFornecedores(valor){
+  var sel = document.getElementById('cmp-forn-sel'); if(!sel) return;
+  var atual = (valor !== undefined) ? valor : sel.value;
+  var lista = _cmpFornecedores();
+  sel.innerHTML = '<option value="">— Escolha o fornecedor —</option>'
+    + lista.map(function(n){ return '<option value="'+_escH(n)+'">'+_escH(n)+'</option>'; }).join('')
+    + '<option value="'+CMP_FORN_AVULSO+'" style="color:#1a6b2a;font-weight:700">+ Outro (digitar)</option>';
+  var inp = document.getElementById('cmp-fornecedor');
+  if(atual && atual !== CMP_FORN_AVULSO && lista.some(function(n){ return _sdNorm(n)===_sdNorm(atual); })){
+    sel.value = lista.find(function(n){ return _sdNorm(n)===_sdNorm(atual); });
+    if(inp){ inp.style.display = 'none'; }
+  } else if(atual){
+    sel.value = CMP_FORN_AVULSO;
+    if(inp){ inp.style.display = ''; if(atual !== CMP_FORN_AVULSO) inp.value = atual; }
+  } else { sel.value = ''; if(inp) inp.style.display = 'none'; }
+}
+function _cmpOnFornChange(){
+  var sel = document.getElementById('cmp-forn-sel'), inp = document.getElementById('cmp-fornecedor');
+  if(inp){ inp.style.display = (sel.value === CMP_FORN_AVULSO) ? '' : 'none'; if(sel.value !== CMP_FORN_AVULSO) inp.value = ''; }
+  // Itens já escolhidos que NÃO são deste fornecedor saem da compra
+  var forn = _cmpFornFiltro();
+  if(forn){
+    var antes = _cmpItens.filter(function(it){ return it.prodId; }).length;
+    _cmpItens = _cmpItens.filter(function(it){
+      if(!it.prodId) return true;
+      var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===it.prodId; });
+      return _cmpApres(prod).length > 0;
+    });
+    var depois = _cmpItens.filter(function(it){ return it.prodId; }).length;
+    if(depois < antes) _toast('Itens que não são deste fornecedor foram retirados da compra.');
+    // Itens mantidos passam para a apresentação (e preço) DESTE fornecedor
+    _cmpItens.forEach(function(it){
+      if(!it.prodId) return;
+      var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===it.prodId; });
+      var aps = _cmpApres(prod);
+      if(!aps.some(function(a){ return a.id===it.apresId; }) && aps.length) _cmpAplicarApres(it, aps[0]);
+    });
+  }
+  _cmpRender();
+}
+
+/* Produtos que podem ser comprados: apresentação autorizada na aba Compras
+   e — se um fornecedor do cadastro foi escolhido — fornecida por ele. */
 function _cmpProdutos(){
+  var forn = _cmpFornFiltro();
   return (_cadDados.produtos||[]).filter(function(p){
-    return !p._excluido && (p.apresentacoes||[]).some(function(a){ return _apresHabilitadaNaAba(p, a, 'Compras'); });
+    return !p._excluido && (p.apresentacoes||[]).some(function(a){ return _apresHabilitadaNaAba(p, a, 'Compras') && (!forn || _cmpMesmoForn(a, forn)); });
   }).sort(function(a,b){ return (a.nome||'').localeCompare(b.nome||'','pt-BR',{sensitivity:'base',numeric:true}); });
 }
+/* Apresentações do item escolhido (do fornecedor escolhido, quando houver) */
 function _cmpApres(prod){
-  return (prod && prod.apresentacoes || []).filter(function(a){ return _apresHabilitadaNaAba(prod, a, 'Compras'); })
+  var forn = _cmpFornFiltro();
+  return (prod && prod.apresentacoes || []).filter(function(a){ return _apresHabilitadaNaAba(prod, a, 'Compras') && (!forn || _cmpMesmoForn(a, forn)); })
     .sort(function(x,y){ return (x.unid||'').localeCompare(y.unid||'','pt-BR',{sensitivity:'base',numeric:true}); });
+}
+/* Aviso quando o fornecedor tem produtos no cadastro, mas nenhum liberado para Compras */
+function _cmpAvisoForn(){
+  var el = document.getElementById('cmp-aviso-forn'); if(!el) return;
+  var forn = _cmpFornFiltro();
+  if(!forn){ el.style.display = 'none'; return; }
+  var liberados = _cmpProdutos().length;
+  var semAut = [];
+  (_cadDados.produtos||[]).forEach(function(p){
+    if(p._excluido) return;
+    var temDoForn = _apresVigentes(p).some(function(a){ return _cmpMesmoForn(a, forn); });
+    var liberado = (p.apresentacoes||[]).some(function(a){ return _apresHabilitadaNaAba(p, a, 'Compras') && _cmpMesmoForn(a, forn); });
+    if(temDoForn && !liberado) semAut.push(p.nome);
+  });
+  if(!liberados && !semAut.length){
+    el.innerHTML = 'ℹ️ Nenhum produto cadastrado com o fornecedor <strong>'+_escH(forn)+'</strong>. Cadastre em Cadastros → Apresentação (campo Fornecedor e aba "Compras").';
+    el.style.display = '';
+  } else if(semAut.length){
+    el.innerHTML = 'ℹ️ '+semAut.length+' produto(s) de <strong>'+_escH(forn)+'</strong> ainda sem a aba "Compras" marcada: '+semAut.map(_escH).join(', ')+'. Marque em Cadastros → Apresentação para aparecerem aqui.';
+    el.style.display = '';
+  } else el.style.display = 'none';
 }
 function _cmpProximoNum(){
   var maior = 0;
@@ -18315,6 +18399,9 @@ function _cmpRemoverItem(i){ _cmpItens.splice(i,1); if(!_cmpItens.length) _cmpIt
 
 function _cmpRender(){
   var cont = document.getElementById('cmp-itens'); if(!cont) return;
+  var selF = document.getElementById('cmp-forn-sel');
+  if(selF) _cmpRenderFornecedores(); // lista sempre igual ao cadastro de fornecedores
+  _cmpAvisoForn();
   if(!_cmpItens.length) _cmpItens.push({prodId:'', apresId:'', nome:'', unid:'', qtd:0, preco:0});
   var prods = _cmpProdutos();
   cont.innerHTML = _cmpItens.map(function(it, i){
@@ -18361,8 +18448,7 @@ function _cmpSetApres(i, id){
 }
 function _cmpAplicarApres(it, a){
   it.apresId = a.id; it.unid = a.unid||''; it.preco = Number(a.preco)||0;
-  var f = document.getElementById('cmp-fornecedor');
-  if(f && !f.value.trim() && a.fornecedor) f.value = a.fornecedor; // sugere o fornecedor da apresentação
+  if(!_cmpFornAtual() && a.fornecedor) _cmpRenderFornecedores(a.fornecedor); // sem fornecedor ainda: usa o da apresentação
 }
 function _cmpSetNum(i, campo, v){
   _cmpItens[i][campo] = parseFloat(v)||0;
@@ -18379,6 +18465,7 @@ function _cmpAtualizarTotal(){
 function _cmpLimpar(){
   _cmpItens = []; _cmpEditTs = null;
   ['cmp-fornecedor','cmp-obs'].forEach(function(id){ var e = document.getElementById(id); if(e) e.value=''; });
+  _cmpRenderFornecedores('');
   var r = document.getElementById('cmp-resp'); if(r) r.value = (localStorage.getItem('wpp_nome')||'').trim();
   var s = document.getElementById('cmp-setor'); if(s) s.value = '';
   _cmpRender();
@@ -18417,7 +18504,7 @@ function _cmpEntradaEstoque(compra, excluir){
 
 async function _cmpRegistrar(){
   var setor = (document.getElementById('cmp-setor')||{}).value||'';
-  var forn  = ((document.getElementById('cmp-fornecedor')||{}).value||'').trim();
+  var forn  = _cmpFornAtual();
   var resp  = ((document.getElementById('cmp-resp')||{}).value||'').trim();
   var obs   = ((document.getElementById('cmp-obs')||{}).value||'').trim();
   var data  = (document.getElementById('data-global')||{}).value || _dataLocalHoje();
@@ -18560,7 +18647,7 @@ function _cmpEditar(ts){
   _cmpEditTs = ts;
   _cmpItens = (r.itens||[]).map(function(it){ return {prodId:it.prodId, apresId:it.apresId||'', nome:it.nome, unid:it.unid, qtd:it.qtd, preco:it.preco}; });
   document.getElementById('cmp-setor').value = r.setor||'';
-  document.getElementById('cmp-fornecedor').value = r.fornecedor||'';
+  _cmpRenderFornecedores(r.fornecedor||'');
   document.getElementById('cmp-resp').value = r.responsavel||'';
   document.getElementById('cmp-obs').value = r.obs||'';
   var dg = document.getElementById('data-global'); if(dg && r.data) dg.value = r.data;
@@ -18677,6 +18764,10 @@ function _sdFator(unidAlvo, unidSaida){
   if(bv === 'bandeja') return 30;         // padrão da fazenda: bandeja = 30 unidades
   if(bv === 'caixa') return 12;           // padrão da fazenda: caixa = 12 unidades
   if(bv === 'duzia') return 12;
+  // Apresentação que NÃO envolve quantidade (ex.: "vivo", "abatido", "limpo")
+  // conta 1 para 1 — vale só o produto, exatamente como na coleta.
+  // Peso/volume (kg, g, litro...) não dá para converter em unidades.
+  if(!/\d/.test(uv) && !/\b(kg|kgs|quilo|quilos|g|gr|grama|gramas|l|lt|litro|litros|ml|ton|arroba|arrobas)\b/.test(uv)) return 1;
   return null;
 }
 var _sdUltimosAvisos = [];
@@ -18696,17 +18787,39 @@ function _histComSaidas(histColetas, pedidos, produtos){
     if(setor==='Aviario') return 'unid'; // Aviário é coletado por unidade
     return unidSaida; // item ainda sem coleta nesse setor: usa a própria unidade da saída
   }
+  // Nomes dos itens de coleta (Aviário/Campo) e dos produtos autorizados lá
+  var basesNome = {};
+  (histColetas||[]).forEach(function(r){ (r.itens||[]).forEach(function(it){
+    if((it.setor==='Aviario' || it.setor==='Campo') && it.nome) basesNome[_sdNorm(it.nome)] = it.nome.trim();
+  }); });
+  (produtos||[]).forEach(function(p){
+    if(p._excluido || !p.nome) return;
+    var ok = (p.apresentacoes||[]).some(function(a){ return _apresHabilitadaNaAba(p, a, 'Aviario') || _apresHabilitadaNaAba(p, a, 'Campo'); });
+    if(ok && !basesNome[_sdNorm(p.nome)]) basesNome[_sdNorm(p.nome)] = p.nome.trim();
+  });
+  // "Frango Vivo", "Frango Abatido" → "Frango" (o item como consta na coleta)
+  function nomeDaColeta(nome){
+    var n = _sdNorm(nome);
+    if(basesNome[n]) return {nome:basesNome[n], mudou:false};
+    var melhor = '';
+    Object.keys(basesNome).forEach(function(b){ if(n.indexOf(b+' ')===0 && b.length > melhor.length) melhor = b; });
+    return melhor ? {nome:basesNome[melhor], mudou:true} : {nome:nome, mudou:false};
+  }
   var saida = [];
   function registrarSaida(origem, dataIso, ts, rotulo, it, prodId, tsOrig){
+    var nc = nomeDaColeta(it.nome);
+    var nomeOrig = it.nome;
+    if(nc.mudou){ it = Object.assign({}, it, {nome:nc.nome}); prodId = null; }
     var sd = _sdSetorDoItem(produtos, it.nome, prodId, contSetor);
     if(sd.erro){ avisos.push({data:dataIso, origem:origem, rotulo:rotulo, nome:it.nome, qtd:it.qtd, unid:it.unid, motivo:sd.erro}); return; }
     var alvo = unidAlvo(sd.setor, it.nome, it.unid);
     var f = _sdFator(alvo, it.unid);
     var q = Number(it.qtd)||0;
     if(f === null){ avisos.push({data:dataIso, origem:origem, rotulo:rotulo, nome:it.nome, qtd:q, unid:it.unid, motivo:'unidade "'+(it.unid||'')+'" não convertível para "'+alvo+'"'}); return; }
+    var detOrig = (nc.mudou || f!==1) ? ' ('+(nc.mudou ? nomeOrig+' · ' : '')+q+' '+(it.unid||'')+')' : '';
     saida.push({data:dataIso, ts:ts, coletor:rotulo, _virtual:origem, _tsOrigem:tsOrig,
       itens:[{setor:sd.setor, nome:it.nome, qtd:Math.round(q*f*1000)/1000, unid:alvo, tipo:'Saida',
-              obs: origem+(f!==1 ? ' ('+q+' '+(it.unid||'')+')' : '')}]});
+              obs: origem+detOrig}]});
   }
   // Perdas → saída no setor do item
   (histColetas||[]).forEach(function(r){ (r.itens||[]).forEach(function(it){
