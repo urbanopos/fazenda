@@ -597,9 +597,11 @@
           "unid": "sc 30kg",
           "preco": 0,
           "abas": [
-            "Estoque"
+            "Estoque",
+            "Compras"
           ],
-          "id": "l_sc-30kg_"
+          "id": "l_sc-30kg_",
+          "_editadoEm": 1790552201577
         },
         {
           "unid": "sc 30kg",
@@ -609,7 +611,8 @@
           ],
           "id": "l_sc-30kg__2"
         }
-      ]
+      ],
+      "_editadoEm": 1790552201577
     },
     {
       "id": "p1789066575376_0",
