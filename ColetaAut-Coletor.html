@@ -1308,7 +1308,7 @@ function _iniciar(){
    nada salvo no aparelho — token, catálogo e coletas pendentes continuam
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
-var _caFP = '1a0e51c817f3';
+var _caFP = '1a0e535c7381';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -3232,6 +3232,10 @@ function _sdFator(unidAlvo, unidSaida){
   if(bv === 'bandeja') return 30;         // padrão da fazenda: bandeja = 30 unidades
   if(bv === 'caixa') return 12;           // padrão da fazenda: caixa = 12 unidades
   if(bv === 'duzia') return 12;
+  // Apresentação que NÃO envolve quantidade (ex.: "vivo", "abatido", "limpo")
+  // conta 1 para 1 — vale só o produto, exatamente como na coleta.
+  // Peso/volume (kg, g, litro...) não dá para converter em unidades.
+  if(!/\d/.test(uv) && !/\b(kg|kgs|quilo|quilos|g|gr|grama|gramas|l|lt|litro|litros|ml|ton|arroba|arrobas)\b/.test(uv)) return 1;
   return null;
 }
 var _sdUltimosAvisos = [];
@@ -3251,17 +3255,39 @@ function _histComSaidas(histColetas, pedidos, produtos){
     if(setor==='Aviario') return 'unid'; // Aviário é coletado por unidade
     return unidSaida; // item ainda sem coleta nesse setor: usa a própria unidade da saída
   }
+  // Nomes dos itens de coleta (Aviário/Campo) e dos produtos autorizados lá
+  var basesNome = {};
+  (histColetas||[]).forEach(function(r){ (r.itens||[]).forEach(function(it){
+    if((it.setor==='Aviario' || it.setor==='Campo') && it.nome) basesNome[_sdNorm(it.nome)] = it.nome.trim();
+  }); });
+  (produtos||[]).forEach(function(p){
+    if(p._excluido || !p.nome) return;
+    var ok = (p.apresentacoes||[]).some(function(a){ return _apresHabilitadaNaAba(p, a, 'Aviario') || _apresHabilitadaNaAba(p, a, 'Campo'); });
+    if(ok && !basesNome[_sdNorm(p.nome)]) basesNome[_sdNorm(p.nome)] = p.nome.trim();
+  });
+  // "Frango Vivo", "Frango Abatido" → "Frango" (o item como consta na coleta)
+  function nomeDaColeta(nome){
+    var n = _sdNorm(nome);
+    if(basesNome[n]) return {nome:basesNome[n], mudou:false};
+    var melhor = '';
+    Object.keys(basesNome).forEach(function(b){ if(n.indexOf(b+' ')===0 && b.length > melhor.length) melhor = b; });
+    return melhor ? {nome:basesNome[melhor], mudou:true} : {nome:nome, mudou:false};
+  }
   var saida = [];
   function registrarSaida(origem, dataIso, ts, rotulo, it, prodId, tsOrig){
+    var nc = nomeDaColeta(it.nome);
+    var nomeOrig = it.nome;
+    if(nc.mudou){ it = Object.assign({}, it, {nome:nc.nome}); prodId = null; }
     var sd = _sdSetorDoItem(produtos, it.nome, prodId, contSetor);
     if(sd.erro){ avisos.push({data:dataIso, origem:origem, rotulo:rotulo, nome:it.nome, qtd:it.qtd, unid:it.unid, motivo:sd.erro}); return; }
     var alvo = unidAlvo(sd.setor, it.nome, it.unid);
     var f = _sdFator(alvo, it.unid);
     var q = Number(it.qtd)||0;
     if(f === null){ avisos.push({data:dataIso, origem:origem, rotulo:rotulo, nome:it.nome, qtd:q, unid:it.unid, motivo:'unidade "'+(it.unid||'')+'" não convertível para "'+alvo+'"'}); return; }
+    var detOrig = (nc.mudou || f!==1) ? ' ('+(nc.mudou ? nomeOrig+' · ' : '')+q+' '+(it.unid||'')+')' : '';
     saida.push({data:dataIso, ts:ts, coletor:rotulo, _virtual:origem, _tsOrigem:tsOrig,
       itens:[{setor:sd.setor, nome:it.nome, qtd:Math.round(q*f*1000)/1000, unid:alvo, tipo:'Saida',
-              obs: origem+(f!==1 ? ' ('+q+' '+(it.unid||'')+')' : '')}]});
+              obs: origem+detOrig}]});
   }
   // Perdas → saída no setor do item
   (histColetas||[]).forEach(function(r){ (r.itens||[]).forEach(function(it){
