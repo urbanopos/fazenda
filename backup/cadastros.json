@@ -285,15 +285,16 @@
           "unid": "unid",
           "preco": 0,
           "id": "l_unid_",
-          "_editadoEm": 1790552569143,
+          "_editadoEm": 1790553280383,
           "abas": [
             "Aviario",
+            "Perda",
             "Estoque",
             "Compras"
           ]
         }
       ],
-      "_editadoEm": 1790553262200
+      "_editadoEm": 1790553280383
     },
     {
       "id": "p1789066565373_0",
