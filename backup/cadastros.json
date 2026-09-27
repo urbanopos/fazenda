@@ -11,19 +11,6 @@
           "abas": [
             "Vendas"
           ],
-          "id": "l_bandeja-c-30-ovos__2"
-        },
-        {
-          "unid": "Unid.",
-          "preco": 1,
-          "id": "l_unid__2"
-        },
-        {
-          "unid": "Bandeja c/30 ovos",
-          "preco": 30,
-          "abas": [
-            "Vendas"
-          ],
           "id": "l_bandeja-c-30-ovos_"
         },
         {
@@ -33,6 +20,655 @@
             "Aviario"
           ],
           "id": "l_unid_"
+        },
+        {
+          "unid": "Bandeja c/30 ovos",
+          "preco": 30,
+          "abas": [
+            "Vendas"
+          ],
+          "id": "l_bandeja-c-30-ovos__2"
+        },
+        {
+          "unid": "Unid.",
+          "preco": 1,
+          "id": "l_unid__2"
+        }
+      ]
+    },
+    {
+      "id": "p_frango",
+      "setor": "Vendas",
+      "nome": "Frango Abatido",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 50,
+          "id": "l_unid_"
+        },
+        {
+          "unid": "Unid.",
+          "preco": 50,
+          "id": "l_unid__2"
+        }
+      ],
+      "_excluido": true,
+      "_excluidoEm": 1789469955251
+    },
+    {
+      "id": "p_pintainha",
+      "setor": "Vendas",
+      "nome": "Pintainha",
+      "apresentacoes": [
+        {
+          "unid": "Unid",
+          "preco": 25,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ],
+          "id": "l_unid_fazenda-sao-jose"
+        },
+        {
+          "unid": "Unid.",
+          "preco": 0,
+          "id": "l_unid_",
+          "_editadoEm": 1790412551264,
+          "abas": [
+            "Aviario",
+            "Vendas"
+          ]
+        }
+      ],
+      "_editadoEm": 1790412551264
+    },
+    {
+      "id": "p_coco",
+      "setor": "Vendas",
+      "nome": "Coco Seco",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 2.5,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_unid_fazenda-sao-jose"
+        },
+        {
+          "unid": "Unid.",
+          "preco": 2,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_unid_"
+        }
+      ]
+    },
+    {
+      "id": "p_manga",
+      "setor": "Vendas",
+      "nome": "Manga",
+      "apresentacoes": [
+        {
+          "unid": "Caixa",
+          "preco": 65,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_caixa_fazenda-sao-jose"
+        },
+        {
+          "unid": "Unid",
+          "preco": 0,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_unid_fazenda-sao-jose"
+        },
+        {
+          "unid": "Caixa",
+          "preco": 0,
+          "id": "l_caixa_"
+        },
+        {
+          "unid": "unid",
+          "preco": 0,
+          "id": "l_unid_"
+        }
+      ]
+    },
+    {
+      "id": "p_abacate",
+      "setor": "Vendas",
+      "nome": "Abacate",
+      "apresentacoes": [
+        {
+          "unid": "Caixa",
+          "preco": 90,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_caixa_fazenda-sao-jose"
+        },
+        {
+          "unid": "unid",
+          "preco": 5,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_unid_fazenda-sao-jose"
+        },
+        {
+          "unid": "Caixa",
+          "preco": 0,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_caixa_"
+        },
+        {
+          "unid": "unid",
+          "preco": 0,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_unid_"
+        }
+      ]
+    },
+    {
+      "id": "p1787993055897",
+      "setor": "Vendas",
+      "nome": "Galinha Viva",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 50,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ],
+          "id": "l_unid_fazenda-sao-jose"
+        },
+        {
+          "unid": "Unid.",
+          "preco": 50,
+          "id": "l_unid_"
+        }
+      ],
+      "_excluido": true,
+      "_excluidoEm": 1789470234199
+    },
+    {
+      "id": "p1787993157009",
+      "setor": "Vendas",
+      "nome": "Frango Vivo",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 50,
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ],
+          "id": "l_unid_"
+        },
+        {
+          "unid": "Unid.",
+          "preco": 50,
+          "id": "l_unid__2"
+        },
+        {
+          "unid": "Unid.",
+          "preco": 50,
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ],
+          "id": "l_unid__3"
+        },
+        {
+          "unid": "Unid.",
+          "preco": 50,
+          "id": "l_unid__4"
+        }
+      ],
+      "_excluido": true,
+      "_excluidoEm": 1789469258838
+    },
+    {
+      "id": "p1789066563591_0",
+      "setor": "Aviario",
+      "nome": "Pinto",
+      "apresentacoes": [
+        {
+          "unid": "Unid",
+          "preco": 8,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ],
+          "id": "l_unid_fazenda-sao-jose"
+        },
+        {
+          "unid": "unid",
+          "preco": 0,
+          "id": "l_unid_"
+        }
+      ]
+    },
+    {
+      "id": "p1789066565373_0",
+      "setor": "Aviario",
+      "nome": "Peru jovem",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 0,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ],
+          "id": "l_unid_fazenda-sao-jose"
+        },
+        {
+          "unid": "Jovem",
+          "preco": 0,
+          "id": "l_jovem_",
+          "_excluido": true,
+          "_excluidoEm": 1790412474279
+        }
+      ],
+      "_editadoEm": 1790412474279
+    },
+    {
+      "id": "p1789066568948_0",
+      "setor": "Campo",
+      "nome": "Banana Prata",
+      "apresentacoes": [
+        {
+          "unid": "Cacho",
+          "preco": 0,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_cacho_fazenda-sao-jose"
+        },
+        {
+          "unid": "Cacho",
+          "preco": 0,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_cacho_fazenda-sao-jose_2"
+        },
+        {
+          "unid": "Cacho",
+          "preco": 0,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_cacho_"
+        }
+      ]
+    },
+    {
+      "id": "p1789066569449_0",
+      "setor": "Campo",
+      "nome": "Pitomba",
+      "apresentacoes": [
+        {
+          "unid": "kg",
+          "preco": 0,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_kg_"
+        },
+        {
+          "unid": "kg",
+          "preco": 0,
+          "id": "l_kg__2"
+        }
+      ]
+    },
+    {
+      "id": "p1789066569771_0",
+      "setor": "Campo",
+      "nome": "Banana Comprida",
+      "apresentacoes": [
+        {
+          "unid": "Cacho",
+          "preco": 0,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_cacho_fazenda-sao-jose"
+        },
+        {
+          "unid": "Cacho",
+          "preco": 0,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_cacho_"
+        }
+      ]
+    },
+    {
+      "id": "p1789066570054_0",
+      "setor": "Campo",
+      "nome": "Estacas de sabiá",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 0,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_unid_fazenda-sao-jose"
+        },
+        {
+          "unid": "Unid.",
+          "preco": 0,
+          "abas": [
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_unid_"
+        }
+      ]
+    },
+    {
+      "id": "p1789066570296_0",
+      "setor": "Estoque",
+      "nome": "Postura",
+      "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0,
+          "fornecedor": "IRCA",
+          "abas": [
+            "Estoque"
+          ],
+          "id": "l_sc-40kg_irca"
+        },
+        {
+          "unid": "sc 40kg",
+          "preco": 0,
+          "fornecedor": "Mauricéia",
+          "abas": [
+            "Estoque"
+          ],
+          "id": "l_sc-40kg_mauriceia"
+        },
+        {
+          "unid": "sc 40kg",
+          "preco": 0,
+          "abas": [
+            "Campo",
+            "Estoque",
+            "Vendas"
+          ],
+          "id": "l_sc-40kg_"
+        }
+      ]
+    },
+    {
+      "id": "p1789066570580_0",
+      "setor": "Estoque",
+      "nome": "Inicial",
+      "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0,
+          "fornecedor": "IRCA",
+          "abas": [
+            "Estoque"
+          ],
+          "id": "l_sc-40kg_irca"
+        },
+        {
+          "unid": "sc 40kg",
+          "preco": 0,
+          "id": "l_sc-40kg_"
+        }
+      ]
+    },
+    {
+      "id": "p1789066570829_0",
+      "setor": "Estoque",
+      "nome": "Pre-Inicial",
+      "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0,
+          "abas": [
+            "Estoque"
+          ],
+          "id": "l_sc-40kg_"
+        },
+        {
+          "unid": "sc 40kg",
+          "preco": 0,
+          "id": "l_sc-40kg__2"
+        }
+      ]
+    },
+    {
+      "id": "p1789066571054_0",
+      "setor": "Estoque",
+      "nome": "Crescimento",
+      "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Estoque"
+          ],
+          "id": "l_sc-40kg_fazenda-sao-jose"
+        },
+        {
+          "unid": "sc 40kg",
+          "preco": 0,
+          "abas": [
+            "Estoque"
+          ],
+          "id": "l_sc-40kg_"
+        }
+      ]
+    },
+    {
+      "id": "p1789066572352_0",
+      "setor": "Estoque",
+      "nome": "Engorda",
+      "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0,
+          "fornecedor": "IRCA",
+          "abas": [
+            "Perda",
+            "Estoque"
+          ],
+          "id": "l_sc-40kg_irca"
+        },
+        {
+          "id": "amu7jv8n8kwr2b0",
+          "unid": "40Kg Gado",
+          "preco": 0,
+          "abas": [
+            "Estoque"
+          ]
+        },
+        {
+          "unid": "sc 40kg",
+          "preco": 0,
+          "abas": [
+            "Estoque"
+          ],
+          "id": "l_sc-40kg_"
+        }
+      ]
+    },
+    {
+      "id": "p1789066573418_0",
+      "setor": "Estoque",
+      "nome": "Milho",
+      "apresentacoes": [
+        {
+          "unid": "sc 40kg",
+          "preco": 0,
+          "abas": [
+            "Estoque"
+          ],
+          "id": "l_sc-40kg_"
+        },
+        {
+          "unid": "sc 40kg",
+          "preco": 0,
+          "id": "l_sc-40kg__2"
+        }
+      ]
+    },
+    {
+      "id": "p1789066574484_0",
+      "setor": "Estoque",
+      "nome": "Farelo de Trigo",
+      "apresentacoes": [
+        {
+          "unid": "sc 30kg",
+          "preco": 0,
+          "abas": [
+            "Estoque"
+          ],
+          "id": "l_sc-30kg_"
+        },
+        {
+          "unid": "sc 30kg",
+          "preco": 0,
+          "abas": [
+            "Estoque"
+          ],
+          "id": "l_sc-30kg__2"
+        }
+      ]
+    },
+    {
+      "id": "p1789066575376_0",
+      "setor": "Estoque",
+      "nome": "Ração de peixe",
+      "apresentacoes": [
+        {
+          "unid": "Sc 25kg",
+          "preco": 0,
+          "fornecedor": "Purina",
+          "abas": [
+            "Estoque"
+          ],
+          "id": "l_sc-25kg_purina"
+        },
+        {
+          "unid": "Sc 25kg",
+          "preco": 0,
+          "fornecedor": "IRCA",
+          "abas": [
+            "Estoque"
+          ],
+          "id": "l_sc-25kg_irca"
+        },
+        {
+          "unid": "Sc 25kg",
+          "preco": 0,
+          "id": "l_sc-25kg_"
+        }
+      ]
+    },
+    {
+      "id": "p1789066562691_0",
+      "setor": "Aviario",
+      "nome": "Frango",
+      "apresentacoes": [
+        {
+          "id": "amu2k1qtsbdryzl",
+          "unid": "Unid.",
+          "preco": 50,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ],
+          "_excluido": true
+        },
+        {
+          "id": "amu2k4a6nqk0dro",
+          "unid": "Unid. Viva",
+          "preco": 45,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ]
+        },
+        {
+          "id": "amu2k6f20gb7odl",
+          "unid": "Unid. Abatida",
+          "preco": 50,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Vendas"
+          ]
         }
       ]
     },
@@ -77,588 +713,22 @@
       "_editadoEm": 1790448990275
     },
     {
-      "id": "p_frango",
-      "setor": "Vendas",
-      "nome": "Frango Abatido",
-      "unid": "Unid.",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 50,
-          "id": "l_unid__2"
-        },
-        {
-          "unid": "Unid.",
-          "preco": 50,
-          "id": "l_unid_"
-        }
-      ],
-      "_excluido": true,
-      "_excluidoEm": 1789469955251
-    },
-    {
-      "id": "p_pintainha",
-      "setor": "Vendas",
-      "nome": "Pintainha",
-      "apresentacoes": [
-        {
-          "unid": "Unid",
-          "preco": 25,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Aviario",
-            "Perda",
-            "Vendas"
-          ],
-          "id": "l_unid_fazenda-sao-jose"
-        },
-        {
-          "unid": "Unid.",
-          "preco": 0,
-          "id": "l_unid_",
-          "_editadoEm": 1790412551264,
-          "abas": [
-            "Aviario",
-            "Vendas"
-          ]
-        }
-      ],
-      "_editadoEm": 1790412551264
-    },
-    {
-      "id": "p_coco",
-      "setor": "Vendas",
-      "nome": "Coco Seco",
-      "unid": "Unid.",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 2,
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_unid_"
-        },
-        {
-          "unid": "Unid.",
-          "preco": 2.5,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_unid_fazenda-sao-jose"
-        }
-      ]
-    },
-    {
-      "id": "p_manga",
-      "setor": "Vendas",
-      "nome": "Manga",
-      "unid": "Caixa",
-      "apresentacoes": [
-        {
-          "unid": "Caixa",
-          "preco": 0,
-          "id": "l_caixa_"
-        },
-        {
-          "unid": "unid",
-          "preco": 0,
-          "id": "l_unid_"
-        },
-        {
-          "unid": "Caixa",
-          "preco": 65,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_caixa_fazenda-sao-jose"
-        },
-        {
-          "unid": "Unid",
-          "preco": 0,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_unid_fazenda-sao-jose"
-        }
-      ]
-    },
-    {
-      "id": "p_abacate",
-      "setor": "Vendas",
-      "nome": "Abacate",
-      "unid": "Caixa",
-      "apresentacoes": [
-        {
-          "unid": "Caixa",
-          "preco": 0,
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_caixa_"
-        },
-        {
-          "unid": "unid",
-          "preco": 0,
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_unid_"
-        },
-        {
-          "unid": "Caixa",
-          "preco": 90,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_caixa_fazenda-sao-jose"
-        },
-        {
-          "unid": "unid",
-          "preco": 5,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_unid_fazenda-sao-jose"
-        }
-      ]
-    },
-    {
-      "id": "p1787993055897",
-      "setor": "Vendas",
-      "nome": "Galinha Viva",
-      "unid": "Unid.",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 50,
-          "id": "l_unid_"
-        },
-        {
-          "unid": "Unid.",
-          "preco": 50,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Aviario",
-            "Perda",
-            "Vendas"
-          ],
-          "id": "l_unid_fazenda-sao-jose"
-        }
-      ],
-      "_excluido": true,
-      "_excluidoEm": 1789470234199
-    },
-    {
-      "id": "p1789066565373_0",
+      "id": "p1789184203486",
       "setor": "Aviario",
-      "nome": "Peru jovem",
+      "nome": "Esterco de Galinha",
       "apresentacoes": [
         {
-          "unid": "Unid.",
-          "preco": 0,
-          "fornecedor": "Fazenda São José",
+          "unid": "Saco",
+          "preco": 15,
           "abas": [
             "Aviario",
             "Perda",
             "Vendas"
           ],
-          "id": "l_unid_fazenda-sao-jose"
-        },
-        {
-          "unid": "Jovem",
-          "preco": 0,
-          "id": "l_jovem_",
-          "_excluido": true,
-          "_excluidoEm": 1790412474279
+          "id": "l_saco_"
         }
       ],
-      "_editadoEm": 1790412474279
-    },
-    {
-      "id": "p1789066568948_0",
-      "setor": "Campo",
-      "nome": "Banana Prata",
-      "apresentacoes": [
-        {
-          "unid": "Cacho",
-          "preco": 0,
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_cacho_"
-        },
-        {
-          "unid": "Cacho",
-          "preco": 0,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_cacho_fazenda-sao-jose"
-        },
-        {
-          "unid": "Cacho",
-          "preco": 0,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_cacho_fazenda-sao-jose_2"
-        }
-      ]
-    },
-    {
-      "id": "p1789066569449_0",
-      "setor": "Campo",
-      "nome": "Pitomba",
-      "apresentacoes": [
-        {
-          "unid": "kg",
-          "preco": 0,
-          "id": "l_kg__2"
-        },
-        {
-          "unid": "kg",
-          "preco": 0,
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_kg_"
-        }
-      ]
-    },
-    {
-      "id": "p1789066569771_0",
-      "setor": "Campo",
-      "nome": "Banana Comprida",
-      "apresentacoes": [
-        {
-          "unid": "Cacho",
-          "preco": 0,
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_cacho_"
-        },
-        {
-          "unid": "Cacho",
-          "preco": 0,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_cacho_fazenda-sao-jose"
-        }
-      ]
-    },
-    {
-      "id": "p1789066570054_0",
-      "setor": "Campo",
-      "nome": "Estacas de sabiá",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 0,
-          "abas": [
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_unid_"
-        },
-        {
-          "unid": "Unid.",
-          "preco": 0,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_unid_fazenda-sao-jose"
-        }
-      ]
-    },
-    {
-      "id": "p1789066570296_0",
-      "setor": "Estoque",
-      "nome": "Postura",
-      "apresentacoes": [
-        {
-          "unid": "sc 40kg",
-          "preco": 0,
-          "abas": [
-            "Campo",
-            "Estoque",
-            "Vendas"
-          ],
-          "id": "l_sc-40kg_"
-        },
-        {
-          "unid": "sc 40kg",
-          "preco": 0,
-          "fornecedor": "IRCA",
-          "abas": [
-            "Estoque"
-          ],
-          "id": "l_sc-40kg_irca"
-        },
-        {
-          "unid": "sc 40kg",
-          "preco": 0,
-          "fornecedor": "Mauricéia",
-          "abas": [
-            "Estoque"
-          ],
-          "id": "l_sc-40kg_mauriceia"
-        }
-      ]
-    },
-    {
-      "id": "p1789066570580_0",
-      "setor": "Estoque",
-      "nome": "Inicial",
-      "apresentacoes": [
-        {
-          "unid": "sc 40kg",
-          "preco": 0,
-          "id": "l_sc-40kg_"
-        },
-        {
-          "unid": "sc 40kg",
-          "preco": 0,
-          "fornecedor": "IRCA",
-          "abas": [
-            "Estoque"
-          ],
-          "id": "l_sc-40kg_irca"
-        }
-      ]
-    },
-    {
-      "id": "p1789066570829_0",
-      "setor": "Estoque",
-      "nome": "Pre-Inicial",
-      "apresentacoes": [
-        {
-          "unid": "sc 40kg",
-          "preco": 0,
-          "id": "l_sc-40kg__2"
-        },
-        {
-          "unid": "sc 40kg",
-          "preco": 0,
-          "abas": [
-            "Estoque"
-          ],
-          "id": "l_sc-40kg_"
-        }
-      ]
-    },
-    {
-      "id": "p1789066571054_0",
-      "setor": "Estoque",
-      "nome": "Crescimento",
-      "apresentacoes": [
-        {
-          "unid": "sc 40kg",
-          "preco": 0,
-          "abas": [
-            "Estoque"
-          ],
-          "id": "l_sc-40kg_"
-        },
-        {
-          "unid": "sc 40kg",
-          "preco": 0,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Estoque"
-          ],
-          "id": "l_sc-40kg_fazenda-sao-jose"
-        }
-      ]
-    },
-    {
-      "id": "p1789066572352_0",
-      "setor": "Estoque",
-      "nome": "Engorda",
-      "apresentacoes": [
-        {
-          "unid": "sc 40kg",
-          "preco": 0,
-          "abas": [
-            "Estoque"
-          ],
-          "id": "l_sc-40kg_"
-        },
-        {
-          "id": "amu7jv8n8kwr2b0",
-          "unid": "40Kg Gado",
-          "preco": 0,
-          "abas": [
-            "Estoque"
-          ]
-        },
-        {
-          "unid": "sc 40kg",
-          "preco": 0,
-          "fornecedor": "IRCA",
-          "abas": [
-            "Perda",
-            "Estoque"
-          ],
-          "id": "l_sc-40kg_irca"
-        }
-      ]
-    },
-    {
-      "id": "p1789066573418_0",
-      "setor": "Estoque",
-      "nome": "Milho",
-      "apresentacoes": [
-        {
-          "unid": "sc 40kg",
-          "preco": 0,
-          "id": "l_sc-40kg__2"
-        },
-        {
-          "unid": "sc 40kg",
-          "preco": 0,
-          "abas": [
-            "Estoque"
-          ],
-          "id": "l_sc-40kg_"
-        }
-      ]
-    },
-    {
-      "id": "p1789066574484_0",
-      "setor": "Estoque",
-      "nome": "Farelo de Trigo",
-      "apresentacoes": [
-        {
-          "unid": "sc 30kg",
-          "preco": 0,
-          "abas": [
-            "Estoque"
-          ],
-          "id": "l_sc-30kg__2"
-        },
-        {
-          "unid": "sc 30kg",
-          "preco": 0,
-          "abas": [
-            "Estoque"
-          ],
-          "id": "l_sc-30kg_"
-        }
-      ]
-    },
-    {
-      "id": "p1789066575376_0",
-      "setor": "Estoque",
-      "nome": "Ração de peixe",
-      "apresentacoes": [
-        {
-          "unid": "Sc 25kg",
-          "preco": 0,
-          "id": "l_sc-25kg_"
-        },
-        {
-          "unid": "Sc 25kg",
-          "preco": 0,
-          "fornecedor": "Purina",
-          "abas": [
-            "Estoque"
-          ],
-          "id": "l_sc-25kg_purina"
-        },
-        {
-          "unid": "Sc 25kg",
-          "preco": 0,
-          "fornecedor": "IRCA",
-          "abas": [
-            "Estoque"
-          ],
-          "id": "l_sc-25kg_irca"
-        }
-      ]
-    },
-    {
-      "id": "p1789066579200_0",
-      "setor": "Estoque",
-      "nome": "Ração de Gado",
-      "apresentacoes": [
-        {
-          "unid": "Sc 40kg",
-          "preco": 0,
-          "id": "l_sc-40kg_"
-        },
-        {
-          "unid": "Sc 40kg",
-          "preco": 0,
-          "fornecedor": "IRCA",
-          "abas": [
-            "Estoque"
-          ],
-          "id": "l_sc-40kg_irca"
-        }
-      ]
-    },
-    {
-      "id": "p1789066563591_0",
-      "setor": "Aviario",
-      "nome": "Pintos",
-      "apresentacoes": [
-        {
-          "unid": "unid",
-          "preco": 0,
-          "id": "l_unid_"
-        },
-        {
-          "unid": "Unid",
-          "preco": 8,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Aviario",
-            "Perda",
-            "Vendas"
-          ],
-          "id": "l_unid_fazenda-sao-jose"
-        }
-      ]
+      "_editadoEm": 1790411213079
     },
     {
       "id": "p1789199978544_0",
@@ -720,102 +790,6 @@
       "_editadoEm": 1790412582265
     },
     {
-      "id": "p1787993157009",
-      "setor": "Vendas",
-      "nome": "Frango Vivo",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 50,
-          "abas": [
-            "Aviario",
-            "Perda",
-            "Vendas"
-          ],
-          "id": "l_unid__3"
-        },
-        {
-          "unid": "Unid.",
-          "preco": 50,
-          "id": "l_unid__4"
-        },
-        {
-          "unid": "Unid.",
-          "preco": 50,
-          "abas": [
-            "Aviario",
-            "Perda",
-            "Vendas"
-          ],
-          "id": "l_unid_"
-        },
-        {
-          "unid": "Unid.",
-          "preco": 50,
-          "id": "l_unid__2"
-        }
-      ],
-      "_excluido": true,
-      "_excluidoEm": 1789469258838
-    },
-    {
-      "id": "p1789066562691_0",
-      "setor": "Aviario",
-      "nome": "Frango",
-      "apresentacoes": [
-        {
-          "id": "amu2k1qtsbdryzl",
-          "unid": "Unid.",
-          "preco": 50,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Aviario",
-            "Perda",
-            "Vendas"
-          ],
-          "_excluido": true
-        },
-        {
-          "id": "amu2k4a6nqk0dro",
-          "unid": "Unid. Viva",
-          "preco": 45,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Aviario",
-            "Perda",
-            "Vendas"
-          ]
-        },
-        {
-          "id": "amu2k6f20gb7odl",
-          "unid": "Unid. Abatida",
-          "preco": 50,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Vendas"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "p1789184203486",
-      "setor": "Aviario",
-      "nome": "Esterco de Galinha",
-      "apresentacoes": [
-        {
-          "unid": "Saco",
-          "preco": 15,
-          "abas": [
-            "Aviario",
-            "Perda",
-            "Vendas"
-          ],
-          "id": "l_saco_"
-        }
-      ],
-      "_editadoEm": 1790411213079
-    },
-    {
       "id": "p1789066561642_0",
       "setor": "Aviario",
       "nome": "Galinha Viva",
@@ -827,7 +801,7 @@
             "Aviario",
             "Vendas"
           ],
-          "id": "l_unid__2"
+          "id": "l_unid_"
         },
         {
           "unid": "unid",
@@ -836,7 +810,7 @@
             "Aviario",
             "Vendas"
           ],
-          "id": "l_unid_"
+          "id": "l_unid__2"
         }
       ],
       "_excluido": true,
@@ -850,6 +824,27 @@
       "apresentacoes": [],
       "_excluido": true,
       "_excluidoEm": 1789469349387
+    },
+    {
+      "id": "p1789066579200_0",
+      "setor": "Estoque",
+      "nome": "Ração de Gado",
+      "apresentacoes": [
+        {
+          "unid": "Sc 40kg",
+          "preco": 0,
+          "fornecedor": "IRCA",
+          "abas": [
+            "Estoque"
+          ],
+          "id": "l_sc-40kg_irca"
+        },
+        {
+          "unid": "Sc 40kg",
+          "preco": 0,
+          "id": "l_sc-40kg_"
+        }
+      ]
     },
     {
       "id": "p1789868100584",
