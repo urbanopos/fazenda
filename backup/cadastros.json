@@ -543,9 +543,11 @@
           "fornecedor": "IRCA",
           "abas": [
             "Perda",
-            "Estoque"
+            "Estoque",
+            "Compras"
           ],
-          "id": "l_sc-40kg_irca"
+          "id": "l_sc-40kg_irca",
+          "_editadoEm": 1790552234421
         },
         {
           "id": "amu7jv8n8kwr2b0",
@@ -568,7 +570,7 @@
           "_editadoEm": 1790552211096
         }
       ],
-      "_editadoEm": 1790552228159
+      "_editadoEm": 1790552234421
     },
     {
       "id": "p1789066573418_0",
