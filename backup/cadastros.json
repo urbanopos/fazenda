@@ -552,10 +552,11 @@
             "Estoque",
             "Compras"
           ],
-          "_editadoEm": 1790552477004
+          "_editadoEm": 1790552646580,
+          "fornecedor": "IRCA"
         }
       ],
-      "_editadoEm": 1790552628087
+      "_editadoEm": 1790552646580
     },
     {
       "id": "p1789066572352_0",
