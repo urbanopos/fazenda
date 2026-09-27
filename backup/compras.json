@@ -1,1 +1,59 @@
-[]
+[
+  {
+    "ts": 1790553086168,
+    "num": "CMP-0001",
+    "data": "2026-09-27",
+    "setor": "Aviario",
+    "fornecedor": "IRCA",
+    "responsavel": "Junior Desk",
+    "obs": "",
+    "itens": [
+      {
+        "prodId": "p1789066571054_0",
+        "apresId": "l_sc-40kg_",
+        "nome": "Crescimento",
+        "unid": "sc 40kg",
+        "qtd": 10,
+        "preco": 92.38,
+        "sub": 923.8
+      },
+      {
+        "prodId": "p1789066572352_0",
+        "apresId": "l_sc-40kg_irca",
+        "nome": "Engorda",
+        "unid": "sc 40kg",
+        "qtd": 15,
+        "preco": 89.94,
+        "sub": 1349.1
+      },
+      {
+        "prodId": "p1789066575376_0",
+        "apresId": "l_sc-25kg_irca",
+        "nome": "Ração de peixe",
+        "unid": "Sc 25kg",
+        "qtd": 15,
+        "preco": 74.71,
+        "sub": 1120.65
+      },
+      {
+        "prodId": "p1789066570580_0",
+        "apresId": "l_sc-40kg_irca",
+        "nome": "Inicial",
+        "unid": "sc 40kg",
+        "qtd": 3,
+        "preco": 108.21,
+        "sub": 324.63
+      },
+      {
+        "prodId": "p1789066579200_0",
+        "apresId": "l_sc-40kg_irca",
+        "nome": "Ração de Gado",
+        "unid": "Sc 40kg",
+        "qtd": 10,
+        "preco": 91.21,
+        "sub": 912.1
+      }
+    ],
+    "total": 4630.28
+  }
+]
