@@ -1064,7 +1064,7 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
 <div id="modal-hcol" onclick="fecharHistColeta()">
   <div class="hcol-box" onclick="event.stopPropagation()">
     <div class="hcol-hd">
-      <div><div class="hcol-hd-t">Historico de Coletas<span id="hcol-hd-setor" style="color:rgba(255,212,154,.85)"></span></div><div class="hcol-hd-s">Acesso restrito — Administrador</div></div>
+      <div><div class="hcol-hd-t">Histórico de Coletas<span id="hcol-hd-setor" style="color:rgba(255,212,154,.85)"></span></div><div class="hcol-hd-s">Acesso restrito — Administrador</div></div>
       <button class="hcol-x" onclick="fecharHistColeta()">✕</button>
     </div>
     <div class="hcol-filtros">
@@ -1073,11 +1073,11 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
         <select class="hcol-sel" id="hcol-ano" onchange="renderHistColeta()"></select>
       </div>
       <div>
-        <div class="hcol-lbl">Mes</div>
+        <div class="hcol-lbl">Mês</div>
         <select class="hcol-sel" id="hcol-mes" onchange="renderHistColeta()">
           <option value="">Todos</option>
           <option value="01">Janeiro</option><option value="02">Fevereiro</option>
-          <option value="03">Marco</option><option value="04">Abril</option>
+          <option value="03">Março</option><option value="04">Abril</option>
           <option value="05">Maio</option><option value="06">Junho</option>
           <option value="07">Julho</option><option value="08">Agosto</option>
           <option value="09">Setembro</option><option value="10">Outubro</option>
@@ -1085,9 +1085,9 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
         </select>
       </div>
       <div>
-        <div class="hcol-lbl">Visao</div>
+        <div class="hcol-lbl">Visão</div>
         <select class="hcol-sel" id="hcol-visao" onchange="renderHistColeta()">
-          <option value="total">Totalizacao por item</option>
+          <option value="total">Totalização por item</option>
           <option value="detalhe">Registros detalhados</option>
         </select>
       </div>
@@ -1109,7 +1109,7 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
 <div id="modal-hist-pedidos" onclick="fecharHistPedidos()">
   <div class="hcol-box" onclick="event.stopPropagation()">
     <div class="hcol-hd">
-      <div><div class="hcol-hd-t">Historico de Pedidos</div><div class="hcol-hd-s">Acesso restrito — Administrador</div></div>
+      <div><div class="hcol-hd-t">Histórico de Pedidos</div><div class="hcol-hd-s">Acesso restrito — Administrador</div></div>
       <button class="hcol-x" onclick="fecharHistPedidos()">✕</button>
     </div>
     <div class="hcol-filtros">
@@ -1118,11 +1118,11 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
         <select class="hcol-sel" id="hped-ano" onchange="_renderHist()"></select>
       </div>
       <div>
-        <div class="hcol-lbl">Mes</div>
+        <div class="hcol-lbl">Mês</div>
         <select class="hcol-sel" id="hped-mes" onchange="_renderHist()">
           <option value="">Todos</option>
           <option value="01">Janeiro</option><option value="02">Fevereiro</option>
-          <option value="03">Marco</option><option value="04">Abril</option>
+          <option value="03">Março</option><option value="04">Abril</option>
           <option value="05">Maio</option><option value="06">Junho</option>
           <option value="07">Julho</option><option value="08">Agosto</option>
           <option value="09">Setembro</option><option value="10">Outubro</option>
@@ -1134,9 +1134,9 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
         <div id="hped-total" style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:#7a3a00;padding:5px 0;min-width:90px">R$ 0,00</div>
       </div>
       <div>
-        <div class="hcol-lbl">Visao</div>
+        <div class="hcol-lbl">Visão</div>
         <select class="hcol-sel" id="hped-visao" onchange="_renderHist()">
-          <option value="total">Totalizacao por produto</option>
+          <option value="total">Totalização por produto</option>
           <option value="detalhe">Pedidos detalhados</option>
         </select>
       </div>
@@ -11636,7 +11636,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0dd3aa11a7';
+var _caFP = '1a0e4ed0c1a9';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -13262,7 +13262,7 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt, opcoesExtra, f
   var c = document.createElement('canvas');
   var ctx = c.getContext('2d');
   var nome = (localStorage.getItem('wpp_nome')||'').trim();
-  var isTalao = titulo.indexOf('TALAO DE PEDIDO')===0;
+  var isTalao = titulo.indexOf('TALÃO DE PEDIDO')===0;
 
   // Calcula altura TOTAL antes de criar o canvas
   // (alterar c.height após desenhar apaga tudo — bug crítico)
@@ -13304,8 +13304,8 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt, opcoesExtra, f
   ctx.beginPath(); ctx.arc(PAD+20,y+28,20,0,Math.PI*2); ctx.clip();
   ctx.drawImage(_LOGO_FSJ, PAD, y+8, 40, 40);
   ctx.restore();
-  txt('Fazenda Sao Jose',PAD+50,y+24,16,'#fff','bold');
-  var subtitulo = isTalao ? 'TALAO DE PEDIDOS' : titulo;
+  txt('Fazenda São José',PAD+50,y+24,16,'#fff','bold');
+  var subtitulo = isTalao ? 'TALÃO DE PEDIDOS' : titulo;
   txt(subtitulo,PAD+50,y+40,9,'#b8943f');
   var data = document.getElementById('data-global').value;
   var dfL = data ? new Date(data+'T12:00').toLocaleDateString('pt-BR') : '';
@@ -13314,7 +13314,7 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt, opcoesExtra, f
   txt(hr,W-PAD,y+82,9,'rgba(255,255,255,0.5)','normal','right');
   if(nome){
     ln(PAD,y+96,W-PAD,y+96,'rgba(255,255,255,0.12)');
-    txt('RESPONSAVEL',PAD+26,y+108,8,'rgba(255,255,255,0.4)');
+    txt('RESPONSÁVEL',PAD+26,y+108,8,'rgba(255,255,255,0.4)');
     txt(nome,PAD+26,y+122,13,'#b8943f','bold');
     y+=158;
   } else { y+=122; }
@@ -13323,7 +13323,7 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, clienteOpt, opcoesExtra, f
   var faixaCor = isTalao ? '#7a3a00' : '#b8943f';
   var faixaH   = isTalao ? 36 : 28;
   rect(0,y,W,faixaH,faixaCor);
-  var faixaTxt = isTalao ? titulo.replace('TALAO DE PEDIDO / ','PEDIDO N.\u00ba ') : titulo + (faixaSufixo ? ' - '+faixaSufixo : '');
+  var faixaTxt = isTalao ? titulo.replace('TALÃO DE PEDIDO / ','PEDIDO N.\u00ba ') : titulo + (faixaSufixo ? ' - '+faixaSufixo : '');
   var faixaTxtY = isTalao ? y+23 : y+19;
   txt(faixaTxt,PAD,faixaTxtY,10,'#fff','bold');
   // Carimbo PAGO — só aparece no comprovante de quitação
@@ -13971,7 +13971,7 @@ async function enviarPedido(){
   var linkImport = payload ? _gerarLinkImportacao(payload) : null;
 
   _qrPayloadAtual = null; // talao de pedido nao leva QR Code
-  _gerarImagem('TALAO DE PEDIDO / '+numPed, linhas, numPed, function(blob){
+  _gerarImagem('TALÃO DE PEDIDO / '+numPed, linhas, numPed, function(blob){
     if(!blob){ _toast('Erro ao gerar talao.'); return; }
     var file = new File([blob],'pedido-'+numPed+'.jpg',{type:'image/jpeg'});
     var msgTitulo = 'Pedido '+numPed+(cliente?' - '+cliente:'')+' - '+dataVenda;
@@ -14160,7 +14160,7 @@ function _renderHist(){
   if(elTotal) elTotal.textContent = 'R$ '+_fmt(totalFiltrado);
 
   if(!filtrado.length){
-    lista.innerHTML = '<div class="hist-empty">'+(_filtroAbertoAtivo ? 'Nenhum pedido em aberto no periodo selecionado.' : 'Nenhum pedido no periodo selecionado.')+'</div>';
+    lista.innerHTML = '<div class="hist-empty">'+(_filtroAbertoAtivo ? 'Nenhum pedido em aberto no período selecionado.' : 'Nenhum pedido no período selecionado.')+'</div>';
     return;
   }
 
@@ -14188,7 +14188,7 @@ function _renderHPedTotal(lista, pedidos, ano, mes){
         : null;
       var chave = prod ? ('p:'+prod.id) : ('n:'+(it.nome||it.col2||'—'));
       var nomeExibicao = prod ? prod.nome : (it.nome||it.col2||'—');
-      if(!totais[chave]) totais[chave]={nomeExibicao:nomeExibicao, qtd:0, unid:'', total:0};
+      if(!totais[chave]) totais[chave]={nomeExibicao:nomeExibicao, qtd:0, unid:'', total:0, eventos:[]};
       // qtd: campo col3 tem formato "2 Unid" ou campo qtd direto
       var partes = (it.col3||'').split(' ');
       var qtd = parseFloat(partes[0])||Number(it.qtd)||0;
@@ -14196,10 +14196,16 @@ function _renderHPedTotal(lista, pedidos, ano, mes){
       totais[chave].qtd   += qtd;
       if(!totais[chave].unid && unid) totais[chave].unid = unid;
       totais[chave].total += Number(it.sub||it.val||0);
+      // Cada lançamento deste item no período (para a seta ▸ abrir)
+      var dataItemIso = _brParaIso(it.data||it.col1||'') || p.data || '';
+      totais[chave].eventos.push({
+        dataIso: dataItemIso, num: p.num||'', cliente: p.cliente||'', pago: !!p.pago,
+        qtd: qtd, unid: unid, preco: Number(it.preco)||0, sub: Number(it.sub||it.val||0)
+      });
     });
   });
 
-  var MESES_N = ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var MESES_N = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   var periodoLabel = mes ? MESES_N[parseInt(mes,10)-1]+' '+ano : 'Ano '+ano;
   var totalGeral = pedidos.reduce(function(s,p){ return s+(Number(p.total)||0); },0);
 
@@ -14209,27 +14215,177 @@ function _renderHPedTotal(lista, pedidos, ano, mes){
 
   // Uma linha por produto — igual ao layout de coletas
   html += '<div class="hcol-secao"><span class="hcol-secao-titulo" style="background:#7a3a00">Pedidos</span>';
+  var _pedDetalheIdx = [];
+  var _pedDetalheMeta = [];
   Object.keys(totais).sort(function(a,b){ return totais[a].nomeExibicao.localeCompare(totais[b].nomeExibicao,'pt-BR'); }).forEach(function(chave){
     var it = totais[chave];
     var qtdFmt = Number(it.qtd).toLocaleString('pt-BR',{maximumFractionDigits:2});
     var valFmt = 'R$ '+_fmt(it.total);
-    html += '<div class="hcol-item">'
+    var idx = _pedDetalheIdx.length;
+    _pedDetalheIdx.push(it.eventos);
+    _pedDetalheMeta.push({nome:it.nomeExibicao, qtd:it.qtd, unid:it.unid, total:it.total, periodo:periodoLabel});
+    // Mesmo padrão das demais abas: a linha do total vira botão com a seta ▸
+    // que abre todos os lançamentos deste item no período.
+    html += '<div class="hcol-item" style="flex-direction:column;align-items:stretch;padding:0;overflow:hidden">'
+      +'<button onclick="_toggleDetalhePedItem(this,'+idx+')" style="display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:none;padding:10px 12px;cursor:pointer;text-align:left">'
       +'<div><div class="hcol-item-nome">'+it.nomeExibicao+'</div>'
       +'<div class="hcol-item-det">'+valFmt+'</div></div>'
+      +'<div style="display:flex;align-items:center;gap:10px">'
       +'<div style="text-align:right">'
       +'<div class="hcol-item-qtd">'+qtdFmt+'</div>'
       +'<div class="hcol-item-unid">'+it.unid+'</div>'
-      +'</div></div>';
+      +'</div>'
+      +'<span role="button" tabindex="0" title="Gerar PDF da movimentação deste item" onclick="event.stopPropagation();_pdfMovItemPedido(this,'+idx+')" style="display:inline-flex;align-items:center;gap:4px;padding:5px 9px;border-radius:14px;background:#1f6b35;color:#fff;font-family:DM Mono,monospace;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap">📄 PDF</span>'
+      +'<span style="font-size:16px;color:var(--mu);transition:transform .2s" class="hcol-chevron">▸</span>'
+      +'</div></button>'
+      +'<div class="hcol-detalhe-lista" style="display:none;border-top:1px solid var(--ce);background:#f8f6f1"></div>'
+      +'</div>';
   });
   html += '</div>';
 
   // Total do período
   html += '<div class="hcol-total">'
-    +'<span class="hcol-total-lbl">Total do periodo</span>'
+    +'<span class="hcol-total-lbl">Total do período</span>'
     +'<span class="hcol-total-val">R$ '+_fmt(totalGeral)+'</span>'
     +'</div>';
 
   lista.innerHTML = html;
+  lista._pedDetalheIdx = _pedDetalheIdx;
+  lista._pedDetalheMeta = _pedDetalheMeta;
+}
+
+/* ═══ PDF da movimentação de UM item no período (botão 📄 PDF da
+   Totalização, em Coletas e em Pedidos) ═══ */
+function _pdfTabelaItem(titulo, subtitulo, colunas, linhas, totais, nomeArq){
+  if(!window.jspdf || !window.jspdf.jsPDF){ _toast('Gerador de PDF indisponível (sem internet?).'); return; }
+  var doc = new window.jspdf.jsPDF({unit:'mm', format:'a4'}); _pdfAcentuar(doc);
+  var pageW = doc.internal.pageSize.getWidth(), pageH = doc.internal.pageSize.getHeight();
+  var margin = 14, y = 18;
+  function cab(){
+    doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(255);
+    doc.setFillColor(28,46,34); doc.rect(margin, y-4.5, pageW-2*margin, 7, 'F');
+    colunas.forEach(function(c){ doc.text(c.t, c.a==='right' ? c.x : margin+c.x, y, {align:c.a||'left'}); });
+    doc.setTextColor(0); doc.setFont('helvetica','normal'); y += 7;
+  }
+  doc.setFont('helvetica','bold'); doc.setFontSize(14);
+  doc.text('Fazenda Sao Jose', margin, y); y += 6.5;
+  doc.setFontSize(12); doc.text(titulo, margin, y); y += 5.5;
+  doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(110);
+  doc.text(subtitulo, margin, y); y += 4.5;
+  doc.setFontSize(7.5); doc.text('Gerado em '+new Date().toLocaleString('pt-BR'), margin, y);
+  doc.setTextColor(0); y += 8;
+  cab();
+  doc.setFontSize(8.5);
+  linhas.forEach(function(l, i){
+    if(y > pageH-22){ doc.addPage(); y = 18; cab(); doc.setFontSize(8.5); }
+    if(i%2===0){ doc.setFillColor(245,240,232); doc.rect(margin, y-4.2, pageW-2*margin, 6.2, 'F'); }
+    colunas.forEach(function(c, ci){
+      var v = String(l[ci]==null?'':l[ci]);
+      if(c.max){ while(doc.getTextWidth(v) > c.max && v.length > 3) v = v.slice(0,-2)+'…'; }
+      if(l._cor && l._cor[ci]) doc.setTextColor(l._cor[ci][0], l._cor[ci][1], l._cor[ci][2]);
+      doc.text(v, c.a==='right' ? c.x : margin+c.x, y, {align:c.a||'left'});
+      doc.setTextColor(0);
+    });
+    y += 6.2;
+  });
+  y += 3;
+  doc.setDrawColor(180); doc.line(margin, y-3, pageW-margin, y-3);
+  doc.setFont('helvetica','bold'); doc.setFontSize(9.5);
+  totais.forEach(function(t){
+    if(y > pageH-14){ doc.addPage(); y = 18; }
+    doc.text(t[0], margin, y+2); doc.text(t[1], pageW-margin, y+2, {align:'right'}); y += 6;
+  });
+  doc.save(nomeArq);
+}
+function _slugArq(t){ return String(t||'item').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+function _fmtNum(n){ return Number(n||0).toLocaleString('pt-BR',{maximumFractionDigits:2}); }
+
+function _pdfMovItemColeta(idx){
+  var body = document.getElementById('hcol-body');
+  var regs = body._detalheIdx && body._detalheIdx[idx];
+  var meta = body._detalheMeta && body._detalheMeta[idx];
+  if(!regs || !meta) return;
+  var ord = regs.slice().sort(function(a,b){ return (a.dataIso||'').localeCompare(b.dataIso||''); }); // cronológico
+  var PW = 210;
+  var colunas = meta.temTipo
+    ? [{t:'Data',x:2},{t:'Mov.',x:26},{t:'Coletor',x:48,max:36},{t:'Fornecedor',x:88,max:34},{t:'Tipo',x:125},{t:'Qtd',x:PW-38,a:'right'},{t:'Saldo',x:PW-16,a:'right'}]
+    : [{t:'Data',x:2},{t:'Mov.',x:28},{t:'Coletor',x:52,max:70},{t:'Quantidade',x:PW-16,a:'right'}];
+  var saldo = 0;
+  var linhas = ord.map(function(r){
+    var q = Number(r.qtd)||0;
+    if(meta.temTipo){
+      saldo += (r.tipo==='Saida' ? -q : q);
+      var l = [r.data, r.mov||'', r.coletor||'', r.forn||'', r.tipo==='Saida'?'Saida':'Entrada', (r.tipo==='Saida'?'-':'+')+_fmtNum(q)+' '+(r.unid||''), _fmtNum(saldo)];
+      l._cor = {4: r.tipo==='Saida'?[192,57,43]:[30,95,191], 5: r.tipo==='Saida'?[192,57,43]:[30,95,191]};
+      return l;
+    }
+    return [r.data, r.mov||'', r.coletor||'', _fmtNum(q)+' '+(r.unid||'')];
+  });
+  var totais = meta.temTipo
+    ? [['Entradas', _fmtNum(meta.entrada)+' '+meta.unid], ['Saidas', _fmtNum(meta.saida)+' '+meta.unid], ['Saldo do periodo', _fmtNum(meta.entrada-meta.saida)+' '+meta.unid]]
+    : [['Total no periodo ('+ord.length+' lancamento(s))', _fmtNum(meta.entrada)+' '+meta.unid]];
+  _pdfTabelaItem('Movimentacao: '+meta.nome+' ('+meta.setor+')', meta.periodo+' \u00b7 '+ord.length+' lancamento(s)', colunas, linhas, totais,
+    'movimentacao-'+_slugArq(meta.setor)+'-'+_slugArq(meta.nome)+'-'+_dataLocalHoje()+'.pdf');
+}
+
+function _pdfMovItemPedido(el, idx){
+  var e = el, eventos = null, meta = null;
+  while(e && !eventos){ if(e._pedDetalheIdx){ eventos = e._pedDetalheIdx[idx]; meta = e._pedDetalheMeta && e._pedDetalheMeta[idx]; } e = e.parentElement; }
+  if(!eventos || !meta) return;
+  var MESES_A = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  var ord = eventos.slice().sort(function(a,b){ return (a.dataIso||'').localeCompare(b.dataIso||''); });
+  var PW = 210;
+  var colunas = [{t:'Data',x:2},{t:'Pedido',x:28},{t:'Cliente',x:52,max:52},{t:'Situacao',x:106},{t:'Qtd',x:PW-62,a:'right'},{t:'Preco',x:PW-38,a:'right'},{t:'Subtotal',x:PW-16,a:'right'}];
+  var linhas = ord.map(function(ev){
+    var d = ev.dataIso ? new Date(ev.dataIso+'T12:00') : null;
+    var dFmt = d ? String(d.getDate()).padStart(2,'0')+' '+MESES_A[d.getMonth()]+' '+d.getFullYear() : '-';
+    var l = [dFmt, ev.num||'', ev.cliente||'(sem cliente)', ev.pago?'Pago':'Em aberto', _fmtNum(ev.qtd)+' '+(ev.unid||''), ev.preco?'R$ '+_fmt(ev.preco):'', 'R$ '+_fmt(ev.sub)];
+    l._cor = {3: ev.pago?[26,107,42]:[163,116,42]};
+    return l;
+  });
+  var totAberto = ord.filter(function(x){ return !x.pago; }).reduce(function(s,x){ return s+x.sub; },0);
+  _pdfTabelaItem('Movimentacao: '+meta.nome+' (Pedidos)', meta.periodo+' \u00b7 '+ord.length+' lancamento(s)', colunas, linhas,
+    [['Quantidade total', _fmtNum(meta.qtd)+' '+(meta.unid||'')], ['Em aberto', 'R$ '+_fmt(totAberto)], ['Valor total no periodo', 'R$ '+_fmt(meta.total)]],
+    'movimentacao-pedidos-'+_slugArq(meta.nome)+'-'+_dataLocalHoje()+'.pdf');
+}
+
+/* Abre/fecha a lista de lançamentos de um item na Totalização de Pedidos
+   (data, nº do pedido, cliente, quantidade e valor), do mais recente ao
+   mais antigo — mesmo comportamento da seta nas abas de coleta. */
+function _toggleDetalhePedItem(btn, idx){
+  var caixa = btn.parentElement;
+  var listaEl = caixa.closest('[id]');
+  var eventos = null, el = caixa;
+  while(el && !eventos){ if(el._pedDetalheIdx) eventos = el._pedDetalheIdx[idx]; el = el.parentElement; }
+  if(!eventos) return;
+  var det = caixa.querySelector('.hcol-detalhe-lista');
+  var chevron = btn.querySelector('.hcol-chevron');
+  if(det.style.display !== 'none'){
+    det.style.display = 'none';
+    chevron.style.transform = ''; chevron.textContent = '▸';
+    return;
+  }
+  if(!det.innerHTML){
+    var MESES_A = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    var ord = eventos.slice().sort(function(a,b){ return (b.dataIso||'').localeCompare(a.dataIso||''); });
+    det.innerHTML = ord.map(function(e){
+      var d = e.dataIso ? new Date(e.dataIso+'T12:00') : null;
+      var dFmt = d ? String(d.getDate()).padStart(2,'0')+' '+MESES_A[d.getMonth()]+' '+d.getFullYear() : '—';
+      var qFmt = Number(e.qtd).toLocaleString('pt-BR',{maximumFractionDigits:2});
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:1px solid var(--ce);font-family:DM Mono,monospace;font-size:11px">'
+        +'<div>'
+        +'<div style="font-weight:700;color:var(--vd)">'+dFmt+(e.num?' · '+_escH(e.num):'')+'</div>'
+        +'<div style="color:var(--mu);margin-top:2px">'+_escH(e.cliente||'(sem cliente)')
+        +(e.pago?' · <span style="color:#1a6b2a;font-weight:700">PAGO</span>':' · <span style="color:#a3742a">em aberto</span>')+'</div>'
+        +'</div>'
+        +'<div style="text-align:right">'
+        +'<div style="font-weight:700;color:#7a3a00">'+qFmt+' '+_escH(e.unid||'')+'</div>'
+        +'<div style="color:var(--mu);margin-top:2px">'+(e.preco?'R$ '+_fmt(e.preco)+' · ':'')+'R$ '+_fmt(e.sub)+'</div>'
+        +'</div></div>';
+    }).join('');
+  }
+  det.style.display = 'block';
+  chevron.textContent = '▾';
 }
 
 
@@ -14250,7 +14406,7 @@ function _reenviarPedidoIdx(idxFiltrado){
             col4:it.col4, col5:col5, val:sub};
   });
   _qrPayloadAtual = null;
-  _gerarImagem('TALAO DE PEDIDO / '+p.num, linhas, p.num, function(blob){
+  _gerarImagem('TALÃO DE PEDIDO / '+p.num, linhas, p.num, function(blob){
     if(!blob){ _toast('Erro ao gerar imagem.'); return; }
     var file = new File([blob],'pedido-'+p.num+'.jpg',{type:'image/jpeg'});
     if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
@@ -14356,7 +14512,7 @@ function _atualizarPreviewPedido(p){
   });
   _qrPayloadAtual = null;
   var opcoesExtra = p.pago ? { pago:true, dataQuit: p.dataQuit || new Date().toLocaleString('pt-BR'), clientePago: p.cliente||'' } : null;
-  _gerarImagem('TALAO DE PEDIDO / '+p.num, linhas, p.num, function(blob){
+  _gerarImagem('TALÃO DE PEDIDO / '+p.num, linhas, p.num, function(blob){
     if(!blob){ if(loading) loading.textContent='Erro ao gerar pré-visualização.'; return; }
     if(_mpPreviewUrl) URL.revokeObjectURL(_mpPreviewUrl);
     _mpPreviewUrl = URL.createObjectURL(blob);
@@ -14414,7 +14570,7 @@ async function _carregarHistColetaOPFS(){
 }
 
 /* ── Relatorio em PDF ──────────────────────────────────────────────── */
-var _MES_NOMES = ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+var _MES_NOMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
 function _gerarRelatorioPDFFiltroAtual(){
   _gerarPDFEspelhoTela();
@@ -14451,22 +14607,22 @@ function _gerarPDFEspelhoTela(){
   if(!registros.length){ _toast('Nenhum registro no período selecionado.'); return; }
 
   var jsPDFCtor = window.jspdf.jsPDF;
-  var doc = new jsPDFCtor({unit:'mm', format:'a4'});
+  var doc = new jsPDFCtor({unit:'mm', format:'a4'}); _pdfAcentuar(doc);
   var pageW = doc.internal.pageSize.getWidth();
   var pageH = doc.internal.pageSize.getHeight();
   var margin = 14;
   var y = 18;
 
   var periodoLabel = mes
-    ? ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][parseInt(mes,10)-1]+' '+ano
+    ? ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][parseInt(mes,10)-1]+' '+ano
     : (ano ? 'Ano '+ano : 'Todos os períodos');
   var setorTitulo = setorFiltro || 'Todos os setores';
 
   doc.setFont('helvetica','bold'); doc.setFontSize(14);
-  doc.text('Historico de Coletas - '+setorTitulo, margin, y);
+  doc.text('Histórico de Coletas - '+setorTitulo, margin, y);
   y += 6;
   doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(120);
-  doc.text(periodoLabel+' \u00b7 '+(visao==='total'?'Totalizacao por item':'Registros detalhados'), margin, y);
+  doc.text(periodoLabel+' \u00b7 '+(visao==='total'?'Totalização por item':'Registros detalhados'), margin, y);
   y += 5;
   doc.setFontSize(8);
   doc.text('Gerado em '+new Date().toLocaleString('pt-BR'), margin, y);
@@ -14599,7 +14755,7 @@ function _gerarPDFEspelhoTela(){
   _toast('✅ PDF gerado!');
 }
 
-/* ── PDF do Historico de Pedidos — espelha a mesma logica de agrupamento
+/* ── PDF do Histórico de Pedidos — espelha a mesma logica de agrupamento
    de _renderHPedTotal/_renderHPedDetalhe, respeitando os filtros de Ano,
    Mes, Cliente, Visao e "Em aberto" aplicados na tela. ── */
 function _gerarRelatorioPedidosPDF(){
@@ -14637,13 +14793,13 @@ function _gerarRelatorioPedidosPDF(){
   });
 
   var jsPDFCtor = window.jspdf.jsPDF;
-  var doc = new jsPDFCtor({unit:'mm', format:'a4'});
+  var doc = new jsPDFCtor({unit:'mm', format:'a4'}); _pdfAcentuar(doc);
   var pageW = doc.internal.pageSize.getWidth();
   var pageH = doc.internal.pageSize.getHeight();
   var margin = 14;
   var y = 18;
 
-  var MESES_N = ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var MESES_N = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   var periodoLabel = mes ? MESES_N[parseInt(mes,10)-1]+' '+ano : (ano ? 'Ano '+ano : 'Todos os períodos');
   var clienteLabel = '';
   var selCli = document.getElementById('hped-cli');
@@ -14653,10 +14809,10 @@ function _gerarRelatorioPedidosPDF(){
   }
 
   doc.setFont('helvetica','bold'); doc.setFontSize(14);
-  doc.text('Historico de Pedidos'+(clienteLabel?' - '+clienteLabel:''), margin, y);
+  doc.text('Histórico de Pedidos'+(clienteLabel?' - '+clienteLabel:''), margin, y);
   y += 6;
   doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(120);
-  doc.text(periodoLabel+' \u00b7 '+(visao==='total'?'Totalizacao por produto':'Pedidos detalhados')+(_filtroAbertoAtivo?' \u00b7 Em aberto':''), margin, y);
+  doc.text(periodoLabel+' \u00b7 '+(visao==='total'?'Totalização por produto':'Pedidos detalhados')+(_filtroAbertoAtivo?' \u00b7 Em aberto':''), margin, y);
   y += 5;
   doc.setFontSize(8);
   doc.text('Gerado em '+new Date().toLocaleString('pt-BR'), margin, y);
@@ -14766,7 +14922,7 @@ function _gerarRelatorioPedidosPDF(){
   doc.setDrawColor(180); doc.line(margin, y, pageW-margin, y);
   y += 6;
   doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(0);
-  doc.text('Total do periodo', margin, y);
+  doc.text('Total do período', margin, y);
   doc.text('R$ '+_fmt(totalGeral), pageW-margin, y, {align:'right'});
 
   doc.save('historico-pedidos-'+_dataLocalHoje()+'.pdf');
@@ -14863,7 +15019,7 @@ function _gerarRelatorioProducaoMensal(){
   }
 
   var jsPDFCtor = window.jspdf.jsPDF;
-  var doc = new jsPDFCtor({unit:'mm', format:'a4'});
+  var doc = new jsPDFCtor({unit:'mm', format:'a4'}); _pdfAcentuar(doc);
   var pageW = doc.internal.pageSize.getWidth();
   var pageH = doc.internal.pageSize.getHeight();
   var margin = 12;
@@ -15191,7 +15347,7 @@ function _gerarRelatorioEstoqueMensal(){
   }
 
   var jsPDFCtor = window.jspdf.jsPDF;
-  var doc = new jsPDFCtor({unit:'mm', format:'a4'});
+  var doc = new jsPDFCtor({unit:'mm', format:'a4'}); _pdfAcentuar(doc);
   var pageW = doc.internal.pageSize.getWidth();
   var pageH = doc.internal.pageSize.getHeight();
   var margin = 14;
@@ -15417,7 +15573,7 @@ function _gerarRelatorioPDF(setorLabel, anoFiltro, mesFiltro){
   if(!filtrado.length){ _toast('Nenhum registro encontrado para gerar o relatório.'); return; }
 
   var jsPDFCtor = window.jspdf.jsPDF;
-  var doc = new jsPDFCtor({unit:'mm', format:'a4'});
+  var doc = new jsPDFCtor({unit:'mm', format:'a4'}); _pdfAcentuar(doc);
   var pageW = doc.internal.pageSize.getWidth();
   var pageH = doc.internal.pageSize.getHeight();
   var margin = 14;
@@ -15428,7 +15584,7 @@ function _gerarRelatorioPDF(setorLabel, anoFiltro, mesFiltro){
     doc.text('Fazenda Sao Jose', margin, y);
     doc.setFont('helvetica','normal'); doc.setFontSize(10);
     y += 6;
-    doc.text('Relatorio de Coletas — '+(setorLabel||'Todos os setores'), margin, y);
+    doc.text('Relatório de Coletas — '+(setorLabel||'Todos os setores'), margin, y);
     y += 5;
     var periodoTxt = 'Periodo: '+(mesFiltro ? _MES_NOMES[parseInt(mesFiltro,10)-1]+' de ' : '')+(anoFiltro||'todos os anos');
     doc.text(periodoTxt, margin, y);
@@ -15499,7 +15655,7 @@ function _gerarRelatorioPDF(setorLabel, anoFiltro, mesFiltro){
     });
   });
 
-  if(!qtdRegistros){ _toast('Nenhum item encontrado para esse setor no periodo.'); return; }
+  if(!qtdRegistros){ _toast('Nenhum item encontrado para esse setor no período.'); return; }
 
   // Pagina de totais
   var semFiltroDePeríodo = !anoFiltro && !mesFiltro;
@@ -15598,11 +15754,11 @@ function _atualizarBtnHistColetaTodos(){
     btn.textContent = '✓ Vendo Todos';
     btn.style.background = '#1a6b2a'; btn.style.color = '#fff';
   }
-  // Nome do setor ao lado do titulo do modal — ex: "Historico de Coletas - AVIARIO".
+  // Nome do setor ao lado do titulo do modal — ex: "Histórico de Coletas - AVIARIO".
   // So aparece quando o filtro esta restrito a uma aba especifica; some quando
   // "Todos" esta selecionado.
   if(tSetor){
-    var NOMES_SETOR_TITULO = {Aviario:'AVIARIO', Perda:'PERDA', Campo:'CAMPO', Estoque:'ESTOQUE'};
+    var NOMES_SETOR_TITULO = {Aviario:'AVIÁRIO', Perda:'PERDA', Campo:'CAMPO', Estoque:'ESTOQUE'};
     tSetor.textContent = input.value ? (' - '+(NOMES_SETOR_TITULO[input.value] || input.value.toUpperCase())) : '';
   }
 }
@@ -15645,7 +15801,7 @@ function renderHistColeta(){
   });
 
   if(!filtrado.length){
-    body.innerHTML = '<div class="hcol-vazia">Nenhum registro encontrado para o periodo selecionado.</div>';
+    body.innerHTML = '<div class="hcol-vazia">Nenhum registro encontrado para o período selecionado.</div>';
     return;
   }
 
@@ -15693,12 +15849,12 @@ function _renderHistColetaTotal(body, registros, ano, mes, setorFiltro){
       } else {
         totais[s][k].entrada += qtdNum; // sem tipo (Aviario/Perda/Campo) — soma normalmente
       }
-      totais[s][k].registros.push({data:dtFmt, coletor:r.coletor||'', qtd:it.qtd, unid:it.unid||'', tipo:it.tipo||''});
+      totais[s][k].registros.push({data:dtFmt, dataIso:r.data||'', mov:r.mov||'', coletor:r.coletor||'', qtd:it.qtd, unid:it.unid||'', tipo:it.tipo||'', forn:it.forn||''});
     });
   });
 
   var periodoLabel = mes
-    ? ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][parseInt(mes,10)-1]+' '+ano
+    ? ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][parseInt(mes,10)-1]+' '+ano
     : 'Ano '+ano;
 
   var html = '<div style="font-family:DM Mono,monospace;font-size:10px;color:var(--mu);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">'
@@ -15706,6 +15862,7 @@ function _renderHistColetaTotal(body, registros, ano, mes, setorFiltro){
 
   // Guarda os detalhes indexados para acesso pelo onclick
   var _detalheIdx = [];
+  var _detalheMeta = [];
 
   Object.keys(totais).forEach(function(setor){
     var cor = CORES[setor]||'#555';
@@ -15740,6 +15897,7 @@ function _renderHistColetaTotal(body, registros, ano, mes, setorFiltro){
       var it = totais[setor][nome];
       var idx = _detalheIdx.length;
       _detalheIdx.push(it.registros);
+      _detalheMeta.push({nome:nome, setor:setor, unid:it.unid, temTipo:it.temTipo, entrada:it.entrada, saida:it.saida, periodo:periodoLabel});
       var qtdDireita;
       if(it.temTipo){
         var saldo = it.entrada - it.saida;
@@ -15764,6 +15922,7 @@ function _renderHistColetaTotal(body, registros, ano, mes, setorFiltro){
         +'<div style="display:flex;align-items:center;gap:10px">'
         +'<div style="text-align:right">'+qtdDireita
         +'<div class="hcol-item-unid">'+it.unid+'</div></div>'
+        +'<span role="button" tabindex="0" title="Gerar PDF da movimentação deste item" onclick="event.stopPropagation();_pdfMovItemColeta('+idx+')" style="display:inline-flex;align-items:center;gap:4px;padding:5px 9px;border-radius:14px;background:#1f6b35;color:#fff;font-family:DM Mono,monospace;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap">📄 PDF</span>'
         +'<span style="font-size:16px;color:var(--mu);transition:transform .2s" class="hcol-chevron">▸</span>'
         +'</div></button>'
         +'<div class="hcol-detalhe-lista" style="display:none;border-top:1px solid var(--ce);background:#f8f6f1"></div>'
@@ -15775,6 +15934,7 @@ function _renderHistColetaTotal(body, registros, ano, mes, setorFiltro){
   body.innerHTML = html;
   // Salva os dados de detalhe no proprio body para acesso posterior
   body._detalheIdx = _detalheIdx;
+  body._detalheMeta = _detalheMeta;
 }
 
 function _toggleDetalheItem(btn, idx){
@@ -15808,8 +15968,7 @@ function _toggleDetalheItem(btn, idx){
       lista.innerHTML = h;
     }
     lista.style.display = 'block';
-    chevron.style.transform = 'rotate(90deg)';
-    chevron.textContent = '▾';
+    chevron.textContent = '▾'; // (antes girava o ▾ também — virava ◂)
   }
 }
 
@@ -16513,7 +16672,7 @@ function _gerarImagemComPago(p){
   var agora = p.dataQuit || new Date().toLocaleString('pt-BR');
   _qrPayloadAtual = null;
   _gerarImagem(
-    'TALAO DE PEDIDO / '+p.num,
+    'TALÃO DE PEDIDO / '+p.num,
     linhas,
     p.num,
     function(blob){
@@ -17694,7 +17853,7 @@ function reemitirPedido(){
     return {col1:it.col1||it.data, col2:it.nome||it.col2, col3:it.col3||(it.qtd+' '+it.unidade),
             col4:it.col4, col5:col5, val:sub};
   });
-  _gerarImagem('TALAO DE PEDIDO / '+p.num, linhas, p.num, function(blob){
+  _gerarImagem('TALÃO DE PEDIDO / '+p.num, linhas, p.num, function(blob){
     if(!blob){ _toast('Erro ao gerar imagem.'); return; }
     var file = new File([blob],'pedido-'+p.num+'.jpg',{type:'image/jpeg'});
     if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
@@ -17937,6 +18096,51 @@ function compartilharLink(){
 }
 
 /* ---- TOAST ---- */
+
+/* Ortografia dos relatórios em PDF: o código monta os textos sem acento
+   (herança antiga); aqui cada texto escrito no PDF é corrigido na hora —
+   só palavras de rótulo conhecidas, nunca altera dado gravado. */
+var _ACENTOS_PDF = [
+  [/\bHistorico\b/g,'Histórico'],[/\bhistorico\b/g,'histórico'],[/\bHISTORICO\b/g,'HISTÓRICO'],
+  [/\bPeriodo\b/g,'Período'],[/\bperiodo\b/g,'período'],[/\bPERIODO\b/g,'PERÍODO'],
+  [/\bMovimentacao\b/g,'Movimentação'],[/\bmovimentacao\b/g,'movimentação'],[/\bMOVIMENTACAO\b/g,'MOVIMENTAÇÃO'],
+  [/\bTotalizacao\b/g,'Totalização'],[/\btotalizacao\b/g,'totalização'],[/\bTOTALIZACAO\b/g,'TOTALIZAÇÃO'],
+  [/\bLancamento(s?)\b/g,'Lançamento$1'],[/\blancamento(s?)\b/g,'lançamento$1'],[/\bLANCAMENTO(S?)\b/g,'LANÇAMENTO$1'],
+  [/\bSaida(s?)\b/g,'Saída$1'],[/\bsaida(s?)\b/g,'saída$1'],[/\bSAIDA(S?)\b/g,'SAÍDA$1'],
+  [/\bRelatorio(s?)\b/g,'Relatório$1'],[/\brelatorio(s?)\b/g,'relatório$1'],[/\bRELATORIO(S?)\b/g,'RELATÓRIO$1'],
+  [/\bProducao\b/g,'Produção'],[/\bproducao\b/g,'produção'],[/\bPRODUCAO\b/g,'PRODUÇÃO'],
+  [/\bBalanco\b/g,'Balanço'],[/\bbalanco\b/g,'balanço'],[/\bBALANCO\b/g,'BALANÇO'],
+  [/\bSituacao\b/g,'Situação'],[/\bSITUACAO\b/g,'SITUAÇÃO'],
+  [/\bPreco(s?)\b/g,'Preço$1'],[/\bpreco(s?)\b/g,'preço$1'],[/\bPRECO(S?)\b/g,'PREÇO$1'],
+  [/\bAviario\b/g,'Aviário'],[/\bAVIARIO\b/g,'AVIÁRIO'],
+  [/\bObservacao\b/g,'Observação'],[/\bobservacao\b/g,'observação'],[/\bOBSERVACAO\b/g,'OBSERVAÇÃO'],
+  [/\bQuitacao\b/g,'Quitação'],[/\bquitacao\b/g,'quitação'],[/\bQUITACAO\b/g,'QUITAÇÃO'],
+  [/\bDescricao\b/g,'Descrição'],[/\bDESCRICAO\b/g,'DESCRIÇÃO'],
+  [/\bEmissao\b/g,'Emissão'],[/\bNumero\b/g,'Número'],[/\bnumero\b/g,'número'],
+  [/\bPagina\b/g,'Página'],[/\bpagina\b/g,'página'],[/\bMedia\b/g,'Média'],[/\bmedia\b/g,'média'],
+  [/\bUnitario\b/g,'Unitário'],[/\bunitario\b/g,'unitário'],[/\bLiquido\b/g,'Líquido'],
+  [/\bResponsavel\b/g,'Responsável'],[/\bRESPONSAVEL\b/g,'RESPONSÁVEL'],
+  [/\bTalao\b/g,'Talão'],[/\bTALAO\b/g,'TALÃO'],
+  [/\bVisao\b/g,'Visão'],[/\bMes\b/g,'Mês'],[/\bmes\b/g,'mês'],
+  [/\bSao Jose\b/g,'São José'],[/\bSAO JOSE\b/g,'SÃO JOSÉ'],
+  [/\bMarco(?= \d{4})/g,'Março'],[/\bnao\b/g,'não'],[/\bNao\b/g,'Não']
+];
+function _acentuarTexto(t){
+  if(typeof t !== 'string') return t;
+  for(var i=0;i<_ACENTOS_PDF.length;i++) t = t.replace(_ACENTOS_PDF[i][0], _ACENTOS_PDF[i][1]);
+  return t;
+}
+function _pdfAcentuar(doc){
+  if(!doc || doc._acentuado) return doc;
+  var fx = function(v){ return Array.isArray(v) ? v.map(_acentuarTexto) : _acentuarTexto(v); };
+  var tx = doc.text.bind(doc), tw = doc.getTextWidth.bind(doc);
+  doc.text = function(t){ var a = Array.prototype.slice.call(arguments); a[0] = fx(t); return tx.apply(null, a); };
+  doc.getTextWidth = function(t){ return tw(fx(t)); };
+  if(doc.splitTextToSize){ var sp = doc.splitTextToSize.bind(doc); doc.splitTextToSize = function(t){ var a = Array.prototype.slice.call(arguments); a[0] = fx(t); return sp.apply(null, a); }; }
+  doc._acentuado = true;
+  return doc;
+}
+
 function _toast(msg){
   var el=document.getElementById('toast');
   el.textContent=msg; el.classList.add('vis');
