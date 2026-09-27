@@ -1308,7 +1308,7 @@ function _iniciar(){
    nada salvo no aparelho — token, catálogo e coletas pendentes continuam
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
-var _caFP = '1a0e4ecab655';
+var _caFP = '1a0e51c817f3';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -1659,7 +1659,10 @@ function _coletarItens(){
   Object.keys(SETORES).forEach(function(setor){
     var cfg = SETORES[setor];
     (_sessaoItens[setor]||[]).forEach(function(it){
-      itens.push({setor:cfg.label, nome:it.nome, unid:it.unid, qtd:it.qtd, preco:it.preco||0, obs:it.obs, forn:it.forn, tipo:it.tipo||''});
+      // Aviário e Campo são SEMPRE entrada (produção): o Coletor não lança
+      // saída/perda nessas abas — perda só pela aba Perda. Só o Estoque tem tipo.
+      var tipoIt = (setor==='estoque') ? (it.tipo||'Saida') : '';
+      itens.push({setor:cfg.label, nome:it.nome, unid:it.unid, qtd:Math.abs(Number(it.qtd)||0), preco:it.preco||0, obs:it.obs, forn:it.forn, tipo:tipoIt});
     });
   });
   return itens;
@@ -2675,7 +2678,20 @@ async function _enviarColetaGitHub(reg,tentativa){
 }
 
 var _histColetaRestrito = false;
-var _histColetaAprovadaCache = null; // ultima base aprovada do Admin buscada do GitHub
+var _histColetaAprovadaCache = null;
+var _histPedidosBaseCache = null; // pedidos da base do Admin (saídas por venda em Aviário/Campo)
+async function _buscarPedidosBaseAdmin(){
+  if(!_ghToken()) return null;
+  try{
+    var h = {'Authorization':'token '+_ghToken(),'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+    var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_BCK_PEDIDOS+'?t='+Date.now(), {headers:h, cache:'no-store'});
+    if(!r.ok) return null;
+    var m = await r.json(); var b64 = (m.content||'').replace(/\n/g,'');
+    if(!b64 && m.sha){ var rb = await fetch('https://api.github.com/repos/'+GH_REPO+'/git/blobs/'+m.sha+'?t='+Date.now(), {headers:h, cache:'no-store'}); if(rb.ok){ var mb = await rb.json(); b64 = (mb.content||'').replace(/\n/g,''); } }
+    var l = JSON.parse(decodeURIComponent(escape(atob(b64))));
+    return Array.isArray(l) ? l.filter(function(p){ return !p._excluido; }) : null;
+  }catch(e){ return null; }
+} // ultima base aprovada do Admin buscada do GitHub
 var _histColetaSincronizado = false;  // true = dados na tela vieram confirmados da base do admin
 
 /* Busca a base de coletas JA APROVADAS pelo administrador (backup/coletas.json no
@@ -2770,6 +2786,7 @@ async function abrirHistColeta(restrito, setorInicial){
     var body = document.getElementById('hcol-body');
     body.innerHTML = '<div class="hcol-vazia">🔄 Sincronizando com o administrador...</div>';
     var aprovadas = await _buscarHistColetaAprovada();
+    _histPedidosBaseCache = await _buscarPedidosBaseAdmin();
     if(aprovadas){
       _histColetaAprovadaCache = aprovadas;
       _histColetaSincronizado  = true;
@@ -2828,6 +2845,8 @@ function renderHistColeta(){
   var hist  = (_histColetaRestrito && _histColetaAprovadaCache !== null)
     ? _histColetaAprovadaCache
     : _carregarHistColeta();
+  // + saídas de Perda/Pedidos em Aviário/Campo (balanço Entrada × Saída)
+  hist = _histComSaidas(hist.filter(function(r){ return !r._excluido; }), _histPedidosBaseCache || _carregarHist(), _produtosCadastro || _produtosCadastroLocal());
   var body  = document.getElementById('hcol-body');
   var ano = '', mes = '';
   var filtrado;
@@ -2883,6 +2902,10 @@ function renderHistColeta(){
   } else {
     _renderHistColetaDetalhe(body, filtrado);
   }
+  var limSd = null;
+  if(_histColetaRestrito){ var dl = new Date(); dl.setDate(dl.getDate()-6); limSd = dl.getFullYear()+'-'+String(dl.getMonth()+1).padStart(2,'0')+'-'+String(dl.getDate()).padStart(2,'0'); }
+  var avSd = _sdAvisosHtml(ano, mes, setor, limSd);
+  if(avSd) body.insertAdjacentHTML('afterbegin', avSd);
 }
 
 function _renderHistColetaTotal(body, registros, ano, mes){
@@ -2897,8 +2920,11 @@ function _renderHistColetaTotal(body, registros, ano, mes){
       var s = it.setor||'Outros';
       if(!totais[s]) totais[s] = {};
       var k = it.nome;
-      if(!totais[s][k]) totais[s][k] = {qtd:0, unid:it.unid||''};
-      totais[s][k].qtd += Number(it.qtd)||0;
+      if(!totais[s][k]) totais[s][k] = {qtd:0, ent:0, sai:0, temTipo:false, unid:it.unid||''};
+      var qn = Number(it.qtd)||0;
+      if(it.tipo==='Saida'){ totais[s][k].sai += qn; totais[s][k].temTipo = true; }
+      else { totais[s][k].ent += qn; if(it.tipo==='Entrada') totais[s][k].temTipo = true; }
+      totais[s][k].qtd = totais[s][k].ent - totais[s][k].sai;
     });
   });
 
@@ -2917,9 +2943,10 @@ function _renderHistColetaTotal(body, registros, ano, mes){
     Object.keys(totais[setor]).forEach(function(nome){
       var it = totais[setor][nome];
       var qtdFmt = Number(it.qtd).toLocaleString('pt-BR',{maximumFractionDigits:2});
+      var esFmt = it.temTipo ? '<div style="font-size:10px;margin-bottom:2px"><span style="color:#1e5fbf;font-weight:700">E: '+Number(it.ent).toLocaleString('pt-BR',{maximumFractionDigits:2})+'</span>&nbsp;&nbsp;<span style="color:#c0392b;font-weight:700">S: '+Number(it.sai).toLocaleString('pt-BR',{maximumFractionDigits:2})+'</span></div>' : '';
       html += '<div class="hcol-item">'
         +'<div><div class="hcol-item-nome">'+nome+'</div></div>'
-        +'<div style="text-align:right"><div class="hcol-item-qtd">'+qtdFmt+'</div>'
+        +'<div style="text-align:right">'+esFmt+'<div class="hcol-item-qtd"'+(it.qtd<0?' style="color:#c0392b"':'')+'>'+qtdFmt+'</div>'
         +'<div class="hcol-item-unid">'+it.unid+'</div></div>'
         +'</div>';
     });
@@ -3138,6 +3165,146 @@ function compartilharLink(){
 }
 
 /* ---- TOAST ---- */
+
+/* ═════════════════════════════════════════════════════════════════
+   SAÍDAS DE AVIÁRIO / CAMPO (balanço Entrada × Saída, como no Estoque)
+   - Coleta em Aviário/Campo = ENTRADA.
+   - Item lançado em PERDA  = SAÍDA no setor do item.
+   - Item vendido em PEDIDO = SAÍDA no setor do item.
+   Setor do item (sempre UM só): pelas abas autorizadas no cadastro —
+   só Aviário → Aviário; só Campo → Campo; nos dois ou em nenhum → a
+   saída NÃO é aplicada e aparece um aviso para o Admin ajustar.
+   Unidade: a saída é convertida para a unidade da coleta do item
+   (ex.: 3 "bandeja c/30" = 90 unid; dúzia = 12). Sem conversão segura
+   → fica fora do saldo, com aviso.
+   Nada disso grava ou altera registros — é calculado na hora de exibir.
+   ═════════════════════════════════════════════════════════════════ */
+function _sdNorm(t){ return String(t||'').normalize('NFD').replace(/[̀-ͯ]/g,'').trim().toLowerCase(); }
+function _sdIsoData(d){
+  if(!d) return '';
+  if(/^\d{4}-\d{2}-\d{2}/.test(d)) return d.slice(0,10);
+  var m = String(d).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  return m ? m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0') : '';
+}
+function _sdSetorDoItem(produtos, nome, prodId, contSetor){
+  var lista = (produtos||[]).filter(function(p){ return !p._excluido && prodId && p.id===prodId; });
+  if(!lista.length) lista = (produtos||[]).filter(function(p){ return !p._excluido && _sdNorm(p.nome)===_sdNorm(nome); });
+  if(!lista.length) return {erro:'sem cadastro de produto'};
+  var av = false, ca = false;
+  lista.forEach(function(p){ (p.apresentacoes||[]).forEach(function(a){
+    if(_apresHabilitadaNaAba(p, a, 'Aviario')) av = true;
+    if(_apresHabilitadaNaAba(p, a, 'Campo')) ca = true;
+  }); });
+  if(av && !ca) return {setor:'Aviario'};
+  if(ca && !av) return {setor:'Campo'};
+  // Autorizado nos dois (ou em nenhum): vai para o setor onde o item é
+  // de fato COLETADO (o que tem mais coletas dele) — nunca para os dois.
+  var cAv = (contSetor && contSetor['Aviario|'+_sdNorm(nome)]) || 0;
+  var cCa = (contSetor && contSetor['Campo|'+_sdNorm(nome)]) || 0;
+  if(cAv > cCa) return {setor:'Aviario'};
+  if(cCa > cAv) return {setor:'Campo'};
+  // Sem coleta que desempate: usa o Setor do cadastro do produto, se for um dos dois
+  var ps = lista.map(function(p){ return _sdNorm(p.setor); });
+  var pAv = ps.indexOf('aviario') > -1, pCa = ps.indexOf('campo') > -1;
+  if(pAv && !pCa) return {setor:'Aviario'};
+  if(pCa && !pAv) return {setor:'Campo'};
+  return {erro: (av && ca) ? 'autorizado em Aviário e em Campo, sem coleta que indique o setor' : 'não autorizado em Aviário nem em Campo'};
+}
+/* Nome "base" da unidade: unid/un/und/unidade → unid; cx → caixa; bdj → bandeja; dz → duzia */
+function _sdBaseUnid(u){
+  var t = _sdNorm(u).replace(/[.\s]+$/,'');
+  if(/^(un|und|unid|unids|unidade|unidades|u)\b/.test(t)) return 'unid';
+  if(/^(cx|caixa|caixas)\b/.test(t)) return 'caixa';
+  if(/^(bdj|bandeja|bandejas)\b/.test(t)) return 'bandeja';
+  if(/^(dz|duzia|duzias)\b/.test(t)) return 'duzia';
+  return t;
+}
+function _sdFator(unidAlvo, unidSaida){
+  var uc = _sdNorm(unidAlvo), uv = _sdNorm(unidSaida);
+  if(!uc || !uv) return (uc===uv) ? 1 : null;
+  if(uc === uv) return 1;
+  var bc = _sdBaseUnid(uc), bv = _sdBaseUnid(uv);
+  if(bc === bv && !/\d/.test(uc) && !/\d/.test(uv)) return 1;   // "unid" x "unidade", "cx" x "caixa"
+  if(bc !== 'unid') return null;         // só converte PARA unidade (coleta em unid)
+  // quantidade escrita na embalagem (ignora pesos/volumes: 40kg, 5 l...)
+  var m = uv.match(/(\d+)(?!\s*(kg|g|l|lt|ml)\b)(?!\d)/);
+  if(m) return parseInt(m[1],10);        // "bandeja c/30" → 30, "caixa c/12" → 12
+  if(bv === 'bandeja') return 30;         // padrão da fazenda: bandeja = 30 unidades
+  if(bv === 'caixa') return 12;           // padrão da fazenda: caixa = 12 unidades
+  if(bv === 'duzia') return 12;
+  return null;
+}
+var _sdUltimosAvisos = [];
+function _histComSaidas(histColetas, pedidos, produtos){
+  var avisos = [];
+  // unidade da coleta por setor+item (a mais usada)
+  var contUnid = {}, contSetor = {};
+  (histColetas||[]).forEach(function(r){ (r.itens||[]).forEach(function(it){
+    if(it.setor!=='Aviario' && it.setor!=='Campo') return;
+    var k = it.setor+'|'+_sdNorm(it.nome), u = (it.unid||'').trim();
+    contUnid[k] = contUnid[k] || {}; contUnid[k][u] = (contUnid[k][u]||0)+1;
+    contSetor[k] = (contSetor[k]||0)+1;
+  }); });
+  function unidAlvo(setor, nome, unidSaida){
+    var c = contUnid[setor+'|'+_sdNorm(nome)];
+    if(c){ return Object.keys(c).sort(function(a,b){ return c[b]-c[a]; })[0]; }
+    if(setor==='Aviario') return 'unid'; // Aviário é coletado por unidade
+    return unidSaida; // item ainda sem coleta nesse setor: usa a própria unidade da saída
+  }
+  var saida = [];
+  function registrarSaida(origem, dataIso, ts, rotulo, it, prodId, tsOrig){
+    var sd = _sdSetorDoItem(produtos, it.nome, prodId, contSetor);
+    if(sd.erro){ avisos.push({data:dataIso, origem:origem, rotulo:rotulo, nome:it.nome, qtd:it.qtd, unid:it.unid, motivo:sd.erro}); return; }
+    var alvo = unidAlvo(sd.setor, it.nome, it.unid);
+    var f = _sdFator(alvo, it.unid);
+    var q = Number(it.qtd)||0;
+    if(f === null){ avisos.push({data:dataIso, origem:origem, rotulo:rotulo, nome:it.nome, qtd:q, unid:it.unid, motivo:'unidade "'+(it.unid||'')+'" não convertível para "'+alvo+'"'}); return; }
+    saida.push({data:dataIso, ts:ts, coletor:rotulo, _virtual:origem, _tsOrigem:tsOrig,
+      itens:[{setor:sd.setor, nome:it.nome, qtd:Math.round(q*f*1000)/1000, unid:alvo, tipo:'Saida',
+              obs: origem+(f!==1 ? ' ('+q+' '+(it.unid||'')+')' : '')}]});
+  }
+  // Perdas → saída no setor do item
+  (histColetas||[]).forEach(function(r){ (r.itens||[]).forEach(function(it){
+    if(it.setor==='Perda') registrarSaida('Perda', r.data, (r.ts||0)+0.1, (r.coletor||'')+' · Perda', it, null, r.ts);
+  }); });
+  // Pedidos → saída no setor do item
+  (pedidos||[]).forEach(function(p){ if(p._excluido) return; (p.itens||[]).forEach(function(it){
+    var nome = it.nome||it.col2||''; if(!nome) return;
+    var partes = String(it.col3||'').split(' ');
+    var qtd = Number(it.qtd) || parseFloat(partes[0]) || 0;
+    var unid = it.unidade || it.unid || partes.slice(1).join(' ');
+    var d = _sdIsoData(it.data||it.col1) || p.data || '';
+    registrarSaida('Pedido', d, (p.ts||0)+0.2, 'Pedido '+(p.num||'')+(p.cliente?' · '+p.cliente:''), {nome:nome, qtd:qtd, unid:unid}, it.prodId, p.ts);
+  }); });
+  // Coletas de Aviário/Campo passam a ser ENTRADA (cópia só para exibir)
+  var base = (histColetas||[]).map(function(r){
+    if(!(r.itens||[]).some(function(it){ return (it.setor==='Aviario'||it.setor==='Campo') && !it.tipo; })) return r;
+    var c = Object.assign({}, r);
+    c.itens = r.itens.map(function(it){ return ((it.setor==='Aviario'||it.setor==='Campo') && !it.tipo) ? Object.assign({}, it, {tipo:'Entrada'}) : it; });
+    return c;
+  });
+  _sdUltimosAvisos = avisos;
+  return base.concat(saida.filter(function(s){ return s.data; }));
+}
+/* Aviso (no topo do histórico) das saídas que não puderam ser aplicadas */
+function _sdAvisosHtml(ano, mes, setor, limiteIso){
+  if(setor && setor!=='Aviario' && setor!=='Campo') return '';
+  var lista = _sdUltimosAvisos.filter(function(a){
+    if(!a.data) return false;
+    if(limiteIso && a.data < limiteIso) return false;
+    if(ano && a.data.slice(0,4)!==ano) return false;
+    if(mes && a.data.slice(5,7)!==mes) return false;
+    return true;
+  });
+  if(!lista.length) return '';
+  var porItem = {};
+  lista.forEach(function(a){ var k = a.nome+' — '+a.motivo; porItem[k] = (porItem[k]||0)+1; });
+  return '<div style="background:#fdf3e2;border:1px solid #ecd4a8;color:#8a5a12;border-radius:8px;padding:9px 12px;font-size:12px;margin-bottom:12px;line-height:1.45">'
+    +'⚠️ <strong>'+lista.length+'</strong> saída(s) de Perda/Pedidos não entraram no balanço:<br>'
+    +Object.keys(porItem).map(function(k){ return '• '+k.replace(/&/g,'&amp;').replace(/</g,'&lt;')+(porItem[k]>1?' ('+porItem[k]+'×)':''); }).join('<br>')
+    +'<br><span style="font-size:11px">Ajuste em Cadastros → Apresentação (autorize o item em Aviário ou Campo) ou use uma unidade com a quantidade escrita (ex.: "Caixa c/12").</span></div>';
+}
+
 function _toast(msg){
   var el=document.getElementById('toast');
   el.textContent=msg; el.classList.add('vis');
