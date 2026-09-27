@@ -351,10 +351,10 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
         <span class="ad-lbl">Enviar app para novo coletor</span>
         <div class="ad-row"><button class="ad-ok" onclick="compartilharLink()" style="background:linear-gradient(135deg,#25d366,#128c7e);color:#fff">Enviar link pelo WhatsApp</button></div>
         <div class="ad-div"></div>
-        <span class="ad-lbl">Historico de Coletas</span>
+        <span class="ad-lbl">Histórico de Coletas</span>
         <div class="ad-row"><button class="ad-ok" onclick="fecharAdmin();abrirHistColeta()" style="background:#1e3a5f;color:#93c5fd">📊 Ver Consulta de Coletas</button></div>
         <div class="ad-div"></div>
-        <span class="ad-lbl">Historico de Pedidos</span>
+        <span class="ad-lbl">Histórico de Pedidos</span>
         <div class="ad-row"><button class="ad-ok" onclick="fecharAdmin();abrirHistPedidos()" style="background:#7a3a00;color:#ffd49a">📄 Ver Consulta Pedidos</button></div>
         <div class="ad-div"></div>
         <div class="ad-row"><button id="btn-desbloquear" class="ad-ok" onclick="desbloquearAdmin()" style="background:#2d4a38;color:#a8d88a;display:none">Desbloquear dispositivo</button></div>
@@ -399,7 +399,7 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
 <div id="modal-hcol" onclick="fecharHistColeta()">
   <div class="hcol-box" onclick="event.stopPropagation()">
     <div class="hcol-hd">
-      <div><div class="hcol-hd-t">Historico de Coletas<span id="hcol-hd-setor" style="color:rgba(255,212,154,.85)"></span></div><div class="hcol-hd-s" id="hcol-hd-sub">Ultimos 7 dias</div></div>
+      <div><div class="hcol-hd-t">Histórico de Coletas<span id="hcol-hd-setor" style="color:rgba(255,212,154,.85)"></span></div><div class="hcol-hd-s" id="hcol-hd-sub">Ultimos 7 dias</div></div>
       <button class="hcol-x" onclick="fecharHistColeta()">✕</button>
     </div>
     <div class="hcol-filtros">
@@ -408,11 +408,11 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
         <select class="hcol-sel" id="hcol-ano" onchange="renderHistColeta()"></select>
       </div>
       <div id="hcol-filtro-mes">
-        <div class="hcol-lbl">Mes</div>
+        <div class="hcol-lbl">Mês</div>
         <select class="hcol-sel" id="hcol-mes" onchange="renderHistColeta()">
           <option value="">Todos</option>
           <option value="01">Janeiro</option><option value="02">Fevereiro</option>
-          <option value="03">Marco</option><option value="04">Abril</option>
+          <option value="03">Março</option><option value="04">Abril</option>
           <option value="05">Maio</option><option value="06">Junho</option>
           <option value="07">Julho</option><option value="08">Agosto</option>
           <option value="09">Setembro</option><option value="10">Outubro</option>
@@ -420,9 +420,9 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
         </select>
       </div>
       <div id="hcol-filtro-visao">
-        <div class="hcol-lbl">Visao</div>
+        <div class="hcol-lbl">Visão</div>
         <select class="hcol-sel" id="hcol-visao" onchange="renderHistColeta()">
-          <option value="total">Totalizacao por item</option>
+          <option value="total">Totalização por item</option>
           <option value="detalhe">Registros detalhados</option>
         </select>
       </div>
@@ -486,11 +486,11 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
       <select class="hcol-sel" id="hped-ano" onchange="_renderHist()"></select>
     </div>
     <div>
-      <div class="hcol-lbl">Mes</div>
+      <div class="hcol-lbl">Mês</div>
       <select class="hcol-sel" id="hped-mes" onchange="_renderHist()">
         <option value="">Todos</option>
         <option value="01">Janeiro</option><option value="02">Fevereiro</option>
-        <option value="03">Marco</option><option value="04">Abril</option>
+        <option value="03">Março</option><option value="04">Abril</option>
         <option value="05">Maio</option><option value="06">Junho</option>
         <option value="07">Julho</option><option value="08">Agosto</option>
         <option value="09">Setembro</option><option value="10">Outubro</option>
@@ -498,9 +498,9 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
       </select>
     </div>
     <div>
-      <div class="hcol-lbl">Visao</div>
+      <div class="hcol-lbl">Visão</div>
       <select class="hcol-sel" id="hped-visao" onchange="_renderHist()">
-        <option value="total">Totalizacao por produto</option>
+        <option value="total">Totalização por produto</option>
         <option value="detalhe">Pedidos detalhados</option>
       </select>
     </div>
@@ -1308,7 +1308,7 @@ function _iniciar(){
    nada salvo no aparelho — token, catálogo e coletas pendentes continuam
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
-var _caFP = '1a0dd15207c5';
+var _caFP = '1a0e4ecab655';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -1728,8 +1728,8 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, faixaSufixo){
   ctx.beginPath(); ctx.arc(PAD+20,y+28,20,0,Math.PI*2); ctx.clip();
   ctx.drawImage(_LOGO_FSJ, PAD, y+8, 40, 40);
   ctx.restore();
-  txt('Fazenda Sao Jose',PAD+50,y+24,16,'#fff','bold');
-  var subtitulo = titulo.indexOf('TALAO DE PEDIDO')===0 ? 'TALAO DE PEDIDOS' : titulo;
+  txt('Fazenda São José',PAD+50,y+24,16,'#fff','bold');
+  var subtitulo = titulo.indexOf('TALÃO DE PEDIDO')===0 ? 'TALÃO DE PEDIDOS' : titulo;
   txt(subtitulo,PAD+50,y+40,9,'#b8943f');
   var data = document.getElementById('data-global').value;
   var dfL = data ? new Date(data+'T12:00').toLocaleDateString('pt-BR') : '';
@@ -1738,15 +1738,15 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, faixaSufixo){
   txt(hr,W-PAD,y+82,9,'rgba(255,255,255,0.5)','normal','right');
   if(nome){
     ln(PAD,y+96,W-PAD,y+96,'rgba(255,255,255,0.12)');
-    txt('RESPONSAVEL',PAD+26,y+108,8,'rgba(255,255,255,0.4)');
+    txt('RESPONSÁVEL',PAD+26,y+108,8,'rgba(255,255,255,0.4)');
     txt(nome,PAD+26,y+122,13,'#b8943f','bold');
     y+=158;
   } else { y+=122; }
 
   // FAIXA
-  var faixaCor = titulo.indexOf('TALAO DE PEDIDO')===0 ? '#7a3a00' : '#b8943f';
+  var faixaCor = titulo.indexOf('TALÃO DE PEDIDO')===0 ? '#7a3a00' : '#b8943f';
   rect(0,y,W,28,faixaCor);
-  var faixaTxt = titulo.indexOf('TALAO DE PEDIDO')===0 ? titulo.replace('TALAO DE PEDIDO / ','PEDIDO N.\u00ba ') : titulo + (faixaSufixo ? ' - '+faixaSufixo : '');
+  var faixaTxt = titulo.indexOf('TALÃO DE PEDIDO')===0 ? titulo.replace('TALÃO DE PEDIDO / ','PEDIDO N.\u00ba ') : titulo + (faixaSufixo ? ' - '+faixaSufixo : '');
   txt(faixaTxt,PAD,y+19,10,'#fff','bold');
   y+=28;
 
@@ -1765,7 +1765,7 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, faixaSufixo){
   // RODAPE
   rect(0,y,W,48,'#1c2e22');
   txt(rodape||'',PAD,y+18,8,'#7aa88a');
-  var ehPedido = titulo.indexOf('TALAO DE PEDIDO')===0;
+  var ehPedido = titulo.indexOf('TALÃO DE PEDIDO')===0;
   if(ehPedido){
     txt('R$ '+_fmt(linhas.reduce(function(s,it){ return s+(it.val||0); },0)),W-PAD,y+34,20,'#b8943f','bold','right');
   }
@@ -2319,7 +2319,7 @@ function enviarPedido(){
   var payload = _gerarPayloadPedido(conc, numPed, cliente, dataVenda);
   var linkImport = payload ? _gerarLinkImportacao(payload) : null;
 
-  _gerarImagem('TALAO DE PEDIDO / '+numPed, linhas, numPed, function(blob){
+  _gerarImagem('TALÃO DE PEDIDO / '+numPed, linhas, numPed, function(blob){
     if(!blob){ _toast('Erro ao gerar talao.'); return; }
     var file = new File([blob],'pedido-'+numPed+'.jpg',{type:'image/jpeg'});
     var msgTitulo = 'Pedido '+numPed+(cliente?' - '+cliente:'')+' - '+dataVenda;
@@ -2426,7 +2426,7 @@ function _renderHist(){
   });
 
   if(!filtrado.length){
-    lista.innerHTML = '<div class="hist-empty">'+(_filtroAbertoAtivo ? 'Nenhum pedido em aberto no periodo selecionado.' : 'Nenhum pedido no periodo selecionado.')+'</div>';
+    lista.innerHTML = '<div class="hist-empty">'+(_filtroAbertoAtivo ? 'Nenhum pedido em aberto no período selecionado.' : 'Nenhum pedido no período selecionado.')+'</div>';
     return;
   }
 
@@ -2464,7 +2464,7 @@ function _renderHPedTotal(lista, pedidos, ano, mes){
     });
   });
 
-  var MESES_N = ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var MESES_N = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   var periodoLabel = mes ? MESES_N[parseInt(mes,10)-1]+' '+ano : 'Ano '+ano;
   var totalGeral = pedidos.reduce(function(s,p){ return s+(Number(p.total)||0); },0);
 
@@ -2490,7 +2490,7 @@ function _renderHPedTotal(lista, pedidos, ano, mes){
 
   // Total do período
   html += '<div class="hcol-total">'
-    +'<span class="hcol-total-lbl">Total do periodo</span>'
+    +'<span class="hcol-total-lbl">Total do período</span>'
     +'<span class="hcol-total-val">R$ '+_fmt(totalGeral)+'</span>'
     +'</div>';
 
@@ -2796,11 +2796,11 @@ function _atualizarBtnHistColetaTodos(){
     btn.textContent = '✓ Vendo Todos';
     btn.style.background = '#1a6b2a'; btn.style.color = '#fff';
   }
-  // Nome do setor ao lado do titulo do modal — ex: "Historico de Coletas - AVIARIO".
+  // Nome do setor ao lado do titulo do modal — ex: "Histórico de Coletas - AVIARIO".
   // So aparece quando o filtro esta restrito a uma aba especifica; some quando
   // "Todos" esta selecionado.
   if(tSetor){
-    var NOMES_SETOR_TITULO = {Aviario:'AVIARIO', Perda:'PERDA', Campo:'CAMPO', Estoque:'ESTOQUE'};
+    var NOMES_SETOR_TITULO = {Aviario:'AVIÁRIO', Perda:'PERDA', Campo:'CAMPO', Estoque:'ESTOQUE'};
     tSetor.textContent = input.value ? (' - '+(NOMES_SETOR_TITULO[input.value] || input.value.toUpperCase())) : '';
   }
 }
@@ -2866,7 +2866,7 @@ function renderHistColeta(){
         ? 'Nenhum registro aprovado pelo administrador nos ultimos 7 dias.'
         : 'Nenhum registro nos ultimos 7 dias (dados deste aparelho — não sincronizado).';
     } else {
-      msgVazia = 'Nenhum registro encontrado para o periodo selecionado.';
+      msgVazia = 'Nenhum registro encontrado para o período selecionado.';
     }
     body.innerHTML = '<div class="hcol-vazia">'+msgVazia+'</div>';
     return;
@@ -2905,7 +2905,7 @@ function _renderHistColetaTotal(body, registros, ano, mes){
   var periodoLabel = _histColetaRestrito
     ? 'Ultimos 7 dias'
     : (mes
-      ? ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][parseInt(mes,10)-1]+' '+ano
+      ? ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][parseInt(mes,10)-1]+' '+ano
       : 'Ano '+ano);
 
   var html = '<div style="font-family:DM Mono,monospace;font-size:10px;color:var(--mu);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">'
@@ -2988,7 +2988,7 @@ function reemitirPedido(){
   var linhas = (p.itens||[]).map(function(it){
     return {col1:it.col1, col2:it.nome, col3:it.col3, col4:it.col4, val:it.sub};
   });
-  _gerarImagem('TALAO DE PEDIDO / '+p.num, linhas, p.num, function(blob){
+  _gerarImagem('TALÃO DE PEDIDO / '+p.num, linhas, p.num, function(blob){
     if(!blob){ _toast('Erro ao gerar imagem.'); return; }
     var file = new File([blob],'pedido-'+p.num+'.jpg',{type:'image/jpeg'});
     if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
