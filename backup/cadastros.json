@@ -639,9 +639,11 @@
           "preco": 0,
           "fornecedor": "IRCA",
           "abas": [
-            "Estoque"
+            "Estoque",
+            "Compras"
           ],
-          "id": "l_sc-25kg_irca"
+          "id": "l_sc-25kg_irca",
+          "_editadoEm": 1790552284983
         },
         {
           "unid": "Sc 25kg",
@@ -649,7 +651,7 @@
           "id": "l_sc-25kg_"
         }
       ],
-      "_editadoEm": 1790552280491
+      "_editadoEm": 1790552284983
     },
     {
       "id": "p1789066562691_0",
