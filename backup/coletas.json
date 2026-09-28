@@ -34,6 +34,23 @@
     "ts": 1790622892635
   },
   {
+    "data": "2026-09-28",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "unid": "Unid.",
+        "qtd": 37,
+        "preco": 1,
+        "obs": "",
+        "forn": "Fazenda São José",
+        "tipo": ""
+      }
+    ],
+    "ts": 1790622781991
+  },
+  {
     "ts": 1790553086169,
     "data": "2026-09-27",
     "coletor": "Junior Desk",
