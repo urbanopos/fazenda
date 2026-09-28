@@ -538,9 +538,11 @@ var VRK = 'fsj_versao_remota';   // ultima versao recebida do status.json
 
 /* ── GitHub API ─────────────────────────────────────────────── */
 var GH_REPO  = 'urbanopos/fazenda';
+/* Repositório dos DADOS (pode ser privado) — vem no link de configuração do Admin */
+var GH_DATA_REPO = (function(){ try{ return localStorage.getItem('fsj_gh_data_repo') || GH_REPO; }catch(e){ return GH_REPO; } })();
 var GH_FILE  = 'coletas-pendentes.json';
 var GH_TOKEN_KEY = 'fsj_gh_token';
-var GH_API   = 'https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE;
+var GH_API   = 'https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_FILE;
 var GH_BCK_COLETAS = 'backup/coletas.json';
 var GH_BCK_CADASTROS = 'backup/cadastros.json';
 var GH_BCK_PEDIDOS = 'backup/pedidos.json';
@@ -558,6 +560,11 @@ function _aplicarConfigDoLink(){
     var m = hash.match(/cfg=([^&]+)/);
     if(!m) return;
     var cfg = JSON.parse(decodeURIComponent(escape(atob(m[1]))));
+    if(cfg && cfg.dr && /^[\w.-]+\/[\w.-]+$/.test(cfg.dr)){
+      localStorage.setItem('fsj_gh_data_repo', cfg.dr);
+      GH_DATA_REPO = cfg.dr;
+      GH_API = 'https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_FILE;
+    }
     if(cfg && cfg.tk){
       localStorage.setItem(GH_TOKEN_KEY, cfg.tk);
       setTimeout(function(){ _toast('✅ App habilitado! Suas coletas já serão enviadas.'); }, 800);
@@ -723,21 +730,31 @@ function _apresMomento(a){
    Os registros já lançados (coletas/pedidos) guardam seus próprios dados,
    então não são afetados. */
 function _apresVigentes(prod){
+  // Agrupa por UNIDADE. Dentro dela: a mais recente vale; uma cópia SEM
+  // fornecedor é considerada versão antiga quando já existe a mesma unidade
+  // COM fornecedor (era o que fazia "Bandeja c/30" aparecer 2× nos Pedidos).
+  // Mesma unidade de fornecedores DIFERENTES (os dois preenchidos) continua
+  // valendo como apresentações distintas. Uma versão antiga só continua se
+  // atender alguma aba que as mantidas não atendem.
   var grupos = {};
   (prod && prod.apresentacoes || []).forEach(function(a){
     if(!a || a._excluido) return;
-    var k = _slugApres(a.unid)+'|'+_slugApres(a.fornecedor);
+    var k = _slugApres(a.unid);
     (grupos[k] = grupos[k] || []).push(a);
   });
   var vig = [];
   Object.keys(grupos).forEach(function(k){
-    var g = grupos[k].slice().sort(function(x,y){ return _apresMomento(y) - _apresMomento(x); });
+    var g = grupos[k].slice().sort(function(x,y){
+      return (_apresMomento(y) - _apresMomento(x)) || ((y.fornecedor?1:0) - (x.fornecedor?1:0));
+    });
     var mantidas = [];
     g.forEach(function(a){
-      if(!mantidas.length){ mantidas.push(a); return; }
-      if(!Array.isArray(a.abas) || !a.abas.length) return; // versão antiga sem abas: substituída
+      var fa = _slugApres(a.fornecedor);
+      var mesmas = mantidas.filter(function(m){ var fm = _slugApres(m.fornecedor); return fm===fa || !fa || !fm; });
+      if(!mesmas.length){ mantidas.push(a); return; }
+      if(!Array.isArray(a.abas) || !a.abas.length) return; // versão antiga sem abas
       var cobertas = a.abas.every(function(x){
-        return mantidas.some(function(mk){ return Array.isArray(mk.abas) && mk.abas.some(function(y){ return _normAba(y)===_normAba(x); }); });
+        return mesmas.some(function(mk){ return Array.isArray(mk.abas) && mk.abas.some(function(y){ return _normAba(y)===_normAba(x); }); });
       });
       if(!cobertas) mantidas.push(a);
     });
@@ -1308,7 +1325,7 @@ function _iniciar(){
    nada salvo no aparelho — token, catálogo e coletas pendentes continuam
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
-var _caFP = '1a0e535c7381';
+var _caFP = '1a0e5d2eecb9';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -1986,7 +2003,7 @@ async function _buscarPedidosGlobais(){
       'Accept': 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28'
     };
-    var resp = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_BCK_PEDIDOS+'?t='+Date.now(),
+    var resp = await fetch('https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_BCK_PEDIDOS+'?t='+Date.now(),
       {headers:headers, cache:'no-store'});
     if(!resp.ok) return null;
     var meta = await resp.json();
@@ -2096,14 +2113,14 @@ async function _buscarProdutosCadastro(){
       'Accept': 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28'
     };
-    var resp = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_BCK_CADASTROS+'?t='+Date.now(),
+    var resp = await fetch('https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_BCK_CADASTROS+'?t='+Date.now(),
       {headers:headers, cache:'no-store'});
     if(!resp.ok) return _produtosCadastroLocal();
     var meta = await resp.json();
     var b64cad = (meta.content||'').replace(/\n/g,'');
     if(!b64cad && meta.sha){
       // Arquivo acima de 1 MB: a API não devolve o texto — busca pelo blob
-      var rb = await fetch('https://api.github.com/repos/'+GH_REPO+'/git/blobs/'+meta.sha+'?t='+Date.now(), {headers:headers, cache:'no-store'});
+      var rb = await fetch('https://api.github.com/repos/'+GH_DATA_REPO+'/git/blobs/'+meta.sha+'?t='+Date.now(), {headers:headers, cache:'no-store'});
       if(rb.ok){ var mb = await rb.json(); b64cad = (mb.content||'').replace(/\n/g,''); }
     }
     var dados = JSON.parse(decodeURIComponent(escape(atob(b64cad))));
@@ -2684,10 +2701,10 @@ async function _buscarPedidosBaseAdmin(){
   if(!_ghToken()) return null;
   try{
     var h = {'Authorization':'token '+_ghToken(),'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
-    var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_BCK_PEDIDOS+'?t='+Date.now(), {headers:h, cache:'no-store'});
+    var r = await fetch('https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_BCK_PEDIDOS+'?t='+Date.now(), {headers:h, cache:'no-store'});
     if(!r.ok) return null;
     var m = await r.json(); var b64 = (m.content||'').replace(/\n/g,'');
-    if(!b64 && m.sha){ var rb = await fetch('https://api.github.com/repos/'+GH_REPO+'/git/blobs/'+m.sha+'?t='+Date.now(), {headers:h, cache:'no-store'}); if(rb.ok){ var mb = await rb.json(); b64 = (mb.content||'').replace(/\n/g,''); } }
+    if(!b64 && m.sha){ var rb = await fetch('https://api.github.com/repos/'+GH_DATA_REPO+'/git/blobs/'+m.sha+'?t='+Date.now(), {headers:h, cache:'no-store'}); if(rb.ok){ var mb = await rb.json(); b64 = (mb.content||'').replace(/\n/g,''); } }
     var l = JSON.parse(decodeURIComponent(escape(atob(b64))));
     return Array.isArray(l) ? l.filter(function(p){ return !p._excluido; }) : null;
   }catch(e){ return null; }
@@ -2707,7 +2724,7 @@ async function _buscarHistColetaAprovada(){
       'Accept': 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28'
     };
-    var resp = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_BCK_COLETAS+'?t='+Date.now(),
+    var resp = await fetch('https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_BCK_COLETAS+'?t='+Date.now(),
       {headers:headers, cache:'no-store'});
     if(!resp.ok) return null;
     var meta = await resp.json();
@@ -2920,6 +2937,7 @@ function _renderHistColetaTotal(body, registros, ano, mes){
       var s = it.setor||'Outros';
       if(!totais[s]) totais[s] = {};
       var k = it.nome;
+      if(it.tipo==='Inventario') return; // contagem: entra no balanço pelo ajuste gerado
       if(!totais[s][k]) totais[s][k] = {qtd:0, ent:0, sai:0, temTipo:false, unid:it.unid||''};
       var qn = Number(it.qtd)||0;
       if(it.tipo==='Saida'){ totais[s][k].sai += qn; totais[s][k].temTipo = true; }
@@ -2971,7 +2989,7 @@ function _renderHistColetaDetalhe(body, registros){
       +'</div>';
     (r.itens||[]).forEach(function(it){
       var tagTipoItem = it.tipo
-        ? '<span style="font-weight:700;font-size:10px;letter-spacing:.5px;margin-right:6px;padding:2px 6px;border-radius:8px;background:'+(it.tipo==='Saida'?'#fde8e8':'#e3edfd')+';color:'+(it.tipo==='Saida'?'#c0392b':'#1e5fbf')+'">'+(it.tipo==='Saida'?'SAÍDA':'ENTRADA')+'</span>'
+        ? '<span style="font-weight:700;font-size:10px;letter-spacing:.5px;margin-right:6px;padding:2px 6px;border-radius:8px;background:'+(it.tipo==='Saida'?'#fde8e8':(it.tipo==='Inventario'?'#fbf4e2':'#e3edfd'))+';color:'+(it.tipo==='Saida'?'#c0392b':(it.tipo==='Inventario'?'#8a5a12':'#1e5fbf'))+'">'+(it.tipo==='Saida'?'SAÍDA':(it.tipo==='Inventario'?'INVENTÁRIO':'ENTRADA'))+'</span>'
         : '';
       html += '<div class="hcol-entrada-item">'
         +'<span style="font-size:15px;font-weight:800">'+it.setor+' · '+it.nome+'</span>'
@@ -3279,11 +3297,11 @@ function _histComSaidas(histColetas, pedidos, produtos){
     var nomeOrig = it.nome;
     if(nc.mudou){ it = Object.assign({}, it, {nome:nc.nome}); prodId = null; }
     var sd = _sdSetorDoItem(produtos, it.nome, prodId, contSetor);
-    if(sd.erro){ avisos.push({data:dataIso, origem:origem, rotulo:rotulo, nome:it.nome, qtd:it.qtd, unid:it.unid, motivo:sd.erro}); return; }
+    if(sd.erro){ avisos.push({ts:tsOrig, data:dataIso, origem:origem, rotulo:rotulo, nome:it.nome, qtd:it.qtd, unid:it.unid, motivo:sd.erro}); return; }
     var alvo = unidAlvo(sd.setor, it.nome, it.unid);
     var f = _sdFator(alvo, it.unid);
     var q = Number(it.qtd)||0;
-    if(f === null){ avisos.push({data:dataIso, origem:origem, rotulo:rotulo, nome:it.nome, qtd:q, unid:it.unid, motivo:'unidade "'+(it.unid||'')+'" não convertível para "'+alvo+'"'}); return; }
+    if(f === null){ avisos.push({ts:tsOrig, data:dataIso, origem:origem, rotulo:rotulo, nome:it.nome, qtd:q, unid:it.unid, motivo:'unidade "'+(it.unid||'')+'" não convertível para "'+alvo+'"'}); return; }
     var detOrig = (nc.mudou || f!==1) ? ' ('+(nc.mudou ? nomeOrig+' · ' : '')+q+' '+(it.unid||'')+')' : '';
     saida.push({data:dataIso, ts:ts, coletor:rotulo, _virtual:origem, _tsOrigem:tsOrig,
       itens:[{setor:sd.setor, nome:it.nome, qtd:Math.round(q*f*1000)/1000, unid:alvo, tipo:'Saida',
@@ -3309,8 +3327,37 @@ function _histComSaidas(histColetas, pedidos, produtos){
     c.itens = r.itens.map(function(it){ return ((it.setor==='Aviario'||it.setor==='Campo') && !it.tipo) ? Object.assign({}, it, {tipo:'Entrada'}) : it; });
     return c;
   });
+  // ── Inventário (contagem física): o saldo passa a ser o CONTADO naquela
+  // data. O app gera um ajuste (Entrada ou Saída) = contado − calculado.
+  // É assim que se corrige o balanço de quem não tinha saldo inicial
+  // (ex.: ovos vendidos em junho, antes das coletas começarem).
+  var todos = base.concat(saida.filter(function(s){ return s.data; }));
+  var invs = [], movs = [];
+  todos.forEach(function(r){ (r.itens||[]).forEach(function(it){
+    if(it.setor!=='Aviario' && it.setor!=='Campo') return;
+    var k = it.setor+'|'+_sdNorm(it.nome);
+    if(it.tipo==='Inventario') invs.push({k:k, data:r.data, ts:r.ts||0, it:it, reg:r});
+    else movs.push({k:k, data:r.data, ts:r.ts||0, q:(it.tipo==='Saida' ? -1 : 1)*(Number(it.qtd)||0)});
+  }); });
+  invs.sort(function(a,b){ return (a.data<b.data?-1:a.data>b.data?1:0) || (a.ts-b.ts); });
+  var ajustes = [];
+  invs.forEach(function(iv){
+    var saldo = 0;
+    movs.concat(ajustes.map(function(a){ return a._mov; })).forEach(function(m){
+      if(m.k!==iv.k) return;
+      if(m.data < iv.data || (m.data===iv.data && m.ts < iv.ts)) saldo += m.q;
+    });
+    var contado = Number(iv.it.qtd)||0;
+    var dif = Math.round((contado - saldo)*1000)/1000;
+    if(!dif) return;
+    var aj = {data:iv.data, ts:iv.ts+0.3, coletor:'Inventário', _virtual:'Inventario', _tsOrigem:iv.ts,
+      itens:[{setor:iv.it.setor, nome:iv.it.nome, qtd:Math.abs(dif), unid:iv.it.unid||'', tipo: dif>0 ? 'Entrada' : 'Saida',
+              obs:'Inventário (contado '+contado+', calculado '+(Math.round(saldo*1000)/1000)+')'}]};
+    aj._mov = {k:iv.k, data:iv.data, ts:iv.ts+0.3, q:dif};
+    ajustes.push(aj);
+  });
   _sdUltimosAvisos = avisos;
-  return base.concat(saida.filter(function(s){ return s.data; }));
+  return todos.concat(ajustes);
 }
 /* Aviso (no topo do histórico) das saídas que não puderam ser aplicadas */
 function _sdAvisosHtml(ano, mes, setor, limiteIso){
