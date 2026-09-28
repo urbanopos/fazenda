@@ -1095,6 +1095,28 @@
         }
       ],
       "_editadoEm": 1790553868616
+    },
+    {
+      "id": "p1790625214598",
+      "setor": "Aviario",
+      "nome": "Patos",
+      "apresentacoes": [
+        {
+          "id": "amulnz7vbczve2k",
+          "unid": "Unid.",
+          "preco": 25,
+          "fornecedor": "Fazenda São José"
+        },
+        {
+          "id": "amulo0delkobbd1",
+          "unid": "",
+          "preco": 0,
+          "_criadoEm": 1790625198045,
+          "_excluido": true,
+          "_excluidoEm": 1790625212969
+        }
+      ],
+      "_editadoEm": 1790625214598
     }
   ],
   "clientes": [
