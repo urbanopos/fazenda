@@ -325,7 +325,9 @@
             "Aviario",
             "Perda",
             "Vendas"
-          ]
+          ],
+          "_excluido": true,
+          "_excluidoEm": 1790560002061
         },
         {
           "id": "amukl4u5ckuroh5",
@@ -347,11 +349,13 @@
           "fornecedor": "Fazenda São José",
           "abas": [
             "Aviario",
-            "Perda"
-          ]
+            "Perda",
+            "Vendas"
+          ],
+          "_editadoEm": 1790559996779
         }
       ],
-      "_editadoEm": 1790559959359
+      "_editadoEm": 1790560002061
     },
     {
       "id": "p1789066568948_0",
