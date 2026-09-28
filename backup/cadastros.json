@@ -1105,7 +1105,11 @@
           "id": "amulnz7vbczve2k",
           "unid": "Unid.",
           "preco": 25,
-          "fornecedor": "Fazenda São José"
+          "fornecedor": "Fazenda São José",
+          "_editadoEm": 1790625332022,
+          "abas": [
+            "Aviario"
+          ]
         },
         {
           "id": "amulo0delkobbd1",
@@ -1116,7 +1120,7 @@
           "_excluidoEm": 1790625212969
         }
       ],
-      "_editadoEm": 1790625214598
+      "_editadoEm": 1790625332022
     }
   ],
   "clientes": [
