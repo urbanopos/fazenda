@@ -31,10 +31,11 @@
           "fornecedor": "Fazenda São José",
           "abas": [
             "Aviario",
+            "Perda",
             "Vendas",
             "Compras"
           ],
-          "_editadoEm": 1790559308910
+          "_editadoEm": 1790562565387
         },
         {
           "id": "l_unid__2",
@@ -42,7 +43,7 @@
           "preco": 1
         }
       ],
-      "_editadoEm": 1790559638199
+      "_editadoEm": 1790562565387
     },
     {
       "id": "p_frango",
