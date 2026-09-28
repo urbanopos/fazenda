@@ -1,6 +1,23 @@
 [
   {
     "data": "2026-09-28",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "unid": "Unid.",
+        "qtd": 45,
+        "preco": 1,
+        "obs": "Irmão",
+        "forn": "Fazenda São José",
+        "tipo": ""
+      }
+    ],
+    "ts": 1790624386694
+  },
+  {
+    "data": "2026-09-28",
     "coletor": "Menininha",
     "itens": [
       {
