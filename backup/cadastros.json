@@ -984,9 +984,11 @@
           "id": "amuenzpa1uc2ye1",
           "unid": "Fêmea Adulta",
           "preco": 0,
-          "_editadoEm": 1790417194073,
+          "_editadoEm": 1790559524086,
           "abas": [
-            "Vendas"
+            "Estoque",
+            "Vendas",
+            "Compras"
           ]
         },
         {
@@ -1010,7 +1012,7 @@
           ]
         }
       ],
-      "_editadoEm": 1790559506823
+      "_editadoEm": 1790559524086
     },
     {
       "id": "p1790274774174",
