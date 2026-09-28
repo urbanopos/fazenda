@@ -993,8 +993,11 @@
           "id": "amuenzw2cc8o4xw",
           "unid": "Fêmea Garrota",
           "preco": 0,
-          "_editadoEm": 1790418154359,
-          "abas": []
+          "_editadoEm": 1790559506823,
+          "abas": [
+            "Estoque",
+            "Compras"
+          ]
         },
         {
           "id": "amueo05cvstgcdo",
@@ -1007,7 +1010,7 @@
           ]
         }
       ],
-      "_editadoEm": 1790559496085
+      "_editadoEm": 1790559506823
     },
     {
       "id": "p1790274774174",
