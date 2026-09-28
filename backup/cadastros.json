@@ -1008,6 +1008,28 @@
       ],
       "_excluido": true,
       "_excluidoEm": 1790274926187
+    },
+    {
+      "id": "p1790553760478",
+      "setor": "Aviario",
+      "nome": "Telhas Pvc",
+      "apresentacoes": [
+        {
+          "id": "amukhg6k7t0iyub",
+          "unid": "Unid",
+          "preco": 0,
+          "fornecedor": "Loja 2001"
+        },
+        {
+          "id": "amukhh3xztnev5l",
+          "unid": "",
+          "preco": 0,
+          "_criadoEm": 1790553755448,
+          "_excluido": true,
+          "_excluidoEm": 1790553758995
+        }
+      ],
+      "_editadoEm": 1790553760478
     }
   ],
   "clientes": [
