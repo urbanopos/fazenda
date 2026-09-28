@@ -4,25 +4,6 @@
     "coletor": "Menininha",
     "itens": [
       {
-        "setor": "Perda",
-        "nome": "Ovos de Capoeira",
-        "unid": "Unid.",
-        "qtd": 15,
-        "preco": 1,
-        "obs": "",
-        "forn": "Fazenda São José",
-        "tipo": ""
-      }
-    ],
-    "ts": 1790623245839,
-    "status": "pendente",
-    "enviadoEm": "2026-09-28T19:20:47.752Z"
-  },
-  {
-    "data": "2026-09-28",
-    "coletor": "Menininha",
-    "itens": [
-      {
         "setor": "Aviario",
         "nome": "Pinto",
         "unid": "unid",
