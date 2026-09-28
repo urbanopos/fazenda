@@ -6,41 +6,43 @@
       "nome": "Ovos de Capoeira",
       "apresentacoes": [
         {
+          "id": "l_bandeja-c-30-ovos_",
           "unid": "Bandeja c/30 ovos",
           "preco": 30,
+          "fornecedor": "Fazenda São José",
           "abas": [
             "Vendas",
             "Compras"
           ],
-          "id": "l_bandeja-c-30-ovos_",
           "_editadoEm": 1790559415141
         },
         {
+          "id": "l_bandeja-c-30-ovos__2",
+          "unid": "Bandeja c/30 ovos",
+          "preco": 30,
+          "abas": [
+            "Vendas"
+          ]
+        },
+        {
+          "id": "l_unid_",
           "unid": "Unid.",
           "preco": 1,
+          "fornecedor": "Fazenda São José",
           "abas": [
             "Aviario",
             "Vendas",
             "Compras"
           ],
-          "id": "l_unid_",
           "_editadoEm": 1790559308910
         },
         {
-          "unid": "Bandeja c/30 ovos",
-          "preco": 30,
-          "abas": [
-            "Vendas"
-          ],
-          "id": "l_bandeja-c-30-ovos__2"
-        },
-        {
+          "id": "l_unid__2",
           "unid": "Unid.",
-          "preco": 1,
-          "id": "l_unid__2"
+          "preco": 1
         }
       ],
-      "_editadoEm": 1790559415141
+      "_editadoEm": 1790559638199
     },
     {
       "id": "p_frango",
