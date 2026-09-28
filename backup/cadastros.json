@@ -307,9 +307,17 @@
     {
       "id": "p1789066565373_0",
       "setor": "Aviario",
-      "nome": "Peru jovem",
+      "nome": "Peru",
       "apresentacoes": [
         {
+          "id": "l_jovem_",
+          "unid": "Jovem",
+          "preco": 0,
+          "_excluido": true,
+          "_excluidoEm": 1790412474279
+        },
+        {
+          "id": "l_unid_fazenda-sao-jose",
           "unid": "Unid.",
           "preco": 0,
           "fornecedor": "Fazenda São José",
@@ -317,18 +325,10 @@
             "Aviario",
             "Perda",
             "Vendas"
-          ],
-          "id": "l_unid_fazenda-sao-jose"
-        },
-        {
-          "unid": "Jovem",
-          "preco": 0,
-          "id": "l_jovem_",
-          "_excluido": true,
-          "_excluidoEm": 1790412474279
+          ]
         }
       ],
-      "_editadoEm": 1790412474279
+      "_editadoEm": 1790559819246
     },
     {
       "id": "p1789066568948_0",
