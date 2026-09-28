@@ -128,15 +128,15 @@
       {
         "setor": "Perda",
         "nome": "Ovos de Capoeira",
-        "unid": "Unid.",
         "qtd": 27,
-        "preco": 1,
-        "obs": "",
+        "unid": "Unid.",
+        "tipo": "",
         "forn": "",
-        "tipo": ""
+        "preco": 1
       }
     ],
-    "ts": 1790362081480
+    "ts": 1790362081480,
+    "_editadoEm": 1790562383227
   },
   {
     "data": "2026-09-25",
