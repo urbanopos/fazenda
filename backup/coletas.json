@@ -1,23 +1,6 @@
 [
   {
     "data": "2026-09-28",
-    "coletor": "Júnior",
-    "itens": [
-      {
-        "setor": "Aviario",
-        "nome": "Ovos de Capoeira",
-        "unid": "Unid.",
-        "qtd": 45,
-        "preco": 1,
-        "obs": "Irmão",
-        "forn": "Fazenda São José",
-        "tipo": ""
-      }
-    ],
-    "ts": 1790624386694
-  },
-  {
-    "data": "2026-09-28",
     "coletor": "Menininha",
     "itens": [
       {
@@ -111,6 +94,23 @@
     "ts": 1790592129944,
     "mov": "MOV-0038",
     "_editadoEm": 1790623969430
+  },
+  {
+    "data": "2026-09-27",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "qtd": 45,
+        "unid": "Unid.",
+        "tipo": "",
+        "forn": "Fazenda São José",
+        "preco": 1
+      }
+    ],
+    "ts": 1790624386694,
+    "_editadoEm": 1790624418385
   },
   {
     "ts": 1790553086169,
