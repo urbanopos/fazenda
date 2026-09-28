@@ -1125,15 +1125,16 @@
     "itens": [
       {
         "setor": "Perda",
-        "nome": "Pintos",
-        "unid": "Unid.",
+        "nome": "Pinto",
         "qtd": 3,
-        "obs": "",
+        "unid": "unid",
+        "tipo": "",
         "forn": "",
-        "tipo": ""
+        "preco": 0
       }
     ],
-    "ts": 1788636968490
+    "ts": 1788636968490,
+    "_editadoEm": 1790561435122
   },
   {
     "data": "2026-09-05",
