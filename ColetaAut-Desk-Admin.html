@@ -1226,8 +1226,12 @@ body:has(#sec-compras.at) #contador{display:none}
   <div class="sec-d">Registro de compras · cada compra entra no Estoque</div>
   <div class="talao-num" id="cmp-num">Compra <strong>CMP-0001</strong></div>
   <div class="vi-row2">
+    <div class="vi-campo"><span class="vi-lbl">Data da compra</span>
+      <input class="vi-inp" type="date" id="cmp-data" style="font-weight:500"></div>
     <div class="vi-campo"><span class="vi-lbl">Setor</span>
       <select class="vi-sel" id="cmp-setor"><option value="">— Escolha —</option><option value="Aviario">Aviário</option><option value="Campo">Campo</option></select></div>
+  </div>
+  <div class="vi-row2" style="grid-template-columns:1fr">
     <div class="vi-campo"><span class="vi-lbl">Fornecedor</span>
       <select class="vi-sel" id="cmp-forn-sel" onchange="_cmpOnFornChange()"><option value="">— Escolha o fornecedor —</option></select>
       <input class="vi-inp" id="cmp-fornecedor" placeholder="Nome do fornecedor (avulso)..." style="font-weight:500;display:none;margin-top:6px" oninput="_cmpRender()"></div>
@@ -11702,7 +11706,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a0e535fa8e9';
+var _caFP = '1a0e550529e9';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -18468,6 +18472,7 @@ function _cmpLimpar(){
   _cmpRenderFornecedores('');
   var r = document.getElementById('cmp-resp'); if(r) r.value = (localStorage.getItem('wpp_nome')||'').trim();
   var s = document.getElementById('cmp-setor'); if(s) s.value = '';
+  var dc = document.getElementById('cmp-data'); if(dc) dc.value = _dataLocalHoje();
   _cmpRender();
 }
 function _cmpCancelarEdicao(){ _cmpLimpar(); _toast('Edição cancelada.'); }
@@ -18507,7 +18512,9 @@ async function _cmpRegistrar(){
   var forn  = _cmpFornAtual();
   var resp  = ((document.getElementById('cmp-resp')||{}).value||'').trim();
   var obs   = ((document.getElementById('cmp-obs')||{}).value||'').trim();
-  var data  = (document.getElementById('data-global')||{}).value || _dataLocalHoje();
+  var data  = (document.getElementById('cmp-data')||{}).value || '';
+  if(!data){ _toast('Informe a data da compra.'); return; }
+  if(data > _dataLocalHoje() && !confirm('A data da compra ('+_cmpDataFmt(data)+') é no futuro. Confirmar mesmo assim?')) return;
   if(!setor){ _toast('Escolha o setor (Aviário ou Campo).'); return; }
   if(!forn){ _toast('Informe o fornecedor.'); return; }
   if(!resp){ _toast('Informe o responsável.'); return; }
@@ -18521,7 +18528,7 @@ async function _cmpRegistrar(){
   });
   var total = linhas.reduce(function(s,l){ return s+l.sub; }, 0);
   var resumo = linhas.map(function(l){ return '• '+l.nome+': '+_fmtNum(l.qtd)+' '+l.unid+' × R$ '+_fmt(l.preco)+' = R$ '+_fmt(l.sub); }).join('\n');
-  if(!confirm((_cmpEditTs?'Salvar alterações da compra':'Registrar compra')+' (também entra no Estoque como Entrada)\n\nSetor: '+_cmpSetorTxt(setor)+'\nFornecedor: '+forn+'\nResponsável: '+resp+'\n\n'+resumo+'\n\nTotal: R$ '+_fmt(total)+'\n\nConfirmar?')) return;
+  if(!confirm((_cmpEditTs?'Salvar alterações da compra':'Registrar compra')+' (também entra no Estoque como Entrada)\n\nData: '+_cmpDataFmt(data)+'\nSetor: '+_cmpSetorTxt(setor)+'\nFornecedor: '+forn+'\nResponsável: '+resp+'\n\n'+resumo+'\n\nTotal: R$ '+_fmt(total)+'\n\nConfirmar?')) return;
 
   // Antes de gravar, traz o que houver de novo de outro aparelho (numeração e edições)
   if(_ghToken()) await _syncAntesDeEditar();
@@ -18650,7 +18657,7 @@ function _cmpEditar(ts){
   _cmpRenderFornecedores(r.fornecedor||'');
   document.getElementById('cmp-resp').value = r.responsavel||'';
   document.getElementById('cmp-obs').value = r.obs||'';
-  var dg = document.getElementById('data-global'); if(dg && r.data) dg.value = r.data;
+  var dc = document.getElementById('cmp-data'); if(dc) dc.value = r.data || _dataLocalHoje();
   _cmpFecharHist();
   trocarAba('compras');
   _cmpRender();
