@@ -4,6 +4,35 @@
     "coletor": "Menininha",
     "itens": [
       {
+        "setor": "Aviario",
+        "nome": "Ovos de Capoeira",
+        "unid": "Unid.",
+        "qtd": 37,
+        "preco": 1,
+        "obs": "",
+        "forn": "Fazenda São José",
+        "tipo": ""
+      },
+      {
+        "setor": "Perda",
+        "nome": "Pintainha",
+        "unid": "Unid",
+        "qtd": 24,
+        "preco": 25,
+        "obs": "",
+        "forn": "Fazenda São José",
+        "tipo": ""
+      }
+    ],
+    "ts": 1790622681900,
+    "status": "pendente",
+    "enviadoEm": "2026-09-28T19:11:22.611Z"
+  },
+  {
+    "data": "2026-09-28",
+    "coletor": "Menininha",
+    "itens": [
+      {
         "setor": "Estoque",
         "nome": "Crescimento",
         "unid": "sc 40kg",
