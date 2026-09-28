@@ -1090,18 +1090,23 @@
         "setor": "Perda",
         "nome": "Pintainha",
         "qtd": 1,
-        "unid": "unid",
-        "tipo": ""
+        "unid": "Unid",
+        "tipo": "",
+        "forn": "Fazenda São José",
+        "preco": 25
       },
       {
         "setor": "Perda",
-        "nome": "Pintos",
+        "nome": "Pinto",
         "qtd": 1,
-        "unid": "Unid.",
-        "tipo": ""
+        "unid": "unid",
+        "tipo": "",
+        "forn": "",
+        "preco": 0
       }
     ],
-    "ts": 1788802408782
+    "ts": 1788802408782,
+    "_editadoEm": 1790561452258
   },
   {
     "data": "2026-09-06",
