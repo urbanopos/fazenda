@@ -1106,9 +1106,11 @@
           "unid": "Unid.",
           "preco": 25,
           "fornecedor": "Fazenda São José",
-          "_editadoEm": 1790625332022,
+          "_editadoEm": 1790625341986,
           "abas": [
-            "Aviario"
+            "Aviario",
+            "Perda",
+            "Vendas"
           ]
         },
         {
@@ -1120,7 +1122,7 @@
           "_excluidoEm": 1790625212969
         }
       ],
-      "_editadoEm": 1790625332022
+      "_editadoEm": 1790625341986
     }
   ],
   "clientes": [
