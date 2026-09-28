@@ -640,7 +640,7 @@
       },
       {
         "nome": "Galinha Viva",
-        "col2": "Galinha",
+        "col2": "Galinha Viva",
         "col1": "02/09/2026",
         "col3": "9 unid",
         "col4": "R$ 50,00 x 9",
@@ -649,8 +649,7 @@
         "unidade": "unid",
         "preco": 50,
         "sub": 450,
-        "data": "02/09/2026",
-        "prodId": "p1787993055897"
+        "data": "02/09/2026"
       },
       {
         "nome": "Ovos de Capoeira",
@@ -663,14 +662,14 @@
         "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 90,
-        "data": "26/08/2026",
-        "prodId": "p_ovo"
+        "data": "26/08/2026"
       }
     ],
     "total": 640,
     "ts": 1787767902611,
     "pago": true,
-    "dataQuit": "05/09/2026, 20:25:52"
+    "dataQuit": "05/09/2026, 20:25:52",
+    "_editadoEm": 1790626032583
   },
   {
     "num": "PED-0070",
