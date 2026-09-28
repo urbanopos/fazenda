@@ -17,9 +17,12 @@
           "unid": "Unid.",
           "preco": 1,
           "abas": [
-            "Aviario"
+            "Aviario",
+            "Vendas",
+            "Compras"
           ],
-          "id": "l_unid_"
+          "id": "l_unid_",
+          "_editadoEm": 1790559308910
         },
         {
           "unid": "Bandeja c/30 ovos",
@@ -34,7 +37,8 @@
           "preco": 1,
           "id": "l_unid__2"
         }
-      ]
+      ],
+      "_editadoEm": 1790559308910
     },
     {
       "id": "p_frango",
