@@ -67,9 +67,9 @@
         "setor": "Estoque",
         "nome": "Engorda",
         "qtd": 2,
-        "unid": "40Kg Gado",
+        "unid": "sc 40kg",
         "tipo": "Saida",
-        "forn": "",
+        "forn": "IRCA",
         "preco": 0
       },
       {
@@ -93,7 +93,7 @@
     ],
     "ts": 1790592129944,
     "mov": "MOV-0038",
-    "_editadoEm": 1790623852574
+    "_editadoEm": 1790623969430
   },
   {
     "ts": 1790553086169,
