@@ -1018,7 +1018,12 @@
           "id": "amukhg6k7t0iyub",
           "unid": "Unid",
           "preco": 0,
-          "fornecedor": "Loja 2001"
+          "fornecedor": "Loja 2001",
+          "_editadoEm": 1790553868615,
+          "abas": [
+            "Estoque",
+            "Compras"
+          ]
         },
         {
           "id": "amukhh3xztnev5l",
@@ -1029,7 +1034,7 @@
           "_excluidoEm": 1790553758995
         }
       ],
-      "_editadoEm": 1790553760478
+      "_editadoEm": 1790553868616
     }
   ],
   "clientes": [
