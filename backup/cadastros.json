@@ -326,9 +326,21 @@
             "Perda",
             "Vendas"
           ]
+        },
+        {
+          "id": "amukl4u5ckuroh5",
+          "unid": "Unid. Macho",
+          "preco": 0,
+          "_criadoEm": 1790559901344,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ]
         }
       ],
-      "_editadoEm": 1790559819246
+      "_editadoEm": 1790559901344
     },
     {
       "id": "p1789066568948_0",
