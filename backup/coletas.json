@@ -1,26 +1,5 @@
 [
   {
-    "ts": 1790553992723,
-    "data": "2026-09-27",
-    "coletor": "Junior Desk",
-    "itens": [
-      {
-        "setor": "Estoque",
-        "nome": "Telhas Pvc",
-        "unid": "Unid",
-        "qtd": 20,
-        "preco": 49.9,
-        "forn": "Loja 2001",
-        "tipo": "Entrada",
-        "obs": "Compra CMP-0002"
-      }
-    ],
-    "origem": "compra",
-    "compraTs": 1790553992722,
-    "compraNum": "CMP-0002",
-    "mov": "MOV-0037"
-  },
-  {
     "ts": 1790553086169,
     "data": "2026-09-27",
     "coletor": "Junior Desk",
@@ -1411,6 +1390,28 @@
       }
     ],
     "ts": 1788049000279
+  },
+  {
+    "ts": 1790553992723,
+    "data": "2026-08-28",
+    "coletor": "Junior Desk",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Telhas Pvc",
+        "unid": "Unid",
+        "qtd": 20,
+        "preco": 49.9,
+        "forn": "Loja 2001",
+        "tipo": "Entrada",
+        "obs": "Compra CMP-0002"
+      }
+    ],
+    "origem": "compra",
+    "compraTs": 1790553992722,
+    "compraNum": "CMP-0002",
+    "mov": "MOV-0037",
+    "_editadoEm": 1790554034261
   },
   {
     "data": "2026-08-28",
