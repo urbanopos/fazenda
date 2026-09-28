@@ -17,6 +17,23 @@
     "ts": 1790623245839
   },
   {
+    "data": "2026-09-28",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Perda",
+        "nome": "Pinto",
+        "unid": "unid",
+        "qtd": 24,
+        "preco": 0,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1790622892635
+  },
+  {
     "ts": 1790553086169,
     "data": "2026-09-27",
     "coletor": "Junior Desk",
