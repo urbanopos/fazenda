@@ -4,6 +4,25 @@
     "coletor": "Menininha",
     "itens": [
       {
+        "setor": "Aviario",
+        "nome": "Pinto",
+        "unid": "unid",
+        "qtd": 176,
+        "preco": 0,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1790623008810,
+    "status": "pendente",
+    "enviadoEm": "2026-09-28T19:16:49.355Z"
+  },
+  {
+    "data": "2026-09-28",
+    "coletor": "Menininha",
+    "itens": [
+      {
         "setor": "Perda",
         "nome": "Pinto",
         "unid": "unid",
