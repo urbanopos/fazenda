@@ -57,46 +57,43 @@
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "unid": "sc 40kg",
         "qtd": 3,
-        "preco": 0,
-        "obs": "",
+        "unid": "sc 40kg",
+        "tipo": "Saida",
         "forn": "IRCA",
-        "tipo": "Saida"
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
+        "qtd": 2,
         "unid": "40Kg Gado",
-        "qtd": 20,
-        "preco": 0,
-        "obs": "",
+        "tipo": "Saida",
         "forn": "",
-        "tipo": "Saida"
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Farelo de Trigo",
-        "unid": "sc 30kg",
         "qtd": 1,
-        "preco": 0,
-        "obs": "",
+        "unid": "sc 30kg",
+        "tipo": "Saida",
         "forn": "",
-        "tipo": "Saida"
+        "preco": 0
       },
       {
         "setor": "Estoque",
         "nome": "Postura",
-        "unid": "sc 40kg",
         "qtd": 3,
-        "preco": 0,
-        "obs": "",
+        "unid": "sc 40kg",
+        "tipo": "Saida",
         "forn": "IRCA",
-        "tipo": "Saida"
+        "preco": 0
       }
     ],
     "ts": 1790592129944,
-    "mov": "MOV-0038"
+    "mov": "MOV-0038",
+    "_editadoEm": 1790623852574
   },
   {
     "ts": 1790553086169,
