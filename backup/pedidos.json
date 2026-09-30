@@ -471,16 +471,14 @@
     "data": "2026-09-02",
     "itens": [
       {
+        "nome": "Ovos de Capoeira",
+        "col2": "Ovos de Capoeira",
         "col1": "02/09/2026",
-        "col2": "ovo",
-        "col3": "1 ",
+        "col3": "1 Bandeja c/30 ovos",
         "col4": "R$ 30,00 x 1",
         "col5": "R$ 30,00",
-        "val": 30,
-        "prodId": "p_ovo",
-        "nome": "Ovos de Capoeira",
-        "unidade": "",
         "qtd": 1,
+        "unidade": "Bandeja c/30 ovos",
         "preco": 30,
         "sub": 30,
         "data": "02/09/2026"
@@ -489,7 +487,8 @@
     "total": 30,
     "ts": 1788382422658,
     "pago": true,
-    "dataQuit": "02/09/2026, 17:54:14"
+    "dataQuit": "02/09/2026, 17:54:14",
+    "_editadoEm": 1790776821528
   },
   {
     "num": "PED-0076",
