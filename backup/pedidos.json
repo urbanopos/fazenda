@@ -2519,29 +2519,27 @@
     "data": "2026-06-10",
     "itens": [
       {
+        "nome": "Peru",
+        "col2": "Peru",
         "col1": "10/06/2026",
-        "col2": "Peru macho adulto",
-        "col3": "2 Unid",
-        "col4": "R$ 150,00",
-        "val": 300,
-        "prodId": "_edit",
-        "nome": "Peru macho adulto",
-        "unidade": "Unid",
+        "col3": "2 Unid. Macho",
+        "col4": "R$ 150,00 x 2",
+        "col5": "R$ 300,00",
         "qtd": 2,
+        "unidade": "Unid. Macho",
         "preco": 150,
         "sub": 300,
         "data": "10/06/2026"
       },
       {
+        "nome": "Peru",
+        "col2": "Peru",
         "col1": "10/06/2026",
-        "col2": "Peruas adultas",
-        "col3": "3 Unidade.",
-        "col4": "R$ 100,00",
-        "val": 300,
-        "prodId": "_edit",
-        "nome": "Peruas adultas",
-        "unidade": "Unidade.",
+        "col3": "3 Unid. Fêmea",
+        "col4": "R$ 100,00 x 3",
+        "col5": "R$ 300,00",
         "qtd": 3,
+        "unidade": "Unid. Fêmea",
         "preco": 100,
         "sub": 300,
         "data": "10/06/2026"
@@ -2549,7 +2547,8 @@
     ],
     "total": 600,
     "ts": 1781097885425,
-    "pago": true
+    "pago": true,
+    "_editadoEm": 1790798284275
   },
   {
     "num": "PED-0008",
