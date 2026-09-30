@@ -1353,11 +1353,11 @@
         "nome": "Esterco de Galinha",
         "col2": "Esterco de Galinha",
         "col1": "27/07/2026",
-        "col3": "11 sacos",
+        "col3": "11 Saco",
         "col4": "R$ 15,00 x 11",
         "col5": "R$ 165,00",
         "qtd": 11,
-        "unidade": "sacos",
+        "unidade": "Saco",
         "preco": 15,
         "sub": 165,
         "data": "27/07/2026"
@@ -1367,7 +1367,7 @@
     "ts": 1785161595127,
     "pago": true,
     "dataQuit": "27/07/2026, 11:14:56",
-    "_editadoEm": 1790792149830
+    "_editadoEm": 1790798732689
   },
   {
     "num": "PED-0049",
