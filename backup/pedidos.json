@@ -1252,16 +1252,14 @@
     "data": "2026-07-30",
     "itens": [
       {
-        "col1": "30/07/2026",
+        "nome": "Ovos de Capoeira",
         "col2": "Ovos de Capoeira",
+        "col1": "30/07/2026",
         "col3": "1 unid",
         "col4": "R$ 30,00 x 1",
         "col5": "R$ 30,00",
-        "val": 30,
-        "prodId": "p_ovo",
-        "nome": "Ovos de Capoeira",
-        "unidade": "unid",
         "qtd": 1,
+        "unidade": "unid",
         "preco": 30,
         "sub": 30,
         "data": "30/07/2026"
@@ -1270,7 +1268,8 @@
     "total": 30,
     "ts": 1785426025564,
     "pago": true,
-    "dataQuit": "11/08/2026, 20:41:33"
+    "dataQuit": "11/08/2026, 20:41:33",
+    "_editadoEm": 1790777052641
   },
   {
     "num": "PED-0053",
