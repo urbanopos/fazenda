@@ -4,6 +4,25 @@
     "coletor": "Menininha",
     "itens": [
       {
+        "setor": "Perda",
+        "nome": "Pinto",
+        "unid": "unid",
+        "qtd": 3,
+        "preco": 0,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1790797510616,
+    "status": "pendente",
+    "enviadoEm": "2026-09-30T19:45:11.326Z"
+  },
+  {
+    "data": "2026-09-30",
+    "coletor": "Menininha",
+    "itens": [
+      {
         "setor": "Aviario",
         "nome": "Ovos de Capoeira",
         "unid": "Unid.",
