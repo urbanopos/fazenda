@@ -1,6 +1,23 @@
 [
   {
     "data": "2026-09-30",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Perda",
+        "nome": "Pinto",
+        "unid": "unid",
+        "qtd": 3,
+        "preco": 0,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1790797510616
+  },
+  {
+    "data": "2026-09-30",
     "coletor": "Júnior",
     "itens": [
       {
