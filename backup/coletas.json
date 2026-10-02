@@ -17,6 +17,24 @@
     "ts": 1790971066298
   },
   {
+    "data": "2026-10-02",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Ração de peixe",
+        "unid": "Sc 25kg",
+        "qtd": 1,
+        "preco": 0,
+        "obs": "",
+        "forn": "Purina",
+        "tipo": "Saida"
+      }
+    ],
+    "ts": 1790942006894,
+    "mov": "MOV-0039"
+  },
+  {
     "data": "2026-09-30",
     "coletor": "Menininha",
     "itens": [
