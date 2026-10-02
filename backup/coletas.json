@@ -1,6 +1,33 @@
 [
   {
     "data": "2026-10-02",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Campo",
+        "nome": "Estacas de sabiá",
+        "unid": "Unid.",
+        "qtd": 12,
+        "preco": 0,
+        "obs": "",
+        "forn": "Fazenda São José",
+        "tipo": ""
+      },
+      {
+        "setor": "Campo",
+        "nome": "Vara p/inhame",
+        "unid": "Unid.",
+        "qtd": 8,
+        "preco": 0,
+        "obs": "",
+        "forn": "Fazenda São José",
+        "tipo": ""
+      }
+    ],
+    "ts": 1790974975708
+  },
+  {
+    "data": "2026-10-02",
     "coletor": "Menininha",
     "itens": [
       {
