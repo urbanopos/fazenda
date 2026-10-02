@@ -1,33 +1,6 @@
 [
   {
     "data": "2026-10-02",
-    "coletor": "Júnior",
-    "itens": [
-      {
-        "setor": "Campo",
-        "nome": "Estacas de sabiá",
-        "unid": "Unid.",
-        "qtd": 27,
-        "preco": 0,
-        "obs": "",
-        "forn": "Fazenda São José",
-        "tipo": ""
-      },
-      {
-        "setor": "Campo",
-        "nome": "Vara p/inhame",
-        "unid": "Unid.",
-        "qtd": 51,
-        "preco": 0,
-        "obs": "",
-        "forn": "Fazenda São José",
-        "tipo": ""
-      }
-    ],
-    "ts": 1790974505793
-  },
-  {
-    "data": "2026-10-02",
     "coletor": "Menininha",
     "itens": [
       {
@@ -60,6 +33,32 @@
     ],
     "ts": 1790942006894,
     "mov": "MOV-0039"
+  },
+  {
+    "data": "2026-10-01",
+    "coletor": "Júnior",
+    "itens": [
+      {
+        "setor": "Campo",
+        "nome": "Estacas de sabiá",
+        "qtd": 27,
+        "unid": "Unid.",
+        "tipo": "",
+        "forn": "Fazenda São José",
+        "preco": 0
+      },
+      {
+        "setor": "Campo",
+        "nome": "Vara p/inhame",
+        "qtd": 51,
+        "unid": "Unid.",
+        "tipo": "",
+        "forn": "Fazenda São José",
+        "preco": 0
+      }
+    ],
+    "ts": 1790974505793,
+    "_editadoEm": 1790974539923
   },
   {
     "data": "2026-10-01",
