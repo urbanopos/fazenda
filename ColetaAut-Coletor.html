@@ -13,76 +13,76 @@
 <link rel="icon" type="image/png" href="https://urbanopos.github.io/fazenda/icon-192.png">
 <link rel="manifest" href="https://urbanopos.github.io/fazenda/manifest.json">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600;700;800&display=swap');
-:root{--vd:#1c2e22;--vm:#2d4a38;--vc:#4a8c6f;--ac:#b8943f;--cr:#f5f0e8;--ce:#e8dfc8;--br:#fff;--tx:#1a1a1a;--mu:#6b655b;--r:8px;--pnl:#e9f4ec;--pnlb:#cfe3d3;--vdrgb:28,46,34}
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+:root{--vd:#1c2e22;--vm:#2d4a38;--vc:#4a8c6f;--ac:#b8943f;--cr:#f5f0e8;--ce:#e8dfc8;--br:#fff;--tx:#1a1a1a;--mu:#888;--r:8px}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{height:100%;background:var(--pnl)}
-body{font-family:'DM Sans',sans-serif;background:var(--pnl);min-height:100vh;color:var(--tx);padding-bottom:env(safe-area-inset-bottom)}
+html{height:100%;background:var(--vd)}
+body{font-family:'DM Sans',sans-serif;background:var(--vd);min-height:100vh;color:var(--tx);padding-bottom:env(safe-area-inset-bottom)}
 /* BANNER */
-#banner-inst{display:none;position:fixed;bottom:0;left:0;right:0;z-index:9998;background:var(--pnl);border-top:2px solid var(--ac);padding:14px 16px 20px;box-shadow:0 -4px 24px rgba(0,0,0,.25)}
+#banner-inst{display:none;position:fixed;bottom:0;left:0;right:0;z-index:9998;background:var(--vd);border-top:2px solid var(--ac);padding:14px 16px 20px;box-shadow:0 -4px 24px rgba(0,0,0,.5)}
 #banner-inst.vis{display:block}
-.bi-titulo{font-family:'DM Serif Display',serif;font-size:16px;color:var(--vd);margin-bottom:3px}
-.bi-desc{font-family:'DM Mono',monospace;font-size:11px;color:rgba(28,46,34,.62);margin-bottom:12px}
+.bi-titulo{font-family:'DM Serif Display',serif;font-size:16px;color:#fff;margin-bottom:3px}
+.bi-desc{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.55);margin-bottom:12px}
 .bi-btns{display:flex;gap:10px}
 .bi-ok{flex:1;padding:12px;border:none;border-radius:var(--r);background:var(--ac);color:var(--vd);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
-.bi-nao{padding:12px 16px;border:1px solid rgba(28,46,34,.25);border-radius:var(--r);background:none;color:rgba(28,46,34,.6);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer}
+.bi-nao{padding:12px 16px;border:1px solid rgba(255,255,255,.2);border-radius:var(--r);background:none;color:rgba(255,255,255,.5);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer}
 /* GUIA IOS */
 #guia-ios{display:none;position:fixed;inset:0;z-index:9997;background:rgba(0,0,0,.78);align-items:flex-end}
 #guia-ios.vis{display:flex}
-.gi-box{background:var(--pnl);width:100%;border-radius:20px 20px 0 0;border-top:2px solid var(--ac);padding:24px 20px 36px}
-.gi-titulo{font-family:'DM Serif Display',serif;font-size:19px;color:var(--vd);text-align:center;margin-bottom:4px}
+.gi-box{background:var(--vd);width:100%;border-radius:20px 20px 0 0;border-top:2px solid var(--ac);padding:24px 20px 36px}
+.gi-titulo{font-family:'DM Serif Display',serif;font-size:19px;color:#fff;text-align:center;margin-bottom:4px}
 .gi-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--ac);letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:20px}
-.gi-passo{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid rgba(28,46,34,.12)}
+.gi-passo{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.07)}
 .gi-passo:last-of-type{border:none}
 .gi-num{width:32px;height:32px;border-radius:50%;background:var(--ac);color:var(--vd);font-family:'DM Mono',monospace;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .gi-ico{font-size:22px;flex-shrink:0}
-.gi-txt{font-family:'DM Sans',sans-serif;font-size:14px;color:rgba(28,46,34,.8);line-height:1.4}
+.gi-txt{font-family:'DM Sans',sans-serif;font-size:14px;color:rgba(255,255,255,.82);line-height:1.4}
 .gi-txt strong{color:var(--ac)}
-.gi-fechar{width:100%;margin-top:18px;padding:13px;border:1px solid rgba(28,46,34,.22);border-radius:var(--r);background:none;color:rgba(28,46,34,.6);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer}
+.gi-fechar{width:100%;margin-top:18px;padding:13px;border:1px solid rgba(255,255,255,.18);border-radius:var(--r);background:none;color:rgba(255,255,255,.55);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer}
 /* BLOQUEIO */
-#tela-bloqueio{display:none;position:fixed;inset:0;z-index:99999;background:var(--pnl);flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;text-align:center}
+#tela-bloqueio{display:none;position:fixed;inset:0;z-index:99999;background:var(--vd);flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;text-align:center}
 #tela-bloqueio.vis{display:flex}
 .bl-ico{font-size:72px;margin-bottom:24px;filter:grayscale(1);opacity:.5}
-.bl-titulo{font-family:'DM Serif Display',serif;font-size:26px;color:var(--vd);margin-bottom:12px}
-.bl-msg{font-family:'DM Sans',sans-serif;font-size:15px;color:rgba(28,46,34,.62);line-height:1.6;max-width:280px;margin-bottom:36px}
-.bl-msg strong{color:var(--vd)}
+.bl-titulo{font-family:'DM Serif Display',serif;font-size:26px;color:#fff;margin-bottom:12px}
+.bl-msg{font-family:'DM Sans',sans-serif;font-size:15px;color:rgba(255,255,255,.5);line-height:1.6;max-width:280px;margin-bottom:36px}
+.bl-msg strong{color:rgba(255,255,255,.8)}
 .bl-wrap{width:100%;max-width:300px}
-.bl-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(28,46,34,.45);margin-bottom:8px;display:block}
+.bl-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px;display:block}
 .bl-iw{position:relative}
-.bl-input{width:100%;padding:14px 48px 14px 14px;background:rgba(28,46,34,.05);border:1px solid rgba(28,46,34,.18);border-radius:var(--r);color:var(--vd);font-family:'DM Mono',monospace;font-size:16px;text-align:left;outline:none}
-.bl-olho{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(28,46,34,.5);font-size:20px;cursor:pointer;line-height:1;padding:4px}
-.bl-btn{width:100%;margin-top:10px;padding:14px;background:rgba(28,46,34,.07);border:1px solid rgba(28,46,34,.2);border-radius:var(--r);color:rgba(28,46,34,.78);font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;cursor:pointer}
-.bl-erro{font-family:'DM Mono',monospace;font-size:11px;color:#a03030;margin-top:8px;min-height:16px}
+.bl-input{width:100%;padding:14px 48px 14px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);color:#fff;font-family:'DM Mono',monospace;font-size:16px;text-align:left;outline:none}
+.bl-olho{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.4);font-size:20px;cursor:pointer;line-height:1;padding:4px}
+.bl-btn{width:100%;margin-top:10px;padding:14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--r);color:rgba(255,255,255,.7);font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;cursor:pointer}
+.bl-erro{font-family:'DM Mono',monospace;font-size:11px;color:#e08080;margin-top:8px;min-height:16px}
 /* ADMIN */
 #painel-admin{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.82);align-items:center;justify-content:center}
 #painel-admin.vis{display:flex}
-.ad-box{background:var(--pnl);width:92%;max-width:360px;border-radius:16px;border:2px solid var(--ac);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.ad-box{background:var(--vd);width:92%;max-width:360px;border-radius:16px;border:2px solid var(--ac);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
 .ad-hd{background:rgba(184,148,63,.1);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(184,148,63,.2)}
-.ad-hd-t{font-family:'DM Serif Display',serif;font-size:17px;color:var(--vd)}
-.ad-hd-s{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ac);margin-top:2px}
-.ad-x{background:none;border:none;color:rgba(28,46,34,.5);font-size:22px;cursor:pointer;line-height:1;padding:0}
+.ad-hd-t{font-family:'DM Serif Display',serif;font-size:17px;color:#fff}
+.ad-hd-s{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ac);margin-top:2px}
+.ad-x{background:none;border:none;color:rgba(255,255,255,.4);font-size:22px;cursor:pointer;line-height:1;padding:0}
 .ad-corpo{padding:20px 18px 24px;max-height:80vh;overflow-y:auto}
-.ad-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(28,46,34,.58);margin-bottom:8px;display:block}
+.ad-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:8px;display:block}
 .ad-iw{position:relative;margin-bottom:14px}
-.ad-inp{width:100%;padding:13px 44px 13px 14px;border:2px solid rgba(28,46,34,.15);border-radius:var(--r);background:rgba(28,46,34,.05);color:var(--vd);font-family:'DM Mono',monospace;font-size:15px;outline:none;letter-spacing:1px}
+.ad-inp{width:100%;padding:13px 44px 13px 14px;border:2px solid rgba(255,255,255,.1);border-radius:var(--r);background:rgba(255,255,255,.07);color:#fff;font-family:'DM Mono',monospace;font-size:15px;outline:none;letter-spacing:1px}
 .ad-inp:focus{border-color:var(--ac)}
-.ad-inp::placeholder{color:rgba(28,46,34,.38);letter-spacing:0}
-.ad-olho{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(28,46,34,.42);font-size:18px;cursor:pointer;line-height:1;padding:0}
-.ad-div{height:1px;background:rgba(28,46,34,.12);margin:16px 0}
-.ad-val{font-family:'DM Mono',monospace;font-size:13px;color:rgba(28,46,34,.58);background:rgba(28,46,34,.04);border:1px dashed rgba(28,46,34,.2);border-radius:6px;padding:10px 14px;display:flex;align-items:center;margin-bottom:4px}
+.ad-inp::placeholder{color:rgba(255,255,255,.22);letter-spacing:0}
+.ad-olho{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.3);font-size:18px;cursor:pointer;line-height:1;padding:0}
+.ad-div{height:1px;background:rgba(255,255,255,.07);margin:16px 0}
+.ad-val{font-family:'DM Mono',monospace;font-size:13px;color:rgba(255,255,255,.45);background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.1);border-radius:6px;padding:10px 14px;display:flex;align-items:center;margin-bottom:4px}
 .ad-val span{color:var(--ac);font-weight:700}
 .ad-row{display:flex;gap:8px;margin-top:10px}
 .ad-ok{flex:1;padding:12px;border:none;border-radius:var(--r);background:var(--ac);color:var(--vd);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
-.ad-cl{padding:12px 14px;border:1px solid rgba(28,46,34,.2);border-radius:var(--r);background:none;color:rgba(28,46,34,.58);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer}
+.ad-cl{padding:12px 14px;border:1px solid rgba(255,255,255,.12);border-radius:var(--r);background:none;color:rgba(255,255,255,.45);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer}
 .ad-st{font-family:'DM Mono',monospace;font-size:11px;text-align:center;margin-top:12px;min-height:16px;color:var(--ac)}
-.ad-st.er{color:#a03030}
+.ad-st.er{color:#e08080}
 /* TOPO */
-.topo{background:var(--pnl);padding:16px 20px 12px;display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--ac);position:sticky;top:0;z-index:100}
+.topo{background:var(--vd);padding:16px 20px 12px;display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--ac);position:sticky;top:0;z-index:100}
 .topo-icon{width:44px;height:44px;border-radius:50%;background:var(--ac);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;cursor:pointer;transition:transform .15s,box-shadow .15s;user-select:none}
 .topo-icon.press{transform:scale(.88);box-shadow:0 0 0 5px rgba(184,148,63,.35)}
-.topo-t{font-family:'DM Serif Display',serif;font-size:18px;color:var(--vd);line-height:1.1}
+.topo-t{font-family:'DM Serif Display',serif;font-size:18px;color:#fff;line-height:1.1}
 .topo-s{font-family:'DM Mono',monospace;font-size:10px;color:var(--ac);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
-.topo-d{margin-left:auto;font-family:'DM Mono',monospace;font-size:11px;color:rgba(28,46,34,.58);text-align:right;line-height:1.5}
+.topo-d{margin-left:auto;font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.45);text-align:right;line-height:1.5}
 .btn-inst{background:rgba(184,148,63,.14);border:1px solid rgba(184,148,63,.35);color:var(--ac);border-radius:20px;padding:8px 18px;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;display:none;letter-spacing:.5px}
 .btn-inst.vis{display:block}
 /* CORPO */
@@ -154,7 +154,7 @@ textarea{resize:none;height:72px;font-size:14px}
 .cdata{display:flex;gap:8px;margin-top:6px}
 .btn-hj{padding:8px 14px;border-radius:6px;background:var(--vm);color:var(--ac);border:none;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;white-space:nowrap}
 /* TOAST */
-.toast{position:fixed;bottom:90px;left:0;right:0;margin:0 auto;width:max-content;max-width:calc(100% - 32px);box-sizing:border-box;text-align:center;white-space:normal !important;line-height:1.4;background:var(--vd);color:#fff;font-family:'DM Mono',monospace;font-size:12px;padding:12px 20px;border-radius:20px;border:1px solid var(--ac);opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999;white-space:nowrap}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--vd);color:#fff;font-family:'DM Mono',monospace;font-size:12px;padding:12px 20px;border-radius:20px;border:1px solid var(--ac);opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999;white-space:nowrap}
 .toast.vis{opacity:1}
 /* VENDAS */
 #sec-vendas{display:none}
@@ -163,7 +163,7 @@ textarea{resize:none;height:72px;font-size:14px}
 .talao-num strong{font-size:15px}
 .vi{background:var(--br);border-radius:var(--r);border:2px solid var(--ce);padding:14px;margin-bottom:10px}
 .vi.con{background:#fffbf0;border-color:var(--ac)}
-.vi-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);display:block;margin-bottom:6px}
+.vi-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);display:block;margin-bottom:6px}
 .vi-sel{width:100%;padding:10px 12px;border:2px solid var(--ce);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:15px;background:var(--cr);color:var(--tx);outline:none;-webkit-appearance:none;appearance:none;margin-bottom:12px}
 .vi-sel:focus{border-color:var(--ac)}
 .vi-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
@@ -203,7 +203,7 @@ textarea{resize:none;height:72px;font-size:14px}
 .mp-body{padding:16px}
 .mp-meta{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--ce)}
 .mp-meta-item{display:flex;flex-direction:column;gap:2px}
-.mp-meta-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu)}
+.mp-meta-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu)}
 .mp-meta-val{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--tx)}
 .mp-linha{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--ce)}
 .mp-linha:last-child{border:none}
@@ -235,12 +235,12 @@ textarea{resize:none;height:72px;font-size:14px}
 .hcol-secao{margin-bottom:18px}
 .hcol-secao-titulo{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#fff;padding:6px 12px;border-radius:4px;display:inline-block;margin-bottom:8px}
 .hcol-item{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:#fff;border-radius:6px;margin-bottom:6px;border:1px solid var(--ce)}
-.hcol-item-nome{font-family:'DM Sans',sans-serif;font-size:17px;font-weight:800;color:var(--tx)}
+.hcol-item-nome{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--tx)}
 .hcol-item-det{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu);margin-top:2px}
 .hcol-item-qtd{font-family:'DM Mono',monospace;font-size:15px;font-weight:700;color:var(--vd);flex-shrink:0;text-align:right}
 .hcol-item-unid{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu)}
 .hcol-total{background:var(--vd);border-radius:var(--r);padding:12px 16px;margin-top:4px;display:flex;justify-content:space-between;align-items:center}
-.hcol-total-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7aa88a}
+.hcol-total-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#7aa88a}
 .hcol-total-val{font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:var(--ac)}
 .hcol-entrada{background:#fff;border:1px solid var(--ce);border-radius:6px;padding:10px 12px;margin-bottom:8px}
 .hcol-entrada-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
@@ -252,15 +252,6 @@ textarea{resize:none;height:72px;font-size:14px}
 .hcol-tab-toggle{display:flex;gap:6px;margin-bottom:14px}
 .hcol-tab-btn{flex:1;padding:9px;border:2px solid var(--ce);border-radius:var(--r);background:#fff;color:var(--mu);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
 .hcol-tab-btn.ativo{background:var(--vd);border-color:var(--vd);color:var(--ac)}
-</style>
-<style>
-/* Nitidez das fontes */
-html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
-body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;font-kerning:normal;font-optical-sizing:auto}
-/* Nunca "engordar" artificialmente uma fonte que não tem o peso pedido
-   (o navegador borra o desenho) — usa o peso real mais próximo. */
-*{font-synthesis-weight:none}
-input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 </style>
 </head>
 <body>
@@ -351,10 +342,10 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
         <span class="ad-lbl">Enviar app para novo coletor</span>
         <div class="ad-row"><button class="ad-ok" onclick="compartilharLink()" style="background:linear-gradient(135deg,#25d366,#128c7e);color:#fff">Enviar link pelo WhatsApp</button></div>
         <div class="ad-div"></div>
-        <span class="ad-lbl">Histórico de Coletas</span>
+        <span class="ad-lbl">Historico de Coletas</span>
         <div class="ad-row"><button class="ad-ok" onclick="fecharAdmin();abrirHistColeta()" style="background:#1e3a5f;color:#93c5fd">📊 Ver Consulta de Coletas</button></div>
         <div class="ad-div"></div>
-        <span class="ad-lbl">Histórico de Pedidos</span>
+        <span class="ad-lbl">Historico de Pedidos</span>
         <div class="ad-row"><button class="ad-ok" onclick="fecharAdmin();abrirHistPedidos()" style="background:#7a3a00;color:#ffd49a">📄 Ver Consulta Pedidos</button></div>
         <div class="ad-div"></div>
         <div class="ad-row"><button id="btn-desbloquear" class="ad-ok" onclick="desbloquearAdmin()" style="background:#2d4a38;color:#a8d88a;display:none">Desbloquear dispositivo</button></div>
@@ -399,7 +390,7 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
 <div id="modal-hcol" onclick="fecharHistColeta()">
   <div class="hcol-box" onclick="event.stopPropagation()">
     <div class="hcol-hd">
-      <div><div class="hcol-hd-t">Histórico de Coletas<span id="hcol-hd-setor" style="color:rgba(255,212,154,.85)"></span></div><div class="hcol-hd-s" id="hcol-hd-sub">Ultimos 7 dias</div></div>
+      <div><div class="hcol-hd-t">Historico de Coletas<span id="hcol-hd-setor" style="color:rgba(255,212,154,.85)"></span></div><div class="hcol-hd-s" id="hcol-hd-sub">Ultimos 7 dias</div></div>
       <button class="hcol-x" onclick="fecharHistColeta()">✕</button>
     </div>
     <div class="hcol-filtros">
@@ -408,11 +399,11 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
         <select class="hcol-sel" id="hcol-ano" onchange="renderHistColeta()"></select>
       </div>
       <div id="hcol-filtro-mes">
-        <div class="hcol-lbl">Mês</div>
+        <div class="hcol-lbl">Mes</div>
         <select class="hcol-sel" id="hcol-mes" onchange="renderHistColeta()">
           <option value="">Todos</option>
           <option value="01">Janeiro</option><option value="02">Fevereiro</option>
-          <option value="03">Março</option><option value="04">Abril</option>
+          <option value="03">Marco</option><option value="04">Abril</option>
           <option value="05">Maio</option><option value="06">Junho</option>
           <option value="07">Julho</option><option value="08">Agosto</option>
           <option value="09">Setembro</option><option value="10">Outubro</option>
@@ -420,9 +411,9 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
         </select>
       </div>
       <div id="hcol-filtro-visao">
-        <div class="hcol-lbl">Visão</div>
+        <div class="hcol-lbl">Visao</div>
         <select class="hcol-sel" id="hcol-visao" onchange="renderHistColeta()">
-          <option value="total">Totalização por item</option>
+          <option value="total">Totalizacao por item</option>
           <option value="detalhe">Registros detalhados</option>
         </select>
       </div>
@@ -486,11 +477,11 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
       <select class="hcol-sel" id="hped-ano" onchange="_renderHist()"></select>
     </div>
     <div>
-      <div class="hcol-lbl">Mês</div>
+      <div class="hcol-lbl">Mes</div>
       <select class="hcol-sel" id="hped-mes" onchange="_renderHist()">
         <option value="">Todos</option>
         <option value="01">Janeiro</option><option value="02">Fevereiro</option>
-        <option value="03">Março</option><option value="04">Abril</option>
+        <option value="03">Marco</option><option value="04">Abril</option>
         <option value="05">Maio</option><option value="06">Junho</option>
         <option value="07">Julho</option><option value="08">Agosto</option>
         <option value="09">Setembro</option><option value="10">Outubro</option>
@@ -498,9 +489,9 @@ input,select,textarea,button{-webkit-font-smoothing:antialiased;text-rendering:o
       </select>
     </div>
     <div>
-      <div class="hcol-lbl">Visão</div>
+      <div class="hcol-lbl">Visao</div>
       <select class="hcol-sel" id="hped-visao" onchange="_renderHist()">
-        <option value="total">Totalização por produto</option>
+        <option value="total">Totalizacao por produto</option>
         <option value="detalhe">Pedidos detalhados</option>
       </select>
     </div>
@@ -538,11 +529,9 @@ var VRK = 'fsj_versao_remota';   // ultima versao recebida do status.json
 
 /* ── GitHub API ─────────────────────────────────────────────── */
 var GH_REPO  = 'urbanopos/fazenda';
-/* Repositório dos DADOS (pode ser privado) — vem no link de configuração do Admin */
-var GH_DATA_REPO = (function(){ try{ return localStorage.getItem('fsj_gh_data_repo') || GH_REPO; }catch(e){ return GH_REPO; } })();
 var GH_FILE  = 'coletas-pendentes.json';
 var GH_TOKEN_KEY = 'fsj_gh_token';
-var GH_API   = 'https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_FILE;
+var GH_API   = 'https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE;
 var GH_BCK_COLETAS = 'backup/coletas.json';
 var GH_BCK_CADASTROS = 'backup/cadastros.json';
 var GH_BCK_PEDIDOS = 'backup/pedidos.json';
@@ -560,11 +549,6 @@ function _aplicarConfigDoLink(){
     var m = hash.match(/cfg=([^&]+)/);
     if(!m) return;
     var cfg = JSON.parse(decodeURIComponent(escape(atob(m[1]))));
-    if(cfg && cfg.dr && /^[\w.-]+\/[\w.-]+$/.test(cfg.dr)){
-      localStorage.setItem('fsj_gh_data_repo', cfg.dr);
-      GH_DATA_REPO = cfg.dr;
-      GH_API = 'https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_FILE;
-    }
     if(cfg && cfg.tk){
       localStorage.setItem(GH_TOKEN_KEY, cfg.tk);
       setTimeout(function(){ _toast('✅ App habilitado! Suas coletas já serão enviadas.'); }, 800);
@@ -593,7 +577,7 @@ function _atualizarExibicaoToken(){
   if(!sp) return;
   var t = _ghToken();
   sp.textContent = t ? '✅ Configurado ('+t.slice(0,8)+'***)' : '⚠️ Não configurado';
-  sp.style.color  = t ? '#1a6b2a' : '#a03030';
+  sp.style.color  = t ? '#4caf74' : '#e08080';
   var st = document.getElementById('ad-gh-status-sp');
   if(st){ st.textContent = localStorage.getItem('fsj_gh_ultimo_status') || ''; }
 }
@@ -686,117 +670,29 @@ function _catalogoBuscarExato(setor, nome, unid){
   var an = String(nome).trim().toLowerCase(), au = String(unid).trim().toLowerCase();
   return cat.find(function(it){ return it.nome.trim().toLowerCase()===an && it.unid.trim().toLowerCase()===au; });
 }
-function _esc(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
-
-/* Regra ÚNICA (a mesma dos apps Admin): uma apresentação só aparece nas
-   abas EXPLICITAMENTE autorizadas pelo Admin em "Aparece nas abas".
-   Sem nenhuma aba marcada = não aparece em lugar nenhum. Antes, sem
-   marcação aparecia em TODAS as abas (ex.: Ovos lançado em Estoque). */
-function _normAba(x){ return String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase(); }
-/* ── Apresentações: identidade estável e "versão vigente" ─────────────
-   Apresentações antigas não tinham id; cada aparelho, ao salvar o produto,
-   inventava um id aleatório diferente para a MESMA apresentação — na
-   sincronização elas viravam duas ("versão antiga" + "versão nova"), e a
-   exclusão feita num aparelho não casava com a do outro (a excluída
-   "voltava"). Agora o id de uma apresentação antiga é sempre o mesmo em
-   qualquer aparelho (derivado da unidade + fornecedor). */
-function _slugApres(t){ return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
-function _idApresEstavel(a){ return 'l_'+_slugApres(a.unid)+'_'+_slugApres(a.fornecedor); }
-function _apresGarantirIds(produtos){
-  (produtos||[]).forEach(function(pr){
-    var usados = {};
-    (pr.apresentacoes||[]).forEach(function(a){ if(a && a.id) usados[a.id] = true; });
-    (pr.apresentacoes||[]).forEach(function(a){
-      if(!a || a.id) return;
-      var id = _idApresEstavel(a), base = id, n = 2;
-      while(usados[id]) id = base+'_'+(n++);
-      a.id = id; usados[id] = true;
-    });
-  });
-  return produtos;
-}
-/* Momento em que a apresentação foi criada/alterada pela última vez */
-function _apresMomento(a){
-  if(a._editadoEm) return a._editadoEm;
-  if(a._criadoEm) return a._criadoEm;
-  var m = /^a([0-9a-z]+)[0-9a-z]{6}$/.exec(a.id||'');
-  if(m){ var t = parseInt(m[1],36); if(t > 1500000000000 && t < 4000000000000) return t; }
-  return 0; // antiga, sem data: sempre a mais velha
-}
-/* Versões VIGENTES de um produto: excluídas nunca entram; entre várias
-   apresentações com a mesma unidade + fornecedor, vale só a mais recente
-   (as anteriores são versões substituídas). Uma versão mais antiga só
-   continua valendo se atende alguma aba que a mais nova não atende.
-   Os registros já lançados (coletas/pedidos) guardam seus próprios dados,
-   então não são afetados. */
-function _apresVigentes(prod){
-  // Agrupa por UNIDADE. Dentro dela: a mais recente vale; uma cópia SEM
-  // fornecedor é considerada versão antiga quando já existe a mesma unidade
-  // COM fornecedor (era o que fazia "Bandeja c/30" aparecer 2× nos Pedidos).
-  // Mesma unidade de fornecedores DIFERENTES (os dois preenchidos) continua
-  // valendo como apresentações distintas. Uma versão antiga só continua se
-  // atender alguma aba que as mantidas não atendem.
-  var grupos = {};
-  (prod && prod.apresentacoes || []).forEach(function(a){
-    if(!a || a._excluido) return;
-    var k = _slugApres(a.unid);
-    (grupos[k] = grupos[k] || []).push(a);
-  });
-  var vig = [];
-  Object.keys(grupos).forEach(function(k){
-    var g = grupos[k].slice().sort(function(x,y){
-      return (_apresMomento(y) - _apresMomento(x)) || ((y.fornecedor?1:0) - (x.fornecedor?1:0));
-    });
-    var mantidas = [];
-    g.forEach(function(a){
-      var fa = _slugApres(a.fornecedor);
-      var mesmas = mantidas.filter(function(m){ var fm = _slugApres(m.fornecedor); return fm===fa || !fa || !fm; });
-      if(!mesmas.length){ mantidas.push(a); return; }
-      if(!Array.isArray(a.abas) || !a.abas.length) return; // versão antiga sem abas
-      var cobertas = a.abas.every(function(x){
-        return mesmas.some(function(mk){ return Array.isArray(mk.abas) && mk.abas.some(function(y){ return _normAba(y)===_normAba(x); }); });
-      });
-      if(!cobertas) mantidas.push(a);
-    });
-    vig = vig.concat(mantidas);
-  });
-  return vig;
-}
-function _apresEhVigente(prod, a){ return _apresVigentes(prod).indexOf(a) > -1; }
-
-function _apresHabilitadaNaAba(prod, a, label){
-  if(!a || a._excluido) return false;
-  if(prod && !_apresEhVigente(prod, a)) return false; // versão substituída nunca aparece
-  if(!Array.isArray(a.abas)) return false;
-  return a.abas.some(function(x){ return _normAba(x) === _normAba(label); });
-}
-function _itemHabilitadoNaAba(setorKeyOuLabel, nome){
-  var label = (SETORES[setorKeyOuLabel]||{}).label || setorKeyOuLabel;
-  var alvo = String(nome||'').trim().toLowerCase();
-  if(!alvo) return false;
-  var cad = _produtosCadastro || _produtosCadastroLocal();
-  return (cad||[]).some(function(pr){
-    if(pr._excluido || (pr.nome||'').trim().toLowerCase() !== alvo) return false;
-    return (pr.apresentacoes||[]).some(function(a){ return _apresHabilitadaNaAba(pr, a, label); });
-  });
-}
-function _escC(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
-
 function _catalogoNomesUnicos(setor){
-  // Fonte única: Cadastros → Produtos do Admin (só leitura, buscada do
-  // GitHub). Um produto aparece na aba se TIVER AO MENOS UMA apresentação
-  // habilitada para ela — quem decide isso é o campo "Aparece nas abas" de
-  // cada apresentação (definido pelo Admin/Desk), não um Setor único do
-  // produto. Produto sem nenhuma restrição de abas aparece em todas.
+  // Busca primeiro na tabela única de Produtos do Admin (já buscada do
+  // GitHub, só leitura) — filtrando pelo setor — e complementa com o
+  // catálogo antigo, para itens ainda não migrados. Preço nunca é lido
+  // aqui, então nunca chega nesta tela de coleta.
   var label = (SETORES[setor]||{}).label || setor;
   var cadRemoto = _produtosCadastro || _produtosCadastroLocal();
+  var doProdutos = (cadRemoto||[])
+    .filter(function(p){ return p.setor===label; })
+    .map(function(p){ return p.nome; });
+  var cat = _catalogoCarregar()[setor]||[];
+  var doCatalogoAntigo = [];
+  (function(){
+    var v = {};
+    cat.forEach(function(it){
+      var chave = it.nome.trim().toLowerCase();
+      if(!v[chave]){ v[chave]=true; doCatalogoAntigo.push(it.nome); }
+    });
+  })();
   var vistos = {}, out = [];
-  (cadRemoto||[]).forEach(function(p){
-    if(p._excluido) return;
-    var habilitado = (p.apresentacoes||[]).some(function(a){ return _apresHabilitadaNaAba(p, a, label); });
-    if(!habilitado) return;
-    var chave = (p.nome||'').trim().toLowerCase();
-    if(chave && !vistos[chave]){ vistos[chave]=true; out.push(p.nome); }
+  doProdutos.concat(doCatalogoAntigo).forEach(function(n){
+    var chave = n.trim().toLowerCase();
+    if(!vistos[chave]){ vistos[chave]=true; out.push(n); }
   });
   return out.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
 }
@@ -806,19 +702,24 @@ function _catalogoUnidadesPara(setor, nome){
   var vistos = {}, out = [];
   var cadRemoto = _produtosCadastro || _produtosCadastroLocal();
   (cadRemoto||[]).forEach(function(p){
-    if(p._excluido) return;
-    if(p.nome.trim().toLowerCase()===alvo){
+    if(p.setor===label && p.nome.trim().toLowerCase()===alvo){
       (p.apresentacoes||[]).forEach(function(a){
-        if(a._excluido) return;
         // Se a apresentação tiver abas restritas, só entra se este setor
         // estiver na lista; sem restrição (campo ausente ou vazio), aparece sempre.
-        if(!_apresHabilitadaNaAba(p, a, label)) return;
+        if(Array.isArray(a.abas) && a.abas.length>0 && a.abas.indexOf(label)===-1) return;
         var u = (a.unid||'').trim();
         if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
       });
     }
   });
-  return out.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
+  var cat = _catalogoCarregar()[setor]||[];
+  cat.forEach(function(it){
+    if(it.nome.trim().toLowerCase()===alvo){
+      var u = it.unid.trim();
+      if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
+    }
+  });
+  return out;
 }
 function _catalogoAdicionar(setor, nome, unid, passo){
   var cat = _catalogoCarregar();
@@ -1030,6 +931,7 @@ function _cardColetaSetor(setor, cl, forn){
   var opts = nomes.map(function(n){
     return '<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/</g,'&lt;')+'</option>';
   }).join('');
+  var fH = forn ? '<div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-'+k+'" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div>' : '';
   return '<div class="pc at pc-edit'+(cl?' '+cl:'')+'" id="card-'+k+'" style="cursor:default">'
     +'<div class="pbd" style="display:block;padding:16px 14px" id="body-'+k+'">'
 
@@ -1050,100 +952,22 @@ function _cardColetaSetor(setor, cl, forn){
     +'<input type="hidden" id="enome-'+k+'" value="">'
 
     +'<div id="wrap-coleta-'+k+'" style="display:none">'
-    +'<div class="cg"><span class="cl">Apresentação</span><div id="apres-wrap-'+k+'"></div></div>'
-    +'<input type="hidden" id="eunid-'+k+'" value="">'
-    +'<input type="hidden" id="epreco-'+k+'" value="0">'
+    +'<div class="cg"><span class="cl">Unidade</span><div id="unid-wrap-'+k+'">'
+    +'<input type="text" id="eunid-'+k+'" value="" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">'
+    +'</div></div>'
 
-    +'<div id="apres-campos-'+k+'" style="display:none">'
     +'<div class="cg"><span class="cl">Quantidade</span>'
     +'<div class="step" style="display:flex;align-items:center;gap:6px">'
     +'<button class="sb" onclick="stepQ(\''+k+'\',1,-1)">-</button>'
     +'<input class="si" type="number" id="qtd-'+k+'" inputmode="decimal" min="0" step="1" value="0" onkeypress="if(event.key===\'Enter\'){_adicionarItemSessao(\''+setor+'\');return false;}">'
     +'<button class="sb" onclick="stepQ(\''+k+'\',1,1)">+</button>'
     +'</div></div>'
-    +'<div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-'+k+'" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:15px;box-sizing:border-box;background:#f0ede6"></div>'
+    +fH
     +'<div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-'+k+'" placeholder="Ex: lote A, qualidade boa..."></textarea></div>'
-    +'<div class="card-acoes"><button type="button" class="btn-con" onclick="_adicionarItemSessao(\''+setor+'\')">+ Adicionar item</button></div>'
-    +'<div id="aviso-add-'+k+'" style="display:none;margin-top:8px;padding:8px 10px;border-radius:6px;background:#e7f5ea;border:1px solid #b7dfc0;color:#1a6b2a;font-size:12px;line-height:1.4"></div>'
-    +'</div>'
+    +'<div class="card-acoes"><button class="btn-con" onclick="_adicionarItemSessao(\''+setor+'\')">+ Adicionar item</button></div>'
     +'</div>'
     +'</div></div>'
     +'<div id="lista-'+setor+'" style="margin-top:12px"></div>';
-}
-
-/* Apresentações (unidade+fornecedor+preço) cadastradas pelo Admin para
-   este item, dentro deste setor. O preço nunca é exposto na tela do
-   Coletor (fica só no campo oculto, para seguir no registro e aparecer
-   depois nos relatórios do Admin). Se não houver nenhuma apresentação
-   cadastrada, a coleta fica bloqueada até o Admin cadastrar. */
-function _catalogoApresentacoesPara(setor, nome){
-  var label = (SETORES[setor]||{}).label || setor;
-  var alvo = String(nome).trim().toLowerCase();
-  var out = [];
-  var cadRemoto = _produtosCadastro || _produtosCadastroLocal();
-  (cadRemoto||[]).forEach(function(p){
-    if(p._excluido) return;
-    if(p.nome.trim().toLowerCase()===alvo){
-      (p.apresentacoes||[]).forEach(function(a){
-        if(a._excluido) return;
-        if(!_apresHabilitadaNaAba(p, a, label)) return;
-        out.push({unid:(a.unid||'').trim(), preco:Number(a.preco)||0, fornecedor:a.fornecedor||''});
-      });
-    }
-  });
-  return out.sort(function(a,b){ return (a.unid||'').localeCompare(b.unid||'','pt-BR'); });
-}
-
-// Rótulo da apresentação SEM preço — este texto é o único lugar onde o
-// coletor vê a apresentação, então preço nunca entra aqui.
-function _labelApresColetor(a){
-  return a.fornecedor ? (a.unid||'—')+' — '+a.fornecedor : (a.unid||'—');
-}
-
-function _montarApresentacaoColeta(setor, nome){
-  var k = setor+'_novo';
-  var apresWrap = document.getElementById('apres-wrap-'+k);
-  var camposWrap = document.getElementById('apres-campos-'+k);
-  if(!apresWrap || !camposWrap) return;
-  var apres = _catalogoApresentacoesPara(setor, nome);
-  if(!apres.length){
-    // Sem apresentação cadastrada — não usa mais o catálogo antigo como
-    // fallback. Deixa unidade/fornecedor em branco e segue liberado, pra
-    // nunca travar a coleta do dia a dia.
-    apresWrap.innerHTML = '<input type="text" readonly value="" placeholder="— sem apresentação cadastrada —" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6;color:#999">';
-    _aplicarApresentacaoColeta(k, {unid:'', fornecedor:'', preco:0});
-    camposWrap.style.display = 'block';
-    return;
-  }
-  if(apres.length === 1){
-    apresWrap.innerHTML = '<input type="text" readonly value="'+_esc(_labelApresColetor(apres[0]))+'" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">';
-    _aplicarApresentacaoColeta(k, apres[0]);
-  } else {
-    var optsA = apres.map(function(a,i){ return '<option value="'+i+'">'+_esc(_labelApresColetor(a))+'</option>'; }).join('');
-    apresWrap.innerHTML = '<select id="apres-sel-'+k+'" onchange="_onApresColetaChange(\''+setor+'\')" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#fff">'+optsA+'</select>';
-    apresWrap._apres = apres;
-    _aplicarApresentacaoColeta(k, apres[0]);
-  }
-  camposWrap.style.display = 'block';
-}
-
-function _onApresColetaChange(setor){
-  var k = setor+'_novo';
-  var apresWrap = document.getElementById('apres-wrap-'+k);
-  var sel = document.getElementById('apres-sel-'+k);
-  if(!apresWrap || !sel) return;
-  var apres = apresWrap._apres || [];
-  var a = apres[parseInt(sel.value,10)];
-  if(a) _aplicarApresentacaoColeta(k, a);
-}
-
-function _aplicarApresentacaoColeta(k, a){
-  var eunid = document.getElementById('eunid-'+k);
-  var eforn = document.getElementById('for-'+k);
-  var precoHid = document.getElementById('epreco-'+k);
-  if(eunid) eunid.value = a.unid||'';
-  if(eforn) eforn.value = a.fornecedor||'—';
-  if(precoHid) precoHid.value = a.preco||0; // nunca mostrado — so segue no registro p/ os relatorios do Admin
 }
 
 function _onSelecionarItem(setor){
@@ -1151,62 +975,54 @@ function _onSelecionarItem(setor){
   var sel = document.getElementById('sel-'+k);
   var wrapColeta = document.getElementById('wrap-coleta-'+k);
   var nomeEl = document.getElementById('enome-'+k);
+  var unidWrap = document.getElementById('unid-wrap-'+k);
   if(!sel) return;
-  var avisoAddSel = document.getElementById('aviso-add-'+k);
-  if(avisoAddSel) avisoAddSel.style.display = 'none';
   var val = sel.value;
   if(val){
     wrapColeta.style.display = 'block';
     nomeEl.value = val;
-    _montarApresentacaoColeta(setor, val);
+    var unidades = _catalogoUnidadesPara(setor, val);
+    if(unidades.length > 1){
+      var opts = unidades.map(function(u){ return '<option value="'+u.replace(/"/g,'&quot;')+'">'+u.replace(/</g,'&lt;')+'</option>'; }).join('');
+      unidWrap.innerHTML = '<select id="eunid-'+k+'" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#fff">'+opts+'</select>';
+    } else {
+      unidWrap.innerHTML = '<input type="text" id="eunid-'+k+'" value="'+(unidades[0]||'unid')+'" readonly style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">';
+    }
   } else {
     wrapColeta.style.display = 'none';
     nomeEl.value = '';
   }
 }
 
-var _ultimoItemAdicionadoEm = 0;
 function _adicionarItemSessao(setor){
   var k = setor+'_novo';
   var nomeEl = document.getElementById('enome-'+k);
   var qtdEl  = document.getElementById('qtd-'+k);
   var unidEl = document.getElementById('eunid-'+k);
-  var precoEl = document.getElementById('epreco-'+k);
   var obsEl  = document.getElementById('obs-'+k);
   var forEl  = document.getElementById('for-'+k);
   var nome = (nomeEl?nomeEl.value:'').trim();
   var qtd  = parseFloat(qtdEl?qtdEl.value:0)||0;
-  var unid = (unidEl?unidEl.value:'').trim();
-  var preco = parseFloat(precoEl?precoEl.value:0)||0; // nunca mostrado ao coletor
+  var unid = (unidEl?unidEl.value:'').trim()||'unid';
   if(!nome){ _toast('Selecione um item da lista.'); return; }
-  if(!_itemHabilitadoNaAba(setor, nome)){
-    _toast('⛔ '+nome+' não está autorizado para a aba '+((SETORES[setor]||{}).label||setor)+'.');
-    return;
-  }
   if(qtd<=0){ _toast('Informe a quantidade antes de adicionar.'); return; }
   var forn = (forEl?forEl.value:'')||'';
-  if(forn==='—') forn='';
   var obs  = (obsEl?obsEl.value:'')||'';
   var tipo = (setor==='estoque') ? 'Saida' : '';
   // No app Coletor so e possivel usar itens ja cadastrados pelo Admin —
   // nao cadastra item novo no catalogo aqui. No Estoque, so sao permitidas
   // saidas (consumo) — entradas ficam exclusivas do painel Administrador.
   _sessaoInit();
-  _sessaoItens[setor].push({nome:nome, unid:unid, qtd:qtd, preco:preco, obs:obs.trim(), forn:forn.trim(), tipo:tipo});
-  // Prepara para o PRÓXIMO item sem recolher o card — antes o card
-  // fechava, a tela "encolhia" e o botão de enviar ia parar embaixo do
-  // dedo, fazendo a coleta sair com um item só.
-  _ultimoItemAdicionadoEm = Date.now();
-  qtdEl.value=0;
+  _sessaoItens[setor].push({nome:nome, unid:unid, qtd:qtd, obs:obs.trim(), forn:forn.trim(), tipo:tipo});
+  var sel = document.getElementById('sel-'+k);
+  var wrapColeta = document.getElementById('wrap-coleta-'+k);
+  var unidWrap = document.getElementById('unid-wrap-'+k);
+  nomeEl.value=''; qtdEl.value=0;
   if(obsEl) obsEl.value='';
-  if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
-  var avisoAdd = document.getElementById('aviso-add-'+k);
-  if(avisoAdd){
-    avisoAdd.innerHTML = '✅ <strong>'+_escC(nome)+'</strong> ('+qtd+' '+_escC(unid)+') adicionado à lista.<br>'
-      +'Para lançar outro item, escolha-o no campo acima (ou informe outra quantidade). '
-      +'Quando terminar, toque em <strong>Enviar coleta</strong>.';
-    avisoAdd.style.display = 'block';
-  }
+  if(forEl) forEl.value='';
+  if(wrapColeta) wrapColeta.style.display='none';
+  if(unidWrap) unidWrap.innerHTML = '<input type="text" id="eunid-'+k+'" value="" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">';
+  if(sel) sel.value = '';
   _renderListaSessao(setor);
   _atualizarContador();
   _sessaoSalvarLocal();
@@ -1246,9 +1062,7 @@ function _iniciar(){
   // produtos/preços novos que o Admin cadastrar depois.
   _atualizarDatalistFornecedores(); // já preenche com o cache, se houver, antes da rede responder
   _buscarProdutosCadastro();
-  setInterval(_buscarProdutosCadastro, 60*1000); // antes 3 min
-  // Ao voltar para o app (celular tira da suspensão), busca na hora
-  document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') _buscarProdutosCadastro(); });
+  setInterval(_buscarProdutosCadastro, 3*60*1000);
 
   // Migracao unica: corrige nomes/coletor/observacao salvos com problema
   // de codificacao (ex: "RaÃ§Ã£o" em vez de "Ração"). Mesma correção já
@@ -1325,7 +1139,7 @@ function _iniciar(){
    nada salvo no aparelho — token, catálogo e coletas pendentes continuam
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
-var _caFP = '1a0ee6bd0809';
+var _caFP = '1a0feb5c67db';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -1607,35 +1421,7 @@ function apagarCard(k, cl){
   _atualizarContador();
 }
 
-
-/* Mantém a lista "Item coletado" de cada aba SEMPRE igual às autorizações
-   atuais do Admin: produto sem nenhuma apresentação autorizada na aba não
-   aparece. Roda quando o cadastro muda (neste ou em outro aparelho) e ao
-   trocar de aba — antes a lista só era refeita se estivesse sem item
-   escolhido, então um produto desautorizado podia continuar na tela. */
-function _atualizarOpcoesItens(){
-  Object.keys(SETORES).forEach(function(s){
-    var k = s+'_novo';
-    var sel = document.getElementById('sel-'+k);
-    if(!sel) return;
-    var atual = sel.value;
-    var nomes = _catalogoNomesUnicos(s);
-    var esc = function(n){ return String(n).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); };
-    var ph = (sel.options[0] && sel.options[0].value==='') ? sel.options[0].outerHTML : '<option value="">— Escolha um item —</option>';
-    var novo = sel.querySelector('option[value="__novo__"]');
-    var html = ph + nomes.map(function(n){ return '<option value="'+esc(n)+'">'+esc(n)+'</option>'; }).join('') + (novo ? novo.outerHTML : '');
-    if(sel.innerHTML === html) return;
-    sel.innerHTML = html;
-    if(!atual || atual==='__novo__' || nomes.indexOf(atual) > -1){ sel.value = atual; return; }
-    // O item que estava escolhido deixou de ser autorizado nesta aba
-    sel.value = '';
-    if(typeof _onSelecionarItem==='function') _onSelecionarItem(s);
-    _toast('⚠️ '+atual+' não está mais autorizado na aba '+((SETORES[s]||{}).label||s)+'.');
-  });
-}
-
 function trocarAba(s){
-  try{ _atualizarOpcoesItens(); }catch(e){}
   // Se estava no historico de pedidos vindo do admin, volta ao admin
   if(_histPedDoAdmin && s !== 'vendas'){
     _histPedDoAdmin = false;
@@ -1676,10 +1462,7 @@ function _coletarItens(){
   Object.keys(SETORES).forEach(function(setor){
     var cfg = SETORES[setor];
     (_sessaoItens[setor]||[]).forEach(function(it){
-      // Aviário e Campo são SEMPRE entrada (produção): o Coletor não lança
-      // saída/perda nessas abas — perda só pela aba Perda. Só o Estoque tem tipo.
-      var tipoIt = (setor==='estoque') ? (it.tipo||'Saida') : '';
-      itens.push({setor:cfg.label, nome:it.nome, unid:it.unid, qtd:Math.abs(Number(it.qtd)||0), preco:it.preco||0, obs:it.obs, forn:it.forn, tipo:tipoIt});
+      itens.push({setor:cfg.label, nome:it.nome, unid:it.unid, qtd:it.qtd, obs:it.obs, forn:it.forn, tipo:it.tipo||''});
     });
   });
   return itens;
@@ -1743,31 +1526,43 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, faixaSufixo){
   }
 
   // CABECALHO
-  rect(0,y,W,nome?158:122,'#1c2e22');
+  // Paleta: o Talao de Pedido (isTalao) e o documento entregue ao cliente \u2014
+  // usa tons de verde claro (fundo claro + texto escuro para contraste), com
+  // a faixa do numero do pedido em dourado. O Boletim de Coleta (uso interno)
+  // mantem a paleta escura original. Espelha a paleta do Admin/Desktop.
+  var isTalao = titulo.indexOf('TALAO DE PEDIDO')===0;
+  var corFundo    = isTalao ? '#e3eee1' : '#1c2e22';
+  var corTitulo   = isTalao ? '#1c2e22' : '#fff';
+  var corAcento   = isTalao ? '#3b6b47' : '#b8943f';
+  var corMuted    = isTalao ? 'rgba(28,46,34,0.55)' : 'rgba(255,255,255,0.5)';
+  var corDivisor  = isTalao ? 'rgba(28,46,34,0.15)' : 'rgba(255,255,255,0.12)';
+  var corMutedFor = isTalao ? 'rgba(28,46,34,0.4)' : 'rgba(255,255,255,0.4)';
+
+  rect(0,y,W,nome?158:122,corFundo);
   ctx.save();
   ctx.beginPath(); ctx.arc(PAD+20,y+28,20,0,Math.PI*2); ctx.clip();
   ctx.drawImage(_LOGO_FSJ, PAD, y+8, 40, 40);
   ctx.restore();
-  txt('Fazenda São José',PAD+50,y+24,16,'#fff','bold');
-  var subtitulo = titulo.indexOf('TALÃO DE PEDIDO')===0 ? 'TALÃO DE PEDIDOS' : titulo;
-  txt(subtitulo,PAD+50,y+40,9,'#b8943f');
+  txt('Fazenda S\u00e3o Jos\u00e9',PAD+50,y+24,16,corTitulo,'bold');
+  var subtitulo = isTalao ? 'TAL\u00c3O DE PEDIDOS' : titulo;
+  txt(subtitulo,PAD+50,y+40,9,corAcento);
   var data = document.getElementById('data-global').value;
   var dfL = data ? new Date(data+'T12:00').toLocaleDateString('pt-BR') : '';
-  txt(dfL,PAD,y+82,11,'#b8943f','bold');
+  txt(dfL,PAD,y+82,11,corAcento,'bold');
   var hr = new Date().toLocaleTimeString('pt-BR').slice(0,5);
-  txt(hr,W-PAD,y+82,9,'rgba(255,255,255,0.5)','normal','right');
+  txt(hr,W-PAD,y+82,9,corMuted,'normal','right');
   if(nome){
-    ln(PAD,y+96,W-PAD,y+96,'rgba(255,255,255,0.12)');
-    txt('RESPONSÁVEL',PAD+26,y+108,8,'rgba(255,255,255,0.4)');
-    txt(nome,PAD+26,y+122,13,'#b8943f','bold');
+    ln(PAD,y+96,W-PAD,y+96,corDivisor);
+    txt('RESPONS\u00c1VEL',PAD+26,y+108,8,corMutedFor);
+    txt(nome,PAD+26,y+122,13,corAcento,'bold');
     y+=158;
   } else { y+=122; }
 
-  // FAIXA
-  var faixaCor = titulo.indexOf('TALÃO DE PEDIDO')===0 ? '#7a3a00' : '#b8943f';
+  // FAIXA \u2014 dourada tanto no Boletim quanto no Talao (acento da marca)
+  var faixaCor = '#b8943f';
   rect(0,y,W,28,faixaCor);
-  var faixaTxt = titulo.indexOf('TALÃO DE PEDIDO')===0 ? titulo.replace('TALÃO DE PEDIDO / ','PEDIDO N.\u00ba ') : titulo + (faixaSufixo ? ' - '+faixaSufixo : '');
-  txt(faixaTxt,PAD,y+19,10,'#fff','bold');
+  var faixaTxt = isTalao ? titulo.replace('TALAO DE PEDIDO / ','PEDIDO N.\u00ba ') : titulo + (faixaSufixo ? ' - '+faixaSufixo : '');
+  txt(faixaTxt,PAD,y+19,10,corTitulo,'bold');
   y+=28;
 
   // LINHAS
@@ -1783,13 +1578,10 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, faixaSufixo){
   });
 
   // RODAPE
-  rect(0,y,W,48,'#1c2e22');
-  txt(rodape||'',PAD,y+18,8,'#7aa88a');
-  var ehPedido = titulo.indexOf('TALÃO DE PEDIDO')===0;
-  if(ehPedido){
-    txt('R$ '+_fmt(linhas.reduce(function(s,it){ return s+(it.val||0); },0)),W-PAD,y+34,20,'#b8943f','bold','right');
-  }
-  txt(linhas.length+' item(ns)',PAD,y+34,11,'rgba(255,255,255,0.5)');
+  rect(0,y,W,48,corFundo);
+  txt(rodape||'',PAD,y+18,8,isTalao ? corMuted : '#7aa88a');
+  txt('R$ '+_fmt(linhas.reduce(function(s,it){ return s+(it.val||0); },0)),W-PAD,y+34,20,corTitulo,'bold','right');
+  txt(linhas.length+' item(ns)',PAD,y+34,11,corMuted);
   y+=48;
 
   // CLIENTE (se houver)
@@ -1907,20 +1699,8 @@ function enviarTudo(){
   if(_enviandoColeta) return; // ja esta processando um envio — ignora toques repetidos
   var itens = _coletarItens();
   if(!itens.length){ _toast('Conclua ao menos um item antes de enviar.'); return; }
-  if(Date.now() - (_ultimoItemAdicionadoEm||0) < 1500){
-    _toast('Item adicionado. Para enviar, toque em "Enviar coleta" novamente.');
-    return;
-  }
   var n = _getNum();
   if(!n){ _toast('Numero nao configurado. Contacte o administrador.'); return; }
-  // Última checagem: todo item precisa estar autorizado na sua aba
-  var foraDaAba = itens.filter(function(it){ return !_itemHabilitadoNaAba(it.setor, it.nome); });
-  if(foraDaAba.length){
-    _toast('⛔ Não autorizado na aba: '+foraDaAba.map(function(it){ return it.nome+' ('+it.setor+')'; }).join(', ')+'. Remova da lista.');
-    return;
-  }
-  var resumoItens = itens.map(function(it){ return '• '+it.setor+' — '+it.nome+': '+it.qtd+' '+(it.unid||''); }).join('\n');
-  if(!confirm('Enviar coleta com '+itens.length+' item(ns)?\n\n'+resumoItens+'\n\nConfirmar?')) return;
 
   _enviandoColeta = true;
   var btnEnviar = document.getElementById('btn-enviar-coleta');
@@ -2003,7 +1783,7 @@ async function _buscarPedidosGlobais(){
       'Accept': 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28'
     };
-    var resp = await fetch('https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_BCK_PEDIDOS+'?t='+Date.now(),
+    var resp = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_BCK_PEDIDOS+'?t='+Date.now(),
       {headers:headers, cache:'no-store'});
     if(!resp.ok) return null;
     var meta = await resp.json();
@@ -2113,23 +1893,15 @@ async function _buscarProdutosCadastro(){
       'Accept': 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28'
     };
-    var resp = await fetch('https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_BCK_CADASTROS+'?t='+Date.now(),
+    var resp = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_BCK_CADASTROS+'?t='+Date.now(),
       {headers:headers, cache:'no-store'});
     if(!resp.ok) return _produtosCadastroLocal();
     var meta = await resp.json();
-    var b64cad = (meta.content||'').replace(/\n/g,'');
-    if(!b64cad && meta.sha){
-      // Arquivo acima de 1 MB: a API não devolve o texto — busca pelo blob
-      var rb = await fetch('https://api.github.com/repos/'+GH_DATA_REPO+'/git/blobs/'+meta.sha+'?t='+Date.now(), {headers:headers, cache:'no-store'});
-      if(rb.ok){ var mb = await rb.json(); b64cad = (mb.content||'').replace(/\n/g,''); }
-    }
-    var dados = JSON.parse(decodeURIComponent(escape(atob(b64cad))));
+    var dados = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g,'')))));
     var produtos = (dados && Array.isArray(dados.produtos)) ? dados.produtos : [];
     produtos.forEach(function(p){ if(p.nome) p.nome = _corrigirMojibake(p.nome); });
-    var mudouCad = JSON.stringify(produtos) !== JSON.stringify(_produtosCadastro || _produtosCadastroLocal());
     _produtosCadastro = produtos;
     try{ localStorage.setItem(CACHE_PRODUTOS_KEY, JSON.stringify(produtos)); }catch(e){}
-    if(mudouCad) _atualizarOpcoesItens();
 
     var fornecedores = (dados && Array.isArray(dados.fornecedores)) ? dados.fornecedores : [];
     fornecedores.forEach(function(f){ if(f.nome) f.nome = _corrigirMojibake(f.nome); });
@@ -2153,10 +1925,8 @@ function _atualizarDatalistFornecedores(){
   if(!lista){
     try{ lista = JSON.parse(localStorage.getItem(CACHE_FORNECEDORES_KEY)||'[]'); }catch(e){ lista = []; }
   }
-  var nomes = (lista||[]).filter(function(f){ return !f._excluido; }).map(function(f){ return f.nome||''; });
-  nomes.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
-  dl.innerHTML = nomes.map(function(n){
-    return '<option value="'+String(n).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'">';
+  dl.innerHTML = (lista||[]).map(function(f){
+    return '<option value="'+String(f.nome||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'">';
   }).join('');
 }
 
@@ -2174,13 +1944,10 @@ function _produtosCadastroLocal(){
    cai de volta na lista antiga PROD_VENDA, pra nunca travar o coletor. */
 function _listaProdutosVenda(){
   var cad = _produtosCadastro || _produtosCadastroLocal();
-  // Só produtos com ao menos uma apresentação autorizada para Vendas
-  if(cad && cad.length) return cad.filter(function(p){
-    return !p._excluido && (p.apresentacoes||[]).some(function(a){ return _apresHabilitadaNaAba(p, a, 'Vendas'); });
+  if(cad && cad.length) return cad;
+  return PROD_VENDA.filter(function(p){ return p.id!=='_edit'; }).map(function(p){
+    return {id:p.id, nome:p.nome, apresentacoes:[]};
   });
-  // Sem cadastro do Admin (ex.: 1º uso sem internet): nenhum produto sem
-  // apresentação autorizada é oferecido — só o item avulso.
-  return [];
 }
 
 function _optsVenda(selId){
@@ -2204,7 +1971,7 @@ function _optsApresentacao(prodId, selIdx){
   // (não a posição na lista filtrada), pois é esse índice original que
   // setApresV() usa depois para encontrar a apresentação certa.
   var opts = apres.map(function(a,i){ return {a:a, i:i}; })
-    .filter(function(par){ return _apresHabilitadaNaAba(prod, par.a, 'Vendas'); });
+    .filter(function(par){ return !Array.isArray(par.a.abas) || par.a.abas.length===0 || par.a.abas.indexOf('Vendas')>-1; });
   if(!opts.length){
     return '<option value="">— nenhuma apresentação disponível para venda —</option>';
   }
@@ -2339,7 +2106,7 @@ function enviarPedido(){
   var payload = _gerarPayloadPedido(conc, numPed, cliente, dataVenda);
   var linkImport = payload ? _gerarLinkImportacao(payload) : null;
 
-  _gerarImagem('TALÃO DE PEDIDO / '+numPed, linhas, numPed, function(blob){
+  _gerarImagem('TALAO DE PEDIDO / '+numPed, linhas, numPed, function(blob){
     if(!blob){ _toast('Erro ao gerar talao.'); return; }
     var file = new File([blob],'pedido-'+numPed+'.jpg',{type:'image/jpeg'});
     var msgTitulo = 'Pedido '+numPed+(cliente?' - '+cliente:'')+' - '+dataVenda;
@@ -2446,7 +2213,7 @@ function _renderHist(){
   });
 
   if(!filtrado.length){
-    lista.innerHTML = '<div class="hist-empty">'+(_filtroAbertoAtivo ? 'Nenhum pedido em aberto no período selecionado.' : 'Nenhum pedido no período selecionado.')+'</div>';
+    lista.innerHTML = '<div class="hist-empty">'+(_filtroAbertoAtivo ? 'Nenhum pedido em aberto no periodo selecionado.' : 'Nenhum pedido no periodo selecionado.')+'</div>';
     return;
   }
 
@@ -2484,7 +2251,7 @@ function _renderHPedTotal(lista, pedidos, ano, mes){
     });
   });
 
-  var MESES_N = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var MESES_N = ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   var periodoLabel = mes ? MESES_N[parseInt(mes,10)-1]+' '+ano : 'Ano '+ano;
   var totalGeral = pedidos.reduce(function(s,p){ return s+(Number(p.total)||0); },0);
 
@@ -2510,7 +2277,7 @@ function _renderHPedTotal(lista, pedidos, ano, mes){
 
   // Total do período
   html += '<div class="hcol-total">'
-    +'<span class="hcol-total-lbl">Total do período</span>'
+    +'<span class="hcol-total-lbl">Total do periodo</span>'
     +'<span class="hcol-total-val">R$ '+_fmt(totalGeral)+'</span>'
     +'</div>';
 
@@ -2592,32 +2359,8 @@ function _salvarColeta(reg){
      e a base OFICIAL/aprovada mantida exclusivamente pelo Admin (_fazerBackup).
      Deixar o Coletor escrever ali sobrescrevia a base aprovada com dados locais
      ainda nao aprovados, quebrando a paridade entre os dois apps. */
-  _filaPendAdicionar(reg);
   _enviarColetaGitHub(reg);
 }
-
-/* Fila de reenvio: se o envio ao Admin falhar (sem internet, conflito,
-   erro do GitHub), a coleta fica guardada aqui e é reenviada sozinha
-   quando a conexão voltar — antes ela ficava "só neste aparelho" para
-   sempre, e o Admin nunca recebia. */
-var FILA_PEND_KEY = 'fsj_fila_envio_pendentes';
-function _filaPendLer(){ try{ return JSON.parse(localStorage.getItem(FILA_PEND_KEY)||'[]'); }catch(e){ return []; } }
-function _filaPendGravar(l){ try{ localStorage.setItem(FILA_PEND_KEY, JSON.stringify(l)); }catch(e){} }
-function _filaPendAdicionar(reg){ var l=_filaPendLer(); if(!l.some(function(r){ return r.ts===reg.ts; })){ l.push(reg); _filaPendGravar(l); } }
-function _filaPendRemover(ts){ _filaPendGravar(_filaPendLer().filter(function(r){ return r.ts!==ts; })); }
-var _filaPendRodando = false;
-async function _filaPendReenviar(){
-  if(_filaPendRodando || !_ghToken()) return;
-  _filaPendRodando = true;
-  try{
-    var l = _filaPendLer();
-    for(var i=0;i<l.length;i++){ await _enviarColetaGitHub(l[i]); }
-  } finally { _filaPendRodando = false; }
-}
-setInterval(_filaPendReenviar, 60000);
-window.addEventListener('online', _filaPendReenviar);
-document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') _filaPendReenviar(); });
-setTimeout(_filaPendReenviar, 5000);
 
 function _carregarHistColeta(){
   try{ return JSON.parse(localStorage.getItem(CK)||'[]'); }catch(e){ return []; }
@@ -2640,7 +2383,7 @@ async function _enviarColetaGitHub(reg,tentativa){
     };
     var pendentes = [];
     var sha = null;
-    var resp = await fetch(GH_API+'?t='+Date.now(), {headers:headers, cache:'no-store'});
+    var resp = await fetch(GH_API+'?t='+Date.now(), {headers:headers});
     if(resp.ok){
       var meta = await resp.json();
       sha = meta.sha;
@@ -2649,12 +2392,6 @@ async function _enviarColetaGitHub(reg,tentativa){
       console.warn('GitHub leitura:', resp.status);
     }
 
-    if(!resp.ok && resp.status !== 404) throw new Error('GitHub leitura HTTP '+resp.status);
-    /* Já chegou lá numa tentativa anterior (resposta perdida)? Não duplica. */
-    if(pendentes.some(function(r){ return r && r.ts === reg.ts; })){
-      _filaPendRemover(reg.ts);
-      return;
-    }
     /* 2. Adiciona o novo registro com status pendente */
     reg.status   = 'pendente';
     reg.enviadoEm = new Date().toISOString();
@@ -2675,40 +2412,26 @@ async function _enviarColetaGitHub(reg,tentativa){
     });
 
     if(put.ok){
-      _filaPendRemover(reg.ts);
       console.log('✅ Coleta enviada ao GitHub');
       try{ localStorage.setItem('fsj_gh_ultimo_status','✅ Última coleta enviada em '+new Date().toLocaleString('pt-BR')); }catch(e){}
-    } else if((put.status===409 || put.status===422) && tentativa<3){
+    } else if(put.status===409 && tentativa<3){
       // Conflito de versão (outro dispositivo gravou ao mesmo tempo) — tenta de novo com o SHA mais recente
       console.warn('GitHub gravação: conflito (409), tentando novamente...');
       return _enviarColetaGitHub(reg, tentativa+1);
     } else {
       var err = await put.json().catch(function(){ return {}; });
       console.warn('GitHub gravação:', put.status, err.message||'');
-      try{ localStorage.setItem('fsj_gh_ultimo_status','❌ Falha ao enviar (HTTP '+put.status+'). Guardada para reenvio automático.'); }catch(e){}
+      try{ localStorage.setItem('fsj_gh_ultimo_status','❌ Falha ao enviar (HTTP '+put.status+'). A coleta ficou salva só neste aparelho.'); }catch(e){}
     }
   } catch(e){
     console.warn('_enviarColetaGitHub:', e.message);
-    try{ localStorage.setItem('fsj_gh_ultimo_status','❌ Sem conexão — a coleta será reenviada automaticamente quando a internet voltar.'); }catch(e2){}
+    try{ localStorage.setItem('fsj_gh_ultimo_status','❌ Sem conexão — a coleta ficou salva só neste aparelho.'); }catch(e2){}
     /* Falha silenciosa na tela, mas registrada para consulta no painel — coleta já foi salva localmente */
   }
 }
 
 var _histColetaRestrito = false;
-var _histColetaAprovadaCache = null;
-var _histPedidosBaseCache = null; // pedidos da base do Admin (saídas por venda em Aviário/Campo)
-async function _buscarPedidosBaseAdmin(){
-  if(!_ghToken()) return null;
-  try{
-    var h = {'Authorization':'token '+_ghToken(),'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
-    var r = await fetch('https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_BCK_PEDIDOS+'?t='+Date.now(), {headers:h, cache:'no-store'});
-    if(!r.ok) return null;
-    var m = await r.json(); var b64 = (m.content||'').replace(/\n/g,'');
-    if(!b64 && m.sha){ var rb = await fetch('https://api.github.com/repos/'+GH_DATA_REPO+'/git/blobs/'+m.sha+'?t='+Date.now(), {headers:h, cache:'no-store'}); if(rb.ok){ var mb = await rb.json(); b64 = (mb.content||'').replace(/\n/g,''); } }
-    var l = JSON.parse(decodeURIComponent(escape(atob(b64))));
-    return Array.isArray(l) ? l.filter(function(p){ return !p._excluido; }) : null;
-  }catch(e){ return null; }
-} // ultima base aprovada do Admin buscada do GitHub
+var _histColetaAprovadaCache = null; // ultima base aprovada do Admin buscada do GitHub
 var _histColetaSincronizado = false;  // true = dados na tela vieram confirmados da base do admin
 
 /* Busca a base de coletas JA APROVADAS pelo administrador (backup/coletas.json no
@@ -2724,7 +2447,7 @@ async function _buscarHistColetaAprovada(){
       'Accept': 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28'
     };
-    var resp = await fetch('https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_BCK_COLETAS+'?t='+Date.now(),
+    var resp = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_BCK_COLETAS+'?t='+Date.now(),
       {headers:headers, cache:'no-store'});
     if(!resp.ok) return null;
     var meta = await resp.json();
@@ -2803,7 +2526,6 @@ async function abrirHistColeta(restrito, setorInicial){
     var body = document.getElementById('hcol-body');
     body.innerHTML = '<div class="hcol-vazia">🔄 Sincronizando com o administrador...</div>';
     var aprovadas = await _buscarHistColetaAprovada();
-    _histPedidosBaseCache = await _buscarPedidosBaseAdmin();
     if(aprovadas){
       _histColetaAprovadaCache = aprovadas;
       _histColetaSincronizado  = true;
@@ -2830,11 +2552,11 @@ function _atualizarBtnHistColetaTodos(){
     btn.textContent = '✓ Vendo Todos';
     btn.style.background = '#1a6b2a'; btn.style.color = '#fff';
   }
-  // Nome do setor ao lado do titulo do modal — ex: "Histórico de Coletas - AVIARIO".
+  // Nome do setor ao lado do titulo do modal — ex: "Historico de Coletas - AVIARIO".
   // So aparece quando o filtro esta restrito a uma aba especifica; some quando
   // "Todos" esta selecionado.
   if(tSetor){
-    var NOMES_SETOR_TITULO = {Aviario:'AVIÁRIO', Perda:'PERDA', Campo:'CAMPO', Estoque:'ESTOQUE'};
+    var NOMES_SETOR_TITULO = {Aviario:'AVIARIO', Perda:'PERDA', Campo:'CAMPO', Estoque:'ESTOQUE'};
     tSetor.textContent = input.value ? (' - '+(NOMES_SETOR_TITULO[input.value] || input.value.toUpperCase())) : '';
   }
 }
@@ -2862,8 +2584,6 @@ function renderHistColeta(){
   var hist  = (_histColetaRestrito && _histColetaAprovadaCache !== null)
     ? _histColetaAprovadaCache
     : _carregarHistColeta();
-  // + saídas de Perda/Pedidos em Aviário/Campo (balanço Entrada × Saída)
-  hist = _histComSaidas(hist.filter(function(r){ return !r._excluido; }), _histPedidosBaseCache || _carregarHist(), _produtosCadastro || _produtosCadastroLocal());
   var body  = document.getElementById('hcol-body');
   var ano = '', mes = '';
   var filtrado;
@@ -2902,7 +2622,7 @@ function renderHistColeta(){
         ? 'Nenhum registro aprovado pelo administrador nos ultimos 7 dias.'
         : 'Nenhum registro nos ultimos 7 dias (dados deste aparelho — não sincronizado).';
     } else {
-      msgVazia = 'Nenhum registro encontrado para o período selecionado.';
+      msgVazia = 'Nenhum registro encontrado para o periodo selecionado.';
     }
     body.innerHTML = '<div class="hcol-vazia">'+msgVazia+'</div>';
     return;
@@ -2919,10 +2639,6 @@ function renderHistColeta(){
   } else {
     _renderHistColetaDetalhe(body, filtrado);
   }
-  var limSd = null;
-  if(_histColetaRestrito){ var dl = new Date(); dl.setDate(dl.getDate()-6); limSd = dl.getFullYear()+'-'+String(dl.getMonth()+1).padStart(2,'0')+'-'+String(dl.getDate()).padStart(2,'0'); }
-  var avSd = _sdAvisosHtml(ano, mes, setor, limSd);
-  if(avSd) body.insertAdjacentHTML('afterbegin', avSd);
 }
 
 function _renderHistColetaTotal(body, registros, ano, mes){
@@ -2937,19 +2653,15 @@ function _renderHistColetaTotal(body, registros, ano, mes){
       var s = it.setor||'Outros';
       if(!totais[s]) totais[s] = {};
       var k = it.nome;
-      if(it.tipo==='Inventario') return; // contagem: entra no balanço pelo ajuste gerado
-      if(!totais[s][k]) totais[s][k] = {qtd:0, ent:0, sai:0, temTipo:false, unid:it.unid||''};
-      var qn = Number(it.qtd)||0;
-      if(it.tipo==='Saida'){ totais[s][k].sai += qn; totais[s][k].temTipo = true; }
-      else { totais[s][k].ent += qn; if(it.tipo==='Entrada') totais[s][k].temTipo = true; }
-      totais[s][k].qtd = totais[s][k].ent - totais[s][k].sai;
+      if(!totais[s][k]) totais[s][k] = {qtd:0, unid:it.unid||''};
+      totais[s][k].qtd += Number(it.qtd)||0;
     });
   });
 
   var periodoLabel = _histColetaRestrito
     ? 'Ultimos 7 dias'
     : (mes
-      ? ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][parseInt(mes,10)-1]+' '+ano
+      ? ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][parseInt(mes,10)-1]+' '+ano
       : 'Ano '+ano);
 
   var html = '<div style="font-family:DM Mono,monospace;font-size:10px;color:var(--mu);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">'
@@ -2961,10 +2673,9 @@ function _renderHistColetaTotal(body, registros, ano, mes){
     Object.keys(totais[setor]).forEach(function(nome){
       var it = totais[setor][nome];
       var qtdFmt = Number(it.qtd).toLocaleString('pt-BR',{maximumFractionDigits:2});
-      var esFmt = it.temTipo ? '<div style="font-size:10px;margin-bottom:2px"><span style="color:#1e5fbf;font-weight:700">E: '+Number(it.ent).toLocaleString('pt-BR',{maximumFractionDigits:2})+'</span>&nbsp;&nbsp;<span style="color:#c0392b;font-weight:700">S: '+Number(it.sai).toLocaleString('pt-BR',{maximumFractionDigits:2})+'</span></div>' : '';
       html += '<div class="hcol-item">'
         +'<div><div class="hcol-item-nome">'+nome+'</div></div>'
-        +'<div style="text-align:right">'+esFmt+'<div class="hcol-item-qtd"'+(it.qtd<0?' style="color:#c0392b"':'')+'>'+qtdFmt+'</div>'
+        +'<div style="text-align:right"><div class="hcol-item-qtd">'+qtdFmt+'</div>'
         +'<div class="hcol-item-unid">'+it.unid+'</div></div>'
         +'</div>';
     });
@@ -2988,12 +2699,9 @@ function _renderHistColetaDetalhe(body, registros){
       +'<span class="hcol-entrada-col">'+(r.coletor||'')+'</span>'
       +'</div>';
     (r.itens||[]).forEach(function(it){
-      var tagTipoItem = it.tipo
-        ? '<span style="font-weight:700;font-size:10px;letter-spacing:.5px;margin-right:6px;padding:2px 6px;border-radius:8px;background:'+(it.tipo==='Saida'?'#fde8e8':(it.tipo==='Inventario'?'#fbf4e2':'#e3edfd'))+';color:'+(it.tipo==='Saida'?'#c0392b':(it.tipo==='Inventario'?'#8a5a12':'#1e5fbf'))+'">'+(it.tipo==='Saida'?'SAÍDA':(it.tipo==='Inventario'?'INVENTÁRIO':'ENTRADA'))+'</span>'
-        : '';
       html += '<div class="hcol-entrada-item">'
-        +'<span style="font-size:15px;font-weight:800">'+it.setor+' · '+it.nome+'</span>'
-        +'<span style="display:flex;align-items:center">'+tagTipoItem+'<span style="font-weight:700;color:var(--vd)">'+it.qtd+' '+it.unid+'</span></span>'
+        +'<span>'+it.setor+' · '+it.nome+'</span>'
+        +'<span style="font-weight:700;color:var(--vd)">'+it.qtd+' '+it.unid+'</span>'
         +'</div>';
     });
     html += '</div>';
@@ -3033,7 +2741,7 @@ function reemitirPedido(){
   var linhas = (p.itens||[]).map(function(it){
     return {col1:it.col1, col2:it.nome, col3:it.col3, col4:it.col4, val:it.sub};
   });
-  _gerarImagem('TALÃO DE PEDIDO / '+p.num, linhas, p.num, function(blob){
+  _gerarImagem('TALAO DE PEDIDO / '+p.num, linhas, p.num, function(blob){
     if(!blob){ _toast('Erro ao gerar imagem.'); return; }
     var file = new File([blob],'pedido-'+p.num+'.jpg',{type:'image/jpeg'});
     if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
@@ -3183,201 +2891,6 @@ function compartilharLink(){
 }
 
 /* ---- TOAST ---- */
-
-/* ═════════════════════════════════════════════════════════════════
-   SAÍDAS DE AVIÁRIO / CAMPO (balanço Entrada × Saída, como no Estoque)
-   - Coleta em Aviário/Campo = ENTRADA.
-   - Item lançado em PERDA  = SAÍDA no setor do item.
-   - Item vendido em PEDIDO = SAÍDA no setor do item.
-   Setor do item (sempre UM só): pelas abas autorizadas no cadastro —
-   só Aviário → Aviário; só Campo → Campo; nos dois ou em nenhum → a
-   saída NÃO é aplicada e aparece um aviso para o Admin ajustar.
-   Unidade: a saída é convertida para a unidade da coleta do item
-   (ex.: 3 "bandeja c/30" = 90 unid; dúzia = 12). Sem conversão segura
-   → fica fora do saldo, com aviso.
-   Nada disso grava ou altera registros — é calculado na hora de exibir.
-   ═════════════════════════════════════════════════════════════════ */
-function _sdNorm(t){ return String(t||'').normalize('NFD').replace(/[̀-ͯ]/g,'').trim().toLowerCase(); }
-function _sdIsoData(d){
-  if(!d) return '';
-  if(/^\d{4}-\d{2}-\d{2}/.test(d)) return d.slice(0,10);
-  var m = String(d).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
-  return m ? m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0') : '';
-}
-function _sdSetorDoItem(produtos, nome, prodId, contSetor){
-  var lista = (produtos||[]).filter(function(p){ return !p._excluido && prodId && p.id===prodId; });
-  if(!lista.length) lista = (produtos||[]).filter(function(p){ return !p._excluido && _sdNorm(p.nome)===_sdNorm(nome); });
-  if(!lista.length) return {erro:'sem cadastro de produto'};
-  var av = false, ca = false;
-  lista.forEach(function(p){ (p.apresentacoes||[]).forEach(function(a){
-    if(_apresHabilitadaNaAba(p, a, 'Aviario')) av = true;
-    if(_apresHabilitadaNaAba(p, a, 'Campo')) ca = true;
-  }); });
-  if(av && !ca) return {setor:'Aviario'};
-  if(ca && !av) return {setor:'Campo'};
-  // Autorizado nos dois (ou em nenhum): vai para o setor onde o item é
-  // de fato COLETADO (o que tem mais coletas dele) — nunca para os dois.
-  var cAv = (contSetor && contSetor['Aviario|'+_sdNorm(nome)]) || 0;
-  var cCa = (contSetor && contSetor['Campo|'+_sdNorm(nome)]) || 0;
-  if(cAv > cCa) return {setor:'Aviario'};
-  if(cCa > cAv) return {setor:'Campo'};
-  // Sem coleta que desempate: usa o Setor do cadastro do produto, se for um dos dois
-  var ps = lista.map(function(p){ return _sdNorm(p.setor); });
-  var pAv = ps.indexOf('aviario') > -1, pCa = ps.indexOf('campo') > -1;
-  if(pAv && !pCa) return {setor:'Aviario'};
-  if(pCa && !pAv) return {setor:'Campo'};
-  return {erro: (av && ca) ? 'autorizado em Aviário e em Campo, sem coleta que indique o setor' : 'não autorizado em Aviário nem em Campo'};
-}
-/* Nome "base" da unidade: unid/un/und/unidade → unid; cx → caixa; bdj → bandeja; dz → duzia */
-function _sdBaseUnid(u){
-  var t = _sdNorm(u).replace(/[.\s]+$/,'');
-  if(/^(un|und|unid|unids|unidade|unidades|u)\b/.test(t)) return 'unid';
-  if(/^(cx|caixa|caixas)\b/.test(t)) return 'caixa';
-  if(/^(bdj|bandeja|bandejas)\b/.test(t)) return 'bandeja';
-  if(/^(dz|duzia|duzias)\b/.test(t)) return 'duzia';
-  return t;
-}
-function _sdFator(unidAlvo, unidSaida){
-  var uc = _sdNorm(unidAlvo), uv = _sdNorm(unidSaida);
-  if(!uc || !uv) return (uc===uv) ? 1 : null;
-  if(uc === uv) return 1;
-  var bc = _sdBaseUnid(uc), bv = _sdBaseUnid(uv);
-  if(bc === bv && !/\d/.test(uc) && !/\d/.test(uv)) return 1;   // "unid" x "unidade", "cx" x "caixa"
-  if(bc !== 'unid') return null;         // só converte PARA unidade (coleta em unid)
-  // quantidade escrita na embalagem (ignora pesos/volumes: 40kg, 5 l...)
-  var m = uv.match(/(\d+)(?!\s*(kg|g|l|lt|ml)\b)(?!\d)/);
-  if(m) return parseInt(m[1],10);        // "bandeja c/30" → 30, "caixa c/12" → 12
-  if(bv === 'bandeja') return 30;         // padrão da fazenda: bandeja = 30 unidades
-  if(bv === 'caixa') return 12;           // padrão da fazenda: caixa = 12 unidades
-  if(bv === 'duzia') return 12;
-  // Apresentação que NÃO envolve quantidade (ex.: "vivo", "abatido", "limpo")
-  // conta 1 para 1 — vale só o produto, exatamente como na coleta.
-  // Peso/volume (kg, g, litro...) não dá para converter em unidades.
-  if(!/\d/.test(uv) && !/\b(kg|kgs|quilo|quilos|g|gr|grama|gramas|l|lt|litro|litros|ml|ton|arroba|arrobas)\b/.test(uv)) return 1;
-  return null;
-}
-var _sdUltimosAvisos = [];
-function _histComSaidas(histColetas, pedidos, produtos){
-  var avisos = [];
-  // unidade da coleta por setor+item (a mais usada)
-  var contUnid = {}, contSetor = {};
-  (histColetas||[]).forEach(function(r){ (r.itens||[]).forEach(function(it){
-    if(it.setor!=='Aviario' && it.setor!=='Campo') return;
-    var k = it.setor+'|'+_sdNorm(it.nome), u = (it.unid||'').trim();
-    contUnid[k] = contUnid[k] || {}; contUnid[k][u] = (contUnid[k][u]||0)+1;
-    contSetor[k] = (contSetor[k]||0)+1;
-  }); });
-  function unidAlvo(setor, nome, unidSaida){
-    var c = contUnid[setor+'|'+_sdNorm(nome)];
-    if(c){ return Object.keys(c).sort(function(a,b){ return c[b]-c[a]; })[0]; }
-    if(setor==='Aviario') return 'unid'; // Aviário é coletado por unidade
-    return unidSaida; // item ainda sem coleta nesse setor: usa a própria unidade da saída
-  }
-  // Nomes dos itens de coleta (Aviário/Campo) e dos produtos autorizados lá
-  var basesNome = {};
-  (histColetas||[]).forEach(function(r){ (r.itens||[]).forEach(function(it){
-    if((it.setor==='Aviario' || it.setor==='Campo') && it.nome) basesNome[_sdNorm(it.nome)] = it.nome.trim();
-  }); });
-  (produtos||[]).forEach(function(p){
-    if(p._excluido || !p.nome) return;
-    var ok = (p.apresentacoes||[]).some(function(a){ return _apresHabilitadaNaAba(p, a, 'Aviario') || _apresHabilitadaNaAba(p, a, 'Campo'); });
-    if(ok && !basesNome[_sdNorm(p.nome)]) basesNome[_sdNorm(p.nome)] = p.nome.trim();
-  });
-  // "Frango Vivo", "Frango Abatido" → "Frango" (o item como consta na coleta)
-  function nomeDaColeta(nome){
-    var n = _sdNorm(nome);
-    if(basesNome[n]) return {nome:basesNome[n], mudou:false};
-    var melhor = '';
-    Object.keys(basesNome).forEach(function(b){ if(n.indexOf(b+' ')===0 && b.length > melhor.length) melhor = b; });
-    return melhor ? {nome:basesNome[melhor], mudou:true} : {nome:nome, mudou:false};
-  }
-  var saida = [];
-  function registrarSaida(origem, dataIso, ts, rotulo, it, prodId, tsOrig){
-    var nc = nomeDaColeta(it.nome);
-    var nomeOrig = it.nome;
-    if(nc.mudou){ it = Object.assign({}, it, {nome:nc.nome}); prodId = null; }
-    var sd = _sdSetorDoItem(produtos, it.nome, prodId, contSetor);
-    if(sd.erro){ avisos.push({ts:tsOrig, data:dataIso, origem:origem, rotulo:rotulo, nome:it.nome, qtd:it.qtd, unid:it.unid, motivo:sd.erro}); return; }
-    var alvo = unidAlvo(sd.setor, it.nome, it.unid);
-    var f = _sdFator(alvo, it.unid);
-    var q = Number(it.qtd)||0;
-    if(f === null){ avisos.push({ts:tsOrig, data:dataIso, origem:origem, rotulo:rotulo, nome:it.nome, qtd:q, unid:it.unid, motivo:'unidade "'+(it.unid||'')+'" não convertível para "'+alvo+'"'}); return; }
-    var detOrig = (nc.mudou || f!==1) ? ' ('+(nc.mudou ? nomeOrig+' · ' : '')+q+' '+(it.unid||'')+')' : '';
-    saida.push({data:dataIso, ts:ts, coletor:rotulo, _virtual:origem, _tsOrigem:tsOrig,
-      itens:[{setor:sd.setor, nome:it.nome, qtd:Math.round(q*f*1000)/1000, unid:alvo, tipo:'Saida',
-              obs: origem+detOrig}]});
-  }
-  // Perdas → saída no setor do item
-  (histColetas||[]).forEach(function(r){ (r.itens||[]).forEach(function(it){
-    if(it.setor==='Perda') registrarSaida('Perda', r.data, (r.ts||0)+0.1, (r.coletor||'')+' · Perda', it, null, r.ts);
-  }); });
-  // Pedidos → saída no setor do item
-  (pedidos||[]).forEach(function(p){ if(p._excluido) return; (p.itens||[]).forEach(function(it){
-    var nome = it.nome||it.col2||''; if(!nome) return;
-    var partes = String(it.col3||'').split(' ');
-    var qtd = Number(it.qtd) || parseFloat(partes[0]) || 0;
-    var unid = it.unidade || it.unid || partes.slice(1).join(' ');
-    var d = _sdIsoData(it.data||it.col1) || p.data || '';
-    registrarSaida('Pedido', d, (p.ts||0)+0.2, 'Pedido '+(p.num||'')+(p.cliente?' · '+p.cliente:''), {nome:nome, qtd:qtd, unid:unid}, it.prodId, p.ts);
-  }); });
-  // Coletas de Aviário/Campo passam a ser ENTRADA (cópia só para exibir)
-  var base = (histColetas||[]).map(function(r){
-    if(!(r.itens||[]).some(function(it){ return (it.setor==='Aviario'||it.setor==='Campo') && !it.tipo; })) return r;
-    var c = Object.assign({}, r);
-    c.itens = r.itens.map(function(it){ return ((it.setor==='Aviario'||it.setor==='Campo') && !it.tipo) ? Object.assign({}, it, {tipo:'Entrada'}) : it; });
-    return c;
-  });
-  // ── Inventário (contagem física): o saldo passa a ser o CONTADO naquela
-  // data. O app gera um ajuste (Entrada ou Saída) = contado − calculado.
-  // É assim que se corrige o balanço de quem não tinha saldo inicial
-  // (ex.: ovos vendidos em junho, antes das coletas começarem).
-  var todos = base.concat(saida.filter(function(s){ return s.data; }));
-  var invs = [], movs = [];
-  todos.forEach(function(r){ (r.itens||[]).forEach(function(it){
-    if(it.setor!=='Aviario' && it.setor!=='Campo') return;
-    var k = it.setor+'|'+_sdNorm(it.nome);
-    if(it.tipo==='Inventario') invs.push({k:k, data:r.data, ts:r.ts||0, it:it, reg:r});
-    else movs.push({k:k, data:r.data, ts:r.ts||0, q:(it.tipo==='Saida' ? -1 : 1)*(Number(it.qtd)||0)});
-  }); });
-  invs.sort(function(a,b){ return (a.data<b.data?-1:a.data>b.data?1:0) || (a.ts-b.ts); });
-  var ajustes = [];
-  invs.forEach(function(iv){
-    var saldo = 0;
-    movs.concat(ajustes.map(function(a){ return a._mov; })).forEach(function(m){
-      if(m.k!==iv.k) return;
-      if(m.data < iv.data || (m.data===iv.data && m.ts < iv.ts)) saldo += m.q;
-    });
-    var contado = Number(iv.it.qtd)||0;
-    var dif = Math.round((contado - saldo)*1000)/1000;
-    if(!dif) return;
-    var aj = {data:iv.data, ts:iv.ts+0.3, coletor:'Inventário', _virtual:'Inventario', _tsOrigem:iv.ts,
-      itens:[{setor:iv.it.setor, nome:iv.it.nome, qtd:Math.abs(dif), unid:iv.it.unid||'', tipo: dif>0 ? 'Entrada' : 'Saida',
-              obs:'Inventário (contado '+contado+', calculado '+(Math.round(saldo*1000)/1000)+')'}]};
-    aj._mov = {k:iv.k, data:iv.data, ts:iv.ts+0.3, q:dif};
-    ajustes.push(aj);
-  });
-  _sdUltimosAvisos = avisos;
-  return todos.concat(ajustes);
-}
-/* Aviso (no topo do histórico) das saídas que não puderam ser aplicadas */
-function _sdAvisosHtml(ano, mes, setor, limiteIso){
-  if(setor && setor!=='Aviario' && setor!=='Campo') return '';
-  var lista = _sdUltimosAvisos.filter(function(a){
-    if(!a.data) return false;
-    if(limiteIso && a.data < limiteIso) return false;
-    if(ano && a.data.slice(0,4)!==ano) return false;
-    if(mes && a.data.slice(5,7)!==mes) return false;
-    return true;
-  });
-  if(!lista.length) return '';
-  var porItem = {};
-  lista.forEach(function(a){ var k = a.nome+' — '+a.motivo; porItem[k] = (porItem[k]||0)+1; });
-  return '<div style="background:#fdf3e2;border:1px solid #ecd4a8;color:#8a5a12;border-radius:8px;padding:9px 12px;font-size:12px;margin-bottom:12px;line-height:1.45">'
-    +'⚠️ <strong>'+lista.length+'</strong> saída(s) de Perda/Pedidos não entraram no balanço:<br>'
-    +Object.keys(porItem).map(function(k){ return '• '+k.replace(/&/g,'&amp;').replace(/</g,'&lt;')+(porItem[k]>1?' ('+porItem[k]+'×)':''); }).join('<br>')
-    +'<br><span style="font-size:11px">Ajuste em Cadastros → Apresentação (autorize o item em Aviário ou Campo) ou use uma unidade com a quantidade escrita (ex.: "Caixa c/12").</span></div>';
-}
-
 function _toast(msg){
   var el=document.getElementById('toast');
   el.textContent=msg; el.classList.add('vis');
