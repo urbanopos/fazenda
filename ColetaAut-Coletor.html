@@ -86,7 +86,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--vd);min-height:100vh;colo
 .btn-inst{background:rgba(184,148,63,.14);border:1px solid rgba(184,148,63,.35);color:var(--ac);border-radius:20px;padding:8px 18px;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;display:none;letter-spacing:.5px}
 .btn-inst.vis{display:block}
 /* CORPO */
-.corpo{background:var(--cr);min-height:calc(100vh - 74px);border-radius:20px 20px 0 0;padding:20px 16px 120px}
+.corpo{background:var(--cr);min-height:calc(100vh - 74px);border-radius:20px 20px 0 0;padding:1mm 16px 120px}
 /* ABAS */
 .abas{display:flex;gap:8px;margin-bottom:20px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
 .abas::-webkit-scrollbar{display:none}
@@ -365,7 +365,7 @@ textarea{resize:none;height:72px;font-size:14px}
 
 <!-- CORPO -->
 <div class="corpo">
-  <div class="cg" style="margin-bottom:20px">
+  <div class="cg" style="margin-top:0;margin-bottom:1mm">
     <span class="cl" id="lbl-data">Data da Coleta</span>
     <div class="cdata" style="justify-content:space-between;align-items:center">
       <div style="display:flex;gap:8px;align-items:center;flex:1;min-width:0">
@@ -375,12 +375,14 @@ textarea{resize:none;height:72px;font-size:14px}
       <button class="btn-hj" onclick="sairColeta()" style="background:#5a1a1a;color:#ffb4b4;border:1px solid #7a2a2a;margin-left:12px;flex:none">Sair</button>
     </div>
   </div>
-  <div class="abas">
-    <button class="aba at" onclick="trocarAba(&#39;aviario&#39;)" id="aba-aviario">Aviario</button>
-    <button class="aba aba-p" onclick="trocarAba(&#39;perda&#39;)" id="aba-perda">Perda</button>
-    <button class="aba aba-c" onclick="trocarAba(&#39;campo&#39;)" id="aba-campo">Campo</button>
-    <button class="aba aba-e" onclick="trocarAba(&#39;estoque&#39;)" id="aba-estoque">Estoque</button>
-    <button class="aba aba-v" onclick="trocarAba(&#39;vendas&#39;)" id="aba-vendas">Pedidos</button>
+  <div class="cg" style="margin-top:0;margin-bottom:1mm">
+    <span class="cl">Setor</span>
+    <select id="setor-sel" onchange="trocarAba(this.value)" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#fff">
+      <option value="aviario" selected>Aviário</option>
+      <option value="perda">Perda</option>
+      <option value="campo">Campo</option>
+      <option value="estoque">Estoque</option>
+    </select>
   </div>
   <div class="secao at" id="sec-aviario"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="sec-t">Aviario</div><button onclick="abrirHistColetaSetor('Aviario')" style="padding:5px 12px;background:rgba(28,78,34,.1);border:1.5px solid var(--vc);border-radius:6px;color:var(--vc);font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📋 Histórico</button></div><div class="sec-d">Producao e movimentacao</div><div class="pgrid" id="grid-aviario"><div class="pc" id="card-aviario_ovo"><div class="ph"><div onclick="toggleCard(&#39;aviario_ovo&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Ovos de Capoeira</span><span class="pb" id="badge-aviario_ovo">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;aviario_ovo&#39;,&#39;&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;aviario_ovo&#39;,&#39;&#39;)">x</button></div></div><div class="res-con" id="res-aviario_ovo"></div><div class="pbd" id="body-aviario_ovo"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_ovo&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_ovo" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_ovo&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-aviario_ovo" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_ovo&#39;,&#39;unid&#39;,&#39;Ovos de Capoeira&#39;)">Concluir</button></div></div></div><div class="pc" id="card-aviario_esterco"><div class="ph"><div onclick="toggleCard(&#39;aviario_esterco&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Esterco</span><span class="pb" id="badge-aviario_esterco">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;aviario_esterco&#39;,&#39;&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;aviario_esterco&#39;,&#39;&#39;)">x</button></div></div><div class="res-con" id="res-aviario_esterco"></div><div class="pbd" id="body-aviario_esterco"><div class="cg"><span class="cl">Quantidade (sacos)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_esterco&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_esterco" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_esterco&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-aviario_esterco" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_esterco&#39;,&#39;sacos&#39;,&#39;Esterco&#39;)">Concluir</button></div></div></div><div class="pc" id="card-aviario_galinha"><div class="ph"><div onclick="toggleCard(&#39;aviario_galinha&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Galinha</span><span class="pb" id="badge-aviario_galinha">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;aviario_galinha&#39;,&#39;&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;aviario_galinha&#39;,&#39;&#39;)">x</button></div></div><div class="res-con" id="res-aviario_galinha"></div><div class="pbd" id="body-aviario_galinha"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_galinha&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_galinha" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_galinha&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-aviario_galinha" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_galinha&#39;,&#39;unid&#39;,&#39;Galinha&#39;)">Concluir</button></div></div></div><div class="pc" id="card-aviario_frango"><div class="ph"><div onclick="toggleCard(&#39;aviario_frango&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Frango</span><span class="pb" id="badge-aviario_frango">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;aviario_frango&#39;,&#39;&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;aviario_frango&#39;,&#39;&#39;)">x</button></div></div><div class="res-con" id="res-aviario_frango"></div><div class="pbd" id="body-aviario_frango"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_frango&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_frango" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_frango&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-aviario_frango" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_frango&#39;,&#39;unid&#39;,&#39;Frango&#39;)">Concluir</button></div></div></div><div class="pc" id="card-aviario_pinto"><div class="ph"><div onclick="toggleCard(&#39;aviario_pinto&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pinto</span><span class="pb" id="badge-aviario_pinto">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;aviario_pinto&#39;,&#39;&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;aviario_pinto&#39;,&#39;&#39;)">x</button></div></div><div class="res-con" id="res-aviario_pinto"></div><div class="pbd" id="body-aviario_pinto"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_pinto&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_pinto" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_pinto&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-aviario_pinto" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_pinto&#39;,&#39;unid&#39;,&#39;Pinto&#39;)">Concluir</button></div></div></div><div class="pc" id="card-aviario_pintainha"><div class="ph"><div onclick="toggleCard(&#39;aviario_pintainha&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pintainha</span><span class="pb" id="badge-aviario_pintainha">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;aviario_pintainha&#39;,&#39;&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;aviario_pintainha&#39;,&#39;&#39;)">x</button></div></div><div class="res-con" id="res-aviario_pintainha"></div><div class="pbd" id="body-aviario_pintainha"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_pintainha&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_pintainha" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_pintainha&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-aviario_pintainha" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_pintainha&#39;,&#39;unid&#39;,&#39;Pintainha&#39;)">Concluir</button></div></div></div></div></div>
   <div class="secao" id="sec-perda"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="sec-t" style="color:#7f1d1d">Perda / Baixa</div><button onclick="abrirHistColetaSetor('Perda')" style="padding:5px 12px;background:rgba(127,29,29,.1);border:1.5px solid #7f1d1d;border-radius:6px;color:#7f1d1d;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📋 Histórico</button></div><div class="sec-d">Mortalidade ou descarte</div><div class="pgrid" id="grid-perda"><div class="pc pc-p" id="card-perda_ovo"><div class="ph"><div onclick="toggleCard(&#39;perda_ovo&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Ovos de Capoeira</span><span class="pb" id="badge-perda_ovo">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;perda_ovo&#39;,&#39;pc-p&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;perda_ovo&#39;,&#39;pc-p&#39;)">x</button></div></div><div class="res-con" id="res-perda_ovo"></div><div class="pbd" id="body-perda_ovo"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_ovo&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_ovo" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_ovo&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-perda_ovo" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_ovo&#39;,&#39;unid&#39;,&#39;Ovos de Capoeira&#39;)">Concluir</button></div></div></div><div class="pc pc-p" id="card-perda_esterco"><div class="ph"><div onclick="toggleCard(&#39;perda_esterco&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Esterco</span><span class="pb" id="badge-perda_esterco">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;perda_esterco&#39;,&#39;pc-p&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;perda_esterco&#39;,&#39;pc-p&#39;)">x</button></div></div><div class="res-con" id="res-perda_esterco"></div><div class="pbd" id="body-perda_esterco"><div class="cg"><span class="cl">Quantidade (sacos)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_esterco&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_esterco" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_esterco&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-perda_esterco" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_esterco&#39;,&#39;sacos&#39;,&#39;Esterco&#39;)">Concluir</button></div></div></div><div class="pc pc-p" id="card-perda_galinha"><div class="ph"><div onclick="toggleCard(&#39;perda_galinha&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Galinha</span><span class="pb" id="badge-perda_galinha">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;perda_galinha&#39;,&#39;pc-p&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;perda_galinha&#39;,&#39;pc-p&#39;)">x</button></div></div><div class="res-con" id="res-perda_galinha"></div><div class="pbd" id="body-perda_galinha"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_galinha&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_galinha" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_galinha&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-perda_galinha" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_galinha&#39;,&#39;unid&#39;,&#39;Galinha&#39;)">Concluir</button></div></div></div><div class="pc pc-p" id="card-perda_frango"><div class="ph"><div onclick="toggleCard(&#39;perda_frango&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Frango</span><span class="pb" id="badge-perda_frango">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;perda_frango&#39;,&#39;pc-p&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;perda_frango&#39;,&#39;pc-p&#39;)">x</button></div></div><div class="res-con" id="res-perda_frango"></div><div class="pbd" id="body-perda_frango"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_frango&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_frango" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_frango&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-perda_frango" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_frango&#39;,&#39;unid&#39;,&#39;Frango&#39;)">Concluir</button></div></div></div><div class="pc pc-p" id="card-perda_pinto"><div class="ph"><div onclick="toggleCard(&#39;perda_pinto&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pinto</span><span class="pb" id="badge-perda_pinto">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;perda_pinto&#39;,&#39;pc-p&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;perda_pinto&#39;,&#39;pc-p&#39;)">x</button></div></div><div class="res-con" id="res-perda_pinto"></div><div class="pbd" id="body-perda_pinto"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_pinto&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_pinto" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_pinto&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-perda_pinto" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_pinto&#39;,&#39;unid&#39;,&#39;Pinto&#39;)">Concluir</button></div></div></div><div class="pc pc-p" id="card-perda_pintainha"><div class="ph"><div onclick="toggleCard(&#39;perda_pintainha&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pintainha</span><span class="pb" id="badge-perda_pintainha">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;perda_pintainha&#39;,&#39;pc-p&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;perda_pintainha&#39;,&#39;pc-p&#39;)">x</button></div></div><div class="res-con" id="res-perda_pintainha"></div><div class="pbd" id="body-perda_pintainha"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_pintainha&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_pintainha" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_pintainha&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-perda_pintainha" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_pintainha&#39;,&#39;unid&#39;,&#39;Pintainha&#39;)">Concluir</button></div></div></div></div></div>
@@ -932,7 +934,8 @@ function _cardColetaSetor(setor, cl, forn){
     return '<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/</g,'&lt;')+'</option>';
   }).join('');
   var fH = forn ? '<div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-'+k+'" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div>' : '';
-  return '<div class="pc at pc-edit'+(cl?' '+cl:'')+'" id="card-'+k+'" style="cursor:default">'
+  return '<div id="lista-'+setor+'" style="margin-bottom:12px"></div>'
+    +'<div class="pc at pc-edit'+(cl?' '+cl:'')+'" id="card-'+k+'" style="cursor:default">'
     +'<div class="pbd" style="display:block;padding:16px 14px" id="body-'+k+'">'
 
     +'<div class="cg"><span class="cl">Item coletado</span>'
@@ -966,8 +969,7 @@ function _cardColetaSetor(setor, cl, forn){
     +'<div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-'+k+'" placeholder="Ex: lote A, qualidade boa..."></textarea></div>'
     +'<div class="card-acoes"><button class="btn-con" onclick="_adicionarItemSessao(\''+setor+'\')">+ Adicionar item</button></div>'
     +'</div>'
-    +'</div></div>'
-    +'<div id="lista-'+setor+'" style="margin-top:12px"></div>';
+    +'</div></div>';
 }
 
 function _onSelecionarItem(setor){
@@ -1139,7 +1141,7 @@ function _iniciar(){
    nada salvo no aparelho — token, catálogo e coletas pendentes continuam
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
-var _caFP = '1a0feb5c67db';
+var _caFP = '1a1008b5fd98';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -1233,12 +1235,7 @@ window.addEventListener('popstate', function(){
     return;
   }
 
-  var abas = ['aviario','perda','campo','estoque','vendas'];
-  var atual = 'aviario';
-  for(var i=0;i<abas.length;i++){
-    var el = document.getElementById('aba-'+abas[i]);
-    if(el && el.classList.contains('at')){ atual = abas[i]; break; }
-  }
+  var atual = _abaAtual();
   if(atual !== 'aviario'){
     trocarAba('aviario');
     history.pushState({ navSentinel: true }, '');
@@ -1430,14 +1427,21 @@ function trocarAba(s){
     return;
   }
   document.querySelectorAll('.secao').forEach(function(x){ x.classList.remove('at'); });
-  document.querySelectorAll('.aba').forEach(function(x){ x.classList.remove('at'); });
   var secV = document.getElementById('sec-vendas');
   if(secV) secV.classList.remove('at');
   if(s==='vendas'){ if(secV) secV.classList.add('at'); }
   else { var sec = document.getElementById('sec-'+s); if(sec) sec.classList.add('at'); }
-  var ab = document.getElementById('aba-'+s); if(ab) ab.classList.add('at');
+  var sel = document.getElementById('setor-sel');
+  if(sel && sel.value !== s) sel.value = s;
   var lbl = document.getElementById('lbl-data');
   if(lbl) lbl.textContent = s==='vendas' ? 'Data da Venda' : 'Data da Coleta';
+}
+
+/* Setor (aba) atualmente selecionado, a partir da lista "Setor" — usada
+   onde antes se detectava o botao de aba com a classe "at". */
+function _abaAtual(){
+  var sel = document.getElementById('setor-sel');
+  return sel ? sel.value : 'aviario';
 }
 
 /* Retorna a data de HOJE no fuso horário local do aparelho (YYYY-MM-DD).
@@ -1505,8 +1509,9 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, faixaSufixo){
   var c = document.createElement('canvas');
   var ctx = c.getContext('2d');
   var nome = (localStorage.getItem('wpp_nome')||'').trim();
+  var isTalao = titulo.indexOf('TALAO DE PEDIDO')===0;
   var H = nome?158:122;
-  H += 28; // faixa
+  H += isTalao ? 40 : 28; // faixa
   linhas.forEach(function(){ H+=52; });
   H += 48; // rodape
   H += rodape ? 44 : 0;
@@ -1530,8 +1535,7 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, faixaSufixo){
   // usa tons de verde claro (fundo claro + texto escuro para contraste), com
   // a faixa do numero do pedido em dourado. O Boletim de Coleta (uso interno)
   // mantem a paleta escura original. Espelha a paleta do Admin/Desktop.
-  var isTalao = titulo.indexOf('TALAO DE PEDIDO')===0;
-  var corFundo    = isTalao ? '#e3eee1' : '#1c2e22';
+  var corFundo    = isTalao ? '#edf5ea' : '#1c2e22';
   var corTitulo   = isTalao ? '#1c2e22' : '#fff';
   var corAcento   = isTalao ? '#3b6b47' : '#b8943f';
   var corMuted    = isTalao ? 'rgba(28,46,34,0.55)' : 'rgba(255,255,255,0.5)';
@@ -1560,10 +1564,12 @@ function _gerarImagem(titulo, linhas, rodape, onBlob, faixaSufixo){
 
   // FAIXA \u2014 dourada tanto no Boletim quanto no Talao (acento da marca)
   var faixaCor = '#b8943f';
-  rect(0,y,W,28,faixaCor);
+  var faixaH = isTalao ? 40 : 28;
+  rect(0,y,W,faixaH,faixaCor);
   var faixaTxt = isTalao ? titulo.replace('TALAO DE PEDIDO / ','PEDIDO N.\u00ba ') : titulo + (faixaSufixo ? ' - '+faixaSufixo : '');
-  txt(faixaTxt,PAD,y+19,10,corTitulo,'bold');
-  y+=28;
+  var faixaTxtY = isTalao ? y+26 : y+19;
+  txt(faixaTxt,PAD,faixaTxtY,10,corTitulo,'bold');
+  y+=faixaH;
 
   // LINHAS
   linhas.forEach(function(it,i){
@@ -1831,13 +1837,18 @@ function _initVendas(){
 }
 
 function _aplicarVendas(ativa){
-  var aba = document.getElementById('aba-vendas');
+  var sel = document.getElementById('setor-sel');
+  var opt = document.getElementById('setor-opt-vendas');
   var btn = document.getElementById('btn-toggle-vendas');
   if(ativa){
-    aba.classList.add('vis');
+    if(sel && !opt){
+      opt = document.createElement('option');
+      opt.value = 'vendas'; opt.id = 'setor-opt-vendas'; opt.textContent = 'Pedidos';
+      sel.appendChild(opt);
+    }
     if(btn){ btn.textContent='Desativar Vendas'; btn.style.background='#5a1010'; btn.style.color='#fca5a5'; }
   } else {
-    aba.classList.remove('vis','at');
+    if(opt) opt.remove();
     if(btn){ btn.textContent='Ativar Vendas'; btn.style.background='#7a3a00'; btn.style.color='#ffd49a'; }
     var sv = document.getElementById('sec-vendas');
     if(sv && sv.classList.contains('at')) trocarAba('aviario');
@@ -2504,12 +2515,7 @@ async function abrirHistColeta(restrito, setorInicial){
 
   // Setor: se veio explicito (botao "Historico" de uma aba especifica), usa ele.
   // Senao, usa a aba atualmente selecionada como filtro padrao.
-  var abas = ['aviario','perda','campo','estoque'];
-  var abaAtual = 'aviario';
-  for(var i=0;i<abas.length;i++){
-    var elA = document.getElementById('aba-'+abas[i]);
-    if(elA && elA.classList.contains('at')){ abaAtual = abas[i]; break; }
-  }
+  var abaAtual = _abaAtual();
   var setorPadrao = setorInicial || (SETORES[abaAtual] ? SETORES[abaAtual].label : '');
   var selSetor = document.getElementById('hcol-setor');
   if(selSetor){ selSetor.value = setorPadrao; selSetor.dataset.setorAba = setorPadrao; }
