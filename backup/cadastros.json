@@ -1133,6 +1133,20 @@
         }
       ],
       "_editadoEm": 1790625341986
+    },
+    {
+      "id": "p1791046361076",
+      "setor": "Aviario",
+      "nome": "Frango Vivo",
+      "apresentacoes": [
+        {
+          "id": "amusmqn14wql47z",
+          "unid": "Unid.",
+          "preco": 50,
+          "fornecedor": "Fazenda São José"
+        }
+      ],
+      "_editadoEm": 1791046361076
     }
   ],
   "clientes": [
