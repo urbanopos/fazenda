@@ -1045,6 +1045,18 @@ body:has(#sec-compras.at) #contador{display:none}
   </div>
 </div>
 
+<!-- MODAL LEITOR DE QR DA NOTA FISCAL (Compras → "+ Outro" fornecedor) -->
+<div id="cmp-scanner-modal" onclick="if(event.target===this) _cmpFecharScannerForn()" style="display:none;position:fixed;inset:0;z-index:9997;background:rgba(0,0,0,.85);align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:12px;max-width:420px;width:100%;overflow:hidden" onclick="event.stopPropagation()">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #eee">
+      <strong style="font-size:14px;color:#333">Ler QR Code da nota fiscal</strong>
+      <button onclick="_cmpFecharScannerForn()" style="background:none;border:none;font-size:18px;cursor:pointer;color:#333">✕</button>
+    </div>
+    <video id="cmp-scan-video" playsinline muted style="width:100%;display:block;background:#000;max-height:50vh"></video>
+    <div id="cmp-scan-st" style="padding:12px 18px;font-size:13px;color:#555;text-align:center">Iniciando câmera...</div>
+  </div>
+</div>
+
 <!-- MODAL VISUALIZACAO PEDIDO -->
 <div id="modal-ped" onclick="fecharModalPed()">
   <div class="mp-box" onclick="event.stopPropagation()">
@@ -1086,7 +1098,13 @@ body:has(#sec-compras.at) #contador{display:none}
   <div class="vi-row2" style="grid-template-columns:1fr">
     <div class="vi-campo"><span class="vi-lbl">Fornecedor</span>
       <select class="vi-sel" id="cmp-forn-sel" onchange="_cmpOnFornChange()"><option value="">— Escolha o fornecedor —</option></select>
-      <input class="vi-inp" id="cmp-fornecedor" placeholder="Nome do fornecedor (avulso)..." style="font-weight:500;display:none;margin-top:6px" oninput="_cmpRender()"></div>
+      <input class="vi-inp" id="cmp-fornecedor" placeholder="Nome do fornecedor (avulso)..." style="font-weight:500;display:none;margin-top:6px" oninput="_cmpRender()">
+      <div id="cmp-qr-wrap" style="display:none;margin-top:8px;gap:8px;align-items:center;flex-wrap:wrap">
+        <button type="button" onclick="_cmpAbrirScannerForn()" style="padding:8px 14px;background:rgba(75,46,131,.1);border:1.5px solid #4b2e83;border-radius:6px;color:#4b2e83;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer">📷 Ler QR da nota</button>
+        <button type="button" id="cmp-qr-nf-btn" onclick="_cmpAbrirNF()" style="display:none;padding:8px 14px;background:rgba(75,46,131,.1);border:1.5px solid #4b2e83;border-radius:6px;color:#4b2e83;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer">🧾 NF</button>
+        <span id="cmp-qr-status" style="font-size:11px;color:var(--mu)"></span>
+      </div>
+    </div>
   </div>
   <div id="cmp-aviso-forn" style="display:none;margin:-4px 0 10px;padding:8px 10px;border-radius:6px;background:#fbf4e2;border:1px solid #ecd4a8;color:#8a5a12;font-size:12px"></div>
   <div id="cmp-itens"></div>
@@ -11558,7 +11576,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a100cf924a2';
+var _caFP = '1a1014f77a1a';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -12484,15 +12502,30 @@ function sairColeta(){
         _renderListaSessao(s);
       });
       _atualizarContador();
-      _sessaoLimparLocal();
     }
-    try{ window.close(); }catch(e){}
-    // O navegador nao permite que o proprio site feche a aba/app quando ela nao
-    // foi aberta por script (restricao de seguranca do navegador, nao um bug
-    // nosso — nenhum site consegue contornar isso). Orienta o fechamento manual.
-    overlay.innerHTML = '<div style="font-size:40px;margin-bottom:16px">✅</div>'
-      +'<div style="font-size:16px;line-height:1.5;max-width:320px">Tudo certo, pode fechar.<br><br>Deslize o aplicativo para fora ou toque no botão de início do celular para fechar.</div>';
+    _sessaoLimparLocal();
+    _encerrarSessaoColeta(overlay);
   };
+}
+
+/* Encerra a sessao de verdade — o navegador nunca deixa um site fechar
+   sozinho a aba/app em que esta rodando (restricao de seguranca; nao e
+   um bug nosso, nenhum PWA do mercado consegue contornar isso). Por
+   isso, alem de tentar o fechamento, a tela vira um "bloqueio" real:
+   nada mais pode ser usado ate o coletor reabrir deliberadamente. */
+function _encerrarSessaoColeta(overlay){
+  try{ window.close(); }catch(e){}
+  // Segunda tentativa, para navegadores que só fecham depois de um
+  // pequeno atraso (alguns Android fecham aqui; a maioria nao fecha
+  // nenhuma das duas vezes — por isso a tela de bloqueio abaixo).
+  setTimeout(function(){ try{ window.close(); }catch(e){} }, 250);
+
+  overlay.innerHTML = '<div style="font-size:40px;margin-bottom:16px">🔒</div>'
+    +'<div style="font-size:18px;font-weight:700;margin-bottom:10px">Sessão encerrada</div>'
+    +'<div style="font-size:15px;line-height:1.6;margin-bottom:28px;max-width:300px;color:rgba(207,234,217,.8)">Por segurança do navegador, o app não consegue se fechar sozinho — mas a sessão já foi encerrada e não há mais nada salvo aqui.<br><br>Para sair de vez, deslize o aplicativo para fora na lista de recentes ou toque no botão de início do celular.</div>'
+    +'<button id="btn-reabrir-sessao" style="background:#1a6b2a;color:#a8e6b8;border:1px solid #2d7a3e;padding:11px 28px;border-radius:8px;font-size:14px;cursor:pointer;width:240px">🔓 Entrar novamente</button>';
+  var btnReabrir = document.getElementById('btn-reabrir-sessao');
+  if(btnReabrir) btnReabrir.onclick = function(){ location.reload(); };
 }
 
 function _cardColetaSetor(setor, cl, forn){
@@ -12923,6 +12956,7 @@ var _navFechar = {
   'ca-lock'         : function(){ document.getElementById('ca-lock').classList.remove('vis'); },
   'ca-setup'        : function(){ document.getElementById('ca-setup').classList.remove('vis'); },
   'guia-ios'        : fecharGuiaIos,
+  'cmp-scanner-modal' : _cmpFecharScannerForn,
   'aba'             : function(){ trocarAba('aviario'); }
 };
 
@@ -12949,6 +12983,15 @@ function _navPop(){
 var _navTrocandoAba = false; /* flag: trocarAba chamado pelo popstate, não empurrar */
 
 window.addEventListener('popstate', function(e){
+  // Tela de sessao encerrada aberta: o "voltar" do celular nao deve
+  // reaparecer com o app por tras — so insiste na tentativa de fechar.
+  var telaSair = document.getElementById('tela-sair-confirmar');
+  if(telaSair && document.getElementById('btn-reabrir-sessao')){
+    try{ window.close(); }catch(e2){}
+    history.pushState({ navSentinel: true }, '');
+    return;
+  }
+
   var id = (e.state && e.state.navId)
     ? e.state.navId
     : (_navPilha.length > 0 ? _navPilha[_navPilha.length - 1] : null);
@@ -18334,17 +18377,23 @@ function _cmpRenderFornecedores(valor){
     + lista.map(function(n){ return '<option value="'+_escH(n)+'">'+_escH(n)+'</option>'; }).join('')
     + '<option value="'+CMP_FORN_AVULSO+'" style="color:#1a6b2a;font-weight:700">+ Outro (digitar)</option>';
   var inp = document.getElementById('cmp-fornecedor');
+  var qrWrap = document.getElementById('cmp-qr-wrap');
   if(atual && atual !== CMP_FORN_AVULSO && lista.some(function(n){ return _sdNorm(n)===_sdNorm(atual); })){
     sel.value = lista.find(function(n){ return _sdNorm(n)===_sdNorm(atual); });
     if(inp){ inp.style.display = 'none'; }
+    if(qrWrap) qrWrap.style.display = 'none';
   } else if(atual){
     sel.value = CMP_FORN_AVULSO;
     if(inp){ inp.style.display = ''; if(atual !== CMP_FORN_AVULSO) inp.value = atual; }
-  } else { sel.value = ''; if(inp) inp.style.display = 'none'; }
+    if(qrWrap) qrWrap.style.display = 'flex';
+  } else { sel.value = ''; if(inp) inp.style.display = 'none'; if(qrWrap) qrWrap.style.display = 'none'; }
 }
 function _cmpOnFornChange(){
   var sel = document.getElementById('cmp-forn-sel'), inp = document.getElementById('cmp-fornecedor');
-  if(inp){ inp.style.display = (sel.value === CMP_FORN_AVULSO) ? '' : 'none'; if(sel.value !== CMP_FORN_AVULSO) inp.value = ''; }
+  var isAvulso = sel.value === CMP_FORN_AVULSO;
+  if(inp){ inp.style.display = isAvulso ? '' : 'none'; if(!isAvulso) inp.value = ''; }
+  var qrWrap = document.getElementById('cmp-qr-wrap');
+  if(qrWrap) qrWrap.style.display = isAvulso ? 'flex' : 'none';
   // Itens já escolhidos que NÃO são deste fornecedor saem da compra
   var forn = _cmpFornFiltro();
   if(forn){
@@ -18365,6 +18414,186 @@ function _cmpOnFornChange(){
     });
   }
   _cmpRender();
+}
+
+/* ════════════════════════════════════════════════════════════════
+   LEITOR DE QR DA NOTA FISCAL (Compras → "+ Outro" fornecedor)
+   O QR Code de uma NFe/NFC-e brasileira não traz os itens da compra
+   (só um link de consulta + a Chave de Acesso de 44 dígitos) — isso é
+   uma restrição da Receita/Sefaz, não do app. Mas a própria Chave de
+   Acesso já traz o CNPJ do emitente embutido (posições fixas, padrão
+   nacional SEFAZ/CONFAZ, vale pra qualquer estado), então dá pra:
+     1. Ler o QR e extrair o CNPJ, sem precisar de internet.
+     2. Tentar descobrir o nome do fornecedor por esse CNPJ (BrasilAPI,
+        pública e gratuita) — se não houver internet/API fora do ar,
+        fica só o CNPJ mesmo, editável.
+     3. Cadastrar esse fornecedor em Cadastros automaticamente.
+     4. Guardar o link da nota para o botão "🧾 NF" (ver a nota na
+        Sefaz e conferir os itens, que continuam digitados à mão).
+   ════════════════════════════════════════════════════════════════ */
+var _cmpScanStream = null;
+var _cmpScanAtivo  = false;
+var _cmpScanRaf    = null;
+var _cmpQrUltimaUrl = '';
+
+function _cmpAbrirScannerForn(){
+  var modal = document.getElementById('cmp-scanner-modal');
+  if(!modal) return;
+  modal.style.display = 'flex';
+  document.getElementById('cmp-scan-st').textContent = 'Iniciando câmera...';
+  _navPush('cmp-scanner-modal');
+  _cmpIniciarScan();
+}
+function _cmpFecharScannerForn(){
+  _cmpPararScan();
+  var modal = document.getElementById('cmp-scanner-modal');
+  if(modal) modal.style.display = 'none';
+  var idx = _navPilha.indexOf('cmp-scanner-modal');
+  if(idx >= 0){ _navPilha.splice(idx,1); history.replaceState({navSentinel:true},''); }
+}
+async function _cmpIniciarScan(){
+  if(_cmpScanAtivo) return;
+  var vid = document.getElementById('cmp-scan-video');
+  var st  = document.getElementById('cmp-scan-st');
+  try{
+    _cmpScanStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
+    vid.srcObject = _cmpScanStream;
+    await vid.play();
+    _cmpScanAtivo = true;
+    st.textContent = 'Aponte para o QR Code da nota fiscal';
+    _cmpScanLoop();
+  }catch(e){ st.textContent = 'Erro ao acessar a câmera: '+e.message; }
+}
+function _cmpPararScan(){
+  _cmpScanAtivo = false;
+  if(_cmpScanRaf){ cancelAnimationFrame(_cmpScanRaf); _cmpScanRaf = null; }
+  if(_cmpScanStream){ _cmpScanStream.getTracks().forEach(function(t){ t.stop(); }); _cmpScanStream = null; }
+  var vid = document.getElementById('cmp-scan-video'); if(vid) vid.srcObject = null;
+}
+async function _cmpScanLoop(){
+  if(!_cmpScanAtivo) return;
+  var vid = document.getElementById('cmp-scan-video');
+  if(vid && vid.readyState === vid.HAVE_ENOUGH_DATA){
+    var result = null;
+    if(_caBarcDet){
+      try{ var codes = await _caBarcDet.detect(vid); if(codes.length) result = codes[0].rawValue; }catch(e){}
+    }
+    if(!result && window.jsQR){
+      var cv = document.createElement('canvas');
+      cv.width = vid.videoWidth; cv.height = vid.videoHeight;
+      cv.getContext('2d').drawImage(vid,0,0);
+      var img = cv.getContext('2d').getImageData(0,0,cv.width,cv.height);
+      var code = jsQR(img.data, img.width, img.height, {inversionAttempts:'dontInvert'});
+      if(code) result = code.data;
+    }
+    if(result){ _cmpPararScan(); _cmpProcessarQRNota(result); return; }
+  }
+  _cmpScanRaf = requestAnimationFrame(_cmpScanLoop);
+}
+
+/* Extrai os 44 dígitos da Chave de Acesso de dentro do texto lido —
+   normalmente uma URL tipo "...?p=44digitos|2|1|1|hash", mas aceita
+   também a chave aparecendo solta no texto. */
+function _cmpExtrairChaveAcesso(raw){
+  var texto = String(raw||'');
+  var pMatch = texto.match(/[?&]p=(\d{44})/);
+  if(pMatch) return pMatch[1];
+  var seq = texto.match(/\d{44}/);
+  return seq ? seq[0] : null;
+}
+
+/* Decodifica os campos fixos da Chave de Acesso (padrão nacional
+   SEFAZ/CONFAZ — mesmo formato em todos os estados):
+   cUF(2) AAMM(4) CNPJ(14) mod(2) serie(3) nNF(9) tpEmis(1) cNF(8) cDV(1) */
+function _cmpDecodificarChave(chave){
+  if(!chave || chave.length !== 44 || !/^\d{44}$/.test(chave)) return null;
+  return {
+    cUF: chave.substr(0,2),
+    ano: chave.substr(2,2),
+    mes: chave.substr(4,2),
+    cnpj: chave.substr(6,14),
+    modelo: chave.substr(20,2),
+    serie: chave.substr(22,3),
+    numero: chave.substr(25,9),
+    chave: chave
+  };
+}
+function _cmpFormatarCNPJ(cnpj){
+  if(!cnpj || cnpj.length !== 14) return cnpj||'';
+  return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+}
+
+async function _cmpProcessarQRNota(raw){
+  var st = document.getElementById('cmp-scan-st');
+  st.textContent = 'QR detectado! Lendo chave de acesso...';
+  var chave = _cmpExtrairChaveAcesso(raw);
+  var dados = chave ? _cmpDecodificarChave(chave) : null;
+  if(!dados){
+    st.textContent = '⚠️ QR não reconhecido como nota fiscal. Aponte novamente ou digite o fornecedor manualmente.';
+    setTimeout(function(){ if(document.getElementById('cmp-scanner-modal').style.display==='flex') _cmpIniciarScan(); }, 1800);
+    return;
+  }
+  _cmpQrUltimaUrl = /^https?:\/\//i.test(raw) ? raw : '';
+  var cnpjFmt = _cmpFormatarCNPJ(dados.cnpj);
+  st.textContent = 'CNPJ '+cnpjFmt+' — buscando dados do fornecedor...';
+  var nome = null, endereco = '';
+  try{
+    var resp = await fetch('https://brasilapi.com.br/api/cnpj/v1/'+dados.cnpj, {cache:'no-store'});
+    if(resp.ok){
+      var j = await resp.json();
+      nome = (j.razao_social || j.nome_fantasia || '').trim() || null;
+      var partesEnd = [j.logradouro && (j.numero ? j.logradouro+', '+j.numero : j.logradouro), j.bairro, j.municipio, j.uf].filter(Boolean);
+      endereco = partesEnd.join(' — ');
+    }
+  }catch(e){ /* sem internet ou API fora do ar — segue só com o CNPJ */ }
+
+  await _cmpAplicarFornecedorQR(cnpjFmt, dados.cnpj, nome, endereco);
+  _cmpFecharScannerForn();
+}
+
+/* Cadastra (ou reaproveita, se já existir pelo CNPJ) o fornecedor lido
+   do QR em Cadastros → Fornecedores, e já deixa selecionado na compra
+   em andamento — fecha o ciclo "ler QR → cadastrar → usar". */
+async function _cmpAplicarFornecedorQR(cnpjFmt, cnpjDigits, nomeApi, enderecoApi){
+  var nome = (nomeApi||'').trim();
+  var achouNome = !!nome;
+  if(!nome) nome = 'Fornecedor CNPJ '+cnpjFmt; // nome provisório e editável em Cadastros
+  if(!_cadDados.fornecedores) _cadDados.fornecedores = [];
+  var existente = _cadDados.fornecedores.find(function(f){
+    return !f._excluido && (f.cnpj||'').replace(/\D/g,'') === cnpjDigits;
+  });
+  if(existente){
+    if(achouNome && existente.nome !== nome){ existente.nome = nome; existente._editadoEm = Date.now(); }
+    if(enderecoApi && !existente.endereco) existente.endereco = enderecoApi;
+    if(!existente.cnpj) existente.cnpj = cnpjFmt;
+  } else {
+    existente = {id:'f'+Date.now(), nome:nome, cnpj:cnpjFmt, contato:'', endereco:enderecoApi||'', obs:''};
+    _cadDados.fornecedores.push(existente);
+  }
+  await _cadSalvar();
+  if(typeof _atualizarDatalistFornecedores==='function') _atualizarDatalistFornecedores();
+  _cmpRenderFornecedores(existente.nome);
+  _cmpOnFornChange();
+  var nfBtn = document.getElementById('cmp-qr-nf-btn');
+  if(nfBtn){
+    if(_cmpQrUltimaUrl){ nfBtn.style.display = ''; nfBtn.dataset.url = _cmpQrUltimaUrl; }
+    else { nfBtn.style.display = 'none'; }
+  }
+  _toast(achouNome ? '✅ Fornecedor identificado: '+nome : '✅ CNPJ lido e cadastrado — confira/edite o nome em Cadastros');
+}
+function _cmpAbrirNF(){
+  var nfBtn = document.getElementById('cmp-qr-nf-btn');
+  var url = nfBtn ? nfBtn.dataset.url : '';
+  if(url) window.open(url, '_blank');
+}
+function _cadFormatarCNPJInput(el){
+  var d = el.value.replace(/\D/g,'').slice(0,14);
+  var out = d;
+  if(d.length > 12) out = d.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})$/, '$1.$2.$3/$4-$5');
+  else if(d.length > 8) out = d.replace(/^(\d{2})(\d{3})(\d{3})(\d{0,4})$/, '$1.$2.$3/$4');
+  else if(d.length > 5) out = d.replace(/^(\d{2})(\d{3})(\d{0,3})$/, '$1.$2.$3');
+  else if(d.length > 2) out = d.replace(/^(\d{2})(\d{0,3})$/, '$1.$2');
+  el.value = out;
 }
 
 /* Produtos que podem ser comprados: apresentação autorizada na aba Compras
@@ -19624,7 +19853,7 @@ function _cadRenderAba(aba){
       det = (it.setor||'')+(resumoApres?' · '+resumoApres:(it.unid?' · '+it.unid:''));
     }
     if(aba==='clientes')    det = it.contato||it.obs||'';
-    if(aba==='fornecedores')det = it.contato||it.obs||'';
+    if(aba==='fornecedores')det = [it.cnpj, it.contato, it.endereco].filter(Boolean).join(' · ') || it.obs || '';
 
     if((aba==='produtos' || aba==='clientes') && _cadModoUnificacao && _cadAbaUnificacao===aba){
       var marcado = _cadSelecionadosUnificacao.indexOf(idx)>-1;
@@ -19727,8 +19956,12 @@ function _cadMostrarForm(aba, dados){
     campos =
       '<div><label class="cad-inp-lbl">Nome</label>'
       +'<input class="cad-inp" id="cf-nome" placeholder="Nome do fornecedor" value="'+_escH(d.nome||'')+'"></div>'
+      +'<div><label class="cad-inp-lbl">CNPJ (opcional)</label>'
+      +'<input class="cad-inp" id="cf-cnpj" placeholder="00.000.000/0000-00" value="'+_escH(d.cnpj||'')+'" oninput="_cadFormatarCNPJInput(this)"></div>'
       +'<div><label class="cad-inp-lbl">Contato (opcional)</label>'
       +'<input class="cad-inp" id="cf-contato" placeholder="Telefone ou e-mail" value="'+_escH(d.contato||'')+'"></div>'
+      +'<div><label class="cad-inp-lbl">Endereço (opcional)</label>'
+      +'<input class="cad-inp" id="cf-endereco" placeholder="Endereço do fornecedor" value="'+_escH(d.endereco||'')+'"></div>'
       +'<div><label class="cad-inp-lbl">Observação (opcional)</label>'
       +'<input class="cad-inp" id="cf-obs" placeholder="Produtos fornecidos..." value="'+_escH(d.obs||'')+'"></div>';
   } else if(aba==='precos'){
@@ -20122,10 +20355,12 @@ async function _cadSalvarItem(aba){
     if(!item.nome){ _toast('\u26a0\ufe0f Informe o nome do cliente'); return; }
   } else if(aba==='fornecedores'){
     item = {
-      id:      'f'+Date.now(),
-      nome:    nome,
-      contato: (document.getElementById('cf-contato')||{value:''}).value.trim(),
-      obs:     (document.getElementById('cf-obs')||{value:''}).value.trim()
+      id:       'f'+Date.now(),
+      nome:     nome,
+      cnpj:     (document.getElementById('cf-cnpj')||{value:''}).value.trim(),
+      contato:  (document.getElementById('cf-contato')||{value:''}).value.trim(),
+      endereco: (document.getElementById('cf-endereco')||{value:''}).value.trim(),
+      obs:      (document.getElementById('cf-obs')||{value:''}).value.trim()
     };
     if(!item.nome){ _toast('\u26a0\ufe0f Informe o nome do fornecedor'); return; }
   } else if(aba==='precos'){
@@ -20238,7 +20473,7 @@ function _acMostrar(inputId, tipo, onSelect){
     var nm = it.nome||it.prodNome||'';
     var det = '';
     if(tipo==='produtos')     det = (it.setor?it.setor+' · ':'')+it.unid;
-    if(tipo==='fornecedores') det = it.contato||'';
+    if(tipo==='fornecedores') det = it.cnpj||it.contato||'';
     if(tipo==='clientes')     det = it.contato||'';
     if(tipo==='precos')       det = it.unid+' · R$ '+Number(it.preco||0).toFixed(2).replace('.',',');
     var hi = nm.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<b>$1</b>');
