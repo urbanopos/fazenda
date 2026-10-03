@@ -2456,11 +2456,11 @@
         "nome": "Frango Vivo",
         "col2": "Frango Vivo",
         "col1": "19/06/2026",
-        "col3": "5 ",
+        "col3": "5 unid",
         "col4": "R$ 35,00 x 5",
         "col5": "R$ 175,00",
         "qtd": 5,
-        "unidade": "",
+        "unidade": "unid",
         "preco": 35,
         "sub": 175,
         "data": "19/06/2026"
@@ -2469,7 +2469,7 @@
     "total": 875,
     "ts": 1781903180475,
     "pago": true,
-    "_editadoEm": 1791045979206
+    "_editadoEm": 1791046076944
   },
   {
     "num": "PED-0014",
