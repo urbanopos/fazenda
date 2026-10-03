@@ -918,7 +918,7 @@ body:has(#sec-compras.at) #contador{display:none}
 <!-- MODAL HISTORICO DE COLETAS (admin only) -->
 <div id="modal-hcol" onclick="fecharHistColeta()">
   <div class="hcol-box" onclick="event.stopPropagation()">
-    <div class="hcol-hd">
+    <div class="hcol-hd" id="hcol-hd-coletas">
       <div><div class="hcol-hd-t">Histórico de Coletas<span id="hcol-hd-setor" style="color:rgba(255,212,154,.85)"></span></div><div class="hcol-hd-s">Acesso restrito — Administrador</div></div>
       <button class="hcol-x" onclick="fecharHistColeta()">✕</button>
     </div>
@@ -965,9 +965,15 @@ body:has(#sec-compras.at) #contador{display:none}
 <!-- MODAL HISTORICO DE PEDIDOS -->
 <div id="modal-hist-pedidos" onclick="fecharHistPedidos()">
   <div class="hcol-box" onclick="event.stopPropagation()">
-    <div class="hcol-hd">
+    <div class="hcol-hd" style="background:#7a3a00">
       <div><div class="hcol-hd-t">Histórico de Pedidos</div><div class="hcol-hd-s">Acesso restrito — Administrador</div></div>
-      <button class="hcol-x" onclick="fecharHistPedidos()">✕</button>
+      <div style="display:flex;align-items:center;gap:16px">
+        <div style="text-align:right">
+          <div class="hcol-lbl" style="color:rgba(255,255,255,.6)">Valor</div>
+          <div id="hped-total" style="font-family:'DM Mono',monospace;font-size:20px;font-weight:800;color:#fff">R$ 0,00</div>
+        </div>
+        <button class="hcol-x" onclick="fecharHistPedidos()">✕</button>
+      </div>
     </div>
     <div class="hcol-filtros">
       <div>
@@ -985,10 +991,6 @@ body:has(#sec-compras.at) #contador{display:none}
           <option value="09">Setembro</option><option value="10">Outubro</option>
           <option value="11">Novembro</option><option value="12">Dezembro</option>
         </select>
-      </div>
-      <div>
-        <div class="hcol-lbl">Valor</div>
-        <div id="hped-total" style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:#7a3a00;padding:5px 0;min-width:90px">R$ 0,00</div>
       </div>
       <div>
         <div class="hcol-lbl">Visão</div>
@@ -1137,9 +1139,15 @@ body:has(#sec-compras.at) #contador{display:none}
 <!-- MODAL HISTÓRICO DE COMPRAS -->
 <div id="hcmp-modal" onclick="_cmpFecharHist()">
   <div class="hcol-box" onclick="event.stopPropagation()">
-    <div class="hcol-hd">
+    <div class="hcol-hd" style="background:#4b2e83">
       <div><div class="hcol-hd-t">Histórico de Compras</div><div class="hcol-hd-s">Acesso restrito — Administrador</div></div>
-      <button class="hcol-x" onclick="_cmpFecharHist()">✕</button>
+      <div style="display:flex;align-items:center;gap:16px">
+        <div style="text-align:right">
+          <div class="hcol-lbl" style="color:rgba(255,255,255,.6)">Valor</div>
+          <div id="hcmp-valor" style="font-family:'DM Mono',monospace;font-size:20px;font-weight:800;color:#fff">R$ 0,00</div>
+        </div>
+        <button class="hcol-x" onclick="_cmpFecharHist()">✕</button>
+      </div>
     </div>
     <div class="hcol-filtros">
       <div><div class="hcol-lbl">Ano</div><select class="hcol-sel" id="hcmp-ano" onchange="_cmpRenderHist()"></select></div>
@@ -1149,7 +1157,6 @@ body:has(#sec-compras.at) #contador{display:none}
         <option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
       <div><div class="hcol-lbl">Setor</div><select class="hcol-sel" id="hcmp-setor" onchange="_cmpRenderHist()"><option value="">Todos</option><option value="Aviario">Aviário</option><option value="Campo">Campo</option></select></div>
       <div><div class="hcol-lbl">Visão</div><select class="hcol-sel" id="hcmp-visao" onchange="_cmpRenderHist()"><option value="detalhe">Compras detalhadas</option><option value="total">Totalização por item</option></select></div>
-      <div><div class="hcol-lbl">Valor</div><div id="hcmp-valor" style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:#4b2e83;padding:6px 0">R$ 0,00</div></div>
       <div><div class="hcol-lbl">&nbsp;</div><button onclick="_cmpPdf()" style="padding:8px 14px;border:none;border-radius:var(--r);background:#4b2e83;color:#fff;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer">📄 Relatório</button></div>
     </div>
     <div class="hcol-body" id="hcmp-body"></div>
@@ -11553,7 +11560,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a10198609b9';
+var _caFP = '1a101a8a74eb';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -14051,6 +14058,20 @@ function _toggleFiltroAberto(){
   }
   _renderHist();
 }
+/* Nome/chave do cliente de um pedido, para agrupar e filtrar no Histórico
+   de Pedidos — usa o nome normalizado (sem diferenciar maiúsc./espaços) em
+   vez de só o clienteId, porque um mesmo cliente podia aparecer duas vezes
+   na lista de filtro quando só PARTE dos pedidos dele tinha o clienteId
+   preenchido (pedidos antigos, por exemplo): uma entrada pelo id resolvido,
+   outra pelo texto digitado — mesmo sendo visualmente o mesmo nome. Com o
+   nome normalizado como chave, as duas caem juntas numa única opção. */
+function _pedNomeCliente(p){
+  var cadastro = p.clienteId ? (_cadDados.clientes||[]).find(function(c){ return c.id===p.clienteId; }) : null;
+  return cadastro ? cadastro.nome : (p.cliente||'');
+}
+function _pedChaveCliente(p){
+  return 'n:' + _pedNomeCliente(p).trim().toLowerCase();
+}
 function _filtrarHist(hist){
   var ano = (document.getElementById('hped-ano')||{}).value||'';
   var mes = (document.getElementById('hped-mes')||{}).value||'';
@@ -14060,14 +14081,9 @@ function _filtrarHist(hist){
     if(ano && p.data.slice(0,4)!==ano) return false;
     if(mes && p.data.slice(5,7)!==mes) return false;
     // Mesma lógica de _renderHist: o filtro de cliente usa uma chave
-    // composta (id do cadastro quando disponível, senão o texto do nome)
-    // — comparar direto com p.cliente aqui nunca bateria, pois o valor
-    // selecionado no <select> é essa chave composta, não o nome puro.
-    if(cli){
-      var cadastroP = p.clienteId ? (_cadDados.clientes||[]).find(function(c){ return c.id===p.clienteId; }) : null;
-      var chaveP = cadastroP ? ('id:'+cadastroP.id) : ('n:'+(p.cliente||''));
-      if(chaveP !== cli) return false;
-    }
+    // composta (nome normalizado) — comparar direto com p.cliente aqui
+    // nunca bateria, pois o valor selecionado no <select> é essa chave.
+    if(cli && _pedChaveCliente(p) !== cli) return false;
     if(_filtroAbertoAtivo && p.pago) return false;
     return true;
   });
@@ -14107,20 +14123,17 @@ function _renderHist(){
     return true;
   });
 
-  // Popula select de clientes com os existentes no período — agrupa por
-  // clienteId quando disponível (referência estável ao cadastro), para que
-  // pedidos com o nome digitado de forma levemente diferente, mas do mesmo
-  // cliente cadastrado, caiam juntos no mesmo filtro. Registros antigos sem
-  // clienteId continuam agrupados pelo texto do nome, como já funcionava.
+  // Popula select de clientes com os existentes no período — agrupa pelo
+  // nome normalizado (ver _pedChaveCliente) para que um mesmo cliente nunca
+  // apareça duplicado na lista, mesmo quando só parte dos pedidos dele tem
+  // o clienteId preenchido (pedidos antigos, por exemplo).
   var selCli = document.getElementById('hped-cli');
   if(selCli){
     var vistosCli = {}, opcoesCli = [];
     filtradoAnoMes.forEach(function(p){
       if(!p.cliente) return;
-      var cadastro = p.clienteId ? (_cadDados.clientes||[]).find(function(c){ return c.id===p.clienteId; }) : null;
-      var chave = cadastro ? ('id:'+cadastro.id) : ('n:'+p.cliente);
-      var nomeExib = cadastro ? cadastro.nome : p.cliente;
-      if(!vistosCli[chave]){ vistosCli[chave]=true; opcoesCli.push({chave:chave, nome:nomeExib}); }
+      var chave = _pedChaveCliente(p);
+      if(!vistosCli[chave]){ vistosCli[chave]=true; opcoesCli.push({chave:chave, nome:_pedNomeCliente(p)}); }
     });
     opcoesCli.sort(function(a,b){ return a.nome.localeCompare(b.nome,'pt-BR'); });
     var cliAtual = selCli.value; // preserva seleção atual
@@ -14133,11 +14146,7 @@ function _renderHist(){
 
   // Aplica filtro de cliente e status (Em aberto)
   var filtrado = filtradoAnoMes.filter(function(p){
-    if(cli){
-      var cadastroP = p.clienteId ? (_cadDados.clientes||[]).find(function(c){ return c.id===p.clienteId; }) : null;
-      var chaveP = cadastroP ? ('id:'+cadastroP.id) : ('n:'+(p.cliente||''));
-      if(chaveP !== cli) return false;
-    }
+    if(cli && _pedChaveCliente(p) !== cli) return false;
     if(_filtroAbertoAtivo && p.pago) return false;
     return true;
   });
@@ -14872,11 +14881,7 @@ function _gerarRelatorioPedidosPDF(){
     return true;
   });
   var filtrado = filtradoAnoMes.filter(function(p){
-    if(cli){
-      var cadastroP = p.clienteId ? (_cadDados.clientes||[]).find(function(c){ return c.id===p.clienteId; }) : null;
-      var chaveP = cadastroP ? ('id:'+cadastroP.id) : ('n:'+(p.cliente||''));
-      if(chaveP !== cli) return false;
-    }
+    if(cli && _pedChaveCliente(p) !== cli) return false;
     if(_filtroAbertoAtivo && p.pago) return false;
     return true;
   });
@@ -15845,17 +15850,20 @@ function _atualizarBtnHistColetaTodos(){
     var NOMES_SETOR_TITULO = {Aviario:'AVIÁRIO', Perda:'PERDA', Campo:'CAMPO', Estoque:'ESTOQUE'};
     tSetor.textContent = input.value ? (' - '+(NOMES_SETOR_TITULO[input.value] || input.value.toUpperCase())) : '';
   }
-  // Botão "Relatório" ganha a cor própria do setor em foco — Aviário já usa
-  // o verde padrão do app (não tem cor própria diferente), então só muda
-  // quando o setor filtrado tiver uma cor determinante (Perda/Campo/Estoque).
-  // Sem filtro ("Todos os setores") também fica no verde padrão.
+  // Cabeçalho do modal e botão "Relatório" ganham a cor própria do setor em
+  // foco — Aviário já usa o verde/preto padrão do app (não tem cor própria
+  // diferente), então só muda quando o setor filtrado tiver uma cor
+  // determinante (Perda/Campo/Estoque). Sem filtro ("Todos os setores")
+  // também fica no padrão, já que nenhum setor é o determinante ali.
+  var CORES_SETOR_REL = {Perda:'#7f1d1d', Campo:'#3b5e2a', Estoque:'#1e3a5f'};
+  var corRel = CORES_SETOR_REL[input.value] || '';
   var btnRel = document.getElementById('hcol-btn-relatorio');
   if(btnRel){
-    var CORES_SETOR_REL = {Perda:'#7f1d1d', Campo:'#3b5e2a', Estoque:'#1e3a5f'};
-    var corRel = CORES_SETOR_REL[input.value] || '#1a6b2a';
-    btnRel.style.background = corRel;
-    btnRel.style.borderColor = corRel;
+    btnRel.style.background = corRel || '#1a6b2a';
+    btnRel.style.borderColor = corRel || '#1a6b2a';
   }
+  var hdColetas = document.getElementById('hcol-hd-coletas');
+  if(hdColetas) hdColetas.style.background = corRel || '';
   // Preenche a lista "Filtro" com todos os itens do catálogo habilitados
   // nesta aba — ao escolher um, a tela e o "Gerar PDF" passam a mostrar
   // só os eventos daquele item/produto (renderHistColeta() cuida disso).
