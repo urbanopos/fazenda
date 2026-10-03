@@ -11572,7 +11572,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a101b035b23';
+var _caFP = '1a101c938e53';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -16219,6 +16219,11 @@ function _reenviarColeta(ri){
   }, undefined, undefined, faixaSufixoColeta, r.data);
 }
 var _editColetaCtx = null; // {ts, editadoEm, ri} — versão que estava na tela quando o formulário abriu
+// Trocas de nome de item feitas durante esta edição (ex.: unificar um nome
+// antigo/divergente com o nome correto do cadastro) — usadas, ao salvar,
+// para oferecer corrigir o MESMO item (só o nome, nada mais) em outros
+// registros que ainda estejam com o nome antigo.
+var _pendentesRenomeColeta = [];
 
 function _buscarColetaPorTs(ts){
   var h = _carregarHistColetaRaw();
@@ -16227,6 +16232,7 @@ function _buscarColetaPorTs(ts){
 }
 
 async function _abrirEditColeta(ri){
+  _pendentesRenomeColeta = [];
   var body = document.getElementById('hcol-body');
   var regs = body._regRefs;
   if(!regs || !regs[ri]) return;
@@ -16408,7 +16414,7 @@ function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtua
     +'<span style="font-family:DM Mono,monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);flex-shrink:0">Setor (aba)</span>'
     +'<select class="hcol-edit-inp" style="flex:1;font-weight:700" id="hcol-ei-setor-'+ri+'-'+ii+'" onchange="_onMudarSetorEditColeta('+ri+','+ii+')">'+optsSetor+'</select>'
     +'</div>'
-    +'<select class="hcol-edit-inp" style="flex:1 1 100%;width:100%;font-size:16px;font-weight:800" id="hcol-ei-nome-'+ri+'-'+ii+'" onchange="_onMudarNomeEditColeta('+ri+','+ii+')">'+optsNome+'</select>'
+    +'<select class="hcol-edit-inp" style="flex:1 1 100%;width:100%;font-size:16px;font-weight:800" id="hcol-ei-nome-'+ri+'-'+ii+'" data-prev-nome="'+_esc(nomeAtual||'')+'" onchange="_onMudarNomeEditColeta('+ri+','+ii+')">'+optsNome+'</select>'
     +'<input class="hcol-edit-inp" style="width:70px;min-width:70px;flex:none" type="number" min="0" step="0.5" placeholder="Qtd" value="'+qtd+'" id="hcol-ei-qtd-'+ri+'-'+ii+'">'
     +'<button class="hcol-del-item" onclick="_delItemEditColeta('+ri+','+ii+')" title="Remover item">\u00d7</button>'
     +'</div>'
@@ -16447,6 +16453,13 @@ function _onMudarNomeEditColeta(ri, ii){
   if(!setorEl || !nomeEl) return;
   var rowWrap = nomeEl.closest('.hcol-item-edit-wrap');
   if(!rowWrap) return;
+  // Guarda a troca (nome antigo → nome novo) para, ao salvar, oferecer
+  // corrigir o mesmo item em outros registros — só o nome, nada mais.
+  var _nomeAnteriorColeta = nomeEl.getAttribute('data-prev-nome')||'';
+  var _nomeNovoColeta = nomeEl.value;
+  if(_nomeAnteriorColeta && _nomeNovoColeta && _nomeAnteriorColeta.toLowerCase()!==_nomeNovoColeta.toLowerCase()){
+    _pendentesRenomeColeta.push({de:_nomeAnteriorColeta, para:_nomeNovoColeta});
+  }
   var qtdEl = document.getElementById('hcol-ei-qtd-'+ri+'-'+ii);
   var qtd = qtdEl ? qtdEl.value : 0;
   var tipoEl = document.querySelector('input[name="hcol-ei-tipo-'+ri+'-'+ii+'"]:checked');
@@ -16624,6 +16637,51 @@ async function _salvarEditColeta(ri){
   _fecharEditColeta();
   renderHistColeta();
   // Publica já (sem esperar o ciclo automático) para o outro aparelho ler a versão nova
+  _sincronizarRegistrosGitHub();
+  if(_pendentesRenomeColeta.length){
+    var _renomesColeta = _pendentesRenomeColeta.slice();
+    _pendentesRenomeColeta = [];
+    _oferecerCorrigirColetas(_renomesColeta, reg.ts);
+  }
+}
+
+/* Depois de corrigir o nome de um item num registro, procura o MESMO nome
+   antigo em outros registros de Coletas/Estoque e oferece corrigir todos de
+   uma vez — só o campo nome; quantidade, unidade, preço, fornecedor e tipo
+   de cada registro ficam exatamente como estavam. */
+function _oferecerCorrigirColetas(renomes, tsAtual){
+  var mapa = {};
+  renomes.forEach(function(r){
+    if(!r.de || !r.para) return;
+    if(r.de.trim().toLowerCase()===r.para.trim().toLowerCase()) return;
+    mapa[r.de.trim().toLowerCase()] = {de:r.de, para:r.para};
+  });
+  var chaves = Object.keys(mapa);
+  if(!chaves.length) return;
+  var hist = _carregarHistColetaRaw();
+  var afetados = [];
+  hist.forEach(function(reg, idx){
+    if(reg._excluido || reg.ts===tsAtual) return;
+    var qtd = (reg.itens||[]).filter(function(it){ return mapa[(it.nome||'').trim().toLowerCase()]; }).length;
+    if(qtd) afetados.push({idx:idx, qtd:qtd});
+  });
+  if(!afetados.length) return;
+  var resumo = chaves.map(function(k){ return '"'+mapa[k].de+'" → "'+mapa[k].para+'"'; }).join('\n');
+  var totalItens = afetados.reduce(function(s,a){ return s+a.qtd; },0);
+  if(!confirm('Encontramos o mesmo item com nome antigo em outros '+afetados.length+' registro(s) ('+totalItens+' lançamento(s)):\n\n'+resumo+'\n\nCorrigir automaticamente o NOME desses itens nesses outros registros também?\n\n(Quantidade, unidade, preço, fornecedor e tipo de cada registro NÃO são alterados — só o nome, para fins de visualização e relatórios.)')) return;
+  afetados.forEach(function(a){
+    var reg = hist[a.idx];
+    reg.itens = (reg.itens||[]).map(function(it){
+      var m = mapa[(it.nome||'').trim().toLowerCase()];
+      return m ? Object.assign({}, it, {nome:m.para}) : it;
+    });
+    reg._editadoEm = Math.max(Date.now(), (reg._editadoEm||0)+1);
+  });
+  var json = JSON.stringify(hist);
+  try{ localStorage.setItem(CK, json); }catch(e){}
+  if(_caOpfs) _caOpfsSalvar(FSJ_COLETAS, json);
+  _toast('✅ Nome corrigido em '+afetados.length+' outro(s) registro(s)!');
+  renderHistColeta();
   _sincronizarRegistrosGitHub();
 }
 
@@ -16891,12 +16949,16 @@ function _abrirEditPedidoIdx(i){
 }
 
 var _pedEditBase = null; // {ts, editadoEm} da versão que estava na tela ao abrir a edição
+// Trocas de nome de item feitas durante esta edição — usadas, ao salvar,
+// para oferecer corrigir o MESMO item (só o nome) em outros pedidos.
+var _pendentesRenomePed = [];
 async function _abrirEditPedido(){
   if(!_pedAtual) return;
   var ef = document.getElementById('mp-edit-form');
   if(!ef) return;
   // Alterna
   if(ef.style.display !== 'none'){ ef.style.display='none'; ef.innerHTML=''; return; }
+  _pendentesRenomePed = [];
   // Busca a versão mais recente antes de editar (outro aparelho pode ter alterado)
   if(_ghToken()){
     _toast('🔃 Buscando a versão mais recente...');
@@ -16997,7 +17059,7 @@ function _nomeSelectHtml(ii, nomeAtual){
     return '<option value="'+_esc(n)+'"'+(n.toLowerCase()===nomeTrim.toLowerCase()?' selected':'')+'>'+_esc(n)+'</option>';
   }).join('');
   opts += '<option value="__outro__"'+(usarOutro?' selected':'')+'>+ Outro (digitar)...</option>';
-  return '<select class="mp-edit-inp" style="flex:1.4;min-width:0;'+(usarOutro?'display:none':'')+'" id="mpe-nome-'+ii+'" onchange="_onNomeSelChange('+ii+')">'+opts+'</select>'
+  return '<select class="mp-edit-inp" style="flex:1.4;min-width:0;'+(usarOutro?'display:none':'')+'" id="mpe-nome-'+ii+'" data-prev-nome="'+_esc(nomeTrim)+'" onchange="_onNomeSelChange('+ii+')">'+opts+'</select>'
     +'<input class="mp-edit-inp" style="flex:1.4;min-width:0;'+(usarOutro?'':'display:none')+'" id="mpe-nome-texto-'+ii+'" placeholder="Nome do item" value="'+(usarOutro?_esc(nomeTrim):'')+'" oninput="_atualizarUnidEditPed('+ii+')">';
 }
 
@@ -17015,12 +17077,17 @@ function _onNomeSelChange(ii){
     return;
   }
   _atualizarUnidEditPed(ii);
-  // Sugere o preço cadastrado da primeira apresentação encontrada
-  var unidEl = document.getElementById('mpe-unid-'+ii);
-  var precoEl = document.getElementById('mpe-preco-'+ii);
-  if(unidEl && precoEl){
-    var preco = _precoParaProdutoUnidade(sel.value, unidEl.value);
-    if(preco!=null){ precoEl.value = preco; _recalcSubEditPed(ii); }
+  // Na edição, o preço NÃO é sobrescrito automaticamente ao trocar o nome
+  // do item — fica a critério do administrador ajustá-lo manualmente,
+  // caso necessário (ex.: ao unificar itens de mesmo tipo com nomes
+  // antigos divergentes, sem alterar o valor já registrado no pedido).
+  // Guarda a troca (nome antigo → nome novo) para, ao salvar, oferecer
+  // corrigir o mesmo item em outros pedidos — só o nome, nada mais.
+  var _nomeAnteriorPed = sel.getAttribute('data-prev-nome')||'';
+  var _nomeNovoPed = sel.value;
+  if(_nomeAnteriorPed && _nomeNovoPed && _nomeAnteriorPed.toLowerCase()!==_nomeNovoPed.toLowerCase()){
+    _pendentesRenomePed.push({de:_nomeAnteriorPed, para:_nomeNovoPed});
+    sel.setAttribute('data-prev-nome', _nomeNovoPed);
   }
 }
 
@@ -17264,6 +17331,48 @@ async function _salvarEditPedido(){
   var ef = document.getElementById('mp-edit-form');
   if(ef){ ef.style.display='none'; ef.innerHTML=''; }
   _renderModalPedConteudo(_pedAtual);
+  _renderHist();
+  if(_pendentesRenomePed.length){
+    var _renomesPed = _pendentesRenomePed.slice();
+    _pendentesRenomePed = [];
+    await _oferecerCorrigirPedidos(_renomesPed, _pedAtual.ts);
+  }
+}
+
+/* Depois de corrigir o nome de um item num pedido, procura o MESMO nome
+   antigo em outros pedidos e oferece corrigir todos de uma vez — só o
+   nome; quantidade, unidade, preço e total de cada pedido ficam exatamente
+   como estavam. */
+async function _oferecerCorrigirPedidos(renomes, tsAtual){
+  var mapa = {};
+  renomes.forEach(function(r){
+    if(!r.de || !r.para) return;
+    if(r.de.trim().toLowerCase()===r.para.trim().toLowerCase()) return;
+    mapa[r.de.trim().toLowerCase()] = {de:r.de, para:r.para};
+  });
+  var chaves = Object.keys(mapa);
+  if(!chaves.length) return;
+  var hist = _carregarHistRaw();
+  var afetados = [];
+  hist.forEach(function(reg, idx){
+    if(reg._excluido || reg.ts===tsAtual) return;
+    var qtd = (reg.itens||[]).filter(function(it){ return mapa[(it.nome||'').trim().toLowerCase()]; }).length;
+    if(qtd) afetados.push({idx:idx, qtd:qtd});
+  });
+  if(!afetados.length) return;
+  var resumo = chaves.map(function(k){ return '"'+mapa[k].de+'" → "'+mapa[k].para+'"'; }).join('\n');
+  var totalItens = afetados.reduce(function(s,a){ return s+a.qtd; },0);
+  if(!confirm('Encontramos o mesmo item com nome antigo em outros '+afetados.length+' pedido(s) ('+totalItens+' lançamento(s)):\n\n'+resumo+'\n\nCorrigir automaticamente o NOME desses itens nesses outros pedidos também?\n\n(Quantidade, unidade, preço e total de cada pedido NÃO são alterados — só o nome, para fins de visualização e relatórios.)')) return;
+  afetados.forEach(function(a){
+    var reg = hist[a.idx];
+    reg.itens = (reg.itens||[]).map(function(it){
+      var m = mapa[(it.nome||'').trim().toLowerCase()];
+      return m ? Object.assign({}, it, {nome:m.para, col2:m.para}) : it;
+    });
+    reg._editadoEm = Math.max(Date.now(), (reg._editadoEm||0)+1);
+  });
+  await _gravarHist(hist);
+  _toast('✅ Nome corrigido em '+afetados.length+' outro(s) pedido(s)!');
   _renderHist();
 }
 
@@ -18353,6 +18462,9 @@ var GH_BCK_COMPRAS = 'backup/compras.json';
 var CMP_SETORES = [{v:'Aviario', t:'Aviário'}, {v:'Campo', t:'Campo'}];
 var _cmpItens = [];
 var _cmpEditTs = null; // ts da compra em edição (null = compra nova)
+// Trocas de nome de item feitas durante esta edição — usadas, ao salvar,
+// para oferecer corrigir o MESMO item (só o nome) em outras compras.
+var _pendentesRenomeCmp = [];
 
 function _cmpCarregarRaw(){ try{ return JSON.parse(localStorage.getItem(CMP_KEY)||'[]'); }catch(e){ return []; } }
 function _cmpCarregar(){ return _cmpCarregarRaw().filter(function(r){ return !r._excluido; }); }
@@ -18695,7 +18807,13 @@ function _cmpRender(){
 function _cmpSetProd(i, v){
   var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===v; });
   var it = _cmpItens[i];
+  var nomeAnteriorCmp = it.nome;
   it.prodId = v; it.nome = prod ? prod.nome : ''; it.apresId = ''; it.unid = ''; it.preco = 0; it.desconto = 0;
+  // Em edição: guarda a troca (nome antigo → nome novo) para, ao salvar,
+  // oferecer corrigir o mesmo item em outras compras — só o nome.
+  if(_cmpEditTs && nomeAnteriorCmp && it.nome && nomeAnteriorCmp.trim().toLowerCase()!==it.nome.trim().toLowerCase()){
+    _pendentesRenomeCmp.push({de:nomeAnteriorCmp, para:it.nome});
+  }
   var aps = _cmpApres(prod);
   if(aps.length) _cmpAplicarApres(it, aps[0]);
   _cmpRender();
@@ -18727,7 +18845,7 @@ function _cmpAtualizarTotal(){
   return t;
 }
 function _cmpLimpar(){
-  _cmpItens = []; _cmpEditTs = null;
+  _cmpItens = []; _cmpEditTs = null; _pendentesRenomeCmp = [];
   ['cmp-fornecedor','cmp-obs'].forEach(function(id){ var e = document.getElementById(id); if(e) e.value=''; });
   _cmpRenderFornecedores('');
   var r = document.getElementById('cmp-resp'); if(r) r.value = (localStorage.getItem('wpp_nome')||'').trim();
@@ -18801,6 +18919,11 @@ async function _cmpRegistrar(){
     _cmpEntradaEstoque(hist[idx]);
     await _cmpGravar(hist);
     _toast('✅ Compra '+hist[idx].num+' atualizada (Entrada no Estoque atualizada)!');
+    if(_pendentesRenomeCmp.length){
+      var _renomesCmp = _pendentesRenomeCmp.slice();
+      _pendentesRenomeCmp = [];
+      await _oferecerCorrigirCompras(_renomesCmp, hist[idx].ts);
+    }
   } else {
     var reg = {ts:Date.now(), num:_cmpProximoNum(), data:data, setor:setor, fornecedor:forn, responsavel:resp, obs:obs, itens:linhas, total:total};
     hist.unshift(reg);
@@ -18809,6 +18932,44 @@ async function _cmpRegistrar(){
     _toast('✅ Compra '+reg.num+' registrada e lançada como Entrada no Estoque!');
   }
   _cmpLimpar();
+}
+
+/* Depois de corrigir o nome de um item numa compra, procura o MESMO nome
+   antigo em outras compras e oferece corrigir todas de uma vez — só o
+   nome; quantidade, unidade, preço, desconto e total de cada compra ficam
+   exatamente como estavam (o produto/apresentação vinculados também não
+   são alterados nas outras compras). */
+async function _oferecerCorrigirCompras(renomes, tsAtual){
+  var mapa = {};
+  renomes.forEach(function(r){
+    if(!r.de || !r.para) return;
+    if(r.de.trim().toLowerCase()===r.para.trim().toLowerCase()) return;
+    mapa[r.de.trim().toLowerCase()] = {de:r.de, para:r.para};
+  });
+  var chaves = Object.keys(mapa);
+  if(!chaves.length) return;
+  var hist = _cmpCarregarRaw();
+  var afetados = [];
+  hist.forEach(function(reg, idx){
+    if(reg._excluido || reg.ts===tsAtual) return;
+    var qtd = (reg.itens||[]).filter(function(it){ return mapa[(it.nome||'').trim().toLowerCase()]; }).length;
+    if(qtd) afetados.push({idx:idx, qtd:qtd});
+  });
+  if(!afetados.length) return;
+  var resumo = chaves.map(function(k){ return '"'+mapa[k].de+'" → "'+mapa[k].para+'"'; }).join('\n');
+  var totalItens = afetados.reduce(function(s,a){ return s+a.qtd; },0);
+  if(!confirm('Encontramos o mesmo item com nome antigo em outras '+afetados.length+' compra(s) ('+totalItens+' lançamento(s)):\n\n'+resumo+'\n\nCorrigir automaticamente o NOME desses itens nessas outras compras também?\n\n(Quantidade, unidade, preço, desconto e total de cada compra NÃO são alterados — só o nome, para fins de visualização e relatórios.)')) return;
+  afetados.forEach(function(a){
+    var reg = hist[a.idx];
+    reg.itens = (reg.itens||[]).map(function(it){
+      var m = mapa[(it.nome||'').trim().toLowerCase()];
+      return m ? Object.assign({}, it, {nome:m.para}) : it;
+    });
+    reg._editadoEm = Math.max(Date.now(), (reg._editadoEm||0)+1);
+  });
+  await _cmpGravar(hist);
+  _toast('✅ Nome corrigido em '+afetados.length+' outra(s) compra(s)!');
+  _cmpRenderHist();
 }
 
 /* ── Histórico de Compras ── */
@@ -18940,6 +19101,7 @@ function _cmpToggleItem(btn, i){
 function _cmpEditar(ts){
   var r = _cmpCarregar().find(function(x){ return x.ts===ts; }); if(!r) return;
   _cmpEditTs = ts;
+  _pendentesRenomeCmp = [];
   _cmpItens = (r.itens||[]).map(function(it){ return {prodId:it.prodId, apresId:it.apresId||'', nome:it.nome, unid:it.unid, qtd:it.qtd, preco:it.preco, desconto:it.desconto||0}; });
   document.getElementById('cmp-setor').value = r.setor||'';
   _cmpRenderFornecedores(r.fornecedor||'');
@@ -20757,17 +20919,16 @@ async function _cadInit(){
 <div class="cad-painel vis" id="cad-p-produtos">
     <div class="cad-rodape" style="flex-direction:column;gap:8px;align-items:stretch">
       <button class="cad-btn-add" onclick="_cadNovoForm('produtos')">+ Novo produto</button>
-      <button class="cad-btn-add" style="background:#7a3a00" onclick="_cadToggleUnificacao('produtos')" id="btn-toggle-unificacao-produtos">🔗 Unificar produtos duplicados</button>
+      <!-- O botão "Unificar produtos duplicados" foi retirado: a correção de
+           nomes antigos/divergentes agora é feita direto nas telas de edição
+           de cada setor (Coletas/Pedidos/Compras), que já oferece corrigir
+           automaticamente o mesmo item em todos os outros registros. -->
       <button class="cad-btn-add" style="background:rgba(0,0,0,.08);color:var(--tx)" onclick="_cadFechar()">Voltar ao aplicativo</button>
     </div>
     <div class="cad-lista" id="cad-lista-produtos"></div>
     <div id="cad-form-produtos" style="display:none"></div>
     <div id="cad-vinculo-orfaos" style="display:none"></div>
     <div id="cad-revisao-catalogo" style="display:none"></div>
-    <div id="cad-unificacao-barra-produtos" style="display:none;position:sticky;bottom:0;background:#fff;border-top:2px solid #7a3a00;padding:10px;margin-top:8px">
-      <div style="font-size:11px;color:var(--mu);margin-bottom:6px" id="cad-unificacao-status-produtos">Selecione 2 ou mais produtos que sejam a mesma coisa</div>
-      <button class="cad-btn-add" style="background:#7a3a00" onclick="_cadUnificarSelecionados()" id="btn-unificar-confirmar-produtos" disabled>Unificar selecionados</button>
-    </div>
   </div>
   <!-- Clientes -->
   <div class="cad-painel" id="cad-p-clientes">
