@@ -2424,8 +2424,7 @@
         "unidade": "Unidade",
         "preco": 20,
         "sub": 200,
-        "data": "19/06/2026",
-        "prodId": "p_pintainha"
+        "data": "19/06/2026"
       },
       {
         "nome": "Pintainha",
@@ -2438,8 +2437,7 @@
         "unidade": "Unidade",
         "preco": 25,
         "sub": 125,
-        "data": "19/06/2026",
-        "prodId": "p_pintainha"
+        "data": "19/06/2026"
       },
       {
         "nome": "Pinto",
@@ -2452,27 +2450,26 @@
         "unidade": "Unidade",
         "preco": 25,
         "sub": 375,
-        "data": "19/06/2026",
-        "prodId": "p1789066563591_0"
+        "data": "19/06/2026"
       },
       {
         "nome": "Frango Vivo",
-        "col2": "Frango",
+        "col2": "Frango Vivo",
         "col1": "19/06/2026",
-        "col3": "5 Unidade",
+        "col3": "5 ",
         "col4": "R$ 35,00 x 5",
         "col5": "R$ 175,00",
         "qtd": 5,
-        "unidade": "Unidade",
+        "unidade": "",
         "preco": 35,
         "sub": 175,
-        "data": "19/06/2026",
-        "prodId": "p1787993157009"
+        "data": "19/06/2026"
       }
     ],
     "total": 875,
     "ts": 1781903180475,
-    "pago": true
+    "pago": true,
+    "_editadoEm": 1791045979206
   },
   {
     "num": "PED-0014",
