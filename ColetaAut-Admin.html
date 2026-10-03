@@ -1041,6 +1041,18 @@ body:has(#sec-compras.at) #contador{display:none}
   </div>
 </div>
 
+<!-- MODAL DETALHE DO ITEM (Histórico de Compras, celular — toque na quantidade
+     abre isto, já que a tela principal mostra só nome + apresentação) -->
+<div id="cmp-item-detalhe-modal" onclick="if(event.target===this) _cmpFecharItemDetalhe()" style="display:none;position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:12px;max-width:320px;width:100%;overflow:hidden" onclick="event.stopPropagation()">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #eee">
+      <strong id="cmp-item-detalhe-nome" style="font-size:14px;color:#333"></strong>
+      <button onclick="_cmpFecharItemDetalhe()" style="background:none;border:none;font-size:18px;cursor:pointer;color:#333">✕</button>
+    </div>
+    <div id="cmp-item-detalhe-corpo" style="padding:14px 18px;font-family:'DM Mono',monospace;font-size:13px;color:#333"></div>
+  </div>
+</div>
+
 <!-- MODAL VISUALIZACAO PEDIDO -->
 <div id="modal-ped" onclick="fecharModalPed()">
   <div class="mp-box" onclick="event.stopPropagation()">
@@ -11560,7 +11572,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a101a8a74eb';
+var _caFP = '1a101b035b23';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -12941,6 +12953,7 @@ var _navFechar = {
   'ca-setup'        : function(){ document.getElementById('ca-setup').classList.remove('vis'); },
   'guia-ios'        : fecharGuiaIos,
   'caf-scanner-modal' : _cafFecharScannerForn,
+  'cmp-item-detalhe-modal' : _cmpFecharItemDetalhe,
   'aba'             : function(){ trocarAba('aviario'); }
 };
 
@@ -18868,10 +18881,14 @@ function _cmpRenderHist(){
         +'<div class="hcol-entrada-hd"><span class="hcol-entrada-data">'+_cmpDataFmt(r.data)+' · '+_escH(r.num||'')+' · '+_escH(_cmpSetorTxt(r.setor))+'</span>'
         +'<span class="hcol-entrada-col">'+_escH(r.responsavel||'')+'</span></div>'
         +'<div style="font-family:DM Mono,monospace;font-size:11px;color:var(--mu);margin-bottom:6px">Fornecedor: <strong style="color:var(--tx)">'+_escH(r.fornecedor||'—')+'</strong></div>'
-        +(r.itens||[]).map(function(it){
-          return '<div class="hcol-entrada-item" style="display:flex;justify-content:space-between;gap:8px;padding:3px 0">'
-            +'<span style="font-weight:800">'+_escH(it.nome)+'</span>'
-            +'<span style="font-family:DM Mono,monospace;font-size:12px;text-align:right">'+_fmtNum(it.qtd)+' '+_escH(it.unid||'')+' × R$ '+_fmt(it.preco)+(it.desconto?' (desconto R$ '+_fmt(it.desconto)+')':'')+' = <strong>R$ '+_fmt(it.sub)+'</strong></span></div>';
+        // No celular, a tela principal mostra só nome + apresentação (preço e
+        // total sobrecarregavam o visor); a quantidade vira um link — ao
+        // tocar, abre uma telinha com quantidade, preço unitário e total
+        // daquele item (cmp-item-detalhe-modal).
+        +(r.itens||[]).map(function(it, ii){
+          return '<div class="hcol-entrada-item" style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:3px 0">'
+            +'<span style="font-weight:800">'+_escH(it.nome)+' <span style="font-weight:400;color:#999;font-size:11px">('+_escH(it.unid||'')+')</span></span>'
+            +'<span role="button" tabindex="0" onclick="_cmpAbrirItemDetalhe('+r.ts+','+ii+')" style="font-family:DM Mono,monospace;font-size:13px;font-weight:700;color:#4b2e83;text-decoration:underline;cursor:pointer;white-space:nowrap">'+_fmtNum(it.qtd)+'</span></div>';
         }).join('')
         +(r.obs?'<div style="font-size:12px;color:var(--mu);margin-top:4px">Obs.: '+_escH(r.obs)+'</div>':'')
         +'<div style="text-align:right;font-family:DM Mono,monospace;font-weight:700;color:#4b2e83;margin-top:6px">Total: R$ '+_fmt(r.total)+'</div>'
@@ -18882,6 +18899,30 @@ function _cmpRenderHist(){
   }
   h += '<div class="hcol-total"><span class="hcol-total-lbl">Total do período</span><span class="hcol-total-val">R$ '+_fmt(total)+'</span></div>';
   body.innerHTML = h;
+}
+/* Telinha com quantidade, preço unitário e total de um item de compra —
+   aberta ao tocar na quantidade (link) na visão "Compras detalhadas". */
+function _cmpAbrirItemDetalhe(ts, idx){
+  var r = _cmpCarregar().find(function(x){ return x.ts===ts; });
+  var it = r && r.itens && r.itens[idx];
+  if(!it) return;
+  document.getElementById('cmp-item-detalhe-nome').textContent = it.nome;
+  var linhas = [
+    ['Quantidade', _fmtNum(it.qtd)+' '+(it.unid||'')],
+    ['Preço unitário', 'R$ '+_fmt(it.preco)]
+  ];
+  if(it.desconto) linhas.push(['Desconto', 'R$ '+_fmt(it.desconto)]);
+  linhas.push(['Total', 'R$ '+_fmt(it.sub)]);
+  document.getElementById('cmp-item-detalhe-corpo').innerHTML = linhas.map(function(l){
+    return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0ece3"><span style="color:#999">'+_escH(l[0])+'</span><strong>'+_escH(l[1])+'</strong></div>';
+  }).join('');
+  document.getElementById('cmp-item-detalhe-modal').style.display = 'flex';
+  _navPush('cmp-item-detalhe-modal');
+}
+function _cmpFecharItemDetalhe(){
+  document.getElementById('cmp-item-detalhe-modal').style.display = 'none';
+  var idx = _navPilha.indexOf('cmp-item-detalhe-modal');
+  if(idx>=0){ _navPilha.splice(idx,1); history.replaceState({navSentinel:true},''); }
 }
 function _cmpToggleItem(btn, i){
   var t = (document.getElementById('hcmp-body')._cmpTot||[])[i]; if(!t) return;
