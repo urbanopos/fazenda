@@ -88,22 +88,31 @@
     {
       "id": "p_frango",
       "setor": "Vendas",
-      "nome": "Frango Abatido",
-      "unid": "Unid.",
+      "nome": "Frango",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Unid.",
           "preco": 50,
-          "id": "l_unid__2"
+          "id": "l_unid_"
         },
         {
           "unid": "Unid.",
           "preco": 50,
-          "id": "l_unid_"
+          "id": "l_unid__2"
         }
       ],
       "_excluido": true,
       "_excluidoEm": 1789469955251
+    },
+    {
+      "id": "p_pinto",
+      "setor": "Vendas",
+      "nome": "Pinto",
+      "unid": "",
+      "apresentacoes": [],
+      "_excluido": true,
+      "_excluidoEm": 1789469349387
     },
     {
       "id": "p_pintainha",
@@ -135,10 +144,38 @@
       "_editadoEm": 1790412551264
     },
     {
+      "id": "p_esterco",
+      "setor": "Vendas",
+      "nome": "Esterco de Boi",
+      "apresentacoes": [
+        {
+          "id": "amu2jtf0zeyp9y9",
+          "unid": "Saco",
+          "preco": 15,
+          "fornecedor": "Fazenda São José",
+          "_editadoEm": 1790412582265,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ]
+        },
+        {
+          "unid": "Sc.",
+          "preco": 15,
+          "fornecedor": "Fazenda São José",
+          "id": "l_sc_fazenda-sao-jose",
+          "_excluido": true,
+          "_excluidoEm": 1790412373720
+        }
+      ],
+      "_editadoEm": 1790412582265
+    },
+    {
       "id": "p_coco",
       "setor": "Vendas",
       "nome": "Coco Seco",
-      "unid": "Unid.",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Unid.",
@@ -167,7 +204,7 @@
       "id": "p_manga",
       "setor": "Vendas",
       "nome": "Manga",
-      "unid": "Caixa",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Caixa",
@@ -206,7 +243,7 @@
       "id": "p_abacate",
       "setor": "Vendas",
       "nome": "Abacate",
-      "unid": "Caixa",
+      "unid": "",
       "apresentacoes": [
         {
           "unid": "Caixa",
@@ -376,6 +413,12 @@
       "nome": "Pitomba",
       "apresentacoes": [
         {
+          "id": "amug9ln845id3qz",
+          "unid": "kg",
+          "preco": 0,
+          "fornecedor": "Fazenda São José"
+        },
+        {
           "unid": "kg",
           "preco": 0,
           "id": "l_kg__2"
@@ -482,6 +525,23 @@
             "Vendas"
           ],
           "id": "l_sc-40kg_"
+        },
+        {
+          "id": "amug9f25lyunk4e",
+          "unid": "sc 40kg",
+          "preco": 0,
+          "fornecedor": "IRCA",
+          "abas": [
+            "Campo",
+            "Estoque",
+            "Vendas"
+          ]
+        },
+        {
+          "id": "amug9fsrqhclosu",
+          "unid": "sc 40Kg",
+          "preco": 0,
+          "fornecedor": "Mauricéia"
         }
       ],
       "_editadoEm": 1790552564447
@@ -511,6 +571,12 @@
             "Estoque",
             "Compras"
           ]
+        },
+        {
+          "id": "amug9hb5p65gulo",
+          "unid": "sc 40kg",
+          "preco": 0,
+          "fornecedor": "IRCA"
         }
       ],
       "_editadoEm": 1790552509001
@@ -534,6 +600,18 @@
           "unid": "sc 40kg",
           "preco": 0,
           "id": "l_sc-40kg__2"
+        },
+        {
+          "id": "amug9gorfbfy02s",
+          "unid": "sc 40kg",
+          "preco": 0,
+          "fornecedor": "IRCA"
+        },
+        {
+          "id": "amug9gucivuue3i",
+          "unid": "sc 40kg",
+          "preco": 0,
+          "fornecedor": "Mauricéia"
         }
       ],
       "_editadoEm": 1790552561730
@@ -579,6 +657,21 @@
             "Estoque",
             "Compras"
           ]
+        },
+        {
+          "id": "amug9izqgsktu1a",
+          "unid": "sc 40kg",
+          "preco": 0,
+          "fornecedor": "IRCA",
+          "abas": [
+            "Estoque"
+          ]
+        },
+        {
+          "id": "amug9j2nppg9ap5",
+          "unid": "sc 40kg",
+          "preco": 0,
+          "fornecedor": "Mauricéia"
         }
       ],
       "_editadoEm": 1790552771235
@@ -619,6 +712,21 @@
           ],
           "id": "l_sc-40kg_",
           "_editadoEm": 1790552441017
+        },
+        {
+          "id": "amug9hpo6u3ul9c",
+          "unid": "sc 40kg",
+          "preco": 0,
+          "fornecedor": "IRCA",
+          "abas": [
+            "Estoque"
+          ]
+        },
+        {
+          "id": "amug9i8fdju1s8m",
+          "unid": "sc 40kg",
+          "preco": 0,
+          "fornecedor": "Mauricéia"
         }
       ],
       "_editadoEm": 1790552459722
@@ -710,6 +818,12 @@
             "Estoque",
             "Compras"
           ]
+        },
+        {
+          "id": "amug9kgp9vc7q1i",
+          "unid": "Sc 25kg",
+          "preco": 0,
+          "fornecedor": "IRCA"
         }
       ],
       "_editadoEm": 1790552555566
@@ -739,6 +853,12 @@
             "Estoque",
             "Compras"
           ]
+        },
+        {
+          "id": "amug9gd6hrsjpc4",
+          "unid": "Sc 40kg",
+          "preco": 0,
+          "fornecedor": "IRCA"
         }
       ],
       "_editadoEm": 1790552558835
@@ -808,53 +928,10 @@
       "_editadoEm": 1790412324560
     },
     {
-      "id": "p_esterco",
-      "setor": "Vendas",
-      "nome": "Esterco de Boi",
-      "apresentacoes": [
-        {
-          "id": "amu2jtf0zeyp9y9",
-          "unid": "Saco",
-          "preco": 15,
-          "fornecedor": "Fazenda São José",
-          "_editadoEm": 1790412582265,
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ]
-        },
-        {
-          "unid": "Sc.",
-          "preco": 15,
-          "fornecedor": "Fazenda São José",
-          "id": "l_sc_fazenda-sao-jose",
-          "_excluido": true,
-          "_excluidoEm": 1790412373720
-        }
-      ],
-      "_editadoEm": 1790412582265
-    },
-    {
       "id": "p1787993157009",
       "setor": "Vendas",
       "nome": "Frango Vivo",
       "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 50,
-          "abas": [
-            "Aviario",
-            "Perda",
-            "Vendas"
-          ],
-          "id": "l_unid__3"
-        },
-        {
-          "unid": "Unid.",
-          "preco": 50,
-          "id": "l_unid__4"
-        },
         {
           "unid": "Unid.",
           "preco": 50,
@@ -869,6 +946,21 @@
           "unid": "Unid.",
           "preco": 50,
           "id": "l_unid__2"
+        },
+        {
+          "unid": "Unid.",
+          "preco": 50,
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ],
+          "id": "l_unid__3"
+        },
+        {
+          "unid": "Unid.",
+          "preco": 50,
+          "id": "l_unid__4"
         }
       ],
       "_excluido": true,
@@ -947,7 +1039,7 @@
             "Aviario",
             "Vendas"
           ],
-          "id": "l_unid__2"
+          "id": "l_unid_"
         },
         {
           "unid": "unid",
@@ -956,20 +1048,11 @@
             "Aviario",
             "Vendas"
           ],
-          "id": "l_unid_"
+          "id": "l_unid__2"
         }
       ],
       "_excluido": true,
       "_excluidoEm": 1789469281439
-    },
-    {
-      "id": "p_pinto",
-      "setor": "Vendas",
-      "nome": "Pinto",
-      "unid": "",
-      "apresentacoes": [],
-      "_excluido": true,
-      "_excluidoEm": 1789469349387
     },
     {
       "id": "p1789868100584",
