@@ -58,18 +58,8 @@
           "abas": [
             "Vendas"
           ],
-          "_excluido": true
-        },
-        {
-          "id": "amu2kegk0ky06vh",
-          "unid": "Unid. Viva",
-          "preco": 50,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Aviario",
-            "Perda",
-            "Vendas"
-          ]
+          "_excluido": true,
+          "_excluidoEm": 1791073546585
         },
         {
           "id": "amu2kfc5yoera2u",
@@ -81,9 +71,20 @@
             "Vendas"
           ],
           "_editadoEm": 1790448990275
+        },
+        {
+          "id": "amu2kegk0ky06vh",
+          "unid": "Unid. Viva",
+          "preco": 50,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ]
         }
       ],
-      "_editadoEm": 1790448990275
+      "_editadoEm": 1791073546585
     },
     {
       "id": "p_frango",
