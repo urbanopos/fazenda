@@ -405,11 +405,11 @@
         "nome": "Galinha Abatida",
         "col2": "Galinha Abatida",
         "col1": "11/09/2026",
-        "col3": "7 Unid.",
+        "col3": "7 unid",
         "col4": "R$ 50,00 x 7",
         "col5": "R$ 350,00",
         "qtd": 7,
-        "unidade": "Unid.",
+        "unidade": "unid",
         "preco": 50,
         "sub": 350,
         "data": "11/09/2026"
@@ -470,7 +470,8 @@
     "total": 940,
     "ts": 1789126483115,
     "pago": true,
-    "dataQuit": "12/09/2026, 19:56:45"
+    "dataQuit": "12/09/2026, 19:56:45",
+    "_editadoEm": 1791073446687
   },
   {
     "num": "PED-0079",
