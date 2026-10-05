@@ -11652,7 +11652,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a10bc9b1c32';
+var _caFP = '1a10bdbe2780';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -19513,8 +19513,7 @@ var _resopPeriodos = [];
 var _resopPeriodoSel = null;
 var _resopRegime = 'caixa';
 var _resopIncluirPerdas = true;
-var _resopDetComprasAberto = false;
-var _resopDetPerdasAberto = false;
+var _resopDetAberto = {}; // chave -> bool; cada "total" tem sua própria lista de itens, recolhida por padrão
 
 function _resopFmt(n){ return 'R$ '+Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 
@@ -19572,30 +19571,34 @@ function _resopValorPedido(p){
   return (p.itens||[]).reduce(function(s,it){ return s+(it.sub!=null?Number(it.sub):(Number(it.qtd)||0)*(Number(it.preco)||0)); },0);
 }
 function _resopDadosPeriodo(periodoSel){
-  var compras = [], perdas = [], recebido = 0, aReceber = 0;
+  var compras = [], perdas = [], pedidosRecebidos = [], pedidosAReceber = [];
   (_cmpCarregarRaw()||[]).filter(function(r){ return !r._excluido; }).forEach(function(r){
     if((r.data||'').slice(0,7) !== periodoSel) return;
     (r.itens||[]).forEach(function(it){
-      compras.push({setor: r.setor==='Campo'?'Campo':'Aviário', nome: it.nome, qtd: Number(it.qtd)||0, preco: Number(it.preco)||0,
-        sub: it.sub!=null ? Number(it.sub) : (Number(it.qtd)||0)*(Number(it.preco)||0)});
+      var preco = Number(it.preco)||0;
+      compras.push({tipo:'compra', ts:r.ts, setor: r.setor==='Campo'?'Campo':'Aviário', nome: it.nome, qtd: Number(it.qtd)||0, preco: preco,
+        sub: it.sub!=null ? Number(it.sub) : (Number(it.qtd)||0)*preco, incompleto: !(preco>0)});
     });
   });
   (_carregarHistColeta()||[]).forEach(function(r){
     if((r.data||'').slice(0,7) !== periodoSel) return;
     (r.itens||[]).forEach(function(it){
       if(it.setor !== 'Perda') return;
-      perdas.push({setor:'Perda', nome: it.nome, qtd: Number(it.qtd)||0, preco: Number(it.preco)||0, sub: (Number(it.qtd)||0)*(Number(it.preco)||0)});
+      var preco = Number(it.preco)||0;
+      perdas.push({tipo:'perda', ts:r.ts, setor:'Perda', nome: it.nome, qtd: Number(it.qtd)||0, preco: preco, sub: (Number(it.qtd)||0)*preco, incompleto: !(preco>0)});
     });
   });
   (_carregarHist()||[]).forEach(function(p){
     var valor = _resopValorPedido(p);
     if(p.pago){
-      if(_resopPeriodoDeDataQuit(p) === periodoSel) recebido += valor;
+      if(_resopPeriodoDeDataQuit(p) === periodoSel) pedidosRecebidos.push({ts:p.ts, num:p.num||'', cliente:p.cliente||'', valor:valor, status:'Pago', incompleto: !(valor>0)});
     } else {
-      if((p.data||'').slice(0,7) === periodoSel) aReceber += valor;
+      if((p.data||'').slice(0,7) === periodoSel) pedidosAReceber.push({ts:p.ts, num:p.num||'', cliente:p.cliente||'', valor:valor, status:'A receber', incompleto: !(valor>0)});
     }
   });
-  return {recebido:recebido, aReceber:aReceber, compras:compras, perdas:perdas};
+  var recebido = pedidosRecebidos.reduce(function(s,x){ return s+x.valor; },0);
+  var aReceber = pedidosAReceber.reduce(function(s,x){ return s+x.valor; },0);
+  return {recebido:recebido, aReceber:aReceber, compras:compras, perdas:perdas, pedidosRecebidos:pedidosRecebidos, pedidosAReceber:pedidosAReceber};
 }
 /* Só mostra no seletor um mês que realmente tem movimentação (Compras,
    Perda, Pedido pago/a receber ou uma parcela de lançamento, mesmo que o
@@ -19664,10 +19667,25 @@ function _resopRemoverLancamento(ts){
   _resopSalvarHist(hist);
   _resopPopularPeriodos(true); _resopAtualizarTela();
 }
-function _resopToggleDet(qual){
-  if(qual==='compras') _resopDetComprasAberto = !_resopDetComprasAberto;
-  else _resopDetPerdasAberto = !_resopDetPerdasAberto;
+function _resopToggleDet(chave){
+  _resopDetAberto[chave] = !_resopDetAberto[chave];
   _resopAtualizarTela();
+}
+/* Links de "corrigir" para itens com dado faltante (sem preço/valor) —
+   fecham o RESOP e abrem a tela/registro exato onde o dado é preenchido. */
+function _resopIrCorrigirCompra(ts){
+  _janelaFechar('jan-resop');
+  trocarAba('compras');
+  _cmpEditar(ts);
+  _toast('Complete o preço do item e salve a compra.');
+}
+function _resopIrCorrigirPerda(ts){
+  _janelaFechar('jan-resop');
+  _abrirEditColetaPorTs(ts);
+}
+function _resopIrCorrigirPedido(ts){
+  _janelaFechar('jan-resop');
+  _abrirPedidoPorTs(ts);
 }
 function _resopTogglePerdas(chk){
   _resopIncluirPerdas = !!chk.checked;
@@ -19721,10 +19739,65 @@ function _resopTagSetor(setor){
   var cor = setor==='Perda' ? '#7f1d1d' : (setor==='Campo' ? '#3b5e2a' : (setor==='Aviário' ? '#1c2e22' : '#6b655b'));
   return '<span class="resop-tag-setor" style="background:'+cor+'">'+_escH(setor)+'</span>';
 }
+function _resopFmtData(d){ var p=String(d||'').split('-'); return p.length===3 ? p[2]+'/'+p[1]+'/'+p[0] : (d||''); }
+/* Toda vez que um total soma vários itens, este bloco lista cada item que
+   o compõe; se o item estiver com dado faltante (sem preço/valor), mostra
+   um link que leva direto ao registro para completar a informação. */
 function _resopDetalheItensHtml(lista){
   return lista.map(function(it){
-    return '<div class="resop-det-item"><span class="nome">'+_resopTagSetor(it.setor)+_escH(it.nome)+'<small>'+it.qtd+' × '+_resopFmt(it.preco)+'</small></span><span class="val">'+_resopFmt(it.sub)+'</span></div>';
+    var linkHtml = '';
+    if(it.incompleto){
+      var fn = it.tipo==='compra' ? '_resopIrCorrigirCompra' : '_resopIrCorrigirPerda';
+      linkHtml = ' · <a href="javascript:void(0)" onclick="event.stopPropagation();'+fn+'('+it.ts+')" style="color:#b0342a;font-weight:700;text-decoration:underline">⚠ sem preço · corrigir</a>';
+    }
+    return '<div class="resop-det-item"><span class="nome">'+_resopTagSetor(it.setor)+_escH(it.nome)+'<small>'+it.qtd+' × '+_resopFmt(it.preco)+linkHtml+'</small></span><span class="val">'+_resopFmt(it.sub)+'</span></div>';
   }).join('') || '<div class="resop-det-item"><span class="nome" style="color:var(--mu)">Nenhum item neste mês</span></div>';
+}
+function _resopDetalhePedidosHtml(lista){
+  return lista.map(function(p){
+    var linkHtml = '';
+    if(p.incompleto){
+      linkHtml = ' · <a href="javascript:void(0)" onclick="event.stopPropagation();_resopIrCorrigirPedido('+p.ts+')" style="color:#b0342a;font-weight:700;text-decoration:underline">⚠ sem valor · corrigir</a>';
+    }
+    return '<div class="resop-det-item"><span class="nome">'+_escH(p.num)+' · '+_escH(p.cliente||'(sem cliente)')+'<small>'+_escH(p.status)+linkHtml+'</small></span><span class="val">'+_resopFmt(p.valor)+'</span></div>';
+  }).join('') || '<div class="resop-det-item"><span class="nome" style="color:var(--mu)">Nenhum pedido neste mês</span></div>';
+}
+function _resopDetalheLancHtml(lista){
+  return (lista||[]).map(function(it){
+    return '<div class="resop-det-item"><span class="nome">'+_escH(it.desc||'(sem descrição)')+'<small>'+_resopFmtData(it.data)+'</small></span><span class="val">'+_resopFmt(it.valor)+'</span></div>';
+  }).join('') || '<div class="resop-det-item"><span class="nome" style="color:var(--mu)">Nenhum lançamento neste mês</span></div>';
+}
+/* Linha de total com toggle "▸/▾" que revela a lista de itens que a compõe */
+function _resopLinhaToggle(chave, labelHtml, valorFmt, detHtml, subtotal){
+  var aberto = !!_resopDetAberto[chave];
+  return '<div><div class="resop-toggle'+(aberto?' on':'')+'" onclick="_resopToggleDet(\''+chave+'\')">'
+    +'<span class="resop-linha-lbl"'+(subtotal?' style="font-weight:700"':'')+'>'+labelHtml+'</span>'
+    +'<span style="display:flex;align-items:center;gap:6px"><span class="resop-linha-val"'+(subtotal?' style="font-size:16px"':'')+'>'+valorFmt+'</span><span class="chev">▸</span></span></div>'
+    +'<div class="resop-det'+(aberto?' vis':'')+'">'+detHtml+'</div></div>';
+}
+/* ---- Estoque — referência: para venda (Aviário/Campo, produção já
+   coletada) × para consumo (Estoque, ração/insumo comprado) — saldo atual,
+   só pra consulta; não entra em Receita, Custo nem Gargalos do RESOP. Não
+   reusa _invSaldos() porque ela só sabe preencher o catálogo "zerado" de
+   Aviário/Campo; aqui listamos só quem já tem saldo, para qualquer setor. */
+function _resopSaldoSetor(setorLabel){
+  var h = _histComSaidas(_carregarHistColeta(), _carregarHist(), _cadDados.produtos);
+  var bal = {};
+  h.forEach(function(r){ (r.itens||[]).forEach(function(it){
+    if(it.setor!==setorLabel || it.tipo==='Inventario') return;
+    var k = _sdNorm(it.nome);
+    if(!bal[k]) bal[k] = {nome:it.nome, unid:it.unid||''};
+    bal[k].unid = it.unid || bal[k].unid;
+    bal[k].saldo = (bal[k].saldo||0) + (it.tipo==='Saida' ? -1 : 1)*(Number(it.qtd)||0);
+  }); });
+  return Object.keys(bal).map(function(k){ bal[k].saldo = Math.round((bal[k].saldo||0)*1000)/1000; return bal[k]; })
+    .filter(function(b){ return b.saldo>0; })
+    .sort(function(a,b){ return a.nome.localeCompare(b.nome,'pt-BR',{sensitivity:'base',numeric:true}); });
+}
+function _resopDetalheSaldoHtml(lista){
+  return lista.map(function(it){
+    return '<div class="resop-det-item"><span class="nome">'+_escH(it.nome)+'</span><span class="val">'+_pdfQtd(it.saldo)+' '+_escH(it.unid||'')+'</span></div>';
+  }).join('') || '<div class="resop-det-item"><span class="nome" style="color:var(--mu)">Nenhum item em estoque</span></div>';
 }
 function _resopGargalosHtml(porCodigo, totalGeral){
   var itens = Object.keys(porCodigo).map(function(k){ return porCodigo[k]; }).filter(function(x){ return x.valor>0; });
@@ -19734,10 +19807,14 @@ function _resopGargalosHtml(porCodigo, totalGeral){
     var pct = max>0 ? (it.valor/max*100) : 0;
     var pctTotal = totalGeral>0 ? (it.valor/totalGeral*100) : 0;
     var corGrupo = it.grupo==='custo' ? '#4b2e83' : RESOP_COR_GRUPO[it.grupo];
+    var chave = 'garg:'+it.chave;
+    var aberto = !!_resopDetAberto[chave];
+    var detHtml = it.grupo==='custo' ? _resopDetalheItensHtml(it.itens||[]) : _resopDetalheLancHtml(it.itens||[]);
     return '<div class="resop-garg-row">'
-      +'<div class="resop-garg-top"><span class="nome"><span class="resop-grupo-pill '+it.grupo+'">'+_escH(RESOP_NOME_GRUPO[it.grupo]||'Custo')+'</span>'+_escH(it.id)+' · '+_escH(it.nome)+'</span>'
-      +'<span class="val">'+_resopFmt(it.valor)+' <span style="color:var(--mu);font-weight:400">('+pctTotal.toFixed(0)+'%)</span></span></div>'
+      +'<div class="resop-garg-top" style="cursor:pointer" onclick="_resopToggleDet(\''+chave+'\')"><span class="nome"><span class="resop-grupo-pill '+it.grupo+'">'+_escH(RESOP_NOME_GRUPO[it.grupo]||'Custo')+'</span>'+_escH(it.id)+' · '+_escH(it.nome)+'</span>'
+      +'<span class="val">'+_resopFmt(it.valor)+' <span style="color:var(--mu);font-weight:400">('+pctTotal.toFixed(0)+'%)</span> <span class="chev" style="font-size:10px">'+(aberto?'▾':'▸')+'</span></span></div>'
       +'<div class="resop-garg-trilha"><div class="resop-garg-bar" style="width:'+pct+'%;background:'+corGrupo+'"></div></div>'
+      +'<div class="resop-det'+(aberto?' vis':'')+'">'+detHtml+'</div>'
       +'</div>';
   }).join('') || '<div style="font-size:12px;color:var(--mu)">Nenhum custo lançado neste mês.</div>';
 }
@@ -19748,6 +19825,8 @@ function _resopHtmlCompleto(){
   var mesesDoAno = _resopPeriodos.filter(function(p){ return p.slice(0,4)===anoSel; }).map(function(p){ return p.slice(5,7); });
 
   var d = _resopDadosPeriodo(_resopPeriodoSel);
+  var estoqueVenda = _resopSaldoSetor('Aviario').concat(_resopSaldoSetor('Campo'));
+  var estoqueConsumo = _resopSaldoSetor('Estoque');
   var totalVendido = d.recebido + d.aReceber;
   var comprasVal = d.compras.reduce(function(s,it){ return s+it.sub; },0);
   var perdasVal = d.perdas.reduce(function(s,it){ return s+it.sub; },0);
@@ -19755,8 +19834,8 @@ function _resopHtmlCompleto(){
   var subCusto = comprasVal + perdasUsadas;
 
   var porCodigo = {
-    'CUSTO-RACAO': {id:'CUSTO-RACAO', nome:'Ração e insumos', grupo:'custo', valor:comprasVal},
-    'CUSTO-PERDA': {id:'CUSTO-PERDA', nome:'Perdas valorizadas', grupo:'custo', valor:perdasUsadas}
+    'CUSTO-RACAO': {id:'CUSTO-RACAO', nome:'Ração e insumos', grupo:'custo', valor:comprasVal, chave:'CUSTO-RACAO', itens:d.compras},
+    'CUSTO-PERDA': {id:'CUSTO-PERDA', nome:'Perdas valorizadas', grupo:'custo', valor:perdasUsadas, chave:'CUSTO-PERDA', itens:_resopIncluirPerdas?d.perdas:[]}
   };
   var lancamentos = _resopCarregar().slice().sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
   var subLanc = 0;
@@ -19767,8 +19846,9 @@ function _resopHtmlCompleto(){
     if(c<=0) return;
     subLanc += c;
     var key = l.grupo+':'+l.codigo;
-    if(!porCodigo[key]) porCodigo[key] = {id:l.codigo, nome:_resopNomeCodigo(l.grupo,l.codigo), grupo:l.grupo, valor:0};
+    if(!porCodigo[key]) porCodigo[key] = {id:l.codigo, nome:_resopNomeCodigo(l.grupo,l.codigo), grupo:l.grupo, valor:0, chave:key, itens:[]};
     porCodigo[key].valor += c;
+    porCodigo[key].itens.push({desc:l.desc, data:l.data, valor:c});
   });
   var totalCusto = subCusto + subLanc;
   var base = _resopRegime==='caixa' ? d.recebido : totalVendido;
@@ -19784,24 +19864,28 @@ function _resopHtmlCompleto(){
     +'</div>'
 
     +'<div class="resop-card"><div class="resop-card-hd"><span class="resop-card-tt" style="color:#7a3a00">Receitas</span><span class="resop-card-sub">Pedidos / Vendas</span></div>'
-      +'<div class="resop-linha"><span class="resop-linha-lbl">Recebido<small>pedidos pagos, pela data do pagamento</small></span><span class="resop-linha-val">'+_resopFmt(d.recebido)+'</span></div>'
-      +'<div class="resop-linha"><span class="resop-linha-lbl">A receber<small>pedidos ainda não pagos, pela data do pedido</small></span><span class="resop-linha-val">'+_resopFmt(d.aReceber)+'</span></div>'
+      +_resopLinhaToggle('recebido', 'Recebido<small>pedidos pagos, pela data do pagamento</small>', _resopFmt(d.recebido), _resopDetalhePedidosHtml(d.pedidosRecebidos))
+      +_resopLinhaToggle('areceber', 'A receber<small>pedidos ainda não pagos, pela data do pedido</small>', _resopFmt(d.aReceber), _resopDetalhePedidosHtml(d.pedidosAReceber))
       +'<div class="resop-sep"></div>'
-      +'<div class="resop-subtotal"><span class="resop-linha-lbl">Total vendido no mês</span><span class="resop-linha-val">'+_resopFmt(totalVendido)+'</span></div>'
+      +_resopLinhaToggle('totalvendido', 'Total vendido no mês', _resopFmt(totalVendido), _resopDetalhePedidosHtml(d.pedidosRecebidos.concat(d.pedidosAReceber)), true)
+    +'</div>'
+
+    +'<div class="resop-card"><div class="resop-card-hd"><span class="resop-card-tt" style="color:#1c2e22">Estoque <span class="resop-grupo-pill" style="background:#e9f4ec;color:#1c2e22;margin-left:4px">referência</span></span><span class="resop-card-sub">não entra em Receita nem Custo</span></div>'
+      +'<div class="resop-nota">Saldo atual (hoje), só para consulta — separado em para venda (produção) e para consumo (ração), pra não misturar os dois.</div>'
+      +_resopLinhaToggle('estvenda', 'Para venda <small>Aviário/Campo — produção já coletada, ainda não vendida</small>', estoqueVenda.length+' item(ns)', _resopDetalheSaldoHtml(estoqueVenda))
+      +_resopLinhaToggle('estconsumo', 'Para consumo <small>Estoque — ração/insumo comprado, pode ou não ser vendido</small>', estoqueConsumo.length+' item(ns)', _resopDetalheSaldoHtml(estoqueConsumo))
     +'</div>'
 
     +'<div class="resop-card"><div class="resop-card-hd"><span class="resop-card-tt" style="color:#4b2e83">Custo <span class="resop-grupo-pill custo" style="margin-left:4px">automático</span></span><span class="resop-card-sub">Compras / Perdas</span></div>'
-      +'<div><div class="resop-toggle'+(_resopDetComprasAberto?' on':'')+'" onclick="_resopToggleDet(\'compras\')">'
-        +'<span class="resop-linha-lbl">CUSTO-RACAO · Ração e insumos<small>vem de Compras, pela data da compra</small></span>'
-        +'<span style="display:flex;align-items:center;gap:6px"><span class="resop-linha-val">'+_resopFmt(comprasVal)+'</span><span class="chev">▸</span></span></div>'
-        +'<div class="resop-det'+(_resopDetComprasAberto?' vis':'')+'">'+_resopDetalheItensHtml(d.compras)+'</div></div>'
+      +_resopLinhaToggle('compras', 'CUSTO-RACAO · Ração e insumos<small>vem de Compras, pela data da compra</small>', _resopFmt(comprasVal), _resopDetalheItensHtml(d.compras))
       +'<label style="display:flex;align-items:center;gap:9px;padding:8px 10px;background:#f6e3e3;border-radius:8px;cursor:pointer">'
         +'<input type="checkbox" style="width:17px;height:17px;accent-color:#7f1d1d;flex:none" '+(_resopIncluirPerdas?'checked':'')+' onchange="_resopTogglePerdas(this)">'
         +'<span style="font-size:12px;color:var(--tx);flex:1;min-width:0">CUSTO-PERDA · Perdas valorizadas<br><small style="color:var(--mu);font-weight:400">itens de Perda, pelo preço cadastrado</small></span>'
         +'<span class="resop-linha-val" style="font-size:13px">'+_resopFmt(perdasVal)+'</span></label>'
-      +'<div class="resop-det'+(_resopDetPerdasAberto?' vis':'')+'" style="margin-top:-6px">'+_resopDetalheItensHtml(d.perdas)+'</div>'
+      +'<div style="display:flex;justify-content:flex-end;margin-top:-6px"><button type="button" onclick="_resopToggleDet(\'perdas\')" style="background:none;border:none;color:var(--mu);font-size:11px;cursor:pointer;text-decoration:underline">'+(_resopDetAberto.perdas?'▾ ocultar itens':'▸ ver itens')+'</button></div>'
+      +'<div class="resop-det'+(_resopDetAberto.perdas?' vis':'')+'" style="margin-top:-6px">'+_resopDetalheItensHtml(d.perdas)+'</div>'
       +'<div class="resop-sep"></div>'
-      +'<div class="resop-subtotal"><span class="resop-linha-lbl">Subtotal Custo</span><span class="resop-linha-val">'+_resopFmt(subCusto)+'</span></div>'
+      +_resopLinhaToggle('subcusto', 'Subtotal Custo', _resopFmt(subCusto), _resopDetalheItensHtml(d.compras.concat(_resopIncluirPerdas?d.perdas:[])), true)
     +'</div>'
 
     +'<div class="resop-card"><div class="resop-card-hd"><span class="resop-card-tt" style="color:#8a4a1c">Despesas e Investimentos</span><span class="resop-card-sub">lançados por código</span></div>'
@@ -19946,7 +20030,7 @@ function _invAbrir(setorLabel){
   var itens = _invSaldos(setorLabel);
   window._invItens = itens; window._invSetor = setorLabel;
   var nomeSetor = setorLabel==='Aviario' ? 'Aviário' : 'Campo';
-  _janelaAbrir('jan-inv', '📦 Inventário — '+nomeSetor, 'Contagem física: o saldo passa a ser o contado',
+  _janelaAbrir('jan-inv', '📦 Inventário — '+nomeSetor, 'Estoque PARA VENDA (produção) — contagem física: o saldo passa a ser o contado. Não se confunde com o estoque de ração (Compras/Estoque).',
     '<div style="font-size:12px;line-height:1.5;margin-bottom:10px">Informe a quantidade <strong>contada</strong> de cada item nesta data. '
     +'O app lança automaticamente o ajuste (entrada ou saída) = contado − saldo calculado. Deixe em branco o que não foi contado.</div>'
     +'<div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:10px"><div><div class="hcol-lbl">Data da contagem</div>'
@@ -20047,7 +20131,7 @@ function _verAbrir(){
     var k = it.setor+'|'+it.nome; bal[k] = bal[k] || {setor:it.setor, nome:it.nome, unid:it.unid, s:0};
     bal[k].s += (it.tipo==='Saida'?-1:1)*(Number(it.qtd)||0);
   }); });
-  grupo('Saldos negativos em Aviário/Campo', 'Vendeu/perdeu mais do que foi coletado — normalmente falta o saldo inicial. Faça um inventário (contagem) do item.',
+  grupo('Saldos negativos em Aviário/Campo (estoque para venda)', 'Vendeu/perdeu mais do que foi coletado — normalmente falta o saldo inicial. Faça um inventário (contagem) do item.',
     Object.keys(bal).filter(function(k){ return bal[k].s < 0; }).sort().map(function(k){ var b = bal[k];
       return (b.setor==='Aviario'?'Aviário':'Campo')+' · <strong>'+_escH(b.nome)+'</strong>: '+_pdfQtd(b.s)+' '+_escH(b.unid||'')+' <button class="ver-btn" onclick="_janelaFechar(\'jan-ver\');_invAbrir(\''+b.setor+'\')">Inventário</button>'; }));
 
