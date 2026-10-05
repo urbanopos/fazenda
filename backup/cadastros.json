@@ -579,13 +579,13 @@
       "apresentacoes": [
         {
           "unid": "sc 40kg",
-          "preco": 0,
+          "preco": 108.21,
           "abas": [
             "Estoque",
             "Compras"
           ],
           "id": "l_sc-40kg_",
-          "_editadoEm": 1790552561730
+          "_editadoEm": 1791223665849
         },
         {
           "unid": "sc 40kg",
@@ -605,7 +605,7 @@
           "fornecedor": "Mauricéia"
         }
       ],
-      "_editadoEm": 1790552561730
+      "_editadoEm": 1791223665849
     },
     {
       "id": "p1789066571054_0",
