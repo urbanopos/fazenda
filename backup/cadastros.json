@@ -46,19 +46,61 @@
       "_editadoEm": 1790562565387
     },
     {
+      "id": "p_galinha",
+      "setor": "Vendas",
+      "nome": "Galinha",
+      "apresentacoes": [
+        {
+          "id": "amu2kcsk9kdfvro",
+          "unid": "Unid.",
+          "preco": 60,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Vendas"
+          ],
+          "_excluido": true,
+          "_excluidoEm": 1791073546585
+        },
+        {
+          "id": "amu2kfc5yoera2u",
+          "unid": "Unid. Abatida",
+          "preco": 60,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Aviario",
+            "Vendas"
+          ],
+          "_editadoEm": 1791073627011
+        },
+        {
+          "id": "amu2kegk0ky06vh",
+          "unid": "Unid. Viva",
+          "preco": 50,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ]
+        }
+      ],
+      "_editadoEm": 1791073627011
+    },
+    {
       "id": "p_frango",
       "setor": "Vendas",
       "nome": "Frango Abatido",
+      "unid": "Unid.",
       "apresentacoes": [
         {
           "unid": "Unid.",
           "preco": 50,
-          "id": "l_unid_"
+          "id": "l_unid__2"
         },
         {
           "unid": "Unid.",
           "preco": 50,
-          "id": "l_unid__2"
+          "id": "l_unid_"
         }
       ],
       "_excluido": true,
@@ -97,7 +139,18 @@
       "id": "p_coco",
       "setor": "Vendas",
       "nome": "Coco Seco",
+      "unid": "Unid.",
       "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 2,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_unid_"
+        },
         {
           "unid": "Unid.",
           "preco": 2.5,
@@ -108,16 +161,6 @@
             "Vendas"
           ],
           "id": "l_unid_fazenda-sao-jose"
-        },
-        {
-          "unid": "Unid.",
-          "preco": 2,
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_unid_"
         }
       ]
     },
@@ -125,7 +168,18 @@
       "id": "p_manga",
       "setor": "Vendas",
       "nome": "Manga",
+      "unid": "Caixa",
       "apresentacoes": [
+        {
+          "unid": "Caixa",
+          "preco": 0,
+          "id": "l_caixa_"
+        },
+        {
+          "unid": "unid",
+          "preco": 0,
+          "id": "l_unid_"
+        },
         {
           "unid": "Caixa",
           "preco": 65,
@@ -146,16 +200,6 @@
             "Vendas"
           ],
           "id": "l_unid_fazenda-sao-jose"
-        },
-        {
-          "unid": "Caixa",
-          "preco": 0,
-          "id": "l_caixa_"
-        },
-        {
-          "unid": "unid",
-          "preco": 0,
-          "id": "l_unid_"
         }
       ]
     },
@@ -163,7 +207,28 @@
       "id": "p_abacate",
       "setor": "Vendas",
       "nome": "Abacate",
+      "unid": "Caixa",
       "apresentacoes": [
+        {
+          "unid": "Caixa",
+          "preco": 0,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_caixa_"
+        },
+        {
+          "unid": "unid",
+          "preco": 0,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_unid_"
+        },
         {
           "unid": "Caixa",
           "preco": 90,
@@ -185,26 +250,6 @@
             "Vendas"
           ],
           "id": "l_unid_fazenda-sao-jose"
-        },
-        {
-          "unid": "Caixa",
-          "preco": 0,
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_caixa_"
-        },
-        {
-          "unid": "unid",
-          "preco": 0,
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_unid_"
         }
       ]
     },
@@ -212,7 +257,13 @@
       "id": "p1787993055897",
       "setor": "Vendas",
       "nome": "Galinha Viva",
+      "unid": "Unid.",
       "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 50,
+          "id": "l_unid_"
+        },
         {
           "unid": "Unid.",
           "preco": 50,
@@ -223,87 +274,10 @@
             "Vendas"
           ],
           "id": "l_unid_fazenda-sao-jose"
-        },
-        {
-          "unid": "Unid.",
-          "preco": 50,
-          "id": "l_unid_"
         }
       ],
       "_excluido": true,
       "_excluidoEm": 1789470234199
-    },
-    {
-      "id": "p1787993157009",
-      "setor": "Vendas",
-      "nome": "Frango Vivo",
-      "apresentacoes": [
-        {
-          "unid": "Unid.",
-          "preco": 50,
-          "abas": [
-            "Aviario",
-            "Perda",
-            "Vendas"
-          ],
-          "id": "l_unid_"
-        },
-        {
-          "unid": "Unid.",
-          "preco": 50,
-          "id": "l_unid__2"
-        },
-        {
-          "unid": "Unid.",
-          "preco": 50,
-          "abas": [
-            "Aviario",
-            "Perda",
-            "Vendas"
-          ],
-          "id": "l_unid__3"
-        },
-        {
-          "unid": "Unid.",
-          "preco": 50,
-          "id": "l_unid__4"
-        }
-      ],
-      "_excluido": true,
-      "_excluidoEm": 1789469258838
-    },
-    {
-      "id": "p1789066563591_0",
-      "setor": "Aviario",
-      "nome": "Pinto",
-      "apresentacoes": [
-        {
-          "unid": "Unid",
-          "preco": 8,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Aviario",
-            "Perda",
-            "Vendas",
-            "Compras"
-          ],
-          "id": "l_unid_fazenda-sao-jose",
-          "_editadoEm": 1790553262200
-        },
-        {
-          "unid": "unid",
-          "preco": 0,
-          "id": "l_unid_",
-          "_editadoEm": 1790553280383,
-          "abas": [
-            "Aviario",
-            "Perda",
-            "Estoque",
-            "Compras"
-          ]
-        }
-      ],
-      "_editadoEm": 1790553280383
     },
     {
       "id": "p1789066565373_0",
@@ -366,6 +340,16 @@
         {
           "unid": "Cacho",
           "preco": 0,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_cacho_"
+        },
+        {
+          "unid": "Cacho",
+          "preco": 0,
           "fornecedor": "Fazenda São José",
           "abas": [
             "Perda",
@@ -384,16 +368,6 @@
             "Vendas"
           ],
           "id": "l_cacho_fazenda-sao-jose_2"
-        },
-        {
-          "unid": "Cacho",
-          "preco": 0,
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_cacho_"
         }
       ]
     },
@@ -405,17 +379,17 @@
         {
           "unid": "kg",
           "preco": 0,
+          "id": "l_kg__2"
+        },
+        {
+          "unid": "kg",
+          "preco": 0,
           "abas": [
             "Perda",
             "Campo",
             "Vendas"
           ],
           "id": "l_kg_"
-        },
-        {
-          "unid": "kg",
-          "preco": 0,
-          "id": "l_kg__2"
         },
         {
           "id": "amug9ln845id3qz",
@@ -433,6 +407,16 @@
         {
           "unid": "Cacho",
           "preco": 0,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_cacho_"
+        },
+        {
+          "unid": "Cacho",
+          "preco": 0,
           "fornecedor": "Fazenda São José",
           "abas": [
             "Perda",
@@ -440,16 +424,6 @@
             "Vendas"
           ],
           "id": "l_cacho_fazenda-sao-jose"
-        },
-        {
-          "unid": "Cacho",
-          "preco": 0,
-          "abas": [
-            "Perda",
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_cacho_"
         }
       ]
     },
@@ -461,21 +435,21 @@
         {
           "unid": "Unid.",
           "preco": 0,
+          "abas": [
+            "Campo",
+            "Vendas"
+          ],
+          "id": "l_unid_"
+        },
+        {
+          "unid": "Unid.",
+          "preco": 0,
           "fornecedor": "Fazenda São José",
           "abas": [
             "Campo",
             "Vendas"
           ],
           "id": "l_unid_fazenda-sao-jose"
-        },
-        {
-          "unid": "Unid.",
-          "preco": 0,
-          "abas": [
-            "Campo",
-            "Vendas"
-          ],
-          "id": "l_unid_"
         }
       ]
     },
@@ -820,106 +794,72 @@
       "_editadoEm": 1791223440621
     },
     {
-      "id": "p1789066562691_0",
-      "setor": "Aviario",
-      "nome": "Frango",
+      "id": "p1789066579200_0",
+      "setor": "Estoque",
+      "nome": "Ração de Gado",
       "apresentacoes": [
         {
-          "id": "amu2k1qtsbdryzl",
-          "unid": "Unid.",
-          "preco": 50,
-          "fornecedor": "Fazenda São José",
+          "unid": "Sc 40kg",
+          "preco": 91.21,
+          "fornecedor": "IRCA",
           "abas": [
-            "Aviario",
-            "Perda",
-            "Vendas"
+            "Estoque",
+            "Compras"
           ],
-          "_excluido": true
+          "id": "l_sc-40kg_irca",
+          "_editadoEm": 1791223504921
         },
         {
-          "id": "amu2k4a6nqk0dro",
-          "unid": "Unid. Viva",
-          "preco": 45,
-          "fornecedor": "Fazenda São José",
+          "unid": "Sc 40kg",
+          "preco": 0,
+          "id": "l_sc-40kg_",
+          "_editadoEm": 1790552541080,
           "abas": [
-            "Aviario",
-            "Perda",
-            "Vendas"
+            "Estoque",
+            "Compras"
           ]
         },
         {
-          "id": "amu2k6f20gb7odl",
-          "unid": "Unid. Abatida",
-          "preco": 50,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Vendas"
-          ]
+          "id": "amug9gd6hrsjpc4",
+          "unid": "Sc 40kg",
+          "preco": 0,
+          "fornecedor": "IRCA"
         }
       ],
-      "_excluido": true,
-      "_excluidoEm": 1791021548464,
-      "_editadoEm": 1791021548465
+      "_editadoEm": 1791223504921
     },
     {
-      "id": "p_galinha",
-      "setor": "Vendas",
-      "nome": "Galinha",
+      "id": "p1789066563591_0",
+      "setor": "Aviario",
+      "nome": "Pinto",
       "apresentacoes": [
         {
-          "id": "amu2kcsk9kdfvro",
-          "unid": "Unid.",
-          "preco": 60,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Vendas"
-          ],
-          "_excluido": true,
-          "_excluidoEm": 1791073546585
-        },
-        {
-          "id": "amu2kfc5yoera2u",
-          "unid": "Unid. Abatida",
-          "preco": 60,
-          "fornecedor": "Fazenda São José",
-          "abas": [
-            "Aviario",
-            "Vendas"
-          ],
-          "_editadoEm": 1791073627011
-        },
-        {
-          "id": "amu2kegk0ky06vh",
-          "unid": "Unid. Viva",
-          "preco": 50,
+          "unid": "Unid",
+          "preco": 8,
           "fornecedor": "Fazenda São José",
           "abas": [
             "Aviario",
             "Perda",
-            "Vendas"
+            "Vendas",
+            "Compras"
+          ],
+          "id": "l_unid_fazenda-sao-jose",
+          "_editadoEm": 1790553262200
+        },
+        {
+          "unid": "unid",
+          "preco": 0,
+          "id": "l_unid_",
+          "_editadoEm": 1790553280383,
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Estoque",
+            "Compras"
           ]
         }
       ],
-      "_editadoEm": 1791073627011
-    },
-    {
-      "id": "p1789184203486",
-      "setor": "Aviario",
-      "nome": "Esterco de Galinha",
-      "apresentacoes": [
-        {
-          "unid": "Saco",
-          "preco": 15,
-          "abas": [
-            "Aviario",
-            "Perda",
-            "Vendas"
-          ],
-          "id": "l_saco_",
-          "_editadoEm": 1790625027044
-        }
-      ],
-      "_editadoEm": 1790625027044
+      "_editadoEm": 1790553280383
     },
     {
       "id": "p1789199978544_0",
@@ -981,6 +921,106 @@
       "_editadoEm": 1790412582265
     },
     {
+      "id": "p1787993157009",
+      "setor": "Vendas",
+      "nome": "Frango Vivo",
+      "apresentacoes": [
+        {
+          "unid": "Unid.",
+          "preco": 50,
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ],
+          "id": "l_unid__3"
+        },
+        {
+          "unid": "Unid.",
+          "preco": 50,
+          "id": "l_unid__4"
+        },
+        {
+          "unid": "Unid.",
+          "preco": 50,
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ],
+          "id": "l_unid_"
+        },
+        {
+          "unid": "Unid.",
+          "preco": 50,
+          "id": "l_unid__2"
+        }
+      ],
+      "_excluido": true,
+      "_excluidoEm": 1789469258838
+    },
+    {
+      "id": "p1789066562691_0",
+      "setor": "Aviario",
+      "nome": "Frango",
+      "apresentacoes": [
+        {
+          "id": "amu2k1qtsbdryzl",
+          "unid": "Unid.",
+          "preco": 50,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ],
+          "_excluido": true
+        },
+        {
+          "id": "amu2k4a6nqk0dro",
+          "unid": "Unid. Viva",
+          "preco": 45,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ]
+        },
+        {
+          "id": "amu2k6f20gb7odl",
+          "unid": "Unid. Abatida",
+          "preco": 50,
+          "fornecedor": "Fazenda São José",
+          "abas": [
+            "Vendas"
+          ]
+        }
+      ],
+      "_excluido": true,
+      "_excluidoEm": 1791021548464,
+      "_editadoEm": 1791021548465
+    },
+    {
+      "id": "p1789184203486",
+      "setor": "Aviario",
+      "nome": "Esterco de Galinha",
+      "apresentacoes": [
+        {
+          "unid": "Saco",
+          "preco": 15,
+          "abas": [
+            "Aviario",
+            "Perda",
+            "Vendas"
+          ],
+          "id": "l_saco_",
+          "_editadoEm": 1790625027044
+        }
+      ],
+      "_editadoEm": 1790625027044
+    },
+    {
       "id": "p1789066561642_0",
       "setor": "Aviario",
       "nome": "Galinha Viva",
@@ -992,7 +1032,7 @@
             "Aviario",
             "Vendas"
           ],
-          "id": "l_unid_"
+          "id": "l_unid__2"
         },
         {
           "unid": "unid",
@@ -1001,7 +1041,7 @@
             "Aviario",
             "Vendas"
           ],
-          "id": "l_unid__2"
+          "id": "l_unid_"
         }
       ],
       "_excluido": true,
@@ -1015,41 +1055,6 @@
       "apresentacoes": [],
       "_excluido": true,
       "_excluidoEm": 1789469349387
-    },
-    {
-      "id": "p1789066579200_0",
-      "setor": "Estoque",
-      "nome": "Ração de Gado",
-      "apresentacoes": [
-        {
-          "unid": "Sc 40kg",
-          "preco": 91.21,
-          "fornecedor": "IRCA",
-          "abas": [
-            "Estoque",
-            "Compras"
-          ],
-          "id": "l_sc-40kg_irca",
-          "_editadoEm": 1791223504921
-        },
-        {
-          "unid": "Sc 40kg",
-          "preco": 0,
-          "id": "l_sc-40kg_",
-          "_editadoEm": 1790552541080,
-          "abas": [
-            "Estoque",
-            "Compras"
-          ]
-        },
-        {
-          "id": "amug9gd6hrsjpc4",
-          "unid": "Sc 40kg",
-          "preco": 0,
-          "fornecedor": "IRCA"
-        }
-      ],
-      "_editadoEm": 1791223504921
     },
     {
       "id": "p1789868100584",
