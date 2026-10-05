@@ -451,6 +451,82 @@ input[type="password"]:-webkit-autofill{
 .ca-menu-sub{font-size:11px;color:var(--mu);margin-top:1px}
 .ca-menu-sep{height:1px;background:#eee;margin:4px 0}
 .ca-menu-item.danger .ca-menu-nm{color:#a03030}
+/* ── RESOP · Resultado Operacional (exclusiva dos Apps Admin) ── */
+.resop-wrap{display:flex;flex-direction:column;gap:14px}
+.resop-periodo{display:flex;gap:8px}
+.resop-periodo select{flex:1;min-width:0;font-family:'DM Mono',monospace;font-size:13px;font-weight:500;padding:10px 10px;border-radius:8px;border:1px solid var(--ce);background:var(--br);color:var(--tx)}
+.resop-card{background:var(--br);border:1px solid var(--ce);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.resop-card-hd{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.resop-card-tt{font-family:'DM Mono',monospace;font-weight:700;font-size:12.5px;letter-spacing:.6px;text-transform:uppercase}
+.resop-card-sub{font-size:11px;color:var(--mu)}
+.resop-linha{display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0}
+.resop-linha-lbl{font-size:13px;color:var(--tx);min-width:0}
+.resop-linha-lbl small{display:block;font-size:10.5px;color:var(--mu);font-weight:400;margin-top:1px}
+.resop-linha-val{font-family:'DM Mono',monospace;font-size:14.5px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.resop-sep{height:1px;background:var(--ce);margin:2px 0}
+.resop-subtotal{display:flex;align-items:baseline;justify-content:space-between;padding-top:4px}
+.resop-subtotal .resop-linha-lbl{font-weight:700}
+.resop-subtotal .resop-linha-val{font-size:16px}
+.resop-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:2px 0}
+.resop-toggle .chev{font-size:11px;color:var(--mu);transition:transform .15s}
+.resop-toggle.on .chev{transform:rotate(90deg)}
+.resop-det{display:none;flex-direction:column;gap:5px;padding:8px 10px;background:var(--cr);border-radius:8px;margin-top:2px}
+.resop-det.vis{display:flex}
+.resop-det-item{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:11.5px}
+.resop-det-item .nome{color:var(--tx);min-width:0}
+.resop-det-item .nome small{display:block;color:var(--mu);font-size:10px}
+.resop-det-item .val{font-family:'DM Mono',monospace;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+.resop-tag-setor{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;padding:1px 5px;border-radius:4px;margin-right:5px;color:#fff}
+.resop-grupo-pill{display:inline-flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:12px}
+.resop-grupo-pill.despesa{background:#f3e4d6;color:#8a4a1c}
+.resop-grupo-pill.investimento{background:#dfecee;color:#2d5a63}
+.resop-grupo-pill.custo{background:#ece6f5;color:#4b2e83}
+.resop-lanc-lista{display:flex;flex-direction:column;gap:8px}
+.resop-lanc-item{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:9px 10px;background:var(--cr);border-radius:8px}
+.resop-lanc-item select,.resop-lanc-item input[type=text],.resop-lanc-item input[type=date]{font-family:inherit;font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid var(--ce);background:var(--br);color:var(--tx)}
+.resop-lanc-item select.grupo-sel{font-family:'DM Mono',monospace;font-weight:700;font-size:10.5px;width:118px}
+.resop-lanc-item select.cod-sel{flex:1;min-width:120px}
+.resop-lanc-item input[type=text]{flex:1;min-width:110px}
+.resop-lanc-item input[type=date]{width:128px;font-family:'DM Mono',monospace;font-size:11px}
+.resop-lanc-item input[type=number]{width:84px;font-family:'DM Mono',monospace;font-size:12px;padding:6px 7px;border-radius:6px;border:1px solid var(--ce);background:var(--br);color:var(--tx);text-align:right}
+.resop-lanc-item .meses-wrap{display:flex;align-items:center;gap:4px;font-size:10.5px;color:var(--mu);font-family:'DM Mono',monospace}
+.resop-lanc-item .meses-wrap input{width:40px;font-family:'DM Mono',monospace;font-size:11px;padding:5px 5px;border-radius:5px;border:1px solid var(--ce);background:var(--br);color:var(--tx);text-align:center}
+.resop-lanc-item button.rm{flex:none;width:26px;height:26px;border-radius:6px;border:1px solid var(--ce);background:var(--br);color:#b0342a;font-size:14px;cursor:pointer;line-height:1}
+.resop-lanc-contrib{width:100%;font-size:10px;color:var(--mu);font-family:'DM Mono',monospace}
+.resop-btn-add{align-self:flex-start;font-family:'DM Mono',monospace;font-size:11.5px;font-weight:700;color:#8a4a1c;background:none;border:1.5px dashed #8a4a1c;border-radius:8px;padding:7px 12px;cursor:pointer}
+.resop-nota{font-size:10.5px;color:var(--mu);line-height:1.5}
+.resop-garg-row{display:flex;flex-direction:column;gap:3px}
+.resop-garg-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:12px}
+.resop-garg-top .nome{display:flex;align-items:center;gap:6px;min-width:0}
+.resop-garg-top .val{font-family:'DM Mono',monospace;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.resop-garg-trilha{height:7px;border-radius:4px;background:var(--ce);overflow:hidden}
+.resop-garg-bar{height:100%;border-radius:4px}
+.resop-segmento{display:flex;border:1px solid var(--ce);border-radius:8px;overflow:hidden}
+.resop-segmento button{flex:1;padding:8px 6px;border:none;background:var(--br);color:var(--mu);font-family:'DM Mono',monospace;font-size:10.5px;font-weight:700;cursor:pointer;letter-spacing:.2px}
+.resop-segmento button.sel{background:var(--vd);color:#fff}
+.resop-resultado-num{font-family:'DM Mono',monospace;font-weight:700;font-size:34px;line-height:1;font-variant-numeric:tabular-nums;text-align:center;padding:4px 0}
+.resop-resultado-num.pos{color:#1a6b2a}
+.resop-resultado-num.neg{color:#b0342a}
+.resop-resultado-tag{text-align:center;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase}
+.resop-resultado-tag.pos{color:#1a6b2a}
+.resop-resultado-tag.neg{color:#b0342a}
+.resop-resultado-formula{text-align:center;font-size:11px;color:var(--mu)}
+.resop-ajuda-btn{flex:none;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--ac);background:var(--br);color:var(--ac);font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.resop-ajuda-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);align-items:flex-end;justify-content:center;z-index:9900}
+.resop-ajuda-ov.vis{display:flex}
+.resop-ajuda-painel{width:100%;max-width:480px;max-height:78vh;overflow-y:auto;background:var(--br);border-radius:16px 16px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px))}
+.resop-ajuda-hd{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+.resop-ajuda-hd .tt{font-family:'DM Serif Display',serif;font-size:16px;color:var(--vd)}
+.resop-ajuda-hd button{flex:none;border:none;background:var(--cr);border-radius:8px;width:28px;height:28px;font-size:15px;color:var(--mu);cursor:pointer}
+.resop-ajuda-grupo-tt{font-family:'DM Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;margin:12px 0 6px}
+.resop-ajuda-cod{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--ce);font-size:12.5px}
+.resop-ajuda-cod:last-child{border-bottom:none}
+.resop-ajuda-cod code{font-family:'DM Mono',monospace;font-weight:700;font-size:11px;white-space:nowrap}
+.resop-ajuda-cod span{color:var(--mu)}
+.resop-enquadra{display:flex;align-items:center;gap:8px;padding:9px 10px;background:var(--cr);border-radius:8px;flex-wrap:wrap}
+.resop-enquadra .nome{flex:1;min-width:120px;font-size:12.5px}
+.resop-enquadra .nome small{display:block;color:var(--mu);font-size:10px}
+.resop-enquadra select{font-family:'DM Mono',monospace;font-size:11px;padding:6px 7px;border-radius:6px;border:1px solid var(--ce);background:var(--br);color:var(--tx);flex:none;max-width:168px}
 /* Versão / Desbloquear */
 .ca-ver-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(184,148,63,.15);border:1px solid rgba(184,148,63,.4);border-radius:6px;padding:5px 10px;font-family:'DM Mono',monospace;font-size:10px;color:var(--ac);margin:8px 16px 0;cursor:pointer}
 /* Conf overlay */
@@ -703,6 +779,10 @@ body:has(#sec-compras.at) #contador{display:none}
     <button class="ca-menu-item" onclick="_cadAbrir();_caFecharMenu()">
       <div class="ca-menu-ico" style="background:#e8f4e0">📚</div>
       <div><div class="ca-menu-nm">Cadastros</div><div class="ca-menu-sub">Produtos, clientes, fornecedores, apresentação</div></div>
+    </button>
+    <button class="ca-menu-item" onclick="_caFecharMenu();_resopAbrir()">
+      <div class="ca-menu-ico" style="background:#e9f4ec">📊</div>
+      <div><div class="ca-menu-nm">RESOP · Resultado Operacional</div><div class="ca-menu-sub">Balanço do mês: receitas, custos, despesas e investimentos</div></div>
     </button>
     <button class="ca-menu-item" onclick="_caFecharMenu();_verAbrir()">
       <div class="ca-menu-ico" style="background:#fbf4e2">🩺</div>
@@ -11572,7 +11652,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a101c938e53';
+var _caFP = '1a10bc9b1c32';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -12872,6 +12952,10 @@ async function _iniciar(){
     try{
       var rcp = await _caOpfsLer(FSJ_COMPRAS);
       if(rcp) try{ localStorage.setItem(CMP_KEY, rcp); }catch(e){}
+    }catch(e){}
+    try{
+      var rresop0 = await _caOpfsLer(FSJ_RESOP);
+      if(rresop0) try{ localStorage.setItem(RESOP_KEY, rresop0); }catch(e){}
     }catch(e){}
     await _catalogoCarregarOPFS();
   }
@@ -17964,6 +18048,19 @@ async function _sincronizarAgora(manual){
       houveMudanca = true;
     }
 
+    // RESOP — lançamentos manuais de Despesa/Investimento (Custo é sempre
+    // recalculado a partir de Compras/Coletas, não precisa de arquivo próprio)
+    var rresop = await _syncArquivo(GH_BCK_RESOP, _resopCarregarRaw, _mesclarRegistros,
+      async function(merge, json){
+        try{ localStorage.setItem(RESOP_KEY, json); }catch(e){}
+        if(_caOpfs) await _caOpfsSalvar(FSJ_RESOP, json);
+      }, 'Sincronizacao automatica (resop)');
+    if(rresop.mudouLocal){
+      var jr = document.getElementById('jan-resop');
+      if(jr && jr.classList.contains('vis')){ _resopPopularPeriodos(true); _resopAtualizarTela(); }
+      houveMudanca = true;
+    }
+
     // Cadastros (Produtos, Clientes, Fornecedores, Preços) — mescla por id;
     // a versão editada mais recentemente de cada item vence.
     var rcad = await _syncArquivo(GH_BCK_CADASTROS,
@@ -18238,12 +18335,13 @@ async function executarReset(){
     try{ await _caOpfsSalvar(FSJ_PEDIDOS, '[]'); }catch(e){}
     try{ await _caOpfsSalvar(FSJ_CAD,     JSON.stringify({produtos:[],clientes:[],fornecedores:[],precos:[]})); }catch(e){}
     try{ await _caOpfsSalvar(FSJ_HIST,    '[]'); }catch(e){}
+    try{ await _caOpfsSalvar(FSJ_RESOP,   '[]'); }catch(e){}
     // Apaga também admin.caut se existir (coletas importadas pelo Admin)
     try{ await _caOpfsSalvar(FSJ_ADMIN,   ''); }catch(e){}
   }
   // Apagar localStorage
   [CK, HK, 'ca_cad', 'ca_chist', 'fsj_hist_coleta', 'fsj_hist_pedido',
-   'fsj_hist_coletas', 'fsj_hist_pedidos', 'fsj_pedido_num', NK].forEach(function(k){
+   'fsj_hist_coletas', 'fsj_hist_pedidos', 'fsj_pedido_num', NK, RESOP_KEY].forEach(function(k){
     try{ localStorage.removeItem(k); }catch(e){}
   });
   // Reinicia contadores em memória
@@ -19375,12 +19473,396 @@ function _janelaFechar(id, doVoltar){
   if(!doVoltar){ var i = _navPilha.indexOf(id); if(i>=0){ _navPilha.splice(i,1); history.replaceState({navSentinel:true},''); } }
 }
 
+/* ═══ RESOP · Resultado Operacional (aba exclusiva dos Apps Admin) ═══
+   Coleta de verdade os registros já existentes (Compras, Perda dentro das
+   Coletas, Pedidos) e os enquadra no demonstrativo mensal. Enquadramento
+   automático por REGRA FIXA (decidido com o administrador): todo item de
+   Compra entra em CUSTO-RACAO; todo item de Perda entra em CUSTO-PERDA —
+   sem precisar escolher nada no registro. Despesas e Investimentos são
+   lançamentos manuais, com código próprio e diluição pela forma de
+   pagamento (à vista = tudo no mês; a prazo = diluído pelas parcelas),
+   sincronizados entre aparelhos do mesmo jeito que coletas/pedidos/compras. */
+var GH_BCK_RESOP = 'backup/resop.json';
+var FSJ_RESOP = 'resop.json';
+var RESOP_KEY = 'fsj_hist_resop';
+
+var RESOP_CODIGOS = {
+  despesa: [
+    {id:'DESP-COMB', nome:'Combustível'},
+    {id:'DESP-MDO', nome:'Mão de obra extra'},
+    {id:'DESP-MANUT', nome:'Manutenção'},
+    {id:'DESP-ENERG', nome:'Energia elétrica'},
+    {id:'DESP-OUTRA', nome:'Outras despesas'}
+  ],
+  investimento: [
+    {id:'INV-PLANTEL', nome:'Plantel (aves de produção)'},
+    {id:'INV-EQUIP', nome:'Equipamentos'},
+    {id:'INV-CONSTR', nome:'Construção / benfeitoria'},
+    {id:'INV-OUTRO', nome:'Outros investimentos'}
+  ]
+};
+var RESOP_CODIGOS_CUSTO_AUTO = [
+  {id:'CUSTO-RACAO', nome:'Ração e insumos (automático — vem de Compras)'},
+  {id:'CUSTO-PERDA', nome:'Perdas valorizadas (automático — vem de Perda)'}
+];
+var RESOP_NOME_GRUPO = {despesa:'Despesa', investimento:'Investimento'};
+var RESOP_COR_GRUPO = {despesa:'#8a4a1c', investimento:'#2d5a63'};
+var RESOP_MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+var _resopPeriodos = [];
+var _resopPeriodoSel = null;
+var _resopRegime = 'caixa';
+var _resopIncluirPerdas = true;
+var _resopDetComprasAberto = false;
+var _resopDetPerdasAberto = false;
+
+function _resopFmt(n){ return 'R$ '+Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+/* ---- Persistência (mesmo padrão de coletas/pedidos/compras) ---- */
+function _resopCarregarRaw(){ try{ return JSON.parse(localStorage.getItem(RESOP_KEY)||'[]'); }catch(e){ return []; } }
+function _resopCarregar(){ return _resopCarregarRaw().filter(function(r){ return !r._excluido; }); }
+async function _resopSalvarHist(hist){
+  var json = JSON.stringify(hist);
+  try{ localStorage.setItem(RESOP_KEY, json); }catch(e){}
+  if(_caOpfs){ try{ await _caOpfsSalvar(FSJ_RESOP, json); }catch(e){} }
+  setTimeout(function(){ _sincronizarRegistrosGitHub(); }, 800);
+}
+
+/* ---- Regras de diluição (Despesa nunca dilui; Investimento à vista = 1
+   mês; Investimento a prazo dilui pelo nº de parcelas) ---- */
+function _resopAddMeses(periodoStr, n){
+  var a = parseInt(periodoStr.slice(0,4),10), m = parseInt(periodoStr.slice(5,7),10);
+  m += n;
+  while(m>12){ m-=12; a++; }
+  while(m<1){ m+=12; a--; }
+  return a+'-'+String(m).padStart(2,'0');
+}
+function _resopPeriodoDoLanc(l){ return (l.data||'').slice(0,7); }
+function _resopParcelasDoLanc(l){
+  if(l.grupo==='investimento' && l.forma==='prazo') return Math.max(1, parseInt(l.parcelas,10)||1);
+  return 1;
+}
+function _resopContribuicao(l, periodoSel){
+  var ini = _resopPeriodoDoLanc(l);
+  var parcelas = _resopParcelasDoLanc(l);
+  for(var k=0;k<parcelas;k++){ if(_resopAddMeses(ini,k)===periodoSel) return (Number(l.valor)||0)/parcelas; }
+  return 0;
+}
+function _resopNomeCodigo(grupo, cod){
+  var lst = RESOP_CODIGOS[grupo]||[];
+  for(var i=0;i<lst.length;i++) if(lst[i].id===cod) return lst[i].nome;
+  return cod;
+}
+function _resopCodigosHtml(grupo, selecionado){
+  return (RESOP_CODIGOS[grupo]||[]).map(function(c){ return '<option value="'+c.id+'"'+(c.id===selecionado?' selected':'')+'>'+_escH(c.id)+' · '+_escH(c.nome)+'</option>'; }).join('');
+}
+
+/* ---- Leitura dos dados REAIS já registrados no app (Compras, Perda
+   dentro de Coletas, Pedidos) — nada aqui é simulado. ---- */
+function _resopPeriodoDeDataQuit(p){
+  if(p.dataQuit){
+    var d0 = String(p.dataQuit).split(',')[0].trim();
+    var partes = d0.split('/');
+    if(partes.length===3) return partes[2]+'-'+partes[1];
+  }
+  return (p.data||'').slice(0,7);
+}
+function _resopValorPedido(p){
+  if(p.total!=null) return Number(p.total)||0;
+  return (p.itens||[]).reduce(function(s,it){ return s+(it.sub!=null?Number(it.sub):(Number(it.qtd)||0)*(Number(it.preco)||0)); },0);
+}
+function _resopDadosPeriodo(periodoSel){
+  var compras = [], perdas = [], recebido = 0, aReceber = 0;
+  (_cmpCarregarRaw()||[]).filter(function(r){ return !r._excluido; }).forEach(function(r){
+    if((r.data||'').slice(0,7) !== periodoSel) return;
+    (r.itens||[]).forEach(function(it){
+      compras.push({setor: r.setor==='Campo'?'Campo':'Aviário', nome: it.nome, qtd: Number(it.qtd)||0, preco: Number(it.preco)||0,
+        sub: it.sub!=null ? Number(it.sub) : (Number(it.qtd)||0)*(Number(it.preco)||0)});
+    });
+  });
+  (_carregarHistColeta()||[]).forEach(function(r){
+    if((r.data||'').slice(0,7) !== periodoSel) return;
+    (r.itens||[]).forEach(function(it){
+      if(it.setor !== 'Perda') return;
+      perdas.push({setor:'Perda', nome: it.nome, qtd: Number(it.qtd)||0, preco: Number(it.preco)||0, sub: (Number(it.qtd)||0)*(Number(it.preco)||0)});
+    });
+  });
+  (_carregarHist()||[]).forEach(function(p){
+    var valor = _resopValorPedido(p);
+    if(p.pago){
+      if(_resopPeriodoDeDataQuit(p) === periodoSel) recebido += valor;
+    } else {
+      if((p.data||'').slice(0,7) === periodoSel) aReceber += valor;
+    }
+  });
+  return {recebido:recebido, aReceber:aReceber, compras:compras, perdas:perdas};
+}
+/* Só mostra no seletor um mês que realmente tem movimentação (Compras,
+   Perda, Pedido pago/a receber ou uma parcela de lançamento, mesmo que o
+   lançamento tenha sido feito em outro mês) — nunca um mês "no vazio",
+   nunca uma movimentação real fora do seletor. */
+function _resopTodosPeriodosComMovimento(){
+  var set = {};
+  (_cmpCarregarRaw()||[]).filter(function(r){ return !r._excluido; }).forEach(function(r){ var p=(r.data||'').slice(0,7); if(p) set[p]=1; });
+  (_carregarHistColeta()||[]).forEach(function(r){
+    var temPerda = (r.itens||[]).some(function(it){ return it.setor==='Perda'; });
+    if(temPerda){ var p=(r.data||'').slice(0,7); if(p) set[p]=1; }
+  });
+  (_carregarHist()||[]).forEach(function(p){
+    var per = p.pago ? _resopPeriodoDeDataQuit(p) : (p.data||'').slice(0,7);
+    if(per) set[per]=1;
+  });
+  _resopCarregar().forEach(function(l){
+    var parc = _resopParcelasDoLanc(l), ini = _resopPeriodoDoLanc(l);
+    for(var k=0;k<parc;k++){ var p=_resopAddMeses(ini,k); if(p) set[p]=1; }
+  });
+  var arr = Object.keys(set).sort();
+  if(!arr.length) arr = [_dataLocalHoje().slice(0,7)];
+  return arr;
+}
+function _resopPopularPeriodos(manterSelecao){
+  var anterior = manterSelecao ? _resopPeriodoSel : null;
+  _resopPeriodos = _resopTodosPeriodosComMovimento();
+  var anos = [], vistoA = {};
+  _resopPeriodos.forEach(function(p){ var a=p.slice(0,4); if(!vistoA[a]){ vistoA[a]=1; anos.push(a); } });
+  var anoAlvo = (anterior && anos.indexOf(anterior.slice(0,4))>-1) ? anterior.slice(0,4) : anos[anos.length-1];
+  var mesesDoAno = _resopPeriodos.filter(function(p){ return p.slice(0,4)===anoAlvo; }).map(function(p){ return p.slice(5,7); });
+  var mesAlvo = (anterior && anterior.slice(0,4)===anoAlvo && mesesDoAno.indexOf(anterior.slice(5,7))>-1) ? anterior.slice(5,7) : mesesDoAno[mesesDoAno.length-1];
+  _resopPeriodoSel = anoAlvo+'-'+mesAlvo;
+}
+
+/* ---- Ações (lançamentos manuais de Despesa/Investimento) ---- */
+function _resopAtualizarTela(){
+  var b = document.getElementById('jan-resop-body');
+  if(b) b.innerHTML = _resopHtmlCompleto();
+}
+function _resopAddLancamento(){
+  var hist = _resopCarregarRaw();
+  hist.unshift({ts:Date.now(), data:_resopPeriodoSel+'-05', grupo:'despesa', codigo:RESOP_CODIGOS.despesa[0].id, desc:'', valor:0, forma:'vista', parcelas:2});
+  _resopSalvarHist(hist);
+  _resopPopularPeriodos(true); _resopAtualizarTela();
+}
+function _resopEditarCampo(ts, campo, valor){
+  var hist = _resopCarregarRaw();
+  var l = hist.find(function(x){ return x.ts===ts; }); if(!l) return;
+  if(campo==='valor') l.valor = parseFloat(valor)||0;
+  else if(campo==='parcelas') l.parcelas = Math.max(2, parseInt(valor,10)||2);
+  else l[campo] = valor;
+  if(campo==='grupo'){
+    l.codigo = (RESOP_CODIGOS[l.grupo]||[{id:''}])[0].id;
+    if(l.grupo==='investimento' && !l.forma) l.forma = 'vista';
+  }
+  l._editadoEm = Date.now();
+  _resopSalvarHist(hist);
+  _resopPopularPeriodos(true); _resopAtualizarTela();
+}
+function _resopRemoverLancamento(ts){
+  if(!confirm('Remover este lançamento?')) return;
+  var hist = _resopCarregarRaw();
+  var l = hist.find(function(x){ return x.ts===ts; });
+  if(l){ l._excluido = true; l._excluidoEm = Date.now(); }
+  _resopSalvarHist(hist);
+  _resopPopularPeriodos(true); _resopAtualizarTela();
+}
+function _resopToggleDet(qual){
+  if(qual==='compras') _resopDetComprasAberto = !_resopDetComprasAberto;
+  else _resopDetPerdasAberto = !_resopDetPerdasAberto;
+  _resopAtualizarTela();
+}
+function _resopTogglePerdas(chk){
+  _resopIncluirPerdas = !!chk.checked;
+  _resopAtualizarTela();
+}
+function _resopSetRegime(r){
+  _resopRegime = r;
+  _resopAtualizarTela();
+}
+function _resopMudarAno(ano){
+  var meses = _resopPeriodos.filter(function(p){ return p.slice(0,4)===ano; }).map(function(p){ return p.slice(5,7); });
+  _resopPeriodoSel = ano+'-'+meses[meses.length-1];
+  _resopAtualizarTela();
+}
+function _resopMudarMes(mes){
+  _resopPeriodoSel = _resopPeriodoSel.slice(0,4)+'-'+mes;
+  _resopAtualizarTela();
+}
+
+/* ---- Painel de ajuda (relação de códigos) — overlay próprio, fora do
+   corpo da janela, pra sobreviver às atualizações do conteúdo. ---- */
+function _resopGarantirAjudaOverlay(){
+  if(document.getElementById('resop-ajuda-overlay')) return;
+  var d = document.createElement('div');
+  d.id = 'resop-ajuda-overlay';
+  d.className = 'resop-ajuda-ov';
+  d.onclick = function(e){ if(e.target===d) _resopFecharAjuda(); };
+  d.innerHTML = '<div class="resop-ajuda-painel" onclick="event.stopPropagation()">'
+    +'<div class="resop-ajuda-hd"><span class="tt">Códigos RESOP</span><button type="button" onclick="_resopFecharAjuda()">×</button></div>'
+    +'<div id="resop-ajuda-conteudo"></div></div>';
+  document.body.appendChild(d);
+}
+function _resopAbrirAjuda(){
+  _resopGarantirAjudaOverlay();
+  function bloco(titulo, lista){
+    return '<div class="resop-ajuda-grupo-tt">'+_escH(titulo)+'</div>'
+      +lista.map(function(c){ return '<div class="resop-ajuda-cod"><code>'+_escH(c.id)+'</code><span>'+_escH(c.nome)+'</span></div>'; }).join('');
+  }
+  document.getElementById('resop-ajuda-conteudo').innerHTML =
+    bloco('Custo (automático por regra fixa — não precisa escolher no registro)', RESOP_CODIGOS_CUSTO_AUTO)
+    + bloco('Despesa', RESOP_CODIGOS.despesa)
+    + bloco('Investimento', RESOP_CODIGOS.investimento);
+  document.getElementById('resop-ajuda-overlay').classList.add('vis');
+}
+function _resopFecharAjuda(){
+  var o = document.getElementById('resop-ajuda-overlay'); if(o) o.classList.remove('vis');
+}
+
+/* ---- Montagem do conteúdo (período + cada card) ---- */
+function _resopTagSetor(setor){
+  var cor = setor==='Perda' ? '#7f1d1d' : (setor==='Campo' ? '#3b5e2a' : (setor==='Aviário' ? '#1c2e22' : '#6b655b'));
+  return '<span class="resop-tag-setor" style="background:'+cor+'">'+_escH(setor)+'</span>';
+}
+function _resopDetalheItensHtml(lista){
+  return lista.map(function(it){
+    return '<div class="resop-det-item"><span class="nome">'+_resopTagSetor(it.setor)+_escH(it.nome)+'<small>'+it.qtd+' × '+_resopFmt(it.preco)+'</small></span><span class="val">'+_resopFmt(it.sub)+'</span></div>';
+  }).join('') || '<div class="resop-det-item"><span class="nome" style="color:var(--mu)">Nenhum item neste mês</span></div>';
+}
+function _resopGargalosHtml(porCodigo, totalGeral){
+  var itens = Object.keys(porCodigo).map(function(k){ return porCodigo[k]; }).filter(function(x){ return x.valor>0; });
+  itens.sort(function(a,b){ return b.valor-a.valor; });
+  var max = itens.length ? itens[0].valor : 0;
+  return itens.map(function(it){
+    var pct = max>0 ? (it.valor/max*100) : 0;
+    var pctTotal = totalGeral>0 ? (it.valor/totalGeral*100) : 0;
+    var corGrupo = it.grupo==='custo' ? '#4b2e83' : RESOP_COR_GRUPO[it.grupo];
+    return '<div class="resop-garg-row">'
+      +'<div class="resop-garg-top"><span class="nome"><span class="resop-grupo-pill '+it.grupo+'">'+_escH(RESOP_NOME_GRUPO[it.grupo]||'Custo')+'</span>'+_escH(it.id)+' · '+_escH(it.nome)+'</span>'
+      +'<span class="val">'+_resopFmt(it.valor)+' <span style="color:var(--mu);font-weight:400">('+pctTotal.toFixed(0)+'%)</span></span></div>'
+      +'<div class="resop-garg-trilha"><div class="resop-garg-bar" style="width:'+pct+'%;background:'+corGrupo+'"></div></div>'
+      +'</div>';
+  }).join('') || '<div style="font-size:12px;color:var(--mu)">Nenhum custo lançado neste mês.</div>';
+}
+function _resopHtmlCompleto(){
+  var anos = [], vistoA = {};
+  _resopPeriodos.forEach(function(p){ var a=p.slice(0,4); if(!vistoA[a]){ vistoA[a]=1; anos.push(a); } });
+  var anoSel = _resopPeriodoSel.slice(0,4), mesSel = _resopPeriodoSel.slice(5,7);
+  var mesesDoAno = _resopPeriodos.filter(function(p){ return p.slice(0,4)===anoSel; }).map(function(p){ return p.slice(5,7); });
+
+  var d = _resopDadosPeriodo(_resopPeriodoSel);
+  var totalVendido = d.recebido + d.aReceber;
+  var comprasVal = d.compras.reduce(function(s,it){ return s+it.sub; },0);
+  var perdasVal = d.perdas.reduce(function(s,it){ return s+it.sub; },0);
+  var perdasUsadas = _resopIncluirPerdas ? perdasVal : 0;
+  var subCusto = comprasVal + perdasUsadas;
+
+  var porCodigo = {
+    'CUSTO-RACAO': {id:'CUSTO-RACAO', nome:'Ração e insumos', grupo:'custo', valor:comprasVal},
+    'CUSTO-PERDA': {id:'CUSTO-PERDA', nome:'Perdas valorizadas', grupo:'custo', valor:perdasUsadas}
+  };
+  var lancamentos = _resopCarregar().slice().sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
+  var subLanc = 0;
+  var contribs = {};
+  lancamentos.forEach(function(l){
+    var c = _resopContribuicao(l, _resopPeriodoSel);
+    contribs[l.ts] = c;
+    if(c<=0) return;
+    subLanc += c;
+    var key = l.grupo+':'+l.codigo;
+    if(!porCodigo[key]) porCodigo[key] = {id:l.codigo, nome:_resopNomeCodigo(l.grupo,l.codigo), grupo:l.grupo, valor:0};
+    porCodigo[key].valor += c;
+  });
+  var totalCusto = subCusto + subLanc;
+  var base = _resopRegime==='caixa' ? d.recebido : totalVendido;
+  var resultado = base - totalCusto;
+  var pos = resultado >= 0;
+
+  var html = ''
+    +'<div class="resop-wrap">'
+    +'<div class="aviso" style="background:var(--pnlb);border:1px solid var(--ce);border-radius:8px;padding:10px 12px;font-size:11.5px;color:var(--mu);line-height:1.5">🔒 <b style="color:var(--vd)">Aba exclusiva dos Apps Admin</b> (celular e desktop) — não aparece no Coletor.<br><br>Custos (Compras e Perda) são classificados <b style="color:var(--vd)">automaticamente por regra fixa</b>: cada item já entra em CUSTO-RACAO ou CUSTO-PERDA, sem precisar escolher nada no registro. Toque no "?" para ver a relação completa de códigos.</div>'
+    +'<div class="resop-periodo">'
+      +'<select onchange="_resopMudarMes(this.value)">'+mesesDoAno.map(function(m){ return '<option value="'+m+'"'+(m===mesSel?' selected':'')+'>'+RESOP_MESES[parseInt(m,10)-1]+'</option>'; }).join('')+'</select>'
+      +'<select onchange="_resopMudarAno(this.value)">'+anos.map(function(a){ return '<option value="'+a+'"'+(a===anoSel?' selected':'')+'>'+a+'</option>'; }).join('')+'</select>'
+    +'</div>'
+
+    +'<div class="resop-card"><div class="resop-card-hd"><span class="resop-card-tt" style="color:#7a3a00">Receitas</span><span class="resop-card-sub">Pedidos / Vendas</span></div>'
+      +'<div class="resop-linha"><span class="resop-linha-lbl">Recebido<small>pedidos pagos, pela data do pagamento</small></span><span class="resop-linha-val">'+_resopFmt(d.recebido)+'</span></div>'
+      +'<div class="resop-linha"><span class="resop-linha-lbl">A receber<small>pedidos ainda não pagos, pela data do pedido</small></span><span class="resop-linha-val">'+_resopFmt(d.aReceber)+'</span></div>'
+      +'<div class="resop-sep"></div>'
+      +'<div class="resop-subtotal"><span class="resop-linha-lbl">Total vendido no mês</span><span class="resop-linha-val">'+_resopFmt(totalVendido)+'</span></div>'
+    +'</div>'
+
+    +'<div class="resop-card"><div class="resop-card-hd"><span class="resop-card-tt" style="color:#4b2e83">Custo <span class="resop-grupo-pill custo" style="margin-left:4px">automático</span></span><span class="resop-card-sub">Compras / Perdas</span></div>'
+      +'<div><div class="resop-toggle'+(_resopDetComprasAberto?' on':'')+'" onclick="_resopToggleDet(\'compras\')">'
+        +'<span class="resop-linha-lbl">CUSTO-RACAO · Ração e insumos<small>vem de Compras, pela data da compra</small></span>'
+        +'<span style="display:flex;align-items:center;gap:6px"><span class="resop-linha-val">'+_resopFmt(comprasVal)+'</span><span class="chev">▸</span></span></div>'
+        +'<div class="resop-det'+(_resopDetComprasAberto?' vis':'')+'">'+_resopDetalheItensHtml(d.compras)+'</div></div>'
+      +'<label style="display:flex;align-items:center;gap:9px;padding:8px 10px;background:#f6e3e3;border-radius:8px;cursor:pointer">'
+        +'<input type="checkbox" style="width:17px;height:17px;accent-color:#7f1d1d;flex:none" '+(_resopIncluirPerdas?'checked':'')+' onchange="_resopTogglePerdas(this)">'
+        +'<span style="font-size:12px;color:var(--tx);flex:1;min-width:0">CUSTO-PERDA · Perdas valorizadas<br><small style="color:var(--mu);font-weight:400">itens de Perda, pelo preço cadastrado</small></span>'
+        +'<span class="resop-linha-val" style="font-size:13px">'+_resopFmt(perdasVal)+'</span></label>'
+      +'<div class="resop-det'+(_resopDetPerdasAberto?' vis':'')+'" style="margin-top:-6px">'+_resopDetalheItensHtml(d.perdas)+'</div>'
+      +'<div class="resop-sep"></div>'
+      +'<div class="resop-subtotal"><span class="resop-linha-lbl">Subtotal Custo</span><span class="resop-linha-val">'+_resopFmt(subCusto)+'</span></div>'
+    +'</div>'
+
+    +'<div class="resop-card"><div class="resop-card-hd"><span class="resop-card-tt" style="color:#8a4a1c">Despesas e Investimentos</span><span class="resop-card-sub">lançados por código</span></div>'
+      +'<div class="resop-lanc-lista">'+lancamentos.map(function(l){
+        var contrib = contribs[l.ts]||0, fora = contrib<=0;
+        return '<div class="resop-lanc-item" style="opacity:'+(fora?'.45':'1')+'">'
+          +'<select class="grupo-sel" onchange="_resopEditarCampo('+l.ts+',\'grupo\',this.value)">'
+            +'<option value="despesa"'+(l.grupo==='despesa'?' selected':'')+'>Despesa</option>'
+            +'<option value="investimento"'+(l.grupo==='investimento'?' selected':'')+'>Investimento</option>'
+          +'</select>'
+          +'<select class="cod-sel" onchange="_resopEditarCampo('+l.ts+',\'codigo\',this.value)">'+_resopCodigosHtml(l.grupo,l.codigo)+'</select>'
+          +'<button type="button" class="resop-ajuda-btn" onclick="_resopAbrirAjuda()" title="Relação de códigos">?</button>'
+          +'<input type="date" value="'+_escH(l.data)+'" onchange="_resopEditarCampo('+l.ts+',\'data\',this.value)">'
+          +'<input type="text" value="'+_escH(l.desc)+'" placeholder="Descrição..." onchange="_resopEditarCampo('+l.ts+',\'desc\',this.value)">'
+          +'<input type="number" step="0.01" min="0" value="'+l.valor+'" onchange="_resopEditarCampo('+l.ts+',\'valor\',this.value)">'
+          +(l.grupo==='investimento' ?
+            '<select class="cod-sel" style="flex:none;width:104px" onchange="_resopEditarCampo('+l.ts+',\'forma\',this.value)">'
+              +'<option value="vista"'+(l.forma!=='prazo'?' selected':'')+'>À vista</option>'
+              +'<option value="prazo"'+(l.forma==='prazo'?' selected':'')+'>A prazo</option>'
+            +'</select>'
+            +(l.forma==='prazo' ? '<span class="meses-wrap">em <input type="number" min="2" step="1" value="'+(l.parcelas||2)+'" onchange="_resopEditarCampo('+l.ts+',\'parcelas\',this.value)"> parcelas</span>' : '')
+            : '')
+          +'<button type="button" class="rm" onclick="_resopRemoverLancamento('+l.ts+')" title="Remover">×</button>'
+          +'<span class="resop-lanc-contrib">'+(fora ? 'não contribui neste mês' : 'contribui '+_resopFmt(contrib)+' neste mês')+'</span>'
+        +'</div>';
+      }).join('')+'</div>'
+      +'<button class="resop-btn-add" onclick="_resopAddLancamento()">+ Adicionar lançamento</button>'
+      +'<div class="resop-nota">Investimento segue a forma da compra: à vista entra inteiro no mês da compra; a prazo dilui o valor pelo mesmo número de parcelas, mês a mês.</div>'
+      +'<div class="resop-sep"></div>'
+      +'<div class="resop-subtotal"><span class="resop-linha-lbl">Subtotal Despesas + Investimentos (no mês)</span><span class="resop-linha-val">'+_resopFmt(subLanc)+'</span></div>'
+    +'</div>'
+
+    +'<div class="resop-card"><div class="resop-card-hd"><span class="resop-card-tt" style="color:var(--vd)">Gargalos do mês</span><span class="resop-card-sub">custos por código, do maior pro menor</span></div>'
+      +'<div style="display:flex;flex-direction:column;gap:10px">'+_resopGargalosHtml(porCodigo, totalCusto)+'</div>'
+    +'</div>'
+
+    +'<div class="resop-card" style="border-width:1.5px">'
+      +'<div class="resop-card-hd"><span class="resop-card-tt" style="color:var(--vd)">Resultado do mês</span></div>'
+      +'<div class="resop-segmento">'
+        +'<button class="'+(_resopRegime==='caixa'?'sel':'')+'" onclick="_resopSetRegime(\'caixa\')">Caixa (recebido)</button>'
+        +'<button class="'+(_resopRegime==='competencia'?'sel':'')+'" onclick="_resopSetRegime(\'competencia\')">Competência (vendido)</button>'
+      +'</div>'
+      +'<div class="resop-resultado-num '+(pos?'pos':'neg')+'">'+(pos?'':'− ')+_resopFmt(Math.abs(resultado))+'</div>'
+      +'<div class="resop-resultado-tag '+(pos?'pos':'neg')+'">'+(pos?'Lucro no mês':'Prejuízo no mês')+'</div>'
+      +'<div class="resop-resultado-formula">'+(_resopRegime==='caixa'?'Recebido':'Total vendido')+' ('+_resopFmt(base)+') − Custos totais ('+_resopFmt(totalCusto)+')</div>'
+    +'</div>'
+    +'</div>';
+  return html;
+}
+function _resopAbrir(){
+  _resopPopularPeriodos(false);
+  _resopGarantirAjudaOverlay();
+  _janelaAbrir('jan-resop', '📊 RESOP · Resultado Operacional', 'Fazenda São José · plano de contas simplificado', _resopHtmlCompleto());
+}
+
 /* ═══ 1) REPOSITÓRIO DE DADOS PRIVADO ═══
    Os apps continuam publicados no repositório público (GitHub Pages), mas
    coletas, pedidos, compras e cadastros podem ficar num repositório
    PRIVADO. O endereço fica salvo no aparelho e vai junto no link de
    configuração enviado aos coletores e ao outro Admin. */
-var _DADOS_ARQS = [GH_BCK_COLETAS, GH_BCK_PEDIDOS, GH_BCK_CADASTROS, 'backup/compras.json', GH_FILE];
+var _DADOS_ARQS = [GH_BCK_COLETAS, GH_BCK_PEDIDOS, GH_BCK_CADASTROS, 'backup/compras.json', GH_BCK_RESOP, GH_FILE];
 function _dadosRepoAbrir(){
   var atual = GH_DATA_REPO;
   _janelaAbrir('jan-dados', '🔒 Onde ficam os dados', 'Repositório do GitHub usado para sincronizar',
