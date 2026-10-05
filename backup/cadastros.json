@@ -1022,14 +1022,14 @@
       "apresentacoes": [
         {
           "unid": "Sc 40kg",
-          "preco": 0,
+          "preco": 91.21,
           "fornecedor": "IRCA",
           "abas": [
             "Estoque",
             "Compras"
           ],
           "id": "l_sc-40kg_irca",
-          "_editadoEm": 1790552558835
+          "_editadoEm": 1791223504921
         },
         {
           "unid": "Sc 40kg",
@@ -1048,7 +1048,7 @@
           "fornecedor": "IRCA"
         }
       ],
-      "_editadoEm": 1790552558835
+      "_editadoEm": 1791223504921
     },
     {
       "id": "p1789868100584",
