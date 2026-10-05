@@ -1,6 +1,54 @@
 [
   {
     "data": "2026-10-05",
+    "coletor": "Junior Desk",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Crescimento",
+        "unid": "sc 40kg",
+        "qtd": 3,
+        "preco": 0,
+        "obs": "",
+        "forn": "IRCA",
+        "tipo": "Saida"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Engorda",
+        "unid": "sc 40kg",
+        "qtd": 2,
+        "preco": 0,
+        "obs": "",
+        "forn": "IRCA",
+        "tipo": "Saida"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Farelo de Trigo",
+        "unid": "sc 30kg",
+        "qtd": 1,
+        "preco": 0,
+        "obs": "",
+        "forn": "",
+        "tipo": "Saida"
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Postura",
+        "unid": "sc 40kg",
+        "qtd": 3,
+        "preco": 0,
+        "obs": "",
+        "forn": "IRCA",
+        "tipo": "Saida"
+      }
+    ],
+    "ts": 1791223180580,
+    "mov": "MOV-0041"
+  },
+  {
+    "data": "2026-10-05",
     "coletor": "Menininha",
     "itens": [
       {
