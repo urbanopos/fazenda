@@ -1,6 +1,24 @@
 [
   {
     "data": "2026-10-05",
+    "coletor": "Junior Desk",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Ração de peixe",
+        "unid": "Sc 25kg",
+        "qtd": 1,
+        "preco": 0,
+        "obs": "",
+        "forn": "IRCA",
+        "tipo": "Saida"
+      }
+    ],
+    "ts": 1791222849940,
+    "mov": "MOV-0040"
+  },
+  {
+    "data": "2026-10-05",
     "coletor": "Menininha",
     "itens": [
       {
