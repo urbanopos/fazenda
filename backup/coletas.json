@@ -21,9 +21,9 @@
     "itens": [
       {
         "setor": "Estoque",
-        "nome": "Ração de peixe",
+        "nome": "Crescimento",
         "qtd": 1,
-        "unid": "Sc 25kg",
+        "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
         "preco": 0
@@ -31,7 +31,7 @@
     ],
     "ts": 1791222849940,
     "mov": "MOV-0040",
-    "_editadoEm": 1791222874486
+    "_editadoEm": 1791222969387
   },
   {
     "data": "2026-10-03",
