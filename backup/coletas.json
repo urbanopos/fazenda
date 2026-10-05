@@ -1,5 +1,21 @@
 [
   {
+    "data": "2026-10-05",
+    "coletor": "Menininha",
+    "itens": [
+      {
+        "setor": "Perda",
+        "nome": "Ovos de Capoeira",
+        "unid": "unid",
+        "qtd": 17,
+        "obs": "",
+        "forn": "",
+        "tipo": ""
+      }
+    ],
+    "ts": 1791202306833
+  },
+  {
     "data": "2026-10-03",
     "coletor": "Menininha",
     "itens": [
