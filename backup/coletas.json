@@ -1,24 +1,6 @@
 [
   {
     "data": "2026-10-05",
-    "coletor": "Junior Desk",
-    "itens": [
-      {
-        "setor": "Estoque",
-        "nome": "Ração de peixe",
-        "unid": "Sc 25kg",
-        "qtd": 1,
-        "preco": 0,
-        "obs": "",
-        "forn": "IRCA",
-        "tipo": "Saida"
-      }
-    ],
-    "ts": 1791222849940,
-    "mov": "MOV-0040"
-  },
-  {
-    "data": "2026-10-05",
     "coletor": "Menininha",
     "itens": [
       {
@@ -32,6 +14,24 @@
       }
     ],
     "ts": 1791202306833
+  },
+  {
+    "data": "2026-10-03",
+    "coletor": "Junior Desk",
+    "itens": [
+      {
+        "setor": "Estoque",
+        "nome": "Ração de peixe",
+        "qtd": 1,
+        "unid": "Sc 25kg",
+        "tipo": "Saida",
+        "forn": "IRCA",
+        "preco": 0
+      }
+    ],
+    "ts": 1791222849940,
+    "mov": "MOV-0040",
+    "_editadoEm": 1791222874486
   },
   {
     "data": "2026-10-03",
