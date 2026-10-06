@@ -1230,7 +1230,7 @@
       "apresentacoes": [
         {
           "id": "amusmqn14wql47z",
-          "unid": "Unid.",
+          "unid": "Unid. Viva",
           "preco": 50,
           "fornecedor": "Fazenda São José",
           "abas": [
@@ -1240,9 +1240,16 @@
             "Compras"
           ],
           "_editadoEm": 1791046678714
+        },
+        {
+          "id": "amuvx4rsyjro218",
+          "unid": "Unid. Abatida",
+          "preco": 50,
+          "fornecedor": "Fazenda São José",
+          "_criadoEm": 1791245181634
         }
       ],
-      "_editadoEm": 1791245165234
+      "_editadoEm": 1791245221502
     }
   ],
   "clientes": [
