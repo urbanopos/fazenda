@@ -1267,10 +1267,17 @@
           "id": "amux61vmj8sd6tl",
           "unid": "Kg - Tratada",
           "preco": 17,
-          "fornecedor": "Fazenda São José"
+          "fornecedor": "Fazenda São José",
+          "_editadoEm": 1791320769224,
+          "abas": [
+            "Perda",
+            "Campo",
+            "Estoque",
+            "Vendas"
+          ]
         }
       ],
-      "_editadoEm": 1791320711943
+      "_editadoEm": 1791320769224
     }
   ],
   "clientes": [
