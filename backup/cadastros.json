@@ -421,9 +421,14 @@
           "id": "amug9ln845id3qz",
           "unid": "kg",
           "preco": 0,
-          "fornecedor": "Fazenda São José"
+          "fornecedor": "Fazenda São José",
+          "_editadoEm": 1791244960946,
+          "abas": [
+            "Campo"
+          ]
         }
-      ]
+      ],
+      "_editadoEm": 1791244960946
     },
     {
       "id": "p1789066569771_0",
