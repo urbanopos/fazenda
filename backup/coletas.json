@@ -1,5 +1,22 @@
 [
   {
+    "data": "2026-10-06",
+    "coletor": "Junior Desk",
+    "itens": [
+      {
+        "setor": "Campo",
+        "nome": "Tilápia",
+        "unid": "Kg - Tratada",
+        "qtd": 12,
+        "preco": 17,
+        "obs": "",
+        "forn": "Fazenda São José",
+        "tipo": ""
+      }
+    ],
+    "ts": 1791320822906
+  },
+  {
     "data": "2026-10-05",
     "coletor": "Menininha",
     "itens": [
