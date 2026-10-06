@@ -1257,6 +1257,20 @@
         }
       ],
       "_editadoEm": 1791245296018
+    },
+    {
+      "id": "p1791320664699",
+      "setor": "Campo",
+      "nome": "Tilápia",
+      "apresentacoes": [
+        {
+          "id": "amux61vmj8sd6tl",
+          "unid": "Kg",
+          "preco": 17,
+          "fornecedor": "Fazenda São José"
+        }
+      ],
+      "_editadoEm": 1791320664699
     }
   ],
   "clientes": [
