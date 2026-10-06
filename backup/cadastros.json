@@ -1226,23 +1226,23 @@
     {
       "id": "p1791046361076",
       "setor": "Aviario",
-      "nome": "Frango Vivo",
+      "nome": "Frango",
       "apresentacoes": [
         {
           "id": "amusmqn14wql47z",
           "unid": "Unid.",
           "preco": 50,
           "fornecedor": "Fazenda São José",
-          "_editadoEm": 1791046678714,
           "abas": [
             "Aviario",
             "Perda",
             "Vendas",
             "Compras"
-          ]
+          ],
+          "_editadoEm": 1791046678714
         }
       ],
-      "_editadoEm": 1791046678714
+      "_editadoEm": 1791245165234
     }
   ],
   "clientes": [
