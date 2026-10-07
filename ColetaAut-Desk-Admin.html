@@ -11833,7 +11833,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a1159972691';
+var _caFP = '1a1159c5a1f6';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -21124,6 +21124,15 @@ async function _cadAbrir(){
   _navPush('cad-tela');
 }
 
+/* Abre o app Publicar (publicar.html, na mesma pasta dos apps) em outra aba */
+function _cadAbrirPublicar(){
+  var url = 'publicar.html';
+  try{ url = new URL('publicar.html', location.href).href; }catch(e){}
+  var w = null;
+  try{ w = window.open(url, '_blank'); }catch(e){}
+  if(!w) location.href = url;
+}
+
 function _cadFechar(){
   document.getElementById('cad-tela').classList.remove('vis');
   _cadAtualizarSetores();
@@ -22257,6 +22266,7 @@ async function _cadInit(){
     <button class="cad-aba" onclick="_cadTrocaAba('clientes',this)">Clientes</button>
     <button class="cad-aba" onclick="_cadTrocaAba('fornecedores',this)">Fornecedores</button>
     <button class="cad-aba" onclick="_cadTrocaAba('precos',this)">Apresentação</button>
+    <button class="cad-aba" onclick="_cadAbrirPublicar()" title="Abre o app de publicação em outra aba">🚀 Publicar ↗</button>
   </div>
   <!-- Produtos -->
   <div class="cad-painel vis" id="cad-p-produtos">
