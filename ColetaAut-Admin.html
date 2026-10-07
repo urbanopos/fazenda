@@ -11656,7 +11656,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a11591f9b29';
+var _caFP = '1a11599309f4';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -16546,12 +16546,12 @@ function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtua
       ? '<input class="hcol-edit-inp" style="flex:1 1 100%;width:100%;margin-top:4px" type="text" placeholder="Fornecedor..." list="fornecedores-datalist" value="'+_esc(fornAtual||'')+'" id="hcol-ei-forn-'+ri+'-'+ii+'">'
       : '<input type="hidden" id="hcol-ei-forn-'+ri+'-'+ii+'" value="'+_esc(fornAtual||'')+'">';
     if(nomeAtual){
-      linhaForn += '<div style="font-size:11px;color:#a03030;margin-top:4px">⚠️ Sem apresentação cadastrada para este item — fornecedor/preço não ficam amarrados até cadastrar em Cadastros → Produtos.</div>';
+      linhaForn += '<div style="font-size:11px;color:#a03030;margin-top:4px">⚠️ Sem apresentação cadastrada para este item — fornecedor/preço não ficam amarrados. <a href="javascript:void(0)" onclick="_cadAbrir()" style=\"color:#b0342a;font-weight:700;text-decoration:underline\">Abrir Cadastros → Produtos</a></div>';
     }
   }
 
   var avisoAba = naoHabilitado
-    ? '<div style="font-size:11px;color:#a03030;margin:4px 0;font-weight:700">⚠️ '+_esc(nomeAtual)+' não está autorizado hoje na aba '+_esc(setor)+'. O registro fica como foi lançado; corrija o setor ou o item só se este lançamento estiver errado.</div>'
+    ? '<div style="font-size:11px;color:#a03030;margin:4px 0;font-weight:700">⚠️ '+_esc(nomeAtual)+' não está autorizado hoje na aba '+_esc(setor)+'. O registro fica como foi lançado; corrija o setor ou o item só se este lançamento estiver errado. <a href="javascript:void(0)" onclick="_cadAbrir()" style=\"color:#b0342a;font-weight:700;text-decoration:underline\">Autorizar em Cadastros → Apresentação</a></div>'
     : '';
   return '<div class="hcol-item-edit-wrap"'+(naoHabilitado?' style="background:#fdecea;border-radius:6px;padding:4px"':'')+'>'
     +avisoAba
@@ -19518,12 +19518,18 @@ function _sdAvisosHtml(ano, mes, setor, limiteIso){
     return true;
   });
   if(!lista.length) return '';
-  var porItem = {};
-  lista.forEach(function(a){ var k = a.nome+' — '+a.motivo; porItem[k] = (porItem[k]||0)+1; });
-  return '<div style="background:#fdf3e2;border:1px solid #ecd4a8;color:#8a5a12;border-radius:8px;padding:9px 12px;font-size:12px;margin-bottom:12px;line-height:1.45">'
+  var esc = function(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;'); };
+  var lk = 'style="color:#b0342a;font-weight:700;text-decoration:underline"';
+  var linhas = lista.slice(0,8).map(function(a){
+    var abrir = a.ts ? (a.origem==='Pedido' ? '_abrirPedidoPorTs('+a.ts+')' : '_abrirEditColetaPorTs('+a.ts+')') : '';
+    return '• '+a.data.split('-').reverse().join('/')+' · '+esc(a.rotulo||a.origem)+' · <strong>'+esc(a.nome)+'</strong> — '+esc(a.motivo)
+      +(abrir ? ' · <a href="javascript:void(0)" onclick="'+abrir+'" '+lk+'>abrir e corrigir</a>' : '');
+  });
+  return '<div style="background:#fdf3e2;border:1px solid #ecd4a8;color:#8a5a12;border-radius:8px;padding:9px 12px;font-size:12px;margin-bottom:12px;line-height:1.55">'
     +'⚠️ <strong>'+lista.length+'</strong> saída(s) de Perda/Pedidos não entraram no balanço:<br>'
-    +Object.keys(porItem).map(function(k){ return '• '+k.replace(/&/g,'&amp;').replace(/</g,'&lt;')+(porItem[k]>1?' ('+porItem[k]+'×)':''); }).join('<br>')
-    +'<br><span style="font-size:11px">Ajuste em Cadastros → Apresentação (autorize o item em Aviário ou Campo) ou use uma unidade com a quantidade escrita (ex.: "Caixa c/12").</span></div>';
+    +linhas.join('<br>')
+    +(lista.length>8 ? '<br>… e mais '+(lista.length-8)+' — <a href="javascript:void(0)" onclick="_verAbrir()" '+lk+'>ver todas na Verificação de dados</a>' : '')
+    +'<br><span style="font-size:11px">Ou ajuste em <a href="javascript:void(0)" onclick="_cadAbrir()" '+lk+'>Cadastros → Apresentação</a> (autorize o item em Aviário ou Campo) ou use uma unidade com a quantidade escrita (ex.: "Caixa c/12").</span></div>';
 }
 
 
@@ -19998,6 +20004,7 @@ function _resopHtmlCompleto(){
     +'</div>'
 
     +_loteResopCardHtml(_resopPeriodoSel)
+    +_loteProducaoCardHtml(_resopPeriodoSel)
 
     +'<div class="resop-card"><div class="resop-card-hd"><span class="resop-card-tt" style="color:var(--vd)">Gargalos do mês</span><span class="resop-card-sub">custos por código, do maior pro menor</span></div>'
       +'<div style="display:flex;flex-direction:column;gap:10px">'+_resopGargalosHtml(porCodigo, totalCusto)+'</div>'
@@ -20187,6 +20194,7 @@ function _loteResumo(l, hoje, taxas){
 function _loteMovsDesejados(hoje){
   var c = _loteCfg(), out = [];
   _loteCarregar().forEach(function(l){
+    if(l.semMov) return;
     var b = _loteBase(l);
     if(!b.data || !(b.qtd>0)) return;
     var setorF = [null,'Estoque','Aviario','Aviario'];
@@ -20314,6 +20322,7 @@ async function _loteRemoverBaixa(ts, n){
   await _loteSalvar(hist);
   _loteAtualizarTela();
 }
+function _loteIrResop(){ _janelaFechar('jan-lotes'); _resopAbrir(); }
 function _loteToggle(ts){ _loteDetAberto[ts] = !_loteDetAberto[ts]; _loteAtualizarTela(); }
 function _loteToggleTodos(){ _loteMostrarTodos = !_loteMostrarTodos; _loteAtualizarTela(); }
 function _loteIrCompra(ts){ _janelaFechar('jan-lotes'); try{ trocarAba('compras'); setTimeout(function(){ try{ _cmpEditar(ts); }catch(e){} }, 150); }catch(e){} }
@@ -20350,7 +20359,7 @@ function _loteHtmlLote(l, hoje, taxas){
     +'<div style="font-weight:700;font-size:14px">'+_loteEsc(l.num)+' · '+_loteEsc(b.nome)+' '+_loteTag(r.fase, r.nomeFase)+'</div>'
     +'<div style="font-size:12px;color:#6b6b60">'+r.dias+' dia(s) de vida</div></div>';
   h += '<div style="font-size:12px;color:#6b6b60;margin-top:3px">'
-    +(b.compraOk ? '<a href="javascript:void(0)" onclick="_loteIrCompra('+l.compraTs+')" style="color:#2e7d4f">Compra '+_loteEsc(b.num)+'</a>' : '<span style="color:#a03030">compra excluída — usando dados guardados</span>')
+    +(l.manual ? '<span>lote manual</span>' : b.compraOk ? '<a href="javascript:void(0)" onclick="_loteIrCompra('+l.compraTs+')" style="color:#2e7d4f">Compra '+_loteEsc(b.num)+'</a>' : '<span style="color:#a03030">compra excluída — usando dados guardados · <a href="javascript:void(0)" onclick="_loteExcluir('+l.ts+')" style="color:#b0342a;font-weight:700;text-decoration:underline">excluir lote</a></span>')
     +' · entrada '+_loteDataFmt(b.data)+' · '+_fmtNum(b.qtd)+' comprada(s) por R$ '+_fmt(b.custo)+'</div>';
   h += '<div style="display:flex;flex-wrap:wrap;gap:14px;margin:8px 0">'
     +'<div><div style="font-size:11px;color:#8a8574">Vivas hoje</div><div style="font-size:18px;font-weight:700">'+_fmtNum(r.vivos)+'</div></div>'
@@ -20368,7 +20377,7 @@ function _loteHtmlLote(l, hoje, taxas){
     [1,2,3].forEach(function(f){
       if(f===3 && !c.fase3) return;
       var med = r.avedias[f]>0 ? r.custoF[f]/r.avedias[f] : 0;
-      h += '<div style="display:flex;justify-content:space-between"><span>'+_loteEsc(nomes[f])+': '+_fmtNum(r.avedias[f])+' ave-dia × R$ '+_fmt(med)+(c.modo==='manual'?'':' (RESOP)')+(r.avedias[f]>0 && !(med>0)?' <span style="color:#a03030">⚠ sem custo no período</span>':'')+'</span><span>R$ '+_fmt(r.custoF[f])+'</span></div>';
+      h += '<div style="display:flex;justify-content:space-between"><span>'+_loteEsc(nomes[f])+': '+_fmtNum(r.avedias[f])+' ave-dia × R$ '+_fmt(med)+(c.modo==='manual'?'':' (RESOP)')+(r.avedias[f]>0 && !(med>0)?' <a href="javascript:void(0)" onclick="_loteIrResop()" style="color:#b0342a;font-weight:700;text-decoration:underline">⚠ sem custo no período · lançar no RESOP</a>':'')+'</span><span>R$ '+_fmt(r.custoF[f])+'</span></div>';
     });
     h += '<div style="display:flex;justify-content:space-between;font-weight:700;border-top:1px solid #e3dfd0;margin-top:3px;padding-top:3px"><span>Total</span><span>R$ '+_fmt(r.total)+'</span></div>';
     h += '<div style="margin-top:8px;font-weight:700">Baixas do lote</div>';
@@ -20429,6 +20438,14 @@ function _loteHtml(){
       +'<button onclick="_loteCriar('+x.cp.ts+','+x.i+')" style="padding:7px 12px;border:0;border-radius:6px;background:#2e7d4f;color:#fff;font-weight:700;white-space:nowrap">Criar lote</button></div>';
   });
   h += '<div style="margin-top:4px"><a href="javascript:void(0)" onclick="_loteToggleTodos()" style="font-size:12px;color:#2e7d4f">'+(_loteMostrarTodos ? '▾ mostrar só itens "pinto"' : '▸ mostrar também outros itens de compras do Aviário')+'</a></div>';
+  h += '<div style="font-weight:700;font-size:13px;margin:14px 0 6px">➕ Lote manual (plantel que já existe)</div>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:flex-end;font-size:11px;color:#6b6b60">'
+    +'<label style="display:flex;flex-direction:column;gap:2px">Nome<input id="lt-mn-nome" type="text" value="'+_loteEsc(c.fase3||c.fase2)+'" style="width:90px;padding:6px;border:1px solid #d6d2c4;border-radius:6px"></label>'
+    +'<label style="display:flex;flex-direction:column;gap:2px">Qtd<input id="lt-mn-qtd" type="number" min="1" inputmode="numeric" style="width:64px;padding:6px;border:1px solid #d6d2c4;border-radius:6px"></label>'
+    +'<label style="display:flex;flex-direction:column;gap:2px">Data de entrada (real ou estimada)<input id="lt-mn-data" type="date" style="padding:6px;border:1px solid #d6d2c4;border-radius:6px"></label>'
+    +'<label style="display:flex;flex-direction:column;gap:2px">Custo de entrada R$<input id="lt-mn-custo" type="number" step="any" min="0" inputmode="decimal" value="0" style="width:80px;padding:6px;border:1px solid #d6d2c4;border-radius:6px"></label>'
+    +'<button onclick="_loteCriarManual()" style="padding:7px 12px;border:0;border-radius:6px;background:#2e7d4f;color:#fff;font-weight:700">Criar</button></div>'
+    +'<div style="font-size:11px;color:#8a8574;margin-top:4px">A fase vem da idade a partir da data de entrada. Não gera movimentos no estoque (o saldo continua o que você já tem).</div>';
   h += '<div style="font-size:11px;color:#8a8574;margin-top:10px;line-height:1.45">As mudanças de fase viram registros reais no Histórico (origem "Lote"): Saída do Pinto no Estoque e Entrada do Frango no Aviário, e assim por diante. Registre mortes aqui, no lote (não em Perda), para não baixar duas vezes.</div>';
   return h;
 }
@@ -20457,6 +20474,103 @@ function _loteResopCardHtml(periodo){
   return h+'</div>';
 }
 
+/* ── Custo de produção (Pinto, Frango, Galinha e Ovo) — dentro do RESOP ── */
+function _loteCustoAte(l, iso, taxas){
+  var b = _loteBase(l), c = _loteCfg(), am = _loteAveDiasMes(l, iso), tot = b.custo;
+  Object.keys(am).forEach(function(m){
+    for(var f=1; f<=3; f++){
+      var tx = c.modo==='manual' ? [0,c.custo1,c.custo2,c.custo3][f] : ((taxas[m] && taxas[m].taxa) || 0);
+      tot += am[m][f]*tx;
+    }
+  });
+  var v = _loteVivosAntes(l, b, iso);
+  return {total:tot, vivos:v, porAve: v>0 ? tot/v : null};
+}
+function _loteOvosMes(per){
+  var col = 0, perd = 0, sem = 0, semTs = [];
+  (_carregarHistColeta()||[]).forEach(function(r){
+    if((r.data||'').slice(0,7)!==per) return;
+    (r.itens||[]).forEach(function(it){
+      if(!/\bovo/.test(_sdNorm(it.nome))) return;
+      var isCol = (it.setor==='Aviario' && it.tipo!=='Saida' && it.tipo!=='Inventario'), isPerd = (it.setor==='Perda');
+      if(!isCol && !isPerd) return;
+      var f = (it.unid||'').trim() ? _sdFator('unid', it.unid) : 1;
+      if(f===null){ sem++; semTs.push(r.ts); return; }
+      var q = (Number(it.qtd)||0)*f;
+      if(isCol) col += q; else perd += q;
+    });
+  });
+  return {col:col, perd:perd, sem:sem, semTs:semTs};
+}
+function _loteProducaoCardHtml(periodo){
+  var lotes = _loteCarregar(), hoje = _dataLocalHoje(), c = _loteCfg();
+  if(!lotes.length) return '';
+  var taxas = _loteTaxas(hoje);
+  function item(l, r, txt){ return '<div class="resop-det-item"><span class="nome">'+_escH(l.num)+' · '+_escH(r.nome)+'<small>'+txt+'</small></span><span class="val">'+(r.porAve!==null ? _resopFmt(r.porAve) : '—')+'</span></div>'; }
+  function bloco(chave, rotulo, lista){   // lista: [{l, x, txt}]
+    var tot = 0, viv = 0, det = '';
+    lista.forEach(function(e){ tot += e.x.total; viv += e.x.vivos; det += item(e.l, {nome:e.l.nomePinto, porAve:e.x.porAve}, e.txt); });
+    var med = viv>0 ? tot/viv : null;
+    return _resopLinhaToggle(chave, rotulo, med!==null ? _resopFmt(med)+'/ave' : '—',
+      det || '<div class="resop-det-item"><span class="nome" style="color:var(--mu)">Nenhum lote chegou a esta fase</span></div>');
+  }
+  var lp = [], lf = [], lg = [];
+  lotes.forEach(function(l){
+    var b = _loteBase(l); if(!b.data) return;
+    var d1 = _loteAddDias(b.data, c.idade1), d2 = c.fase3 ? _loteAddDias(b.data, c.idade2) : null;
+    if(!l.manual && d1 <= hoje){ var x1 = _loteCustoAte(l, d1, taxas); if(x1.vivos>0) lp.push({l:l, x:x1, txt:_fmtNum(x1.vivos)+' ave(s) aos '+c.idade1+' dias · R$ '+_fmt(x1.total)+' no total'}); }
+    if(!l.manual && d2 && d2 <= hoje){ var x2 = _loteCustoAte(l, d2, taxas); if(x2.vivos>0) lf.push({l:l, x:x2, txt:_fmtNum(x2.vivos)+' ave(s) aos '+c.idade2+' dias · R$ '+_fmt(x2.total)+' no total'}); }
+    var r = _loteResumo(l, hoje, taxas);
+    if(c.fase3 && r.fase===3 && r.vivos>0) lg.push({l:l, x:{total:r.total, vivos:r.vivos, porAve:r.porAve}, txt:_fmtNum(r.vivos)+' ave(s) hoje · '+r.dias+' dia(s) · R$ '+_fmt(r.total)+' no total'});
+  });
+  var h = '<div class="resop-card"><div class="resop-card-hd"><span class="resop-card-tt" style="color:#8a5a12">Custo de produção <span class="resop-grupo-pill" style="background:#fbf1dc;color:#8a5a12;margin-left:4px">informativo</span></span><span class="resop-card-sub">Pinto · Frango · Galinha · Ovo</span></div>';
+  h += '<div class="resop-nota">Custo de 1 ave ao <b>sair de cada fase</b> (compra + ave-dias × R$/ave-dia do RESOP), média ponderada dos lotes que já chegaram lá. Lotes manuais (plantel existente) ficam fora de Pinto e Frango.</div>';
+  h += bloco('pr-pinto', 'Pinto<small>custo por ave aos '+c.idade1+' dias (pronto p/ fase '+_escH(c.fase2)+')</small>', lp);
+  h += bloco('pr-frango', _escH(c.fase2)+'<small>custo por ave'+(c.fase3 ? ' aos '+c.idade2+' dias (pronto p/ '+_escH(c.fase3)+')' : '')+'</small>', c.fase3 ? lf : []);
+  if(c.fase3) h += bloco('pr-galinha', _escH(c.fase3)+'<small>custo acumulado por ave hoje</small>', lg);
+  if(c.fase3){
+    var custoPost = 0, ad3 = 0;
+    lotes.forEach(function(l){
+      var am = taxas._am[l.ts] && taxas._am[l.ts][periodo]; if(!am) return;
+      var tx = c.modo==='manual' ? c.custo3 : ((taxas[periodo] && taxas[periodo].taxa) || 0);
+      ad3 += am[3]; custoPost += am[3]*tx;
+    });
+    var ov = _loteOvosMes(periodo), vend = ov.col - ov.perd;
+    h += '<div class="resop-sep"></div><div class="resop-nota" style="margin-bottom:2px"><b>Ovo · '+RESOP_MESES[parseInt(periodo.slice(5,7),10)-1]+'/'+periodo.slice(0,4)+'</b></div>';
+    h += '<div class="resop-det-item" style="display:flex"><span class="nome">Custo das galinhas no mês<small>'+_fmtNum(ad3)+' ave-dia de '+_escH(c.fase3)+' × R$/ave-dia</small></span><span class="val">'+_resopFmt(custoPost)+'</span></div>';
+    h += '<div class="resop-det-item" style="display:flex"><span class="nome">Ovos coletados<small>Aviário, itens "ovo" (convertidos p/ unidade)</small></span><span class="val">'+_fmtNum(ov.col)+'</span></div>';
+    h += '<div class="resop-det-item" style="display:flex"><span class="nome">Ovos perdidos<small>itens "ovo" em Perda</small></span><span class="val">'+_fmtNum(ov.perd)+'</span></div>';
+    h += '<div class="resop-sep"></div>';
+    h += '<div class="resop-subtotal"><span class="resop-linha-lbl">Custo por ovo (coletado)</span><span class="resop-linha-val">'+(ov.col>0 && custoPost>0 ? _resopFmt(custoPost/ov.col) : '—')+'</span></div>';
+    h += '<div class="resop-subtotal"><span class="resop-linha-lbl">Custo por ovo (aproveitável)</span><span class="resop-linha-val">'+(vend>0 && custoPost>0 ? _resopFmt(custoPost/vend) : '—')+'</span></div>';
+    h += '<div class="resop-subtotal"><span class="resop-linha-lbl">Custo por dúzia (aproveitável)</span><span class="resop-linha-val">'+(vend>0 && custoPost>0 ? _resopFmt(custoPost/vend*12) : '—')+'</span></div>';
+    var av = [];
+    var L = 'style="color:#b0342a;font-weight:700;text-decoration:underline"';
+    if(!(ad3>0)) av.push('Nenhuma galinha em lote neste mês — <a href="javascript:void(0)" onclick="_loteAbrir()" '+L+'>criar lote manual do plantel existente</a>');
+    if(!(ov.col>0)) av.push('Sem ovos coletados no Aviário neste mês — <a href="javascript:void(0)" onclick="_janelaFechar(\'jan-resop\');abrirHistColetaSetor(\'Aviario\')" '+L+'>abrir histórico do Aviário</a>');
+    if(ov.sem){
+      var ids = ov.semTs.filter(function(t,i,a){ return a.indexOf(t)===i; }).slice(0,5);
+      av.push(ov.sem+' registro(s) de ovo com unidade não convertível ficaram fora — '+ids.map(function(t,i){ return '<a href="javascript:void(0)" onclick="_resopIrCorrigirPerda('+t+')" '+L+'>corrigir '+(i+1)+'</a>'; }).join(' · '));
+    }
+    if(av.length) h += '<div class="resop-nota" style="color:#a03030">⚠ '+av.join('<br>⚠ ')+'</div>';
+    h += '<div class="resop-nota">Todo o custo da galinha (ração + despesas) é atribuído aos ovos; esterco e venda de aves de descarte não são abatidos.</div>';
+  }
+  return h+'</div>';
+}
+async function _loteCriarManual(){
+  var nome = ((document.getElementById('lt-mn-nome')||{}).value||'').trim();
+  var qtd = Number(String((document.getElementById('lt-mn-qtd')||{}).value||'').replace(',','.'));
+  var data = (document.getElementById('lt-mn-data')||{}).value || '';
+  var custo = Number(String((document.getElementById('lt-mn-custo')||{}).value||'0').replace(',','.')) || 0;
+  if(!nome || !(qtd>0) || !data){ _toast('Informe nome, quantidade e data de entrada.'); return; }
+  if(data > _dataLocalHoje()){ _toast('A data não pode ser futura.'); return; }
+  var hist = _loteCarregarRaw(), maior = 0;
+  hist.forEach(function(r){ var m = String(r.num||'').match(/(\d+)/); if(m && +m[1]>maior) maior = +m[1]; });
+  hist.unshift({ts:Date.now(), num:'L-'+String(maior+1).padStart(3,'0'), manual:true, semMov:true, nomePinto:nome, data:data, qtd:qtd, custo:custo, baixas:[]});
+  await _loteSalvar(hist);
+  _toast('✅ Lote manual criado (sem movimentos de estoque).');
+  _loteAtualizarTela();
+}
 function _loteAtualizarTela(){ var b = document.getElementById('jan-lotes-body'); if(b) b.innerHTML = _loteHtml(); }
 function _loteAbrir(){
   try{ _loteGerarMov(); }catch(e){}
@@ -20687,8 +20801,27 @@ function _verAbrir(){
 
   // Compras
   var semEnt = [];
-  _cmpCarregar().forEach(function(c){ if(!col.some(function(r){ return r.compraTs===c.ts; })) semEnt.push((c.num||'')+' · '+fd(c.data)+' — sem Entrada no Estoque (abra e salve de novo)'); });
+  _cmpCarregar().forEach(function(c){ if(!col.some(function(r){ return r.compraTs===c.ts; })) semEnt.push((c.num||'')+' · '+fd(c.data)+' — sem Entrada no Estoque (abra e salve de novo) <button class="ver-btn" onclick="_janelaFechar(\'jan-ver\');_resopIrCorrigirCompra('+c.ts+')">Abrir</button>'); });
   grupo('Compras sem entrada no Estoque', '', semEnt);
+
+  // Valores que faltam (alimentam o RESOP e o custo de produção)
+  var cmpSemPreco = [], perSemPreco = [], pedSemValor = [], lotesAvisos = [];
+  (_cmpCarregarRaw()||[]).forEach(function(c){ if(c._excluido) return; (c.itens||[]).forEach(function(it){
+    if(!(Number(it.preco)>0)) cmpSemPreco.push((c.num||'')+' · '+fd(c.data)+' · <strong>'+_escH(it.nome)+'</strong> '+'<button class="ver-btn" onclick="_janelaFechar(\'jan-ver\');_resopIrCorrigirCompra('+c.ts+')">Corrigir</button>');
+  }); });
+  col.forEach(function(r){ (r.itens||[]).forEach(function(it){
+    if(it.setor==='Perda' && !(Number(it.preco)>0)) perSemPreco.push(fd(r.data)+' · <strong>'+_escH(it.nome)+'</strong> ('+_escH(String(it.qtd))+' '+_escH(it.unid||'')+') '+btnCol(r.ts));
+  }); });
+  ped.forEach(function(p){ if(!(_resopValorPedido(p)>0)) pedSemValor.push((p.num||'')+' · '+fd(p.data)+' · '+_escH(p.cliente||'')+' '+btnPed(p.ts)); });
+  _loteCarregar().forEach(function(l){
+    var b = _loteBase(l);
+    if(!l.manual && !b.compraOk) lotesAvisos.push(_escH(l.num)+' · '+_escH(l.nomePinto)+' — a compra de origem foi excluída (usando dados guardados) <button class="ver-btn" onclick="_janelaFechar(\'jan-ver\');_loteAbrir()">Lotes</button>');
+    if(!(b.custo>0)) lotesAvisos.push(_escH(l.num)+' · '+_escH(l.nomePinto)+' — custo de entrada zerado '+(l.manual ? '<button class="ver-btn" onclick="_janelaFechar(\'jan-ver\');_loteAbrir()">Lotes</button>' : '<button class="ver-btn" onclick="_janelaFechar(\'jan-ver\');_resopIrCorrigirCompra('+l.compraTs+')">Abrir compra</button>'));
+  });
+  grupo('Compras com item sem preço', 'Sem preço o item não entra no custo (RESOP) nem no custo de produção. Abra a compra e complete o preço.', cmpSemPreco);
+  grupo('Perdas sem preço', 'Cadastre o preço em Cadastros → Apresentação (é aplicado automaticamente) ou edite o registro.', perSemPreco);
+  grupo('Pedidos com valor zerado', 'Pedido sem valor não entra na Receita do RESOP.', pedSemValor);
+  grupo('Lotes de aves com pendência', 'Afetam o custo por ave.', lotesAvisos);
 
   var total = grupos.reduce(function(s,g){ return s+g.linhas.length; },0);
   var html = total
