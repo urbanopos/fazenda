@@ -4091,7 +4091,7 @@
         "unid": "sc 40kg",
         "tipo": "Entrada",
         "forn": "",
-        "preco": 0
+        "preco": 108.21
       },
       {
         "setor": "Estoque",
@@ -4150,7 +4150,7 @@
     ],
     "ts": 1788215323792,
     "mov": "MOV-0001",
-    "_editadoEm": 1791364203051
+    "_editadoEm": 1791364207224
   },
   {
     "data": "2026-03-08",
