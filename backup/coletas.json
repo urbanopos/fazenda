@@ -488,13 +488,22 @@
         "tipo": "Entrada",
         "forn": "",
         "preco": 108.21
+      },
+      {
+        "setor": "Estoque",
+        "nome": "Postura",
+        "qtd": 10,
+        "unid": "sc 40kg",
+        "tipo": "Entrada",
+        "forn": "IRCA",
+        "preco": 88.39
       }
     ],
     "origem": "compra",
     "compraTs": 1790553086168,
     "compraNum": "CMP-0001",
     "mov": "MOV-0036",
-    "_editadoEm": 1791364192136
+    "_editadoEm": 1791364367387
   },
   {
     "data": "2026-09-26",
