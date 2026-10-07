@@ -482,11 +482,11 @@
       },
       {
         "setor": "Estoque",
-        "nome": "Inicial",
+        "nome": "Pre-Inicial",
         "qtd": 3,
         "unid": "sc 40kg",
         "tipo": "Entrada",
-        "forn": "IRCA",
+        "forn": "",
         "preco": 108.21
       }
     ],
@@ -494,7 +494,7 @@
     "compraTs": 1790553086168,
     "compraNum": "CMP-0001",
     "mov": "MOV-0036",
-    "_editadoEm": 1791364151887
+    "_editadoEm": 1791364192136
   },
   {
     "data": "2026-09-26",
@@ -4086,7 +4086,7 @@
       },
       {
         "setor": "Estoque",
-        "nome": "Inicial",
+        "nome": "Pre-Inicial",
         "qtd": 0,
         "unid": "sc 40kg",
         "tipo": "Entrada",
@@ -4150,7 +4150,7 @@
     ],
     "ts": 1788215323792,
     "mov": "MOV-0001",
-    "_editadoEm": 1791363462848
+    "_editadoEm": 1791364203051
   },
   {
     "data": "2026-03-08",
