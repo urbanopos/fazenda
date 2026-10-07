@@ -1,0 +1,2942 @@
+<!DOCTYPE html>
+<!-- saved from url=(0047)https://urbanopos.github.io/fazenda/coleta.html -->
+<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Fazenda SJ">
+<meta name="theme-color" content="#1c2e22">
+<title>Fazenda Sao Jose - Coleta</title>
+<link rel="apple-touch-icon" href="https://urbanopos.github.io/fazenda/icon-192.png">
+<link rel="icon" type="image/png" href="https://urbanopos.github.io/fazenda/icon-192.png">
+<link rel="manifest" href="https://urbanopos.github.io/fazenda/manifest.json">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+:root{--vd:#1c2e22;--vm:#2d4a38;--vc:#4a8c6f;--ac:#b8943f;--cr:#f5f0e8;--ce:#e8dfc8;--br:#fff;--tx:#1a1a1a;--mu:#888;--r:8px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%;background:var(--vd)}
+body{font-family:'DM Sans',sans-serif;background:var(--vd);min-height:100vh;color:var(--tx);padding-bottom:env(safe-area-inset-bottom)}
+/* BANNER */
+#banner-inst{display:none;position:fixed;bottom:0;left:0;right:0;z-index:9998;background:var(--vd);border-top:2px solid var(--ac);padding:14px 16px 20px;box-shadow:0 -4px 24px rgba(0,0,0,.5)}
+#banner-inst.vis{display:block}
+.bi-titulo{font-family:'DM Serif Display',serif;font-size:16px;color:#fff;margin-bottom:3px}
+.bi-desc{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.55);margin-bottom:12px}
+.bi-btns{display:flex;gap:10px}
+.bi-ok{flex:1;padding:12px;border:none;border-radius:var(--r);background:var(--ac);color:var(--vd);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
+.bi-nao{padding:12px 16px;border:1px solid rgba(255,255,255,.2);border-radius:var(--r);background:none;color:rgba(255,255,255,.5);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer}
+/* GUIA IOS */
+#guia-ios{display:none;position:fixed;inset:0;z-index:9997;background:rgba(0,0,0,.78);align-items:flex-end}
+#guia-ios.vis{display:flex}
+.gi-box{background:var(--vd);width:100%;border-radius:20px 20px 0 0;border-top:2px solid var(--ac);padding:24px 20px 36px}
+.gi-titulo{font-family:'DM Serif Display',serif;font-size:19px;color:#fff;text-align:center;margin-bottom:4px}
+.gi-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--ac);letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:20px}
+.gi-passo{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.gi-passo:last-of-type{border:none}
+.gi-num{width:32px;height:32px;border-radius:50%;background:var(--ac);color:var(--vd);font-family:'DM Mono',monospace;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gi-ico{font-size:22px;flex-shrink:0}
+.gi-txt{font-family:'DM Sans',sans-serif;font-size:14px;color:rgba(255,255,255,.82);line-height:1.4}
+.gi-txt strong{color:var(--ac)}
+.gi-fechar{width:100%;margin-top:18px;padding:13px;border:1px solid rgba(255,255,255,.18);border-radius:var(--r);background:none;color:rgba(255,255,255,.55);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer}
+/* BLOQUEIO */
+#tela-bloqueio{display:none;position:fixed;inset:0;z-index:99999;background:var(--vd);flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;text-align:center}
+#tela-bloqueio.vis{display:flex}
+.bl-ico{font-size:72px;margin-bottom:24px;filter:grayscale(1);opacity:.5}
+.bl-titulo{font-family:'DM Serif Display',serif;font-size:26px;color:#fff;margin-bottom:12px}
+.bl-msg{font-family:'DM Sans',sans-serif;font-size:15px;color:rgba(255,255,255,.5);line-height:1.6;max-width:280px;margin-bottom:36px}
+.bl-msg strong{color:rgba(255,255,255,.8)}
+.bl-wrap{width:100%;max-width:300px}
+.bl-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px;display:block}
+.bl-iw{position:relative}
+.bl-input{width:100%;padding:14px 48px 14px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);color:#fff;font-family:'DM Mono',monospace;font-size:16px;text-align:left;outline:none}
+.bl-olho{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.4);font-size:20px;cursor:pointer;line-height:1;padding:4px}
+.bl-btn{width:100%;margin-top:10px;padding:14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--r);color:rgba(255,255,255,.7);font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;cursor:pointer}
+.bl-erro{font-family:'DM Mono',monospace;font-size:11px;color:#e08080;margin-top:8px;min-height:16px}
+/* ADMIN */
+#painel-admin{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.82);align-items:center;justify-content:center}
+#painel-admin.vis{display:flex}
+.ad-box{background:var(--vd);width:92%;max-width:360px;border-radius:16px;border:2px solid var(--ac);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.ad-hd{background:rgba(184,148,63,.1);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(184,148,63,.2)}
+.ad-hd-t{font-family:'DM Serif Display',serif;font-size:17px;color:#fff}
+.ad-hd-s{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ac);margin-top:2px}
+.ad-x{background:none;border:none;color:rgba(255,255,255,.4);font-size:22px;cursor:pointer;line-height:1;padding:0}
+.ad-corpo{padding:20px 18px 24px;max-height:80vh;overflow-y:auto}
+.ad-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:8px;display:block}
+.ad-iw{position:relative;margin-bottom:14px}
+.ad-inp{width:100%;padding:13px 44px 13px 14px;border:2px solid rgba(255,255,255,.1);border-radius:var(--r);background:rgba(255,255,255,.07);color:#fff;font-family:'DM Mono',monospace;font-size:15px;outline:none;letter-spacing:1px}
+.ad-inp:focus{border-color:var(--ac)}
+.ad-inp::placeholder{color:rgba(255,255,255,.22);letter-spacing:0}
+.ad-olho{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.3);font-size:18px;cursor:pointer;line-height:1;padding:0}
+.ad-div{height:1px;background:rgba(255,255,255,.07);margin:16px 0}
+.ad-val{font-family:'DM Mono',monospace;font-size:13px;color:rgba(255,255,255,.45);background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.1);border-radius:6px;padding:10px 14px;display:flex;align-items:center;margin-bottom:4px}
+.ad-val span{color:var(--ac);font-weight:700}
+.ad-row{display:flex;gap:8px;margin-top:10px}
+.ad-ok{flex:1;padding:12px;border:none;border-radius:var(--r);background:var(--ac);color:var(--vd);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
+.ad-cl{padding:12px 14px;border:1px solid rgba(255,255,255,.12);border-radius:var(--r);background:none;color:rgba(255,255,255,.45);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer}
+.ad-st{font-family:'DM Mono',monospace;font-size:11px;text-align:center;margin-top:12px;min-height:16px;color:var(--ac)}
+.ad-st.er{color:#e08080}
+/* TOPO */
+.topo{background:var(--vd);padding:16px 20px 12px;display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--ac);position:sticky;top:0;z-index:100}
+.topo-icon{width:44px;height:44px;border-radius:50%;background:var(--ac);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;cursor:pointer;transition:transform .15s,box-shadow .15s;user-select:none}
+.topo-icon.press{transform:scale(.88);box-shadow:0 0 0 5px rgba(184,148,63,.35)}
+.topo-t{font-family:'DM Serif Display',serif;font-size:18px;color:#fff;line-height:1.1}
+.topo-s{font-family:'DM Mono',monospace;font-size:10px;color:var(--ac);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+.topo-d{margin-left:auto;font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.45);text-align:right;line-height:1.5}
+.btn-inst{background:rgba(184,148,63,.14);border:1px solid rgba(184,148,63,.35);color:var(--ac);border-radius:20px;padding:8px 18px;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;display:none;letter-spacing:.5px}
+.btn-inst.vis{display:block}
+/* CORPO */
+.corpo{background:var(--cr);min-height:calc(100vh - 74px);border-radius:20px 20px 0 0;padding:1mm 16px 120px}
+/* ABAS */
+.abas{display:flex;gap:8px;margin-bottom:20px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.abas::-webkit-scrollbar{display:none}
+.aba{flex-shrink:0;padding:9px 18px;border-radius:20px;font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:1px;text-transform:uppercase;border:2px solid var(--ce);background:var(--br);color:var(--mu);cursor:pointer;transition:all .2s}
+.aba.at{background:var(--vd);color:var(--ac);border-color:var(--vd)}
+.aba-p.at{background:#7f1d1d;border-color:#7f1d1d;color:#fca5a5}
+.aba-c.at{background:#3b5e2a;border-color:#3b5e2a;color:#a8d88a}
+.aba-e.at{background:#1e3a5f;border-color:#1e3a5f;color:#93c5fd}
+.aba-v{display:none}.aba-v.vis{display:inline-flex}.aba-v.at{background:#7a3a00;border-color:#7a3a00;color:#ffd49a}
+/* SECAO */
+.secao{display:none}.secao.at{display:block}
+.sec-t{font-family:'DM Serif Display',serif;font-size:22px;color:var(--vd);margin-bottom:4px}
+.sec-d{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);margin-bottom:18px}
+/* CARDS COLETA */
+.pgrid{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.pc{background:var(--br);border-radius:var(--r);border:2px solid var(--ce);overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.pc.at{border-color:var(--vc);box-shadow:0 2px 14px rgba(74,140,111,.15)}
+.pc.concluido{border-color:var(--vc);background:#f0faf4}
+.pc-p.at{border-color:#e08080;box-shadow:0 2px 12px rgba(160,48,48,.12)}
+.pc-p.concluido{background:#fff5f5;border-color:#e08080}
+.pc-c.at{border-color:#7ab85a;box-shadow:0 2px 12px rgba(74,140,74,.12)}
+.pc-c.concluido{background:#f0faf0;border-color:#7ab85a}
+.pc-e.at{border-color:#5a8ab8;box-shadow:0 2px 12px rgba(30,58,95,.14)}
+.pc-e.concluido{background:#f0f4fa;border-color:#5a8ab8}
+.ph{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none}
+.pe{font-size:26px;flex-shrink:0}
+.pn{font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;color:var(--tx);flex:1}
+.pb{font-family:'DM Mono',monospace;font-size:10px;padding:3px 9px;border-radius:10px;background:var(--cr);color:var(--mu);transition:all .2s;flex-shrink:0}
+.pc.at .pb{background:var(--vc);color:#fff}
+.pc-p.at .pb{background:#a03030;color:#fff}
+.pc-c.at .pb{background:#5a8a3a;color:#fff}
+.pc-e.at .pb{background:#1e3a5f;color:#93c5fd}
+.pc.concluido .pb,.pc-p.concluido .pb,.pc-c.concluido .pb,.pc-e.concluido .pb{background:#27ae60;color:#fff}
+.pbd{display:none;padding:0 16px 16px;border-top:1px solid var(--ce)}
+.pc.at .pbd{display:block}
+.res-con{display:none;padding:8px 16px 12px;background:rgba(39,174,96,.06);border-top:1px solid rgba(39,174,96,.15)}
+.pc.concluido .res-con{display:block}
+.rc-l{font-family:'DM Mono',monospace;font-size:12px;color:var(--vm);margin-bottom:3px}
+.rc-l strong{color:var(--tx)}
+/* CAMPOS COLETA */
+.cg{margin-top:14px}
+.cl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);margin-bottom:6px;display:block}
+input[type=number],input[type=text],input[type=date],textarea{width:100%;padding:12px 14px;border:2px solid var(--ce);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:16px;background:var(--cr);color:var(--tx);outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none}
+input:focus,textarea:focus{border-color:var(--vc);background:var(--br)}
+textarea{resize:none;height:72px;font-size:14px}
+.step{display:flex;align-items:center;border:2px solid var(--ce);border-radius:var(--r);background:var(--cr);overflow:hidden}
+.sb{width:52px;height:52px;flex-shrink:0;background:none;border:none;font-size:26px;font-weight:300;color:var(--vc);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.sb:active{background:var(--ce)}
+.si{flex:1;text-align:center;border:none!important;background:transparent!important;font-size:22px!important;font-weight:700!important;padding:10px 0!important;color:var(--tx)}
+.card-acoes{display:flex;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--ce)}
+.btn-con{flex:2;padding:12px;border:none;border-radius:var(--r);background:#27ae60;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
+.btn-alt{flex:1;padding:12px;border:2px solid var(--ce);border-radius:var(--r);background:var(--br);color:var(--vm);font-family:'DM Mono',monospace;font-size:11px;font-weight:600;cursor:pointer;text-align:center}
+.btn-apa{width:48px;height:48px;padding:0;border:2px solid #fde8e8;border-radius:var(--r);background:#fde8e8;color:#a03030;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* Botoes sempre visiveis no cabecalho */
+.ph-acoes{display:flex;gap:5px;flex-shrink:0}
+.ph-btn-alt{padding:5px 10px;border:1px solid var(--ce);border-radius:6px;background:var(--br);color:var(--vm);font-family:'DM Mono',monospace;font-size:10px;font-weight:600;cursor:pointer;line-height:1.4}
+.ph-btn-apa{width:30px;height:30px;padding:0;border:1px solid #fde8e8;border-radius:6px;background:#fde8e8;color:#a03030;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+/* BOTOES PRINCIPAIS */
+.btn-wpp{width:100%;padding:16px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 4px 16px rgba(37,211,102,.3);margin-top:8px}
+.btn-wpp:active{opacity:.85}
+/* CONT */
+.cont{font-family:'DM Mono',monospace;font-size:11px;color:var(--mu);text-align:center;margin-bottom:16px;letter-spacing:1px}
+.cont strong{color:var(--vc)}
+.div{height:1px;background:var(--ce);margin:20px 0}
+.cdata{display:flex;gap:8px;margin-top:6px}
+.btn-hj{padding:8px 14px;border-radius:6px;background:var(--vm);color:var(--ac);border:none;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;white-space:nowrap}
+/* TOAST */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--vd);color:#fff;font-family:'DM Mono',monospace;font-size:12px;padding:12px 20px;border-radius:20px;border:1px solid var(--ac);opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999;white-space:nowrap}
+.toast.vis{opacity:1}
+/* VENDAS */
+#sec-vendas{display:none}
+#sec-vendas.at{display:block}
+.talao-num{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--ac);text-align:center;margin-bottom:14px;padding:6px;background:rgba(184,148,63,.08);border-radius:6px;border:1px dashed var(--ac)}
+.talao-num strong{font-size:15px}
+.vi{background:var(--br);border-radius:var(--r);border:2px solid var(--ce);padding:14px;margin-bottom:10px}
+.vi.con{background:#fffbf0;border-color:var(--ac)}
+.vi-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);display:block;margin-bottom:6px}
+.vi-sel{width:100%;padding:10px 12px;border:2px solid var(--ce);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:15px;background:var(--cr);color:var(--tx);outline:none;-webkit-appearance:none;appearance:none;margin-bottom:12px}
+.vi-sel:focus{border-color:var(--ac)}
+.vi-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.vi-campo{display:flex;flex-direction:column}
+.vi-inp{padding:10px 12px;border:2px solid var(--ce);border-radius:var(--r);font-family:'DM Mono',monospace;font-size:15px;font-weight:600;background:var(--cr);color:var(--tx);outline:none;width:100%;-webkit-appearance:none}
+.vi-inp:focus{border-color:var(--ac);background:var(--br)}
+.vi-sub-box{background:var(--vd);color:var(--ac);font-family:'DM Mono',monospace;font-size:16px;font-weight:700;padding:10px 12px;border-radius:var(--r);display:flex;align-items:center}
+.vi-btns{display:flex;gap:8px;margin-top:10px}
+.vi-ok{flex:1;padding:10px;border:none;border-radius:var(--r);background:#27ae60;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
+.vi-del{width:44px;height:44px;border:2px solid #fde8e8;border-radius:var(--r);background:#fde8e8;color:#a03030;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.vi-res{font-family:'DM Mono',monospace;font-size:12px;color:var(--vm);margin-top:6px}
+.vi-edit{padding:8px 14px;border:2px solid var(--ce);border-radius:var(--r);background:var(--br);color:var(--vm);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;margin-top:8px}
+.btn-add{width:100%;padding:12px;border:2px dashed var(--ac);border-radius:var(--r);background:rgba(184,148,63,.06);color:var(--ac);font-family:'DM Mono',monospace;font-size:12px;letter-spacing:1px;cursor:pointer;margin-bottom:12px}
+/* HISTORICO DE PEDIDOS */
+.hist-toggle{display:flex;gap:8px;margin-bottom:16px}
+.hist-btn{flex:1;padding:10px;border:2px solid var(--ce);border-radius:var(--r);background:var(--br);color:var(--mu);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;text-align:center}
+.hist-btn.ativo{background:#7a3a00;border-color:#7a3a00;color:#ffd49a}
+.hist-panel{display:none}
+.hist-panel.vis{display:block}
+.hist-item{background:var(--br);border-radius:var(--r);border:2px solid var(--ce);padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.hist-item:active{background:var(--cr)}
+.hist-num{font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:#7a3a00;flex-shrink:0;min-width:72px}
+.hist-info{flex:1;min-width:0}
+.hist-cli{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-det{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu);margin-top:2px}
+.hist-tot{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:#7a3a00;flex-shrink:0;text-align:right}
+.hist-viz{background:#7a3a00;border:none;border-radius:6px;color:#ffd49a;font-family:'DM Mono',monospace;font-size:10px;padding:6px 10px;cursor:pointer;flex-shrink:0;white-space:nowrap}
+.hist-empty{text-align:center;font-family:'DM Mono',monospace;font-size:12px;color:var(--mu);padding:24px 0}
+/* Modal visualizacao pedido */
+#modal-ped{display:none;position:fixed;inset:0;z-index:9990;background:rgba(0,0,0,.78);align-items:flex-end}
+#modal-ped.vis{display:flex}
+.mp-box{background:var(--cr);width:100%;max-height:88vh;border-radius:20px 20px 0 0;overflow-y:auto}
+.mp-hd{background:#7a3a00;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-radius:20px 20px 0 0;position:sticky;top:0;z-index:1}
+.mp-hd-t{font-family:'DM Serif Display',serif;font-size:16px;color:#ffd49a}
+.mp-hd-s{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,212,154,.6);margin-top:2px}
+.mp-x{background:none;border:none;color:rgba(255,212,154,.6);font-size:20px;cursor:pointer;line-height:1;padding:0}
+.mp-body{padding:16px}
+.mp-meta{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--ce)}
+.mp-meta-item{display:flex;flex-direction:column;gap:2px}
+.mp-meta-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu)}
+.mp-meta-val{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--tx)}
+.mp-linha{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--ce)}
+.mp-linha:last-child{border:none}
+.mp-li-prod{flex:1;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--tx)}
+.mp-li-det{font-family:'DM Mono',monospace;font-size:11px;color:var(--mu);margin-top:2px}
+.mp-li-sub{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:#7a3a00;flex-shrink:0;text-align:right}
+.mp-total{background:#7a3a00;border-radius:var(--r);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.mp-total-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,212,154,.7)}
+.mp-total-val{font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:#ffd49a}
+.mp-btn-img{width:100%;margin-top:12px;padding:13px;background:linear-gradient(135deg,#7a3a00,#b85a00);color:#fff;border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
+.vt{background:var(--vd);border-radius:var(--r);padding:14px 16px;margin-top:4px;display:flex;justify-content:space-between;align-items:center}
+.vt-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7aa88a}
+.vt-val{font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--ac)}
+/* HISTORICO DE COLETAS */
+.btn-consulta{width:100%;padding:11px;border:2px solid var(--ac);border-radius:var(--r);background:rgba(184,148,63,.08);color:var(--ac);font-family:'DM Mono',monospace;font-size:12px;letter-spacing:1px;cursor:pointer;margin-top:10px;display:none}
+.btn-consulta.vis{display:block}
+#modal-hcol{display:none;position:fixed;inset:0;z-index:9991;background:rgba(0,0,0,.78);align-items:flex-end}
+#modal-hcol.vis{display:flex}
+.hcol-box{background:var(--cr);width:100%;max-height:92vh;border-radius:20px 20px 0 0;overflow:hidden;display:flex;flex-direction:column}
+.hcol-hd{background:var(--vd);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:3px solid var(--ac)}
+.hcol-hd-t{font-family:'DM Serif Display',serif;font-size:17px;color:var(--ac)}
+.hcol-hd-s{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.5);margin-top:2px}
+.hcol-x{background:none;border:none;color:rgba(255,255,255,.5);font-size:22px;cursor:pointer;line-height:1}
+.hcol-filtros{background:#f5f0e8;padding:10px 16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--ce);flex-shrink:0}
+.hcol-sel{padding:8px 12px;border:2px solid var(--ce);border-radius:var(--r);font-family:'DM Mono',monospace;font-size:12px;background:#fff;color:var(--tx);outline:none;-webkit-appearance:none}
+.hcol-sel:focus{border-color:var(--ac)}
+.hcol-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu)}
+.hcol-body{flex:1;overflow-y:auto;padding:14px 16px 80px}
+.hcol-secao{margin-bottom:18px}
+.hcol-secao-titulo{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#fff;padding:6px 12px;border-radius:4px;display:inline-block;margin-bottom:8px}
+.hcol-item{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:#fff;border-radius:6px;margin-bottom:6px;border:1px solid var(--ce)}
+.hcol-item-nome{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--tx)}
+.hcol-item-det{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu);margin-top:2px}
+.hcol-item-qtd{font-family:'DM Mono',monospace;font-size:15px;font-weight:700;color:var(--vd);flex-shrink:0;text-align:right}
+.hcol-item-unid{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu)}
+.hcol-total{background:var(--vd);border-radius:var(--r);padding:12px 16px;margin-top:4px;display:flex;justify-content:space-between;align-items:center}
+.hcol-total-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#7aa88a}
+.hcol-total-val{font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:var(--ac)}
+.hcol-entrada{background:#fff;border:1px solid var(--ce);border-radius:6px;padding:10px 12px;margin-bottom:8px}
+.hcol-entrada-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.hcol-entrada-data{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:var(--vd)}
+.hcol-entrada-col{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu)}
+.hcol-entrada-item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f0ece3;font-family:'DM Mono',monospace;font-size:12px}
+.hcol-entrada-item:last-child{border:none}
+.hcol-vazia{text-align:center;font-family:'DM Mono',monospace;font-size:12px;color:var(--mu);padding:30px 0}
+.hcol-tab-toggle{display:flex;gap:6px;margin-bottom:14px}
+.hcol-tab-btn{flex:1;padding:9px;border:2px solid var(--ce);border-radius:var(--r);background:#fff;color:var(--mu);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
+.hcol-tab-btn.ativo{background:var(--vd);border-color:var(--vd);color:var(--ac)}
+</style>
+</head>
+<body>
+
+<!-- BANNER ANDROID removido — instalacao pelo botao no cabecalho -->
+
+<!-- GUIA IOS -->
+<div id="guia-ios" onclick="fecharGuiaIos()">
+  <div class="gi-box" onclick="event.stopPropagation()">
+    <div class="gi-titulo">Adicionar a tela inicial</div>
+    <div class="gi-sub">iPhone / iPad</div>
+    <div class="gi-passo"><div class="gi-num">1</div><span class="gi-ico">⇧</span><div class="gi-txt">Toque em <strong>Compartilhar</strong> no Safari</div></div>
+    <div class="gi-passo"><div class="gi-num">2</div><span class="gi-ico">+</span><div class="gi-txt">Toque em <strong>Adicionar a Tela de Inicio</strong></div></div>
+    <div class="gi-passo"><div class="gi-num">3</div><span class="gi-ico">✓</span><div class="gi-txt">Confirme em <strong>Adicionar</strong></div></div>
+    <button class="gi-fechar" onclick="fecharGuiaIos()">Entendi</button>
+  </div>
+</div>
+
+<!-- BLOQUEIO -->
+<div id="tela-bloqueio">
+  <div class="bl-ico">🔒</div>
+  <div class="bl-titulo">Aplicativo desativado</div>
+  <div class="bl-msg" id="bl-msg">Este aplicativo foi <strong>desativado</strong> pelo administrador.<br><br>Entre em contato com a Fazenda Sao Jose.</div>
+  <div class="bl-wrap">
+    <span class="bl-label">Codigo de reativacao</span>
+    <div class="bl-iw">
+      <input class="bl-input" type="text" id="bl-inp" placeholder="Digite o codigo..." autocomplete="off">
+      <button class="bl-olho" onclick="toggleBlVis()" id="bl-olho">👁</button>
+    </div>
+    <button class="bl-btn" onclick="tentarDesbloquear()">✓ Verificar codigo</button>
+    <div class="bl-erro" id="bl-erro"></div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="painel-admin">
+  <div class="ad-box">
+    <div class="ad-hd">
+      <div><div class="ad-hd-t">Administrador</div><div class="ad-hd-s">Configuracoes</div></div>
+      <button class="ad-x" onclick="fecharAdmin()">x</button>
+    </div>
+    <div class="ad-corpo">
+      <span class="ad-lbl">Senha</span>
+      <div class="ad-iw">
+        <input class="ad-inp" type="password" id="ad-senha" placeholder="Digite a senha..." autocomplete="off">
+        <button class="ad-olho" onclick="toggleAdVis()" id="ad-olho">👁</button>
+      </div>
+      <div class="ad-row" style="margin-top:0">
+        <button class="ad-ok" onclick="verificarAdmin()">Entrar</button>
+        <button class="ad-cl" onclick="fecharAdmin()">Cancelar</button>
+      </div>
+      <div class="ad-st" id="ad-st"></div>
+      <div id="ad-cfg" style="display:none">
+        <div class="ad-div"></div>
+        <span class="ad-lbl">Numero WhatsApp</span>
+        <div class="ad-val"><span id="ad-num-sp">Nao configurado</span></div>
+        <div style="margin-top:10px"><span class="ad-lbl">Novo numero (ex: 5581999999999)</span>
+          <div class="ad-iw" style="margin-bottom:0"><input class="ad-inp" type="tel" id="ad-num-novo" placeholder="5581999999999" autocomplete="off"></div>
+        </div>
+        <div class="ad-div"></div>
+        <span class="ad-lbl">Nome do Coletor</span>
+        <div class="ad-val"><span id="ad-nome-sp">Nao configurado</span></div>
+        <div style="margin-top:10px"><span class="ad-lbl">Nome completo do portador</span>
+          <div class="ad-iw" style="margin-bottom:0"><input class="ad-inp" type="text" id="ad-nome-novo" placeholder="Ex: Joao da Silva..." autocomplete="off"></div>
+        </div>
+        <div class="ad-row"><button class="ad-ok" onclick="salvarConfigColetor()">Salvar configuracoes</button></div>
+        <div class="ad-div"></div>
+        <span class="ad-lbl">Modulo de Vendas</span>
+        <div class="ad-row">
+          <button class="ad-ok" id="btn-toggle-vendas" onclick="toggleVendas()" style="background:#7a3a00;color:#ffd49a">Ativar Vendas</button>
+        </div>
+        <div class="ad-div"></div>
+        <span class="ad-lbl">Alterar senha</span>
+        <div class="ad-iw"><input class="ad-inp" type="password" id="ad-senha-nova" placeholder="Nova senha..." autocomplete="new-password"></div>
+        <div class="ad-row"><button class="ad-ok" onclick="salvarSenha()" style="background:#2d4a38;color:var(--ac)">Salvar senha</button></div>
+        <div class="ad-div"></div>
+        <span class="ad-lbl">Token GitHub (envio de coletas)</span>
+        <div class="ad-val"><span id="ad-gh-token-sp">Não configurado</span></div>
+        <div class="ad-val" style="font-size:11px;margin-top:4px"><span id="ad-gh-status-sp"></span></div>
+        <div style="margin-top:10px"><span class="ad-lbl">Cole o token ghp_... gerado no GitHub</span>
+          <div class="ad-iw" style="margin-bottom:0"><input class="ad-inp" type="password" id="ad-gh-token-inp" placeholder="ghp_..." autocomplete="off"></div>
+        </div>
+        <div class="ad-row"><button class="ad-ok" onclick="_salvarGhToken()" style="background:#1a6b2a;color:#fff">Salvar token</button></div>
+        <div class="ad-div"></div>
+        <span class="ad-lbl">Atualizacoes</span>
+        <div class="ad-row"><button class="ad-ok" onclick="_caVerificarAtualizacao(true)" style="background:#1a6b2a;color:#a8e6b8">🔄 Verificar atualização agora</button></div>
+        <div class="ad-div"></div>
+        <span class="ad-lbl">Enviar app para novo coletor</span>
+        <div class="ad-row"><button class="ad-ok" onclick="compartilharLink()" style="background:linear-gradient(135deg,#25d366,#128c7e);color:#fff">Enviar link pelo WhatsApp</button></div>
+        <div class="ad-div"></div>
+        <span class="ad-lbl">Historico de Coletas</span>
+        <div class="ad-row"><button class="ad-ok" onclick="fecharAdmin();abrirHistColeta()" style="background:#1e3a5f;color:#93c5fd">📊 Ver Consulta de Coletas</button></div>
+        <div class="ad-div"></div>
+        <span class="ad-lbl">Historico de Pedidos</span>
+        <div class="ad-row"><button class="ad-ok" onclick="fecharAdmin();abrirHistPedidos()" style="background:#7a3a00;color:#ffd49a">📄 Ver Consulta Pedidos</button></div>
+        <div class="ad-div"></div>
+        <div class="ad-row"><button id="btn-desbloquear" class="ad-ok" onclick="desbloquearAdmin()" style="background:#2d4a38;color:#a8d88a;display:none">Desbloquear dispositivo</button></div>
+        <div class="ad-st" id="ad-st2"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOPO -->
+<div class="topo">
+  <div class="topo-icon" id="topo-icon">🌿</div>
+  <div><div class="topo-t">Fazenda Sao Jose</div><div class="topo-s">Coleta de Campo</div></div>
+  <button class="btn-inst" id="btn-inst" onclick="abrirInst()">Instalar</button>
+  <div class="topo-d" id="relogio">seg., 08 de jun.<br>05:34</div>
+</div>
+
+<!-- CORPO -->
+<div class="corpo">
+  <div class="cg" style="margin-top:0;margin-bottom:1mm">
+    <span class="cl" id="lbl-data">Data da Coleta</span>
+    <div class="cdata" style="justify-content:space-between;align-items:center">
+      <div style="display:flex;gap:8px;align-items:center;flex:1;min-width:0">
+        <input type="date" id="data-global" style="flex:1">
+        <button class="btn-hj" onclick="setHoje()">Hoje</button>
+      </div>
+      <button class="btn-hj" onclick="sairColeta()" style="background:#5a1a1a;color:#ffb4b4;border:1px solid #7a2a2a;margin-left:12px;flex:none">Sair</button>
+    </div>
+  </div>
+  <div class="cg" style="margin-top:0;margin-bottom:1mm">
+    <span class="cl">Setor</span>
+    <select id="setor-sel" onchange="trocarAba(this.value)" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#fff">
+      <option value="aviario" selected>Aviário</option>
+      <option value="perda">Perda</option>
+      <option value="campo">Campo</option>
+      <option value="estoque">Estoque</option>
+    </select>
+  </div>
+  <div class="secao at" id="sec-aviario"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="sec-t">Aviario</div><button onclick="abrirHistColetaSetor('Aviario')" style="padding:5px 12px;background:rgba(28,78,34,.1);border:1.5px solid var(--vc);border-radius:6px;color:var(--vc);font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📋 Histórico</button></div><div class="sec-d">Producao e movimentacao</div><div class="pgrid" id="grid-aviario"><div class="pc" id="card-aviario_ovo"><div class="ph"><div onclick="toggleCard(&#39;aviario_ovo&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Ovos de Capoeira</span><span class="pb" id="badge-aviario_ovo">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;aviario_ovo&#39;,&#39;&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;aviario_ovo&#39;,&#39;&#39;)">x</button></div></div><div class="res-con" id="res-aviario_ovo"></div><div class="pbd" id="body-aviario_ovo"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_ovo&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_ovo" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_ovo&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-aviario_ovo" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_ovo&#39;,&#39;unid&#39;,&#39;Ovos de Capoeira&#39;)">Concluir</button></div></div></div><div class="pc" id="card-aviario_esterco"><div class="ph"><div onclick="toggleCard(&#39;aviario_esterco&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Esterco</span><span class="pb" id="badge-aviario_esterco">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;aviario_esterco&#39;,&#39;&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;aviario_esterco&#39;,&#39;&#39;)">x</button></div></div><div class="res-con" id="res-aviario_esterco"></div><div class="pbd" id="body-aviario_esterco"><div class="cg"><span class="cl">Quantidade (sacos)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_esterco&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_esterco" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_esterco&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-aviario_esterco" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_esterco&#39;,&#39;sacos&#39;,&#39;Esterco&#39;)">Concluir</button></div></div></div><div class="pc" id="card-aviario_galinha"><div class="ph"><div onclick="toggleCard(&#39;aviario_galinha&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Galinha</span><span class="pb" id="badge-aviario_galinha">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;aviario_galinha&#39;,&#39;&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;aviario_galinha&#39;,&#39;&#39;)">x</button></div></div><div class="res-con" id="res-aviario_galinha"></div><div class="pbd" id="body-aviario_galinha"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_galinha&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_galinha" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_galinha&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-aviario_galinha" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_galinha&#39;,&#39;unid&#39;,&#39;Galinha&#39;)">Concluir</button></div></div></div><div class="pc" id="card-aviario_frango"><div class="ph"><div onclick="toggleCard(&#39;aviario_frango&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Frango</span><span class="pb" id="badge-aviario_frango">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;aviario_frango&#39;,&#39;&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;aviario_frango&#39;,&#39;&#39;)">x</button></div></div><div class="res-con" id="res-aviario_frango"></div><div class="pbd" id="body-aviario_frango"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_frango&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_frango" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_frango&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-aviario_frango" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_frango&#39;,&#39;unid&#39;,&#39;Frango&#39;)">Concluir</button></div></div></div><div class="pc" id="card-aviario_pinto"><div class="ph"><div onclick="toggleCard(&#39;aviario_pinto&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pinto</span><span class="pb" id="badge-aviario_pinto">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;aviario_pinto&#39;,&#39;&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;aviario_pinto&#39;,&#39;&#39;)">x</button></div></div><div class="res-con" id="res-aviario_pinto"></div><div class="pbd" id="body-aviario_pinto"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_pinto&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_pinto" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_pinto&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-aviario_pinto" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_pinto&#39;,&#39;unid&#39;,&#39;Pinto&#39;)">Concluir</button></div></div></div><div class="pc" id="card-aviario_pintainha"><div class="ph"><div onclick="toggleCard(&#39;aviario_pintainha&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pintainha</span><span class="pb" id="badge-aviario_pintainha">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;aviario_pintainha&#39;,&#39;&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;aviario_pintainha&#39;,&#39;&#39;)">x</button></div></div><div class="res-con" id="res-aviario_pintainha"></div><div class="pbd" id="body-aviario_pintainha"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_pintainha&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_pintainha" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_pintainha&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-aviario_pintainha" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_pintainha&#39;,&#39;unid&#39;,&#39;Pintainha&#39;)">Concluir</button></div></div></div></div></div>
+  <div class="secao" id="sec-perda"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="sec-t" style="color:#7f1d1d">Perda / Baixa</div><button onclick="abrirHistColetaSetor('Perda')" style="padding:5px 12px;background:rgba(127,29,29,.1);border:1.5px solid #7f1d1d;border-radius:6px;color:#7f1d1d;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📋 Histórico</button></div><div class="sec-d">Mortalidade ou descarte</div><div class="pgrid" id="grid-perda"><div class="pc pc-p" id="card-perda_ovo"><div class="ph"><div onclick="toggleCard(&#39;perda_ovo&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Ovos de Capoeira</span><span class="pb" id="badge-perda_ovo">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;perda_ovo&#39;,&#39;pc-p&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;perda_ovo&#39;,&#39;pc-p&#39;)">x</button></div></div><div class="res-con" id="res-perda_ovo"></div><div class="pbd" id="body-perda_ovo"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_ovo&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_ovo" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_ovo&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-perda_ovo" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_ovo&#39;,&#39;unid&#39;,&#39;Ovos de Capoeira&#39;)">Concluir</button></div></div></div><div class="pc pc-p" id="card-perda_esterco"><div class="ph"><div onclick="toggleCard(&#39;perda_esterco&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Esterco</span><span class="pb" id="badge-perda_esterco">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;perda_esterco&#39;,&#39;pc-p&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;perda_esterco&#39;,&#39;pc-p&#39;)">x</button></div></div><div class="res-con" id="res-perda_esterco"></div><div class="pbd" id="body-perda_esterco"><div class="cg"><span class="cl">Quantidade (sacos)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_esterco&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_esterco" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_esterco&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-perda_esterco" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_esterco&#39;,&#39;sacos&#39;,&#39;Esterco&#39;)">Concluir</button></div></div></div><div class="pc pc-p" id="card-perda_galinha"><div class="ph"><div onclick="toggleCard(&#39;perda_galinha&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Galinha</span><span class="pb" id="badge-perda_galinha">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;perda_galinha&#39;,&#39;pc-p&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;perda_galinha&#39;,&#39;pc-p&#39;)">x</button></div></div><div class="res-con" id="res-perda_galinha"></div><div class="pbd" id="body-perda_galinha"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_galinha&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_galinha" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_galinha&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-perda_galinha" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_galinha&#39;,&#39;unid&#39;,&#39;Galinha&#39;)">Concluir</button></div></div></div><div class="pc pc-p" id="card-perda_frango"><div class="ph"><div onclick="toggleCard(&#39;perda_frango&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Frango</span><span class="pb" id="badge-perda_frango">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;perda_frango&#39;,&#39;pc-p&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;perda_frango&#39;,&#39;pc-p&#39;)">x</button></div></div><div class="res-con" id="res-perda_frango"></div><div class="pbd" id="body-perda_frango"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_frango&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_frango" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_frango&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-perda_frango" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_frango&#39;,&#39;unid&#39;,&#39;Frango&#39;)">Concluir</button></div></div></div><div class="pc pc-p" id="card-perda_pinto"><div class="ph"><div onclick="toggleCard(&#39;perda_pinto&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pinto</span><span class="pb" id="badge-perda_pinto">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;perda_pinto&#39;,&#39;pc-p&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;perda_pinto&#39;,&#39;pc-p&#39;)">x</button></div></div><div class="res-con" id="res-perda_pinto"></div><div class="pbd" id="body-perda_pinto"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_pinto&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_pinto" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_pinto&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-perda_pinto" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_pinto&#39;,&#39;unid&#39;,&#39;Pinto&#39;)">Concluir</button></div></div></div><div class="pc pc-p" id="card-perda_pintainha"><div class="ph"><div onclick="toggleCard(&#39;perda_pintainha&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pintainha</span><span class="pb" id="badge-perda_pintainha">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;perda_pintainha&#39;,&#39;pc-p&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;perda_pintainha&#39;,&#39;pc-p&#39;)">x</button></div></div><div class="res-con" id="res-perda_pintainha"></div><div class="pbd" id="body-perda_pintainha"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_pintainha&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_pintainha" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_pintainha&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-perda_pintainha" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_pintainha&#39;,&#39;unid&#39;,&#39;Pintainha&#39;)">Concluir</button></div></div></div></div></div>
+  <div class="secao" id="sec-campo"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="sec-t" style="color:#3b5e2a">Campo</div><button onclick="abrirHistColetaSetor('Campo')" style="padding:5px 12px;background:rgba(59,94,42,.1);border:1.5px solid #3b5e2a;border-radius:6px;color:#3b5e2a;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📋 Histórico</button></div><div class="sec-d">Colheita e producao rural</div><div class="pgrid" id="grid-campo"><div class="pc pc-c" id="card-campo_coco"><div class="ph"><div onclick="toggleCard(&#39;campo_coco&#39;,&#39;pc-c&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Coco Seco</span><span class="pb" id="badge-campo_coco">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;campo_coco&#39;,&#39;pc-c&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;campo_coco&#39;,&#39;pc-c&#39;)">x</button></div></div><div class="res-con" id="res-campo_coco"></div><div class="pbd" id="body-campo_coco"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;campo_coco&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-campo_coco" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;campo_coco&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-campo_coco" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;campo_coco&#39;,&#39;unid&#39;,&#39;Coco Seco&#39;)">Concluir</button></div></div></div><div class="pc pc-c" id="card-campo_manga"><div class="ph"><div onclick="toggleCard(&#39;campo_manga&#39;,&#39;pc-c&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Manga</span><span class="pb" id="badge-campo_manga">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;campo_manga&#39;,&#39;pc-c&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;campo_manga&#39;,&#39;pc-c&#39;)">x</button></div></div><div class="res-con" id="res-campo_manga"></div><div class="pbd" id="body-campo_manga"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;campo_manga&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-campo_manga" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;campo_manga&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-campo_manga" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;campo_manga&#39;,&#39;unid&#39;,&#39;Manga&#39;)">Concluir</button></div></div></div><div class="pc pc-c" id="card-campo_abacate"><div class="ph"><div onclick="toggleCard(&#39;campo_abacate&#39;,&#39;pc-c&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Abacate</span><span class="pb" id="badge-campo_abacate">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;campo_abacate&#39;,&#39;pc-c&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;campo_abacate&#39;,&#39;pc-c&#39;)">x</button></div></div><div class="res-con" id="res-campo_abacate"></div><div class="pbd" id="body-campo_abacate"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;campo_abacate&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-campo_abacate" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;campo_abacate&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-campo_abacate" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;campo_abacate&#39;,&#39;unid&#39;,&#39;Abacate&#39;)">Concluir</button></div></div></div><div class="pc pc-c" id="card-campo_banana"><div class="ph"><div onclick="toggleCard(&#39;campo_banana&#39;,&#39;pc-c&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Banana</span><span class="pb" id="badge-campo_banana">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;campo_banana&#39;,&#39;pc-c&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;campo_banana&#39;,&#39;pc-c&#39;)">x</button></div></div><div class="res-con" id="res-campo_banana"></div><div class="pbd" id="body-campo_banana"><div class="cg"><span class="cl">Quantidade (cac.)</span><div class="step"><button class="sb" onclick="stepQ(&#39;campo_banana&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-campo_banana" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;campo_banana&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-campo_banana" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;campo_banana&#39;,&#39;cac.&#39;,&#39;Banana&#39;)">Concluir</button></div></div></div><div class="pc pc-c" id="card-campo_pitomba"><div class="ph"><div onclick="toggleCard(&#39;campo_pitomba&#39;,&#39;pc-c&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pitomba</span><span class="pb" id="badge-campo_pitomba">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;campo_pitomba&#39;,&#39;pc-c&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;campo_pitomba&#39;,&#39;pc-c&#39;)">x</button></div></div><div class="res-con" id="res-campo_pitomba"></div><div class="pbd" id="body-campo_pitomba"><div class="cg"><span class="cl">Quantidade (kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;campo_pitomba&#39;,0.5,-1)">-</button><input class="si" type="number" id="qtd-campo_pitomba" inputmode="decimal" min="0" step="0.5" value="0"><button class="sb" onclick="stepQ(&#39;campo_pitomba&#39;,0.5,1)">+</button></div></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-campo_pitomba" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;campo_pitomba&#39;,&#39;kg&#39;,&#39;Pitomba&#39;)">Concluir</button></div></div></div></div></div>
+  <div class="secao" id="sec-estoque"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="sec-t" style="color:#1e3a5f">Estoque</div><button onclick="abrirHistColetaSetor('Estoque')" style="padding:5px 12px;background:rgba(30,58,95,.1);border:1.5px solid #1e3a5f;border-radius:6px;color:#1e3a5f;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📋 Histórico</button></div><div class="sec-d">Entrada de insumos e racoes</div><div class="pgrid" id="grid-estoque"><div class="pc pc-e" id="card-estoque_ipos"><div class="ph"><div onclick="toggleCard(&#39;estoque_ipos&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Postura</span><span class="pb" id="badge-estoque_ipos">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;estoque_ipos&#39;,&#39;pc-e&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;estoque_ipos&#39;,&#39;pc-e&#39;)">x</button></div></div><div class="res-con" id="res-estoque_ipos"></div><div class="pbd" id="body-estoque_ipos"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_ipos&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_ipos" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_ipos&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_ipos" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-estoque_ipos" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_ipos&#39;,&#39;sc 40kg&#39;,&#39;Postura&#39;)">Concluir</button></div></div></div><div class="pc pc-e" id="card-estoque_iini"><div class="ph"><div onclick="toggleCard(&#39;estoque_iini&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Inicial</span><span class="pb" id="badge-estoque_iini">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;estoque_iini&#39;,&#39;pc-e&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;estoque_iini&#39;,&#39;pc-e&#39;)">x</button></div></div><div class="res-con" id="res-estoque_iini"></div><div class="pbd" id="body-estoque_iini"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_iini&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_iini" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_iini&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_iini" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-estoque_iini" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_iini&#39;,&#39;sc 40kg&#39;,&#39;Inicial&#39;)">Concluir</button></div></div></div><div class="pc pc-e" id="card-estoque_ipre"><div class="ph"><div onclick="toggleCard(&#39;estoque_ipre&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pre-Inicial</span><span class="pb" id="badge-estoque_ipre">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;estoque_ipre&#39;,&#39;pc-e&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;estoque_ipre&#39;,&#39;pc-e&#39;)">x</button></div></div><div class="res-con" id="res-estoque_ipre"></div><div class="pbd" id="body-estoque_ipre"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_ipre&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_ipre" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_ipre&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_ipre" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-estoque_ipre" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_ipre&#39;,&#39;sc 40kg&#39;,&#39;Pre-Inicial&#39;)">Concluir</button></div></div></div><div class="pc pc-e" id="card-estoque_icre"><div class="ph"><div onclick="toggleCard(&#39;estoque_icre&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Crescimento</span><span class="pb" id="badge-estoque_icre">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;estoque_icre&#39;,&#39;pc-e&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;estoque_icre&#39;,&#39;pc-e&#39;)">x</button></div></div><div class="res-con" id="res-estoque_icre"></div><div class="pbd" id="body-estoque_icre"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_icre&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_icre" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_icre&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_icre" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-estoque_icre" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_icre&#39;,&#39;sc 40kg&#39;,&#39;Crescimento&#39;)">Concluir</button></div></div></div><div class="pc pc-e" id="card-estoque_ieng"><div class="ph"><div onclick="toggleCard(&#39;estoque_ieng&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Engorda</span><span class="pb" id="badge-estoque_ieng">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;estoque_ieng&#39;,&#39;pc-e&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;estoque_ieng&#39;,&#39;pc-e&#39;)">x</button></div></div><div class="res-con" id="res-estoque_ieng"></div><div class="pbd" id="body-estoque_ieng"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_ieng&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_ieng" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_ieng&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_ieng" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-estoque_ieng" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_ieng&#39;,&#39;sc 40kg&#39;,&#39;Engorda&#39;)">Concluir</button></div></div></div><div class="pc pc-e" id="card-estoque_milho"><div class="ph"><div onclick="toggleCard(&#39;estoque_milho&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Milho</span><span class="pb" id="badge-estoque_milho">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;estoque_milho&#39;,&#39;pc-e&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;estoque_milho&#39;,&#39;pc-e&#39;)">x</button></div></div><div class="res-con" id="res-estoque_milho"></div><div class="pbd" id="body-estoque_milho"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_milho&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_milho" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_milho&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_milho" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-estoque_milho" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_milho&#39;,&#39;sc 40kg&#39;,&#39;Milho&#39;)">Concluir</button></div></div></div><div class="pc pc-e" id="card-estoque_farelo"><div class="ph"><div onclick="toggleCard(&#39;estoque_farelo&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Farelo de Trigo</span><span class="pb" id="badge-estoque_farelo">+ Registrar</span></div><div class="ph-acoes"><button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(&#39;estoque_farelo&#39;,&#39;pc-e&#39;)">Edit</button><button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(&#39;estoque_farelo&#39;,&#39;pc-e&#39;)">x</button></div></div><div class="res-con" id="res-estoque_farelo"></div><div class="pbd" id="body-estoque_farelo"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_farelo&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_farelo" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_farelo&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_farelo" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-estoque_farelo" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_farelo&#39;,&#39;sc 40kg&#39;,&#39;Farelo de Trigo&#39;)">Concluir</button></div></div></div></div></div>
+<!-- MODAL HISTORICO DE COLETAS (admin only) -->
+<div id="modal-hcol" onclick="fecharHistColeta()">
+  <div class="hcol-box" onclick="event.stopPropagation()">
+    <div class="hcol-hd">
+      <div><div class="hcol-hd-t">Historico de Coletas<span id="hcol-hd-setor" style="color:rgba(255,212,154,.85)"></span></div><div class="hcol-hd-s" id="hcol-hd-sub">Ultimos 7 dias</div></div>
+      <button class="hcol-x" onclick="fecharHistColeta()">✕</button>
+    </div>
+    <div class="hcol-filtros">
+      <div id="hcol-filtro-ano">
+        <div class="hcol-lbl">Ano</div>
+        <select class="hcol-sel" id="hcol-ano" onchange="renderHistColeta()"></select>
+      </div>
+      <div id="hcol-filtro-mes">
+        <div class="hcol-lbl">Mes</div>
+        <select class="hcol-sel" id="hcol-mes" onchange="renderHistColeta()">
+          <option value="">Todos</option>
+          <option value="01">Janeiro</option><option value="02">Fevereiro</option>
+          <option value="03">Marco</option><option value="04">Abril</option>
+          <option value="05">Maio</option><option value="06">Junho</option>
+          <option value="07">Julho</option><option value="08">Agosto</option>
+          <option value="09">Setembro</option><option value="10">Outubro</option>
+          <option value="11">Novembro</option><option value="12">Dezembro</option>
+        </select>
+      </div>
+      <div id="hcol-filtro-visao">
+        <div class="hcol-lbl">Visao</div>
+        <select class="hcol-sel" id="hcol-visao" onchange="renderHistColeta()">
+          <option value="total">Totalizacao por item</option>
+          <option value="detalhe">Registros detalhados</option>
+        </select>
+      </div>
+      <div>
+        <div class="hcol-lbl">Setor</div>
+        <input type="hidden" id="hcol-setor" value="">
+        <button class="hcol-sel" id="hcol-todos-btn" onclick="_toggleHistColetaTodos()" style="cursor:pointer">Todos</button>
+      </div>
+    </div>
+    <div class="hcol-body" id="hcol-body"></div>
+  </div>
+</div>
+
+<!-- MODAL VISUALIZACAO PEDIDO -->
+<div id="modal-ped" onclick="fecharModalPed()">
+  <div class="mp-box" onclick="event.stopPropagation()">
+    <div class="mp-hd">
+      <div><div class="mp-hd-t" id="mp-titulo">Pedido</div><div class="mp-hd-s" id="mp-sub"></div></div>
+      <button class="mp-x" onclick="fecharModalPed()">✕</button>
+    </div>
+    <div class="mp-body">
+      <div class="mp-meta" id="mp-meta"></div>
+      <div id="mp-linhas"></div>
+      <div class="mp-total"><span class="mp-total-lbl">Total</span><span class="mp-total-val" id="mp-total"></span></div>
+      <button class="mp-btn-img" onclick="reemitirPedido()">📷 Gerar imagem novamente</button>
+    </div>
+  </div>
+</div>
+
+<div id="sec-vendas">
+  <div class="sec-t" style="color:#7a3a00">Vendas</div>
+  <div class="sec-d">Talao de pedido numerado</div>
+  <!-- Alternancia Novo / Historico -->
+  <div class="hist-toggle">
+    <button class="hist-btn ativo" id="btn-aba-novo" onclick="mostrarPainelVendas(&#39;novo&#39;)">+ Novo Pedido</button>
+    <button class="hist-btn" id="btn-aba-hist" onclick="mostrarPainelVendas(&#39;hist&#39;)" style="display:none">📄 Historico</button>
+  </div>
+  <!-- PAINEL NOVO PEDIDO -->
+  <div class="hist-panel vis" id="painel-novo">
+    <div class="talao-num" id="talao-num">Pedido <strong>PED-0001</strong></div>
+    <div class="cg" style="margin-bottom:12px">
+      <span class="cl">Nome do Cliente</span>
+      <input type="text" id="venda-cliente" placeholder="Nome do cliente..." autocomplete="off" style="font-size:15px">
+    </div>
+    <div id="vendas-itens"></div>
+    <button class="btn-add" onclick="addItemVenda()">+ Adicionar item</button>
+    <div class="vt">
+      <div><div class="vt-lbl">Total do pedido</div></div>
+      <div class="vt-val" id="vt-val">R$ 0,00</div>
+    </div>
+    <div style="margin-top:12px">
+      <button class="btn-wpp" onclick="enviarPedido()" style="background:linear-gradient(135deg,#7a3a00,#b85a00)">
+        Enviar Pedido
+      </button>
+    </div>
+  </div>
+  <!-- Filtros de pedidos — mesmo layout do historico de coletas -->
+  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;background:#f5f0e8;border-bottom:1px solid var(--ce);margin:0 -16px 14px;padding:10px 16px">
+    <div>
+      <div class="hcol-lbl">Ano</div>
+      <select class="hcol-sel" id="hped-ano" onchange="_renderHist()"></select>
+    </div>
+    <div>
+      <div class="hcol-lbl">Mes</div>
+      <select class="hcol-sel" id="hped-mes" onchange="_renderHist()">
+        <option value="">Todos</option>
+        <option value="01">Janeiro</option><option value="02">Fevereiro</option>
+        <option value="03">Marco</option><option value="04">Abril</option>
+        <option value="05">Maio</option><option value="06">Junho</option>
+        <option value="07">Julho</option><option value="08">Agosto</option>
+        <option value="09">Setembro</option><option value="10">Outubro</option>
+        <option value="11">Novembro</option><option value="12">Dezembro</option>
+      </select>
+    </div>
+    <div>
+      <div class="hcol-lbl">Visao</div>
+      <select class="hcol-sel" id="hped-visao" onchange="_renderHist()">
+        <option value="total">Totalizacao por produto</option>
+        <option value="detalhe">Pedidos detalhados</option>
+      </select>
+    </div>
+    <div>
+      <div class="hcol-lbl">&nbsp;</div>
+      <button class="hcol-sel" id="hped-aberto-btn" onclick="_toggleFiltroAberto()" style="cursor:pointer;font-weight:700">Em aberto</button>
+    </div>
+  </div>
+  <!-- PAINEL HISTORICO DE PEDIDOS -->
+  <div class="hist-panel" id="painel-hist">
+    <div id="hist-lista"></div>
+  </div>
+</div>
+  <div class="div"></div>
+  <button class="btn-hj" onclick="abrirHistColeta(true)" style="width:100%;margin-bottom:8px;padding:10px">📊 Coletas (últimos 7 dias)</button>
+  <div class="cont" id="contador">Nenhum item preenchido</div>
+  <button class="btn-wpp" id="btn-enviar-coleta" onclick="enviarTudo()">💬 Enviar coleta</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var WPP_DESTINO = '';
+var GITHUB_STATUS = 'https://urbanopos.github.io/fazenda/status.json';
+// URL do sistema granja para importacao de dados
+var GRANJA_URL = 'https://urbanopos.github.io/fazenda/granja.html';
+var SK = 'fsj_admin_senha';
+var SP = 'fazenda2024';
+var BK = 'fsj_bloqueado';
+var MK = 'fsj_blk_msg';
+var VK = 'fsj_vendas_ativa';
+var NK = 'fsj_pedido_num';
+var APP_VER = '2';               // incremente aqui a cada nova versao publicada
+var VLK = 'fsj_versao_local';    // versao ja confirmada pelo admin neste dispositivo
+var VRK = 'fsj_versao_remota';   // ultima versao recebida do status.json
+
+/* ── GitHub API ─────────────────────────────────────────────── */
+var GH_REPO  = 'urbanopos/fazenda';
+var GH_FILE  = 'coletas-pendentes.json';
+var GH_TOKEN_KEY = 'fsj_gh_token';
+/* Repositório DE DADOS (coletas, pedidos, cadastros): por padrão o mesmo dos apps;
+   passa a ser outro (ex.: privado) quando o link de configuração traz "dr". */
+var GH_DATA_REPO = (function(){ try{ return localStorage.getItem('fsj_gh_data_repo') || GH_REPO; }catch(e){ return GH_REPO; } })();
+var GH_API   = 'https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_FILE;
+var GH_BCK_COLETAS = 'backup/coletas.json';
+var GH_BCK_CADASTROS = 'backup/cadastros.json';
+var GH_BCK_PEDIDOS = 'backup/pedidos.json';
+var GH_CATALOGO_PUB = 'https://urbanopos.github.io/fazenda/catalogo.json'; // leitura publica, sem token
+function _ghToken(){ return localStorage.getItem(GH_TOKEN_KEY)||''; }
+
+/* ── Configuração remota via link (#cfg=...) ───────────────────────────
+   Permite habilitar o envio de coletas sem precisar abrir o painel
+   admin no celular do operador: o administrador gera um link com o
+   token embutido e envia por WhatsApp; ao abrir o link uma única vez,
+   o app se configura sozinho. ──────────────────────────────────────── */
+function _aplicarConfigDoLink(){
+  try{
+    var hash = location.hash || '';
+    var m = hash.match(/cfg=([^&]+)/);
+    if(!m) return;
+    var cfg = JSON.parse(decodeURIComponent(escape(atob(m[1]))));
+    if(cfg && cfg.dr && /^[\w.-]+\/[\w.-]+$/.test(cfg.dr)){
+      localStorage.setItem('fsj_gh_data_repo', cfg.dr);
+      GH_DATA_REPO = cfg.dr;
+      GH_API = 'https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_FILE;
+    }
+    if(cfg && cfg.tk){
+      localStorage.setItem(GH_TOKEN_KEY, cfg.tk);
+      setTimeout(function(){ _toast('✅ App habilitado! Suas coletas já serão enviadas.'); }, 800);
+    }
+    // Remove o token da URL/histórico do navegador assim que aplicado
+    history.replaceState(null, '', location.pathname + location.search);
+  }catch(e){ console.warn('config do link:', e.message); }
+}
+
+/* ── Token GitHub: salvo apenas neste dispositivo coletor ─────────────── */
+function _salvarGhToken(){
+  var inp = document.getElementById('ad-gh-token-inp');
+  if(!inp) return;
+  var val = inp.value.trim();
+  if(!val){ alert('Cole o token antes de salvar.'); return; }
+  if(!val.startsWith('ghp_') && !val.startsWith('github_pat_')){
+    alert('Token inválido — deve começar com ghp_'); return;
+  }
+  localStorage.setItem(GH_TOKEN_KEY, val);
+  inp.value = '';
+  _atualizarExibicaoToken();
+  alert('✅ Token salvo neste dispositivo! As próximas coletas já serão enviadas ao Admin.');
+}
+function _atualizarExibicaoToken(){
+  var sp = document.getElementById('ad-gh-token-sp');
+  if(!sp) return;
+  var t = _ghToken();
+  sp.textContent = t ? '✅ Configurado ('+t.slice(0,8)+'***)' : '⚠️ Não configurado';
+  sp.style.color  = t ? '#4caf74' : '#e08080';
+  var st = document.getElementById('ad-gh-status-sp');
+  if(st){ st.textContent = localStorage.getItem('fsj_gh_ultimo_status') || ''; }
+}
+
+/* NOTA: o backup em backup/coletas.json é responsabilidade exclusiva do Admin
+   (função _fazerBackup lá) — o Coletor apenas LÊ esse arquivo (ver
+   _buscarHistColetaAprovada) para exibir os mesmos registros já aprovados. */
+
+var SETORES = {
+  aviario:{label:'Aviario',cl:'',forn:false,produtos:[
+    {id:'ovo',nome:'Ovos de Capoeira',emoji:'Ovo',unid:'unid',passo:1},
+    {id:'esterco',nome:'Esterco',emoji:'Est',unid:'sacos',passo:1},
+    {id:'galinha',nome:'Galinha',emoji:'Gal',unid:'unid',passo:1},
+    {id:'frango',nome:'Frango',emoji:'Fra',unid:'unid',passo:1},
+    {id:'pinto',nome:'Pinto',emoji:'Pin',unid:'unid',passo:1},
+    {id:'pintainha',nome:'Pintainha',emoji:'Pta',unid:'unid',passo:1}
+  ]},
+  perda:{label:'Perda',cl:'pc-p',forn:false,produtos:[
+    {id:'ovo',nome:'Ovos de Capoeira',emoji:'Ovo',unid:'unid',passo:1},
+    {id:'esterco',nome:'Esterco',emoji:'Est',unid:'sacos',passo:1},
+    {id:'galinha',nome:'Galinha',emoji:'Gal',unid:'unid',passo:1},
+    {id:'frango',nome:'Frango',emoji:'Fra',unid:'unid',passo:1},
+    {id:'pinto',nome:'Pinto',emoji:'Pin',unid:'unid',passo:1},
+    {id:'pintainha',nome:'Pintainha',emoji:'Pta',unid:'unid',passo:1}
+  ]},
+  campo:{label:'Campo',cl:'pc-c',forn:false,produtos:[
+    {id:'coco',nome:'Coco Seco',emoji:'Coc',unid:'unid',passo:1},
+    {id:'manga',nome:'Manga',emoji:'Man',unid:'unid',passo:1},
+    {id:'abacate',nome:'Abacate',emoji:'Aba',unid:'unid',passo:1},
+    {id:'banana',nome:'Banana',emoji:'Ban',unid:'cac.',passo:1},
+    {id:'pitomba',nome:'Pitomba',emoji:'Pit',unid:'kg',passo:0.5}
+  ]},
+  estoque:{label:'Estoque',cl:'pc-e',forn:true,produtos:[
+    {id:'ipos',nome:'Postura',emoji:'Pos',unid:'sc 40kg',passo:1},
+    {id:'iini',nome:'Inicial',emoji:'Ini',unid:'sc 40kg',passo:1},
+    {id:'ipre',nome:'Pre-Inicial',emoji:'Pre',unid:'sc 40kg',passo:1},
+    {id:'icre',nome:'Crescimento',emoji:'Cre',unid:'sc 40kg',passo:1},
+    {id:'ieng',nome:'Engorda',emoji:'Eng',unid:'sc 40kg',passo:1},
+    {id:'milho',nome:'Milho',emoji:'Mil',unid:'sc 40kg',passo:1},
+    {id:'farelo',nome:'Farelo de Trigo',emoji:'Far',unid:'sc 40kg',passo:1}
+  ]}
+};
+
+/* ── CATÁLOGO DE ITENS — lista de produtos por setor, salva no aparelho.
+   Começa com os itens atuais (abaixo) e cresce conforme novos itens são
+   digitados na linha "Editável" de cada aba. Uma vez cadastrado, o item
+   passa a aparecer como card pronto — só precisa informar a quantidade. */
+var CAT_KEY = 'fsj_catalogo_itens';
+var _catalogo = null;
+
+function _catalogoPadrao(){
+  var out = {};
+  Object.keys(SETORES).forEach(function(s){
+    out[s] = SETORES[s].produtos.map(function(p){
+      return {id:p.id, nome:p.nome, unid:p.unid, passo:p.passo||1};
+    });
+  });
+  return out;
+}
+/* Corrige nomes salvos com problema de codificação (ex: "RaÃ§Ã£o" em vez
+   de "Ração") — função global, para poder ser usada também ao mesclar
+   dados vindos de outro aparelho (catálogo remoto), evitando que um
+   texto corrompido vindo de outro dispositivo entre no catálogo local. */
+function _corrigirMojibake(str){
+  if(!str || typeof str !== 'string' || str.indexOf('\u00c3') === -1) return str;
+  try{ return decodeURIComponent(escape(str)); }catch(e){ return str; }
+}
+
+function _catalogoCarregar(){
+  if(_catalogo) return _catalogo;
+  try{ _catalogo = JSON.parse(localStorage.getItem(CAT_KEY)||'null'); }catch(e){ _catalogo=null; }
+  if(!_catalogo || typeof _catalogo!=='object'){ _catalogo = _catalogoPadrao(); _catalogoSalvar(); }
+  Object.keys(SETORES).forEach(function(s){ if(!Array.isArray(_catalogo[s])) _catalogo[s]=[]; });
+  return _catalogo;
+}
+function _catalogoSalvar(){
+  try{ localStorage.setItem(CAT_KEY, JSON.stringify(_catalogo)); }catch(e){}
+}
+function _catalogoSlug(nome){
+  var s = String(nome).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+  return s || ('item'+Date.now());
+}
+function _catalogoBuscar(setor, nome){
+  var cat = _catalogoCarregar()[setor]||[];
+  var alvo = String(nome).trim().toLowerCase();
+  return cat.find(function(it){ return it.nome.trim().toLowerCase()===alvo; });
+}
+function _catalogoBuscarExato(setor, nome, unid){
+  var cat = _catalogoCarregar()[setor]||[];
+  var an = String(nome).trim().toLowerCase(), au = String(unid).trim().toLowerCase();
+  return cat.find(function(it){ return it.nome.trim().toLowerCase()===an && it.unid.trim().toLowerCase()===au; });
+}
+function _catalogoNomesUnicos(setor){
+  // Busca primeiro na tabela única de Produtos do Admin (já buscada do
+  // GitHub, só leitura) — filtrando pelo setor — e complementa com o
+  // catálogo antigo, para itens ainda não migrados. Preço nunca é lido
+  // aqui, então nunca chega nesta tela de coleta.
+  var label = (SETORES[setor]||{}).label || setor;
+  var cadRemoto = _produtosCadastro || _produtosCadastroLocal();
+  var doProdutos = (cadRemoto||[])
+    .filter(function(p){ return p.setor===label; })
+    .map(function(p){ return p.nome; });
+  var cat = _catalogoCarregar()[setor]||[];
+  var doCatalogoAntigo = [];
+  (function(){
+    var v = {};
+    cat.forEach(function(it){
+      var chave = it.nome.trim().toLowerCase();
+      if(!v[chave]){ v[chave]=true; doCatalogoAntigo.push(it.nome); }
+    });
+  })();
+  var vistos = {}, out = [];
+  doProdutos.concat(doCatalogoAntigo).forEach(function(n){
+    var chave = n.trim().toLowerCase();
+    if(!vistos[chave]){ vistos[chave]=true; out.push(n); }
+  });
+  return out.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
+}
+function _catalogoUnidadesPara(setor, nome){
+  var label = (SETORES[setor]||{}).label || setor;
+  var alvo = String(nome).trim().toLowerCase();
+  var vistos = {}, out = [];
+  var cadRemoto = _produtosCadastro || _produtosCadastroLocal();
+  (cadRemoto||[]).forEach(function(p){
+    if(p.setor===label && p.nome.trim().toLowerCase()===alvo){
+      (p.apresentacoes||[]).forEach(function(a){
+        // Se a apresentação tiver abas restritas, só entra se este setor
+        // estiver na lista; sem restrição (campo ausente ou vazio), aparece sempre.
+        if(Array.isArray(a.abas) && a.abas.length>0 && a.abas.indexOf(label)===-1) return;
+        var u = (a.unid||'').trim();
+        if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
+      });
+    }
+  });
+  var cat = _catalogoCarregar()[setor]||[];
+  cat.forEach(function(it){
+    if(it.nome.trim().toLowerCase()===alvo){
+      var u = it.unid.trim();
+      if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; out.push(u); }
+    }
+  });
+  return out;
+}
+function _catalogoAdicionar(setor, nome, unid, passo){
+  var cat = _catalogoCarregar();
+  var existente = _catalogoBuscarExato(setor, nome, unid||'unid');
+  if(existente) return existente;
+  var id = _catalogoSlug(nome)+'_'+_catalogoSlug(unid||'unid');
+  var base = id, n = 2;
+  while(cat[setor].some(function(it){ return it.id===id; })){ id = base+'_'+(n++); }
+  var novo = { id:id, nome:String(nome).trim(), unid:(unid||'unid').trim(), passo:passo||1 };
+  cat[setor].push(novo);
+  _catalogoSalvar();
+  return novo;
+}
+
+/* ── Sincronizacao do catalogo (somente leitura no Coletor) ───────────
+   Busca (sem precisar de token) a versao mais recente publicada pelo
+   Admin e mescla com o catalogo local deste aparelho, periodicamente. */
+function _catalogoMesclarRemoto(remoto){
+  if(!remoto || typeof remoto !== 'object') return false;
+  var local = _catalogoCarregar();
+  var mudou = false;
+  Object.keys(remoto).forEach(function(setor){
+    if(!Array.isArray(local[setor])) local[setor] = [];
+    (remoto[setor]||[]).forEach(function(itRemoto){
+      if(!itRemoto || !itRemoto.nome) return;
+      var nomeCorrigido = _corrigirMojibake(itRemoto.nome);
+      var existe = local[setor].some(function(itLocal){
+        return itLocal.nome.trim().toLowerCase()===nomeCorrigido.trim().toLowerCase()
+            && itLocal.unid.trim().toLowerCase()===(itRemoto.unid||'unid').trim().toLowerCase();
+      });
+      if(!existe){
+        local[setor].push({ id:itRemoto.id||_catalogoSlug(nomeCorrigido), nome:nomeCorrigido, unid:itRemoto.unid||'unid', passo:itRemoto.passo||1 });
+        mudou = true;
+      }
+    });
+  });
+  if(mudou){ _catalogo = local; try{ localStorage.setItem(CAT_KEY, JSON.stringify(local)); }catch(e){} }
+  return mudou;
+}
+
+async function _catalogoBuscarRemoto(){
+  try{
+    var r = await fetch(GH_CATALOGO_PUB+'?t='+Date.now(), {cache:'no-store'});
+    if(!r.ok) return null;
+    return await r.json();
+  }catch(e){ return null; }
+}
+
+async function _catalogoSincronizarLocal(){
+  var remoto = await _catalogoBuscarRemoto();
+  var mudou = _catalogoMesclarRemoto(remoto);
+  if(mudou) _atualizarFormulariosComCatalogo();
+}
+
+function _atualizarFormulariosComCatalogo(){
+  // Reconstroi os formularios das abas sem nada selecionado no momento
+  // (para nao atrapalhar quem esta no meio de um registro), preservando
+  // os itens ja adicionados na lista da sessao.
+  Object.keys(SETORES).forEach(function(s){
+    var sel = document.getElementById('sel-'+s+'_novo');
+    var g = document.getElementById('grid-'+s);
+    if(g && (!sel || !sel.value)){
+      var cfg = SETORES[s];
+      g.innerHTML = _cardColetaSetor(s, cfg.cl, cfg.forn);
+      _renderListaSessao(s);
+    }
+  });
+}
+
+var PROD_VENDA = [
+  {id:'ovo',nome:'Ovos de Capoeira'},{id:'galinha',nome:'Galinha'},
+  {id:'frango',nome:'Frango'},{id:'pinto',nome:'Pinto'},
+  {id:'pintainha',nome:'Pintainha'},{id:'esterco',nome:'Esterco'},
+  {id:'coco',nome:'Coco Seco'},{id:'manga',nome:'Manga'},
+  {id:'abacate',nome:'Abacate'},
+  {id:'_edit',nome:'Editavel'}
+];
+
+/* ---- INSTALL ---- */
+/* ---- INSTALL ---- */
+var _ip = null;
+var _ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+var _sa = window.matchMedia('(display-mode:standalone)').matches
+       || window.matchMedia('(display-mode:fullscreen)').matches
+       || navigator.standalone === true
+       || document.referrer.includes('android-app://');
+
+if(!_sa){
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    _ip = e;
+    document.getElementById('btn-inst').classList.add('vis');
+  });
+  if(_ios) document.getElementById('btn-inst').classList.add('vis');
+}
+
+function dispensarInst(){ /* sem banner */ }
+function abrirInst(){
+  if(_ip){ _ip.prompt(); _ip.userChoice.then(function(r){ if(r.outcome==='accepted'){ _ip=null; document.getElementById('btn-inst').classList.remove('vis'); _toast('App instalado!'); } }); }
+  else if(_ios) document.getElementById('guia-ios').classList.add('vis');
+  else _toast('Menu do navegador - Adicionar a tela inicial');
+}
+function fecharGuiaIos(){ document.getElementById('guia-ios').classList.remove('vis'); }
+
+/* ---- CARD EDITAVEL ---- */
+// CSS injetado para o card editavel
+(function(){
+  var s = document.createElement('style');
+  s.textContent =
+    '.pc-edit{border-left-color:#b8943f!important}'
+    +'.pc-edit .ph{background:#2d2010}'
+    +'.pc-edit-nome{width:100%;padding:9px 12px;border:2px solid #b8943f;border-radius:8px;font-size:16px;background:#fff;color:#222;font-family:inherit;margin-bottom:2px}'
+    +'.pc-edit-nome::placeholder{color:#bbb}';
+  document.head.appendChild(s);
+})();
+
+function _cardEditavel(setor, cl, forn){
+  var k = setor+'_edit';
+  var fH = forn ? '<div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-'+k+'" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div>' : '';
+  return '<div class="pc pc-edit'+(cl?' '+cl:'')+'" id="card-'+k+'">'
+    +'<div class="ph">'
+    +'<div onclick="toggleCard(\''+k+'\',\''+cl+'\')" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0">'
+    +'<span class="pe" style="color:#b8943f">Editavel</span>'
+    +'<span class="pb" id="badge-'+k+'">+ Registrar</span>'
+    +'</div>'
+    +'<div class="ph-acoes">'
+    +'<button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(\''+k+'\',\''+cl+'\')">Edit</button>'
+    +'<button class="ph-btn-apa" onclick="event.stopPropagation();apagarCardEdit(\''+k+'\',\''+cl+'\')">x</button>'
+    +'</div>'
+    +'</div>'
+    +'<div class="res-con" id="res-'+k+'"></div>'
+    +'<div class="pbd" id="body-'+k+'">'
+    +'<div class="cg"><span class="cl">Nome do item</span>'
+    +'<input class="pc-edit-nome" type="text" id="enome-'+k+'" placeholder="Descreva o item..." autocomplete="off"></div>'
+    +'<div class="cg"><span class="cl">Quantidade</span>'
+    +'<div class="step" style="display:flex;align-items:center;gap:6px">'
+    +'<button class="sb" onclick="stepQ(\''+k+'\',1,-1)">-</button>'
+    +'<input class="si" type="number" id="qtd-'+k+'" inputmode="decimal" min="0" step="1" value="0">'
+    +'<button class="sb" onclick="stepQ(\''+k+'\',1,1)">+</button>'
+    +'<input type="text" id="eunid-'+k+'" placeholder="unid" style="width:70px;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:14px;text-align:center">'
+    +'</div></div>'
+    +fH
+    +'<div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-'+k+'" placeholder="Ex: lote A, qualidade boa..."></textarea></div>'
+    +'<div class="card-acoes">'
+    +'<button class="btn-con" onclick="concluirCardEdit(\''+k+'\',\''+setor+'\')">Concluir</button>'
+    +'</div></div></div>';
+}
+
+function concluirCardEdit(k, setor){
+  var nomeEl = document.getElementById('enome-'+k);
+  var qtdEl  = document.getElementById('qtd-'+k);
+  var unidEl = document.getElementById('eunid-'+k);
+  var nome = (nomeEl ? nomeEl.value : '').trim();
+  var qtd  = parseFloat(qtdEl ? qtdEl.value : 0)||0;
+  var unid = (unidEl ? unidEl.value : '').trim()||'unid';
+  if(!nome){ _toast('Informe o nome do item.'); nomeEl&&nomeEl.focus(); return; }
+  if(qtd<=0){ _toast('Informe a quantidade antes de concluir.'); return; }
+  var cfg  = SETORES[setor];
+  var cl   = cfg ? cfg.cl : '';
+  var card = document.getElementById('card-'+k);
+  var badge= document.getElementById('badge-'+k);
+  var res  = document.getElementById('res-'+k);
+  var forn = (document.getElementById('for-'+k)||{value:''}).value||'';
+  var obs  = (document.getElementById('obs-'+k)||{value:''}).value||'';
+  card.classList.remove('at'); card.classList.add('concluido');
+  badge.textContent = qtd+' '+unid;
+  var html = '<div class="rc-l"><strong>'+nome+'</strong></div>'
+    +'<div class="rc-l">Qtde: <strong>'+qtd+' '+unid+'</strong></div>';
+  if(forn) html += '<div class="rc-l">Fornecedor: <strong>'+forn+'</strong></div>';
+  if(obs)  html += '<div class="rc-l">Obs: <strong>'+obs+'</strong></div>';
+  res.innerHTML = html;
+  if(!_catalogoBuscar(setor, nome)){
+    _catalogoAdicionar(setor, nome, unid);
+    _renderGridSetor(setor);
+  }
+  _atualizarContador();
+  _toast(nome+' registrado');
+}
+
+function apagarCardEdit(k, cl){
+  var card  = document.getElementById('card-'+k);
+  var qtdEl = document.getElementById('qtd-'+k);
+  var obsEl = document.getElementById('obs-'+k);
+  var forEl = document.getElementById('for-'+k);
+  var nomEl = document.getElementById('enome-'+k);
+  var undEl = document.getElementById('eunid-'+k);
+  if(qtdEl) qtdEl.value=0;
+  if(obsEl) obsEl.value='';
+  if(forEl) forEl.value='';
+  if(nomEl) nomEl.value='';
+  if(undEl) undEl.value='';
+  card.classList.remove('concluido','at');
+  var badge = document.getElementById('badge-'+k);
+  var res   = document.getElementById('res-'+k);
+  if(badge) badge.textContent='+ Registrar';
+  if(res)   res.innerHTML='';
+  _atualizarContador();
+}
+
+/* ---- INIT ---- */
+var _sessaoItens = {}; // {setor:[{nome,unid,qtd,obs,forn}]}
+function _sessaoInit(){
+  Object.keys(SETORES).forEach(function(s){ if(!_sessaoItens[s]) _sessaoItens[s]=[]; });
+}
+
+function _cardColetaSetor(setor, cl, forn){
+  var k = setor+'_novo';
+  var nomes = _catalogoNomesUnicos(setor);
+  var opts = nomes.map(function(n){
+    return '<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/</g,'&lt;')+'</option>';
+  }).join('');
+  var fH = forn ? '<div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-'+k+'" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div>' : '';
+  return '<div id="lista-'+setor+'" style="margin-bottom:12px"></div>'
+    +'<div class="pc at pc-edit'+(cl?' '+cl:'')+'" id="card-'+k+'" style="cursor:default">'
+    +'<div class="pbd" style="display:block;padding:16px 14px" id="body-'+k+'">'
+
+    +'<div class="cg"><span class="cl">Item coletado</span>'
+    +'<select id="sel-'+k+'" onchange="_onSelecionarItem(\''+setor+'\')" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#fff">'
+    +'<option value="">— Escolha um item —</option>'
+    +opts
+    +'</select>'
+    +'</div>'
+
+    +(setor==='estoque' ?
+      '<div class="cg"><span class="cl">Movimentacao</span>'
+      +'<div style="font-size:13px;color:#c0392b;font-weight:700;margin-top:4px">🔻 Saida (consumo)</div>'
+      +'<div style="font-size:11px;color:#999;margin-top:2px">Entradas de estoque so podem ser lancadas pelo Administrador.</div>'
+      +'</div>'
+      : '')
+
+    +'<input type="hidden" id="enome-'+k+'" value="">'
+
+    +'<div id="wrap-coleta-'+k+'" style="display:none">'
+    +'<div class="cg"><span class="cl">Unidade</span><div id="unid-wrap-'+k+'">'
+    +'<input type="text" id="eunid-'+k+'" value="" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">'
+    +'</div></div>'
+
+    +'<div class="cg"><span class="cl">Quantidade</span>'
+    +'<div class="step" style="display:flex;align-items:center;gap:6px">'
+    +'<button class="sb" onclick="stepQ(\''+k+'\',1,-1)">-</button>'
+    +'<input class="si" type="number" id="qtd-'+k+'" inputmode="decimal" min="0" step="1" value="0" onkeypress="if(event.key===\'Enter\'){_adicionarItemSessao(\''+setor+'\');return false;}">'
+    +'<button class="sb" onclick="stepQ(\''+k+'\',1,1)">+</button>'
+    +'</div></div>'
+    +fH
+    +'<div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-'+k+'" placeholder="Ex: lote A, qualidade boa..."></textarea></div>'
+    +'<div class="card-acoes"><button class="btn-con" onclick="_adicionarItemSessao(\''+setor+'\')">+ Adicionar item</button></div>'
+    +'</div>'
+    +'</div></div>';
+}
+
+function _onSelecionarItem(setor){
+  var k = setor+'_novo';
+  var sel = document.getElementById('sel-'+k);
+  var wrapColeta = document.getElementById('wrap-coleta-'+k);
+  var nomeEl = document.getElementById('enome-'+k);
+  var unidWrap = document.getElementById('unid-wrap-'+k);
+  if(!sel) return;
+  var val = sel.value;
+  if(val){
+    wrapColeta.style.display = 'block';
+    nomeEl.value = val;
+    var unidades = _catalogoUnidadesPara(setor, val);
+    if(unidades.length > 1){
+      var opts = unidades.map(function(u){ return '<option value="'+u.replace(/"/g,'&quot;')+'">'+u.replace(/</g,'&lt;')+'</option>'; }).join('');
+      unidWrap.innerHTML = '<select id="eunid-'+k+'" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#fff">'+opts+'</select>';
+    } else {
+      unidWrap.innerHTML = '<input type="text" id="eunid-'+k+'" value="'+(unidades[0]||'unid')+'" readonly style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">';
+    }
+  } else {
+    wrapColeta.style.display = 'none';
+    nomeEl.value = '';
+  }
+}
+
+function _adicionarItemSessao(setor){
+  var k = setor+'_novo';
+  var nomeEl = document.getElementById('enome-'+k);
+  var qtdEl  = document.getElementById('qtd-'+k);
+  var unidEl = document.getElementById('eunid-'+k);
+  var obsEl  = document.getElementById('obs-'+k);
+  var forEl  = document.getElementById('for-'+k);
+  var nome = (nomeEl?nomeEl.value:'').trim();
+  var qtd  = parseFloat(qtdEl?qtdEl.value:0)||0;
+  var unid = (unidEl?unidEl.value:'').trim()||'unid';
+  if(!nome){ _toast('Selecione um item da lista.'); return; }
+  if(qtd<=0){ _toast('Informe a quantidade antes de adicionar.'); return; }
+  var forn = (forEl?forEl.value:'')||'';
+  var obs  = (obsEl?obsEl.value:'')||'';
+  var tipo = (setor==='estoque') ? 'Saida' : '';
+  // No app Coletor so e possivel usar itens ja cadastrados pelo Admin —
+  // nao cadastra item novo no catalogo aqui. No Estoque, so sao permitidas
+  // saidas (consumo) — entradas ficam exclusivas do painel Administrador.
+  _sessaoInit();
+  _sessaoItens[setor].push({nome:nome, unid:unid, qtd:qtd, obs:obs.trim(), forn:forn.trim(), tipo:tipo});
+  var sel = document.getElementById('sel-'+k);
+  var wrapColeta = document.getElementById('wrap-coleta-'+k);
+  var unidWrap = document.getElementById('unid-wrap-'+k);
+  nomeEl.value=''; qtdEl.value=0;
+  if(obsEl) obsEl.value='';
+  if(forEl) forEl.value='';
+  if(wrapColeta) wrapColeta.style.display='none';
+  if(unidWrap) unidWrap.innerHTML = '<input type="text" id="eunid-'+k+'" value="" readonly placeholder="—" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;background:#f0ede6">';
+  if(sel) sel.value = '';
+  _renderListaSessao(setor);
+  _atualizarContador();
+  _sessaoSalvarLocal();
+  _toast(nome+' adicionado');
+}
+
+function _removerItemSessao(setor, idx){
+  if(!confirm('Remover este item da lista?')) return;
+  _sessaoItens[setor].splice(idx,1);
+  _renderListaSessao(setor);
+  _atualizarContador();
+  _sessaoSalvarLocal();
+}
+
+function _renderListaSessao(setor){
+  var cont = document.getElementById('lista-'+setor);
+  if(!cont) return;
+  var itens = _sessaoItens[setor]||[];
+  if(!itens.length){ cont.innerHTML=''; return; }
+  cont.innerHTML = itens.map(function(it,i){
+    var tagTipo = it.tipo ? ' <span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:'+(it.tipo==='Saida'?'#f8d7d7;color:#c0392b':'#d7f0dd;color:#1a6b2a')+'">'+it.tipo.toUpperCase()+'</span>' : '';
+    return '<div style="display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid #e6ddd0;border-radius:8px;padding:10px 12px;margin-bottom:6px">'
+      +'<div><strong>'+it.nome+'</strong>'+tagTipo+'<br><span style="font-size:12px;color:#999">'+it.qtd+' '+it.unid+(it.forn?' &middot; '+it.forn:'')+(it.obs?' &middot; '+it.obs:'')+'</span></div>'
+      +'<button onclick="_removerItemSessao(\''+setor+'\','+i+')" style="background:none;border:none;color:#c0392b;font-size:18px;cursor:pointer;padding:4px 8px" title="Remover">\uD83D\uDDD1</button>'
+      +'</div>';
+  }).join('');
+}
+
+function _iniciar(){
+  setHoje(); _relogio(); setInterval(_relogio, 30000);
+  _sessaoInit();
+  _sessaoRestaurarLocal();
+
+  // Busca o cadastro único de produtos (Admin) assim que possível — usado
+  // na tela de Vendas para saber as apresentações certas de cada item,
+  // sem nunca expor o preço ao coletor. Repete periodicamente pra pegar
+  // produtos/preços novos que o Admin cadastrar depois.
+  _atualizarDatalistFornecedores(); // já preenche com o cache, se houver, antes da rede responder
+  _buscarProdutosCadastro();
+  setInterval(_buscarProdutosCadastro, 3*60*1000);
+
+  // Migracao unica: corrige nomes/coletor/observacao salvos com problema
+  // de codificacao (ex: "RaÃ§Ã£o" em vez de "Ração"). Mesma correção já
+  // aplicada no Admin — roda uma única vez neste aparelho.
+  if(!localStorage.getItem('ca_fix_mojibake_v1')){
+    (function(){
+      // Nome do coletor
+      var nomeAtual = localStorage.getItem('wpp_nome');
+      var nomeCorrigido = _corrigirMojibake(nomeAtual);
+      if(nomeAtual && nomeCorrigido !== nomeAtual){ try{ localStorage.setItem('wpp_nome', nomeCorrigido); }catch(e){} }
+
+      // Catálogo local (nomes dos itens)
+      var cat = _catalogoCarregar();
+      var mudouCat = false;
+      Object.keys(cat).forEach(function(setorKey){
+        (cat[setorKey]||[]).forEach(function(it){
+          var c = _corrigirMojibake(it.nome);
+          if(c !== it.nome){ it.nome = c; mudouCat = true; }
+        });
+      });
+      if(mudouCat) _catalogoSalvar();
+
+      // Coletas pendentes locais (nome dos itens, coletor, observação)
+      var histColeta = _carregarHistColeta();
+      var mudouColeta = false;
+      histColeta.forEach(function(r){
+        var cCol = _corrigirMojibake(r.coletor);
+        if(r.coletor && cCol !== r.coletor){ r.coletor = cCol; mudouColeta = true; }
+        (r.itens||[]).forEach(function(it){
+          var cNome = _corrigirMojibake(it.nome);
+          if(cNome !== it.nome){ it.nome = cNome; mudouColeta = true; }
+          var cObs = _corrigirMojibake(it.obs);
+          if(it.obs && cObs !== it.obs){ it.obs = cObs; mudouColeta = true; }
+        });
+      });
+      if(mudouColeta){ try{ localStorage.setItem(CK, JSON.stringify(histColeta)); }catch(e){} }
+
+      // Pedidos locais (nome dos itens, cliente, observação)
+      var histPed = _carregarHist();
+      var mudouPed = false;
+      histPed.forEach(function(p){
+        var cCli = _corrigirMojibake(p.cliente);
+        if(p.cliente && cCli !== p.cliente){ p.cliente = cCli; mudouPed = true; }
+        (p.itens||[]).forEach(function(it){
+          var c1 = _corrigirMojibake(it.nome); if(c1 !== it.nome){ it.nome = c1; mudouPed = true; }
+          var c2 = _corrigirMojibake(it._nome); if(it._nome && c2 !== it._nome){ it._nome = c2; mudouPed = true; }
+          var c3 = _corrigirMojibake(it.obs); if(it.obs && c3 !== it.obs){ it.obs = c3; mudouPed = true; }
+        });
+      });
+      if(mudouPed){ try{ localStorage.setItem(HK, JSON.stringify(histPed)); }catch(e){} }
+
+      try{ localStorage.setItem('ca_fix_mojibake_v1','1'); }catch(e){}
+    })();
+  }
+
+  Object.keys(SETORES).forEach(function(s){
+    var cfg = SETORES[s];
+    var g = document.getElementById('grid-'+s);
+    if(g) g.innerHTML = _cardColetaSetor(s, cfg.cl, cfg.forn);
+    _renderListaSessao(s);
+  });
+  _atualizarContador();
+  _initLP();
+  _initVendas();
+
+  // Busca itens novos do catalogo publicados pelo Admin
+  _catalogoSincronizarLocal();
+  setInterval(_catalogoSincronizarLocal, 60000);
+}
+
+/* ── AUTO-ATUALIZAÇÃO ────────────────────────────────────────────────
+   Verifica, a cada abertura do app, se existe uma versão mais nova
+   publicada no mesmo endereço. Se houver, recarrega sozinho (sem apagar
+   nada salvo no aparelho — token, catálogo e coletas pendentes continuam
+   intactos, já que ficam em localStorage, vinculado ao site, não ao
+   conteúdo do arquivo). */
+var _caFP = '1a115fa9a380';
+var _caBuild = '20261007073932'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
+function _caVerificarAtualizacao(manual){
+  var url = location.href.split('?')[0];
+  if(url.indexOf('://') === -1 || url.startsWith('file:')) {
+    if(manual) _toast('App aberto localmente — verificação de atualização não se aplica.');
+    return;
+  }
+  if(manual) _toast('🔍 Verificando atualizações...');
+  fetch(url + '?_ca=' + Date.now(), {
+    cache: 'no-store',
+    headers: {'Cache-Control': 'no-cache'}
+  })
+  .then(function(r){ return r.text(); })
+  .then(function(html){
+    var m = html.match(/var _caFP = '([a-f0-9]+)'/) || html.match(/var FP = '([a-f0-9]+)'/);
+    if(m && m[1] && m[1] !== _caFP){
+      _toast('🔄 Nova versão encontrada! Atualizando...');
+      setTimeout(function(){ location.replace(url + '?_upd=' + Date.now()); }, 1200);
+    } else if(manual){
+      _toast('✅ Você já está na versão mais recente.');
+    }
+  })
+  .catch(function(){ if(manual) _toast('⚠️ Não foi possível verificar agora (sem conexão?).'); });
+}
+(function _caAutoUpdate(){
+  _caVerificarAtualizacao(false);
+  // Verifica de novo periodicamente — cobre o caso de a rede do GitHub
+  // (CDN) ainda estar servindo uma cópia antiga na primeira checagem,
+  // logo após uma publicação recente.
+  setInterval(function(){ _caVerificarAtualizacao(false); }, 3*60*1000);
+})();
+
+document.addEventListener('DOMContentLoaded', function(){
+  _aplicarConfigDoLink();
+  /* Sentinela inicial — garante que o primeiro "<" caia no popstate, nao feche o app direto.
+     Precisa ser pushState (nao so replaceState) para existir uma segunda posicao
+     no historico — senao a primeira vez que aperta voltar sai direto do app. */
+  history.replaceState({ navSentinel: true }, '');
+  history.pushState({ navSentinel: true }, '');
+  if(localStorage.getItem(BK)==='1'){
+    var msg = localStorage.getItem(MK)||'Aplicativo desativado pelo administrador.';
+    document.getElementById('bl-msg').innerHTML = msg.replace(/\n/g,'<br>');
+    document.getElementById('tela-bloqueio').classList.add('vis');
+    return;
+  }
+  fetch(GITHUB_STATUS+'?t='+Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      // Salva versao remota sempre que receber do servidor
+      if(d.versao !== undefined && d.versao !== null){
+        localStorage.setItem(VRK, String(d.versao));
+      }
+      if(d.bloqueado===true){
+        localStorage.setItem(BK,'1');
+        if(d.mensagem) localStorage.setItem(MK,d.mensagem);
+        document.getElementById('bl-msg').innerHTML = (d.mensagem||'Aplicativo desativado.').replace(/\n/g,'<br>');
+        document.getElementById('tela-bloqueio').classList.add('vis');
+      } else {
+        localStorage.removeItem(BK);
+        _iniciar();
+      }
+    })
+    .catch(function(){ _iniciar(); });
+});
+
+function _relogio(){
+  var d = new Date();
+  document.getElementById('relogio').innerHTML =
+    d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'})+'<br>'+
+    d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+}
+
+/* ── Navegacao pela seta de voltar: nunca fecha o app sozinho ─────────
+   Nivel 1: fecha modal aberto, se houver.
+   Nivel 2: se estiver em aba secundaria, volta para "aviario".
+   Nivel 3: ja em aviario sem nada aberto — so o botao "Sair" encerra. */
+var _navFecharMap = {
+  'guia-ios'    : function(){ if(typeof fecharGuiaIos==='function') fecharGuiaIos(); },
+  'modal-ped'   : function(){ if(typeof fecharModalPed==='function') fecharModalPed(); },
+  'modal-hcol'  : function(){ if(typeof fecharHistColeta==='function') fecharHistColeta(); },
+  'painel-admin': function(){ if(typeof fecharAdmin==='function') fecharAdmin(); }
+};
+
+window.addEventListener('popstate', function(){
+  // Tela de sessao encerrada aberta: o "voltar" do celular nao deve
+  // reaparecer com o app por tras — so insiste na tentativa de fechar.
+  var telaSair = document.getElementById('tela-sair-confirmar');
+  if(telaSair && document.getElementById('btn-reabrir-sessao')){
+    try{ window.close(); }catch(e){}
+    history.pushState({ navSentinel: true }, '');
+    return;
+  }
+
+  var abertos = Object.keys(_navFecharMap).filter(function(id){
+    var el = document.getElementById(id);
+    return el && el.classList.contains('vis');
+  });
+  if(abertos.length){
+    abertos.forEach(function(id){ _navFecharMap[id](); });
+    history.pushState({ navSentinel: true }, '');
+    return;
+  }
+
+  var atual = _abaAtual();
+  if(atual !== 'aviario'){
+    trocarAba('aviario');
+    history.pushState({ navSentinel: true }, '');
+    return;
+  }
+
+  // Ja em aviario, nada aberto — nao fecha sozinho
+  _sessaoSalvarLocal();
+  history.pushState({ navSentinel: true }, '');
+  if(!document.getElementById('tela-sair-confirmar')) sairColeta();
+});
+
+/* ── Pendencias, salvamento local e saida controlada do app ───────────── */
+var SESSAO_PEND_KEY = 'fsj_sessao_pendente';
+
+function _haPendencias(){
+  _sessaoInit();
+  return Object.keys(_sessaoItens).some(function(s){ return (_sessaoItens[s]||[]).length > 0; });
+}
+
+function _sessaoSalvarLocal(){
+  try{ localStorage.setItem(SESSAO_PEND_KEY, JSON.stringify(_sessaoItens)); }catch(e){}
+}
+
+/* Rede de seguranca: salva sozinho sempre que o app sai de foco, é minimizado,
+   trocado por outro app, ou a tela é desligada — nao depende só do botao "Sair"
+   nem da seta de voltar. */
+document.addEventListener('visibilitychange', function(){
+  if(document.visibilityState === 'hidden') _sessaoSalvarLocal();
+});
+window.addEventListener('pagehide', _sessaoSalvarLocal);
+window.addEventListener('blur', _sessaoSalvarLocal);
+
+function _sessaoRestaurarLocal(){
+  try{
+    var raw = localStorage.getItem(SESSAO_PEND_KEY);
+    if(!raw) return;
+    var salvo = JSON.parse(raw);
+    _sessaoInit();
+    Object.keys(salvo).forEach(function(s){
+      if(Array.isArray(salvo[s]) && salvo[s].length) _sessaoItens[s] = salvo[s];
+    });
+  }catch(e){}
+}
+
+function _sessaoLimparLocal(){
+  try{ localStorage.removeItem(SESSAO_PEND_KEY); }catch(e){}
+}
+
+function sairColeta(){
+  var pend = _haPendencias();
+  var msg = pend
+    ? 'Você tem itens coletados ainda NÃO enviados.<br><br>Se sair agora, esses itens serão <strong>apagados</strong> e não poderão ser recuperados depois.<br><br>Deseja realmente sair mesmo assim?'
+    : 'Deseja sair do aplicativo agora?';
+  var overlay = document.createElement('div');
+  overlay.id = 'tela-sair-confirmar';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;background:#0e1f16;color:#cfead9;font-family:sans-serif';
+  overlay.innerHTML = '<div style="font-size:40px;margin-bottom:16px">'+(pend?'⚠️':'👋')+'</div>'
+    +'<div style="font-size:16px;line-height:1.5;margin-bottom:28px;max-width:320px">'+msg+'</div>'
+    +'<button id="btn-sair-confirmar" style="background:#c0392b;color:#fff;border:none;padding:13px 28px;border-radius:8px;font-size:15px;font-weight:700;margin-bottom:10px;cursor:pointer;width:240px">'+(pend?'Sim, sair e apagar':'Sim, sair')+'</button>'
+    +'<button id="btn-sair-cancelar" style="background:transparent;color:#cfead9;border:1px solid #4a8c6f;padding:11px 28px;border-radius:8px;font-size:14px;cursor:pointer;width:240px">Cancelar</button>';
+  document.body.appendChild(overlay);
+  document.getElementById('btn-sair-cancelar').onclick = function(){ overlay.remove(); };
+  document.getElementById('btn-sair-confirmar').onclick = function(){
+    if(pend){
+      // Usuario confirmou sair mesmo com pendencias — apaga o que nao foi enviado
+      Object.keys(SETORES).forEach(function(s){
+        _sessaoItens[s] = [];
+        _renderListaSessao(s);
+      });
+      _atualizarContador();
+    }
+    _sessaoLimparLocal();
+    _encerrarSessaoColeta(overlay);
+  };
+}
+
+/* Encerra a sessao de verdade — o navegador nunca deixa um site fechar
+   sozinho a aba/app em que esta rodando (restricao de seguranca; nao e
+   um bug nosso, nenhum PWA do mercado consegue contornar isso). Por
+   isso, alem de tentar o fechamento, a tela vira um "bloqueio" real:
+   nada mais pode ser usado ate o coletor reabrir deliberadamente. */
+function _encerrarSessaoColeta(overlay){
+  try{ window.close(); }catch(e){}
+  // Segunda tentativa, para navegadores que só fecham depois de um
+  // pequeno atraso (alguns Android fecham aqui; a maioria nao fecha
+  // nenhuma das duas vezes — por isso a tela de bloqueio abaixo).
+  setTimeout(function(){ try{ window.close(); }catch(e){} }, 250);
+
+  overlay.innerHTML = '<div style="font-size:40px;margin-bottom:16px">🔒</div>'
+    +'<div style="font-size:18px;font-weight:700;margin-bottom:10px">Sessão encerrada</div>'
+    +'<div style="font-size:15px;line-height:1.6;margin-bottom:28px;max-width:300px;color:rgba(207,234,217,.8)">Por segurança do navegador, o app não consegue se fechar sozinho — mas a sessão já foi encerrada e não há mais nada salvo aqui.<br><br>Para sair de vez, deslize o aplicativo para fora na lista de recentes ou toque no botão de início do celular.</div>'
+    +'<button id="btn-reabrir-sessao" style="background:#1a6b2a;color:#a8e6b8;border:1px solid #2d7a3e;padding:11px 28px;border-radius:8px;font-size:14px;cursor:pointer;width:240px">🔓 Entrar novamente</button>';
+  var btnReabrir = document.getElementById('btn-reabrir-sessao');
+  if(btnReabrir) btnReabrir.onclick = function(){ location.reload(); };
+}
+
+/* ---- CARD COLETA ---- */
+function _card(setor, p, cl, forn){
+  var k = setor+'_'+p.id;
+  var fH = forn ? '<div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-'+k+'" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div>' : '';
+  return '<div class="pc'+(cl?' '+cl:'')+'" id="card-'+k+'">'
+    +'<div class="ph">'
+    +'<div onclick="toggleCard(\''+k+'\',\''+cl+'\')" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0">'
+    +'<span class="pe">'+p.nome+'</span>'
+    +'<span class="pb" id="badge-'+k+'">+ Registrar</span>'
+    +'</div>'
+    +'<div class="ph-acoes">'
+    +'<button class="ph-btn-alt" onclick="event.stopPropagation();alterarCard(\''+k+'\',\''+cl+'\')">Edit</button>'
+    +'<button class="ph-btn-apa" onclick="event.stopPropagation();apagarCard(\''+k+'\',\''+cl+'\')">x</button>'
+    +'</div>'
+    +'</div>'
+    +'<div class="res-con" id="res-'+k+'"></div>'
+    +'<div class="pbd" id="body-'+k+'">'
+    +'<div class="cg"><span class="cl">Quantidade ('+p.unid+')</span>'
+    +'<div class="step">'
+    +'<button class="sb" onclick="stepQ(\''+k+'\','+p.passo+',-1)">-</button>'
+    +'<input class="si" type="number" id="qtd-'+k+'" inputmode="decimal" min="0" step="'+p.passo+'" value="0">'
+    +'<button class="sb" onclick="stepQ(\''+k+'\','+p.passo+',1)">+</button>'
+    +'</div></div>'
+    +fH
+    +'<div class="cg"><span class="cl">Observacao (opcional)</span><textarea id="obs-'+k+'" placeholder="Ex: lote A, qualidade boa..."></textarea></div>'
+    +'<div class="card-acoes">'
+    +'<button class="btn-con" onclick="concluirCard(\''+k+'\',\''+p.unid+'\',\''+p.nome+'\')">Concluir</button>'
+    +'</div></div></div>';
+}
+
+function toggleCard(k, cl){
+  var card = document.getElementById('card-'+k);
+  // Se concluido, nao abre pelo toque no cabecalho — use Edit para alterar
+  if(card.classList.contains('concluido')) return;
+  var aberto = card.classList.contains('at');
+  if(aberto){ card.classList.remove('at'); }
+  else {
+    card.classList.add('at');
+    if(cl) card.classList.add(cl);
+    setTimeout(function(){ var i=document.getElementById('qtd-'+k); if(i){i.focus();i.select();} }, 100);
+  }
+}
+
+function stepQ(k, passo, dir){
+  var inp = document.getElementById('qtd-'+k);
+  inp.value = Math.max(0, parseFloat(((parseFloat(inp.value)||0)+passo*dir).toFixed(2)));
+}
+
+function concluirCard(k, unid, nome){
+  var qtd = parseFloat(document.getElementById('qtd-'+k).value)||0;
+  if(qtd<=0){ _toast('Informe a quantidade antes de concluir.'); return; }
+  var card = document.getElementById('card-'+k);
+  var badge = document.getElementById('badge-'+k);
+  var res = document.getElementById('res-'+k);
+  var forn = (document.getElementById('for-'+k)||{value:''}).value||'';
+  var obs = (document.getElementById('obs-'+k)||{value:''}).value||'';
+  card.classList.remove('at');
+  card.classList.add('concluido');
+  badge.textContent = qtd+' '+unid;
+  var html = '<div class="rc-l">Qtde: <strong>'+qtd+' '+unid+'</strong></div>';
+  if(forn) html += '<div class="rc-l">Fornecedor: <strong>'+forn+'</strong></div>';
+  if(obs)  html += '<div class="rc-l">Obs: <strong>'+obs+'</strong></div>';
+  res.innerHTML = html;
+  _atualizarContador();
+  _toast(nome+' registrado');
+}
+
+function alterarCard(k, cl){
+  var card = document.getElementById('card-'+k);
+  // Se estava concluido, limpa o resumo e reabre para edicao
+  card.classList.remove('concluido');
+  card.classList.add('at');
+  if(cl) card.classList.add(cl);
+  var res = document.getElementById('res-'+k);
+  if(res) res.innerHTML = '';
+  // Badge volta ao estado editavel
+  var badge = document.getElementById('badge-'+k);
+  var qtdEl = document.getElementById('qtd-'+k);
+  var qtd = qtdEl ? parseFloat(qtdEl.value)||0 : 0;
+  // mantem valor mas indica que precisa concluir
+  if(badge) badge.textContent = qtd > 0 ? '* '+qtd+' (editar)' : '+ Registrar';
+  setTimeout(function(){ var i=document.getElementById('qtd-'+k); if(i){i.focus();i.select();} }, 100);
+  _atualizarContador();
+}
+
+function apagarCard(k, cl){
+  var card = document.getElementById('card-'+k);
+  var qtdEl = document.getElementById('qtd-'+k);
+  var obsEl = document.getElementById('obs-'+k);
+  var forEl = document.getElementById('for-'+k);
+  if(qtdEl) qtdEl.value = 0;
+  if(obsEl) obsEl.value = '';
+  if(forEl) forEl.value = '';
+  card.classList.remove('at','concluido');
+  if(cl) card.classList.remove(cl);
+  document.getElementById('badge-'+k).textContent = '+ Registrar';
+  document.getElementById('res-'+k).innerHTML = '';
+  _atualizarContador();
+}
+
+function trocarAba(s){
+  // Se estava no historico de pedidos vindo do admin, volta ao admin
+  if(_histPedDoAdmin && s !== 'vendas'){
+    _histPedDoAdmin = false;
+    mostrarPainelVendas('novo');
+    abrirAdmin();
+    return;
+  }
+  document.querySelectorAll('.secao').forEach(function(x){ x.classList.remove('at'); });
+  var secV = document.getElementById('sec-vendas');
+  if(secV) secV.classList.remove('at');
+  if(s==='vendas'){ if(secV) secV.classList.add('at'); }
+  else { var sec = document.getElementById('sec-'+s); if(sec) sec.classList.add('at'); }
+  var sel = document.getElementById('setor-sel');
+  if(sel && sel.value !== s) sel.value = s;
+  var lbl = document.getElementById('lbl-data');
+  if(lbl) lbl.textContent = s==='vendas' ? 'Data da Venda' : 'Data da Coleta';
+}
+
+/* Setor (aba) atualmente selecionado, a partir da lista "Setor" — usada
+   onde antes se detectava o botao de aba com a classe "at". */
+function _abaAtual(){
+  var sel = document.getElementById('setor-sel');
+  return sel ? sel.value : 'aviario';
+}
+
+/* Retorna a data de HOJE no fuso horário local do aparelho (YYYY-MM-DD).
+   Nunca usar new Date().toISOString() para isso — toISOString() converte
+   para UTC, o que faz a data "virar" cedo demais à noite em fusos como o
+   do Brasil (UTC-3), mostrando o dia seguinte antes da meia-noite local. */
+function _dataLocalHoje(){
+  var d = new Date();
+  var mm = String(d.getMonth()+1).padStart(2,'0');
+  var dd = String(d.getDate()).padStart(2,'0');
+  return d.getFullYear()+'-'+mm+'-'+dd;
+}
+
+function setHoje(){
+  document.getElementById('data-global').value = _dataLocalHoje();
+}
+
+/* ---- COLETA ---- */
+function _coletarItens(){
+  var itens = [];
+  _sessaoInit();
+  Object.keys(SETORES).forEach(function(setor){
+    var cfg = SETORES[setor];
+    (_sessaoItens[setor]||[]).forEach(function(it){
+      itens.push({setor:cfg.label, nome:it.nome, unid:it.unid, qtd:it.qtd, obs:it.obs, forn:it.forn, tipo:it.tipo||''});
+    });
+  });
+  return itens;
+}
+
+function _atualizarContador(){
+  var n = _coletarItens().length;
+  document.getElementById('contador').innerHTML = n===0 ? 'Nenhum item preenchido' : '<strong>'+n+'</strong> item(ns) concluido(s)';
+}
+
+function _getNum(){
+  return (localStorage.getItem('wpp_numero')||'').replace(/\D/g,'') || (WPP_DESTINO||'').replace(/\D/g,'');
+}
+
+function _fmtFone(n){
+  if(!n) return 'Nao configurado';
+  var d = n.replace(/\D/g,'');
+  if(d.length===13 && d.slice(0,2)==='55') d=d.slice(2);
+  if(d.length===12 && d.slice(0,2)==='55') d=d.slice(2);
+  if(d.length===11) return '('+d.slice(0,2)+') '+d.slice(2,7)+'.'+d.slice(7);
+  if(d.length===10) return '('+d.slice(0,2)+') '+d.slice(2,6)+'.'+d.slice(6);
+  return n;
+}
+
+function _fmt(v){ return Number(v||0).toFixed(2).replace('.',','); }
+
+/* ---- IMAGEM / ENVIO ---- */
+/* Logotipo da Fazenda Sao Jose (folhas em circulo dourado sobre fundo verde
+   identico ao do cabecalho do boletim/talao) — usado no lugar das letras
+   "SJ"/"FSJ" em todos os formularios gerados como imagem. */
+var _LOGO_FSJ = new Image();
+_LOGO_FSJ.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAMAAAAOusbgAAAAYFBMVEW5l0G4lT22lT+6lD64lD64lDy3lD+nokGwmESzlUJmwDJhmyW7kz65kz+7kj63kj6ZjkFGixNibyo4PBwgLx8cLyUcLiMcLiIcLiAeLSAcLSMgKxkbLiMbLx8YLyIZLCHtPqg5AAARbElEQVR42u2bi3ajyJJFk6fAAiG7eMog/v8v7zknMhFCdleVZ9bMrDWd93bblmVtIjIyXhnthv+l5f4F/wv+F/x/Btz3/2PgEWsYHz/578f/NvA4Pr7Oc3+bu3mex2VZPr9Y0zTdbrf5joV3DfNoC9/+NRh/Ng34sGFdlqHr5o5r3qi/HsteaKcVz3bXWtdxapdlHOZvyf+oamBv2MIFUqw3YPspID8+Pq5+4dsPT29b0GZgu26a8P3PwP2NqqXyVoCHKUCNWeyW53vR21aqmamy4SeqvunPTXVL69X7YJZlHJdcD3xgixzY48/BXTcGWa+BmacZl3NJkuBrnusBNvZk4PlnYFopdd3RoEgV1pVNc8kqrYvo/C7JmoZs6lxSj7NEpoH95BzfOli117FEBTV3LssuWlWSGL7KLpXjMrEpdTtNwwB9/eA44WFv021qKS6lddhVrBTaTcSta6i6lthV4mxJ4x+Sup3Gn4ChpnXF+QjiujiL+ckxMBHQNVbO1aQ1HyWJGj4WNP4QusU+4RByDeufg+/r6LHgllHUZLFfUWaLds0foyzC8r/Ci4YGucdBJLj7GzDMuZVVEds0UYLtxcfzn2wDGywSmqqw3wlNMpQGIP55DSW/A3tuljpX19pe+3zBUuk6xwv+SSJPbgK57fhZJHd/DO76YFVxwxMLMD9T+5lyYZNTW3iVvyA5jmVrtZGBnvquA/nPwePkxS34UWneNE0icL1f1eM7HedIBoDvapxq2+hhIHn4c/BDzTRhcM2m0jTfg5OnBxE4TWqRvYlBz7CtP5d4Mm7M57+4OpcJ5bu12Vi6vSTV42uaNlnkvImN0PPwj2DzrfSS+PrMxSKGMeFwouxxzLOQyK3Az2bccCfXXy19GPZ4tvUKRuZwRzhRPGJU8F4jqi41DSuyY0vB+CXVhlcpgDk9WJw3fFvewKM15mYgtCu9bSNEK+C8gMdBScsyLncmEQv8xrUAJZUZ1/ompWR0WiDX9eUSxdklhQ5yOE85cKDjmL40gW1XFz5VbuRh9qH9/iqx6WEcV3i5uwyrTJ8XfSR0mFR4DnDxuRHBMb6/4LjJYxUFRa6hd3wh2Nl57rr1O/AQwMhbzKBfwJRsB87iqEolMMBxcTqdEBRPZXOpcAI8OHXmSaBs+aT59gJW9BV4aP1BegVXUZRW5Nf4d5Lm0HougWNSz1jXU9xU2QOc07S5zSP3E/+69c9gC/vMGFrvKMv4CzD2WGAY1MWiE7kV5BX2/f18KuIUcar24Bre0wxs9Hnr8Armw0zTxo0O4CqAq9xsucZJ0gYY9+2NYCg7JxE+hF8S7zw/kXOOSL6VML+CfTL5Syc4epU4JRgfyGzEjnNC7sm4b2/vXuTIg3EGHMmKVALfDmD8ZCnWEARGxDmC+VFpVXNDuQjPkf7gR2j57SSJITKeOeab8e4c7jvxyl7InZBMfeG5WAF4yzK3/LyQZcC2wL3KioAuYUlRafKeJLDA8CBJACM/y2Vf7QgX1t5u3bMDGVEUMXH34BKOKjmC4Yqg2aw4STKx4SgyCvz25jXNTW4QvCPqB49ZMR8L9jVNHaqcZ4kJRqkyTLbDZZq8cNM8Qmp3ib0Bi1zAc4YNlm1J4hSnLGGQTCtF6cZ2uR0BvnXjM3gheBPY1V+BIcClLiEwKWTj1ELz+lkC67XC4XjDnuFoApgiw2gRo5B/PYFVfsKr4TBRYAXXV3ADv5EXewFBPgWwNsDADMs0/6RKlLc4E3mE5xwODoQCowg2gR1z5q/Al6qmpt/eNhFpY+/v2w7zlTJJYgMj32eykGW1k/ta1g716wt4RC4oME0IbukFXNMN78HyVASfN67AFY84PA0MTGlKVlmsWFkOTS97jJPcS9OOFQpDoc4Q/pcz9UBURNxr/BafgnKvBL/b9wKfYji4kmAuJUS2y78+R9VhL2AUxPDTH3QA+AME9VqxUK6PustRJri6EBhyetb1dApMf5pi6gX1JNNRRjIlDabrmRIPRzCqDWpa3hJJhZ6VfvLiVJu60gHsSp1agb2Ep+sTt3DMDBs8dYR9rrXdScpcBGH5voby8QV8NS/sU0nFAIQA+SnSN1WD7FHXncjXKwJ0rcdOmTVUkSoNqK6kXQM8fgG+GzjegfOcB9ciLelFiacwIz6Zqs87XeM9KHZYyKruYB5q4Jxg6BrJzfiqapR2SvHEzX2eHCEUXc/ykN5Bb45qc5EezF8TWLNazblPHgynnxm47eZXicd59WDlz5CWqo5yL7CFeaHPu4Os86RfmULijAKXjf4YDgRky4Rzgqeum17ALbIt2Va+gRnz4tKDzj7qUcDzE/h6/jBdWKhUmcwEBTVHVYUEPKfXFPjlON3nSbaVMgWoPThCdrFJGDb17F8xqw5cdZ0sWDIhqpUTPsBKdNkAe93jzsB6X1KllkpG5c43vweU0N6Or+Rew36AXSAO0wMp82KQUGPIzLp7Ma4R4M8AThgVPTg+HcAiKyCYIX8AfD3vjjLSrliFTKxPsAI2ExhJ3XGPx5HHWH6LtWiK0Fbzr7KHc94+/LQ/QVD02953advZQ2hi55j6ApwKfGXNOg3jN+A8YywjGOE3iuLyERV2n0x1Wx7yIXt/Ap8tK4J989lR86AOyMxbb03hB3gNYIQznISMls3AWjwfn3B2Tyc73u8HbrD9wuU8WDVCMosu760fje4t5xrWeQMrFgvMgiiAT5uyGQkKO9AHYXc6Qf0IMvRXscBEvkbwsP4OzEiIIyXwIwAHkQ18fRb2vP8R70hYSiDS1Tkqu8jA8xoKVbcvFj83cP4AlzsfGcjwjcV2gryKn99xviIgJyibUwNn34Bn9da/AOc4f3vw2YPLUKQFV/22Xx5cI7OGKzKJY1N1aAoEcA+wSaxOjsqxWtVZXhxEXpZ3Ooyr9xal5dl7ruWfSdWg8qgDuDRwdwDPduHAxKeWxApP7PAgSmw+0kRe3q0oZUZZlLUzf3LgItdEvEASwGZ2vB2n+QjuEBQJ/ijKrZ2EUM64rFrwfeevf73rUcxRoCQ7eU8W3qFMP2fCxVwgYsskyRJ5rhGlRP+i6vsBnFs92Bj5/QE+S88fu8hgJmaRUz5TfQIeDoKZ6ybKfeClDmXq0DEfUlad+6w0ZRBnMdDEXibvnxmWLSsIkeG8mZ29jrqtYsHO1n2m5lRVFx7cH8AQed3Ok/JSA7PepMz7XNJgp+vTKX47h7hIf4kcABU8/59aU8zSzLU/gsehCxlIyQoPjg56ApjN+MoFf3F+gN8OLtr8KBNS/lWU8tpAbfxcIdnA6gk8gaepF5hxUZcMmbUHUz01+ziF9XXOZ0vfzy/OkiZVKrP1LpdSS3NqttG2UKgewyKeBFnmpNyH1U4WZSw+2BB1yKcrlzKF424zvTXocogNJDcNn7NqcksvzVYYXK0RAvB6BK9bQq/+cGQlSFXDuBrmBY0uQLLCV6nP0m7FYyExE2cXBXB81o3MrFBtb0cwXhh7WJzChGPsjvzdUpIwoltzllc9cqDn74IS8x4Inbg0993WhnVqFFm3a+rWqT2Cpxt8l5XHTYYS14sMIwt3IGWc+AbItsOHpMhrm3+V++sR1DLaYTUjUKZO3XpQ9cSOsW8INBA4SqztzhrIg8sok+N+tyTr/OSeQ9w6lXQXMA5sD/4mb5By+ZYAtnOc+peci2DfAsntroP7Vasp4dmbwFapvR1WULZL7LLgwr9qEscmiOqItbutw0teDTLv1SSyyOowqffPQ51H2Ht3MmdZFNfzF+Q36+yhJk/Y7WT/GODEC0xwf6wW1RKAG/Wded0uJb67pSsGio+K1Zzk1b2EpBAfeJa5P3QAl0pJT9aY9+gA7oZnMBvzi1qcnzpREBnuFWUXyhmR8T3BpUX/or4Ur/E/HCg2dtk/xftTXURZu6kF+N71hyYqY9MCyx6CrtkstfgED1TbM8SsHLHF10Lp9lMwfNvKCIja8O4vqgXOvMDg6qbxKzBEnltvXsnFqhDr37BNF/Ivgh0OdOGjxFZJyluXmcDsgqTssZmbtl45wYe82lStjKC1SBEllwZg3jVUuivGeeYdFm3rRK/KDMBc91Ydn3Q9VoVHZj2uOtGcBxv08/hSwuiKxI8DKCojGXdIWlzkwQitcWFDEATHunDwuZfPvuImg39OLAdgky1n2WSdzHaYodPlJUjQqnVrsC5eZOeQnTa+EWshXQ6IkwJlXUW8kbCQ5UtjDgwo+Np1si6koBlvWS3E8r3y1+PE7HoNIiPCZVFDMnMhq/ic4xQABUZxk2EzYudnIkqzhVq3yf4qjKli0/g7iRVCievJW0K/yIMw6w2XA43u0RrHS67axiCa2igsIyHZJUt47WMzEpdLo1w23C8zJuJchPtcgR/cA1gFxa01ZTt7bKdpD94SZzHsFTZVVqpfaX5cl8rvRRo3uSVMuogEtgr3Ap9j/zV45GHSNBEyoJsX2Tl/TxfArHdr51IWvRFVi0++MBjRO0p2dvEFjiPeDkDg61WTIUjkvwZrKgcuE8UN0OHuuPQX8mVMcBy7im3dysDQMBtaKWpCpAmNzrzdXZcqB3D2c++k2di5z8NXqiaYGS8SL2Z97Z5sXaAkhZFf2C8U2EYgGrgzeAvnojzcsUJF5LK6L7c7J55UgW+3I3joe4BVrXYc2/rc7nETWUuinIspVJPxpkHOtLn4TCPFs2VpntkbJW6yDQp8jrrRnO365wjudfPk7WteljAQ4Xy7KKkbNb9yZZ48TvgOB1fJN2tC6wRq8AcGd6HjMO5k3Ptg4EN6azdeAC93Ay/b5IlxUfvVKpih0ErpMnvpkbbaMmgElQhkpbfJYzBiuvWdCfzVhdc2NQb/5cHLNiUQpxlvzJqLL6dYwOrywNTMQOZHf3TLrPv1uNi4ujqWg9jd8G3J3mAzdwRD6/yK6BnmIkrORGSN3VSwV0/ZQ/ASWYkw1M5+C7xNvg2/4FP9Jf3NLPrYihj5NOZOeduH4IUYNu3mi5gZeFfhy3amkn5gINVsCNROsB+w0hQI1ajJLok28WL+FTzNBpbSp4E32GMY5KL2Ir+Vl5phPlc6lnq2EjTeWiCBb3hNbuYMrdlQmHEnmtDwmmVyd+/eyqj3FcfqMcsF72AZHO864MqilCHfZyk86rw4Ye7vXBisku+H5fQ+gRZ4PjbYljDaZ1gUzKt6bo/ptdIMWNMJPLupdt08Vpoip4UllG6bqpr6dV13w4LkIvAeVD3YdN24uZLBtqe7TRI6TLDBW0WOh8jJQXEUI9dsU6qD/pgjQ/kJF/gys7fNY7jhd0N7ffuY6vLTiS5KMra05aMuNnZEkyof84KTTEoR769n9mDnPQ/gOLafXuqroREZGIA5r3fR3FxqU4qPMcW214jjj8A3G+oCedEEnd9rk9s9Jo0aD/XUX34m1BK4n0wpysfY5S4e36PD7GvxvPwo7DYI269yVrxi+dlcpm6VcSjW+babvP3YTd7upm9tFBSemedhDZM0PwQbue/ndeWM5m3aRo0/wnoMHLfTAmvUcKC/j5++5f4GPNnQMM0MnozNin6cPr9cLaoQ7OwdCQxP5OTXNnDy1+DwAdgvG+X1wzEPohYcLtTbcVJXEy6/4/7zOR4e4NHKWEYPeqBRYxRD8MFaHGDRzuz+6id7LG8WPnKYbLdHL00YdZt3TzeaRQRDnryB/GD2Vh8yhZhhn7qMWzlAbr9xTQc4uvPAx5n7wT/Gz8ALNe7HtO9+EOxR/7DKhHxeWk2SzI91/y+BF+uhk2zD5XfpV/GL4Qw53AayX95D3SnHtfzovxpYzHEp4Q1T7RuXuvQv7KTcLc0e/uC/k9BWGnkTBft384nwHtz7l8zFLkFVty2l/Cuw2czytGRZg9/jMYB3J37cvTdkFN+Ax2/W9knjM3Z/REdt4TgMu1cfb1YuOw3ffL6b/nF9/TSH333zfinm20/+//ffO/0H+uGz2K7sTMIAAAAASUVORK5CYII=';
+
+function _gerarImagem(titulo, linhas, rodape, onBlob, faixaSufixo){
+  if(!_LOGO_FSJ.complete){
+    _LOGO_FSJ.onload = function(){ _gerarImagem(titulo, linhas, rodape, onBlob, faixaSufixo); };
+    return;
+  }
+  var W=420, PAD=18;
+  var c = document.createElement('canvas');
+  var ctx = c.getContext('2d');
+  var nome = (localStorage.getItem('wpp_nome')||'').trim();
+  var isTalao = titulo.indexOf('TALAO DE PEDIDO')===0;
+  var H = nome?158:122;
+  H += isTalao ? 40 : 28; // faixa
+  linhas.forEach(function(){ H+=52; });
+  H += 48; // rodape
+  H += rodape ? 44 : 0;
+  H += 8;
+  c.width=W; c.height=H;
+  var y=0;
+
+  function rect(x,yy,w,h,col){ ctx.fillStyle=col; ctx.fillRect(x,yy,w,h); }
+  function txt(t,x,yy,sz,col,weight,align){
+    ctx.font=(weight||'normal')+' '+sz+'px Arial';
+    ctx.fillStyle=col; ctx.textAlign=(align||'left');
+    ctx.fillText(String(t),x,yy); ctx.textAlign='left';
+  }
+  function ln(x1,y1,x2,y2,col,lw){
+    ctx.strokeStyle=col; ctx.lineWidth=lw||1;
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  }
+
+  // CABECALHO
+  // Paleta: o Talao de Pedido (isTalao) e o documento entregue ao cliente \u2014
+  // usa tons de verde claro (fundo claro + texto escuro para contraste), com
+  // a faixa do numero do pedido em dourado. O Boletim de Coleta (uso interno)
+  // mantem a paleta escura original. Espelha a paleta do Admin/Desktop.
+  var corFundo    = isTalao ? '#edf5ea' : '#1c2e22';
+  var corTitulo   = isTalao ? '#1c2e22' : '#fff';
+  var corAcento   = isTalao ? '#3b6b47' : '#b8943f';
+  var corMuted    = isTalao ? 'rgba(28,46,34,0.55)' : 'rgba(255,255,255,0.5)';
+  var corDivisor  = isTalao ? 'rgba(28,46,34,0.15)' : 'rgba(255,255,255,0.12)';
+  var corMutedFor = isTalao ? 'rgba(28,46,34,0.4)' : 'rgba(255,255,255,0.4)';
+
+  rect(0,y,W,nome?158:122,corFundo);
+  ctx.save();
+  ctx.beginPath(); ctx.arc(PAD+20,y+28,20,0,Math.PI*2); ctx.clip();
+  ctx.drawImage(_LOGO_FSJ, PAD, y+8, 40, 40);
+  ctx.restore();
+  txt('Fazenda S\u00e3o Jos\u00e9',PAD+50,y+24,16,corTitulo,'bold');
+  var subtitulo = isTalao ? 'TAL\u00c3O DE PEDIDOS' : titulo;
+  txt(subtitulo,PAD+50,y+40,9,corAcento);
+  var data = document.getElementById('data-global').value;
+  var dfL = data ? new Date(data+'T12:00').toLocaleDateString('pt-BR') : '';
+  txt(dfL,PAD,y+82,11,corAcento,'bold');
+  var hr = new Date().toLocaleTimeString('pt-BR').slice(0,5);
+  txt(hr,W-PAD,y+82,9,corMuted,'normal','right');
+  if(nome){
+    ln(PAD,y+96,W-PAD,y+96,corDivisor);
+    txt('RESPONS\u00c1VEL',PAD+26,y+108,8,corMutedFor);
+    txt(nome,PAD+26,y+122,13,corAcento,'bold');
+    y+=158;
+  } else { y+=122; }
+
+  // FAIXA \u2014 dourada tanto no Boletim quanto no Talao (acento da marca)
+  var faixaCor = '#b8943f';
+  var faixaH = isTalao ? 40 : 28;
+  rect(0,y,W,faixaH,faixaCor);
+  var faixaTxt = isTalao ? titulo.replace('TALAO DE PEDIDO / ','PEDIDO N.\u00ba ') : titulo + (faixaSufixo ? ' - '+faixaSufixo : '');
+  var faixaTxtY = isTalao ? y+26 : y+19;
+  txt(faixaTxt,PAD,faixaTxtY,10,corTitulo,'bold');
+  y+=faixaH;
+
+  // LINHAS
+  linhas.forEach(function(it,i){
+    var bg = i%2===0 ? '#fff' : '#f8f6f1';
+    rect(0,y,W,52,bg);
+    txt(it.col1||'',PAD,y+22,11,'#888');
+    txt(it.col2||'',PAD,y+38,12,'#1a1a1a','bold');
+    txt(it.col3||'',PAD+180,y+30,12,'#1c2e22','bold');
+    txt(it.col4||'',W-PAD,y+30,13,'#7a3a00','bold','right');
+    ln(0,y+51,W,y+51,'#eee');
+    y+=52;
+  });
+
+  // RODAPE
+  rect(0,y,W,48,corFundo);
+  txt(rodape||'',PAD,y+18,8,isTalao ? corMuted : '#7aa88a');
+  txt('R$ '+_fmt(linhas.reduce(function(s,it){ return s+(it.val||0); },0)),W-PAD,y+34,20,corTitulo,'bold','right');
+  txt(linhas.length+' item(ns)',PAD,y+34,11,corMuted);
+  y+=48;
+
+  // CLIENTE (se houver)
+  if(rodape){
+    rect(0,y,W,44,'#f5f0e8');
+    txt('CLIENTE',PAD,y+16,8,'#888');
+    var cli = (document.getElementById('venda-cliente')||{value:''}).value||'';
+    txt(cli||'-',PAD,y+34,14,'#333','bold');
+    y+=44;
+  }
+
+  c.toBlob(onBlob,'image/jpeg',0.92);
+}
+
+/* ---- INTEGRACAO COM GRANJA ---- */
+function _gerarPayloadColeta(){
+  var itens = _coletarItens();
+  if(!itens.length) return null;
+  var data = document.getElementById('data-global').value||_dataLocalHoje();
+  var nome = (localStorage.getItem('wpp_nome')||'').trim();
+  var payload = {
+    origem: 'coleta',
+    coletor: nome,
+    data: data,
+    ts: Date.now(),
+    itens: itens.map(function(it){
+      return {
+        setor: it.setor,
+        nome: it.nome,
+        unid: it.unid,
+        qtd: it.qtd,
+        forn: it.forn||'',
+        obs: it.obs||''
+      };
+    })
+  };
+  return payload;
+}
+
+function _gerarPayloadPedido(conc, numPed, cliente, dataVenda){
+  var nome = (localStorage.getItem('wpp_nome')||'').trim();
+  var total = conc.reduce(function(s,it){ return s+it.sub; },0);
+  var payload = {
+    origem: 'pedido',
+    coletor: nome,
+    numPed: numPed,
+    cliente: cliente,
+    data: dataVenda,
+    ts: Date.now(),
+    itens: conc.map(function(it){
+      var p = _listaProdutosVenda().find(function(x){ return x.id===it.prodId; })||{nome:it.prodId};
+      return {
+        nome: p.nome,
+        unidade: it.unidade||'',
+        qtd: it.qtd,
+        preco: it.preco,
+        sub: it.sub,
+        data: it._data||dataVenda
+      };
+    }),
+    total: total
+  };
+  return payload;
+}
+
+function _gerarLinkImportacao(payload){
+  try{
+    var json = JSON.stringify(payload);
+    var b64  = btoa(unescape(encodeURIComponent(json)));
+    return GRANJA_URL + '?import=' + b64;
+  }catch(e){ return null; }
+}
+
+
+/* Mostra a imagem gerada do boletim direto na tela — garante que o operador
+   veja a confirmacao visual do que foi salvo, mesmo que o compartilhamento
+   pelo WhatsApp falhe silenciosamente (comum em alguns aparelhos). */
+function _mostrarConfirmacaoEnvio(blob, nomeArquivo){
+  var url = URL.createObjectURL(blob);
+  var overlay = document.createElement('div');
+  overlay.id = 'tela-confirmacao-envio';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:rgba(14,31,22,.97);overflow:auto';
+  overlay.innerHTML = '<div style="color:#cfead9;font-family:sans-serif;text-align:center;margin-bottom:14px">'
+    +'<div style="font-size:36px">✅</div>'
+    +'<div style="font-size:16px;font-weight:700">Coleta registrada com sucesso!</div>'
+    +'</div>'
+    +'<img src="'+url+'" style="max-width:90%;max-height:55vh;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.4);margin-bottom:18px">'
+    +'<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">'
+    +'<button id="btn-compartilhar-envio" style="background:#1a6b2a;color:#fff;border:none;padding:12px 20px;border-radius:8px;font-weight:700;cursor:pointer">💬 Compartilhar</button>'
+    +'<button id="btn-fechar-envio" style="background:transparent;color:#cfead9;border:1px solid #4a8c6f;padding:12px 20px;border-radius:8px;cursor:pointer">Fechar</button>'
+    +'</div>';
+  document.body.appendChild(overlay);
+  document.getElementById('btn-fechar-envio').onclick = function(){ overlay.remove(); URL.revokeObjectURL(url); };
+  document.getElementById('btn-compartilhar-envio').onclick = function(){
+    var file = new File([blob], nomeArquivo, {type:'image/jpeg'});
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({files:[file]})
+        .then(function(){ _toast('✅ Compartilhado!'); })
+        .catch(function(err){
+          if(err && err.name !== 'AbortError'){
+            _fallbackDownload(blob, nomeArquivo);
+            _toast('✅ Imagem salva — compartilhe pelo WhatsApp.');
+          }
+        });
+    } else {
+      _fallbackDownload(blob, nomeArquivo);
+      _toast('✅ Imagem salva — compartilhe pelo WhatsApp.');
+    }
+  };
+}
+
+var _enviandoColeta = false; // trava contra clique duplo / reenvio acidental
+
+function enviarTudo(){
+  if(_enviandoColeta) return; // ja esta processando um envio — ignora toques repetidos
+  var itens = _coletarItens();
+  if(!itens.length){ _toast('Conclua ao menos um item antes de enviar.'); return; }
+  var n = _getNum();
+  if(!n){ _toast('Numero nao configurado. Contacte o administrador.'); return; }
+
+  _enviandoColeta = true;
+  var btnEnviar = document.getElementById('btn-enviar-coleta');
+  if(btnEnviar){ btnEnviar.disabled = true; btnEnviar.style.opacity = '0.6'; btnEnviar.style.pointerEvents = 'none'; }
+
+  // Grava coleta no historico
+  var _dataColeta = document.getElementById('data-global').value||_dataLocalHoje();
+  var _nomeColeta = (localStorage.getItem('wpp_nome')||'').trim();
+  _salvarColeta({data:_dataColeta, coletor:_nomeColeta, itens:itens, ts:Date.now()});
+
+  // Gera link de importacao para o admin
+  var payload = _gerarPayloadColeta();
+  var linkImport = payload ? _gerarLinkImportacao(payload) : null;
+
+  // Monta linhas para a imagem
+  var linhas = [];
+  itens.forEach(function(it){
+    linhas.push({col1:it.setor, col2:it.nome, col3:it.qtd+' '+it.unid, col4:it.forn||'', val:0});
+  });
+
+  // Nome(s) da(s) aba(s) de origem, exibido na faixa amarela ao lado de "BOLETIM DE COLETA"
+  var NOMES_SETOR_TITULO = {Aviario:'AVIÁRIO', Perda:'PERDA', Campo:'CAMPO', Estoque:'ESTOQUE'};
+  var setoresUsados = [];
+  itens.forEach(function(it){
+    if(it.setor && setoresUsados.indexOf(it.setor)===-1) setoresUsados.push(it.setor);
+  });
+  var faixaSufixoColeta = setoresUsados.map(function(s){
+    return NOMES_SETOR_TITULO[s] || String(s).toUpperCase();
+  }).join(' / ');
+
+  _gerarImagem('BOLETIM DE COLETA', linhas, null, function(blob){
+    if(!blob){ _toast('Erro ao gerar imagem.'); return; }
+    var data = document.getElementById('data-global').value||_dataLocalHoje();
+    // Mostra a imagem gerada na tela — confirmacao visual garantida de que o
+    // registro foi salvo, independente do compartilhamento funcionar ou nao
+    _mostrarConfirmacaoEnvio(blob, 'coleta-'+data+'.jpg');
+  }, faixaSufixoColeta);
+
+  // Limpa apos envio e libera a trava/botao
+  setTimeout(function(){
+    Object.keys(SETORES).forEach(function(setor){
+      _sessaoItens[setor] = [];
+      _renderListaSessao(setor);
+    });
+    document.getElementById('contador').innerHTML = 'Nenhum item preenchido';
+    _sessaoLimparLocal();
+    _enviandoColeta = false;
+    if(btnEnviar){ btnEnviar.disabled = false; btnEnviar.style.opacity = ''; btnEnviar.style.pointerEvents = ''; }
+  }, 2000);
+}
+
+function _fallbackDownload(blob, nome){
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href=url; a.download=nome;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
+  _toast('Imagem salva em Downloads!');
+}
+
+/* ---- VENDAS ---- */
+var _vItens = [];
+var _vIdx = 0;
+var _pedNum = 0;
+
+/* O número do pedido (PED-XXXX) precisa refletir o total já enviado por
+   QUALQUER aparelho — mas o Coletor não escreve pedidos no GitHub (só
+   gera o link de importação pro Admin), então seu histórico local
+   sozinho NUNCA sabe quantos pedidos outros aparelhos já enviaram. Por
+   isso, busca também (somente leitura, mesmo padrão do catálogo) o
+   backup de pedidos já publicado, e usa o maior número entre local e
+   remoto — sem esse passo, o Coletor sempre mostraria uma numeração
+   desatualizada, igual ao bug que já corrigimos no Admin/Desktop. */
+async function _buscarPedidosGlobais(){
+  if(!_ghToken()) return null;
+  try{
+    var headers = {
+      'Authorization': 'token '+_ghToken(),
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28'
+    };
+    var resp = await fetch('https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_BCK_PEDIDOS+'?t='+Date.now(),
+      {headers:headers, cache:'no-store'});
+    if(!resp.ok) return null;
+    var meta = await resp.json();
+    var dados = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g,'')))));
+    return Array.isArray(dados) ? dados : null;
+  }catch(e){
+    console.warn('Busca pedidos globais:', e.message);
+    return null;
+  }
+}
+
+function _maiorNumEmLista(lista){
+  var maior = 0;
+  (lista||[]).forEach(function(p){
+    var m = String(p.num||'').match(/(\d+)/);
+    if(m){ var n = parseInt(m[1],10); if(n>maior) maior = n; }
+  });
+  return maior;
+}
+
+async function _recalcularPedNumPeloHistorico(){
+  var maiorLocal = _maiorNumEmLista(_carregarHist());
+  if(maiorLocal > _pedNum){
+    _pedNum = maiorLocal;
+    try{ localStorage.setItem(NK, String(_pedNum)); }catch(e){}
+    _renderTalaoNum();
+  }
+  // Busca a contagem global (pode demorar um instante) e atualiza de
+  // novo se encontrar um número ainda maior vindo de outro aparelho
+  var pedidosGlobais = await _buscarPedidosGlobais();
+  var maiorGlobal = _maiorNumEmLista(pedidosGlobais);
+  if(maiorGlobal > _pedNum){
+    _pedNum = maiorGlobal;
+    try{ localStorage.setItem(NK, String(_pedNum)); }catch(e){}
+    _renderTalaoNum();
+  }
+}
+
+function _initVendas(){
+  var ativa = localStorage.getItem(VK)==='1';
+  _aplicarVendas(ativa);
+  _pedNum = parseInt(localStorage.getItem(NK)||'0');
+  _recalcularPedNumPeloHistorico(); // assíncrona: atualiza a tela assim que resolver
+  _renderTalaoNum();
+}
+
+function _aplicarVendas(ativa){
+  var sel = document.getElementById('setor-sel');
+  var opt = document.getElementById('setor-opt-vendas');
+  var btn = document.getElementById('btn-toggle-vendas');
+  if(ativa){
+    if(sel && !opt){
+      opt = document.createElement('option');
+      opt.value = 'vendas'; opt.id = 'setor-opt-vendas'; opt.textContent = 'Pedidos';
+      sel.appendChild(opt);
+    }
+    if(btn){ btn.textContent='Desativar Vendas'; btn.style.background='#5a1010'; btn.style.color='#fca5a5'; }
+  } else {
+    if(opt) opt.remove();
+    if(btn){ btn.textContent='Ativar Vendas'; btn.style.background='#7a3a00'; btn.style.color='#ffd49a'; }
+    var sv = document.getElementById('sec-vendas');
+    if(sv && sv.classList.contains('at')) trocarAba('aviario');
+  }
+}
+
+function toggleVendas(){
+  var atual = localStorage.getItem(VK)==='1';
+  var nova = !atual;
+  localStorage.setItem(VK, nova?'1':'0');
+  _aplicarVendas(nova);
+  var s2 = document.getElementById('ad-st2');
+  s2.textContent = nova ? 'Vendas ativadas' : 'Vendas desativadas';
+  s2.className = 'ad-st';
+}
+
+function _renderTalaoNum(){
+  var el = document.getElementById('talao-num');
+  if(el) el.innerHTML = 'Pedido <strong>PED-'+String(_pedNum+1).padStart(4,'0')+'</strong>';
+}
+
+function _nextPedNum(){
+  _pedNum++;
+  localStorage.setItem(NK, String(_pedNum));
+  _renderTalaoNum();
+  return 'PED-'+String(_pedNum).padStart(4,'0');
+}
+
+function addItemVenda(){
+  var idx = _vIdx++;
+  var hoje = _dataLocalHoje();
+  _vItens.push({idx:idx, prodId:'', apresIdx:null, unidade:'', data:hoje, qtd:0, preco:0, sub:0, concluido:false});
+  _renderVItens();
+}
+
+/* ── Cadastro único de Produtos (só leitura no Coletor) ──────────────────
+   O Coletor nunca edita o cadastro — só lê o que o Admin já configurou,
+   pra saber a apresentação (unidade) certa de cada produto e calcular o
+   preço internamente, sem nunca mostrar esse preço pro coletor. */
+var _produtosCadastro = null;
+var CACHE_PRODUTOS_KEY = 'fsj_produtos_cache';
+/* Mesma ideia para Fornecedores — só leitura, usada para sugerir nomes já
+   cadastrados no campo "Fornecedor" das telas de Estoque (via <datalist>,
+   que não impede digitar um nome novo, só sugere os já conhecidos). */
+var _fornecedoresCadastro = null;
+var CACHE_FORNECEDORES_KEY = 'fsj_fornecedores_cache';
+
+async function _buscarProdutosCadastro(){
+  if(!_ghToken()) return _produtosCadastroLocal();
+  try{
+    var headers = {
+      'Authorization': 'token '+_ghToken(),
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28'
+    };
+    var resp = await fetch('https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_BCK_CADASTROS+'?t='+Date.now(),
+      {headers:headers, cache:'no-store'});
+    if(!resp.ok) return _produtosCadastroLocal();
+    var meta = await resp.json();
+    var dados = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g,'')))));
+    var produtos = (dados && Array.isArray(dados.produtos)) ? dados.produtos : [];
+    produtos.forEach(function(p){ if(p.nome) p.nome = _corrigirMojibake(p.nome); });
+    _produtosCadastro = produtos;
+    try{ localStorage.setItem(CACHE_PRODUTOS_KEY, JSON.stringify(produtos)); }catch(e){}
+
+    var fornecedores = (dados && Array.isArray(dados.fornecedores)) ? dados.fornecedores : [];
+    fornecedores.forEach(function(f){ if(f.nome) f.nome = _corrigirMojibake(f.nome); });
+    _fornecedoresCadastro = fornecedores;
+    try{ localStorage.setItem(CACHE_FORNECEDORES_KEY, JSON.stringify(fornecedores)); }catch(e){}
+    _atualizarDatalistFornecedores();
+
+    return produtos;
+  }catch(e){
+    console.warn('Busca cadastro de produtos:', e.message);
+    return _produtosCadastroLocal();
+  }
+}
+
+/* Preenche o <datalist> compartilhado do campo "Fornecedor" a partir do
+   cache mais recente (buscado ou salvo localmente de uma sessão anterior). */
+function _atualizarDatalistFornecedores(){
+  var dl = document.getElementById('fornecedores-datalist');
+  if(!dl) return;
+  var lista = _fornecedoresCadastro;
+  if(!lista){
+    try{ lista = JSON.parse(localStorage.getItem(CACHE_FORNECEDORES_KEY)||'[]'); }catch(e){ lista = []; }
+  }
+  dl.innerHTML = (lista||[]).map(function(f){
+    return '<option value="'+String(f.nome||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'">';
+  }).join('');
+}
+
+function _produtosCadastroLocal(){
+  if(_produtosCadastro) return _produtosCadastro;
+  try{
+    var raw = localStorage.getItem(CACHE_PRODUTOS_KEY);
+    if(raw){ _produtosCadastro = JSON.parse(raw); return _produtosCadastro; }
+  }catch(e){}
+  return null;
+}
+
+/* Lista de produtos pra montar o <select> — usa o cadastro único quando
+   disponível; se nunca conseguiu buscar (ex: primeiro uso sem internet),
+   cai de volta na lista antiga PROD_VENDA, pra nunca travar o coletor. */
+function _listaProdutosVenda(){
+  var cad = _produtosCadastro || _produtosCadastroLocal();
+  if(cad && cad.length) return cad;
+  return PROD_VENDA.filter(function(p){ return p.id!=='_edit'; }).map(function(p){
+    return {id:p.id, nome:p.nome, apresentacoes:[]};
+  });
+}
+
+function _optsVenda(selId){
+  var opts = _listaProdutosVenda().map(function(p){
+    return '<option value="'+p.id+'"'+(p.id===selId?' selected':'')+'>'+p.nome+'</option>';
+  }).join('');
+  return opts + '<option value="_edit"'+(selId==='_edit'?' selected':'')+'>+ Item avulso (não cadastrado)</option>';
+}
+
+/* Apresentações (Unidade, Bandeja, Caixa, Kg, Sacos...) do produto
+   escolhido — o preço de cada uma existe no cadastro, mas nunca aparece
+   pro coletor: é usado só internamente para calcular o subtotal. */
+function _optsApresentacao(prodId, selIdx){
+  var prod = _listaProdutosVenda().find(function(p){ return p.id===prodId; });
+  var apres = (prod && prod.apresentacoes) ? prod.apresentacoes : [];
+  if(!apres.length){
+    return '<option value="">— nenhuma apresentação cadastrada —</option>';
+  }
+  // Só mostra apresentações habilitadas para a aba "Vendas" — mas o valor
+  // de cada <option> continua sendo o ÍNDICE ORIGINAL no array completo
+  // (não a posição na lista filtrada), pois é esse índice original que
+  // setApresV() usa depois para encontrar a apresentação certa.
+  var opts = apres.map(function(a,i){ return {a:a, i:i}; })
+    .filter(function(par){ return !Array.isArray(par.a.abas) || par.a.abas.length===0 || par.a.abas.indexOf('Vendas')>-1; });
+  if(!opts.length){
+    return '<option value="">— nenhuma apresentação disponível para venda —</option>';
+  }
+  return opts.map(function(par){
+    return '<option value="'+par.i+'"'+(par.i===selIdx?' selected':'')+'>'+par.a.unid+'</option>';
+  }).join('');
+}
+
+function _renderVItens(){
+  var cont = document.getElementById('vendas-itens');
+  if(!cont) return;
+  var html = '';
+  _vItens.forEach(function(it, i){
+    if(it.concluido){
+      html += '<div class="vi con">'
+        +'<div style="font-weight:700;margin-bottom:6px">'+it._nome+'</div>'
+        +'<div class="vi-res">'+it.qtd+' '+it.unidade+' = <strong>R$ '+_fmt(it.sub)+'</strong> ('+it._data+')</div>'
+        +'<div style="display:flex;gap:8px;margin-top:8px">'
+        +'<button class="vi-edit" onclick="editVItem('+i+')">Alterar</button>'
+        +'<button class="vi-del" onclick="delVItem('+i+')">X</button>'
+        +'</div></div>';
+    } else {
+      var isEdit = it.prodId==='_edit';
+      var nomeEditField = isEdit
+        ? '<span class="vi-lbl">Nome do item</span>'
+          +'<input class="vi-inp pc-edit-nome" type="text" id="vedit-nome-'+it.idx+'" placeholder="Descreva o item..." value="'+(it._editNome||'')+'" oninput="_vItens['+i+']._editNome=this.value" style="margin-bottom:10px;border:2px solid #b8943f">'
+        : '';
+      // Apresentação (unidade) vem do cadastro do produto — o preço de
+      // cada uma existe lá, mas nunca é mostrado nem editável aqui.
+      var campoApresentacao = isEdit
+        ? '<span class="vi-lbl">Unidade (ex: bandeja, kg, duzia...)</span>'
+          +'<input class="vi-inp" type="text" placeholder="Digite a unidade..." value="'+(it.unidade||'')+'" oninput="setUnidV('+i+',this.value)" style="margin-bottom:12px">'
+        : '<span class="vi-lbl">Apresentação</span>'
+          +'<select class="vi-sel" onchange="setApresV('+i+',this.value)" style="margin-bottom:12px">'+_optsApresentacao(it.prodId, it.apresIdx)+'</select>';
+      html += '<div class="vi" id="vi-'+it.idx+'">'
+        +'<span class="vi-lbl">Produto</span>'
+        +'<select class="vi-sel" onchange="setProdV('+i+',this.value);_renderVItens()">'+_optsVenda(it.prodId)+'</select>'
+        +nomeEditField
+        +campoApresentacao
+        +'<div class="vi-row2">'
+        +'<div class="vi-campo"><span class="vi-lbl">Data</span><input class="vi-inp" type="date" value="'+it.data+'" oninput="setDataV('+i+',this.value)"></div>'
+        +'<div class="vi-campo"><span class="vi-lbl">Quantidade</span><input class="vi-inp" type="number" min="0" step="0.5" inputmode="decimal" placeholder="0" value="'+(it.qtd||'')+'" oninput="setQtdV('+i+',this.value)"></div>'
+        +'</div>'
+        +(isEdit?'':'<div class="vi-campo" style="margin-top:10px"><span class="vi-lbl">Subtotal a cobrar</span><div class="vi-sub-box">R$ <span id="vsub-'+it.idx+'">'+_fmt(it.sub)+'</span></div></div>')
+        +'<div class="vi-btns" style="margin-top:10px">'
+        +'<button class="vi-ok" onclick="conclVItem('+i+')">Confirmar item</button>'
+        +'<button class="vi-del" onclick="delVItem('+i+')">X</button>'
+        +'</div></div>';
+    }
+  });
+  cont.innerHTML = html;
+  _atualizarTotalV();
+}
+
+function setProdV(i,v){
+  _vItens[i].prodId=v;
+  _vItens[i].apresIdx=null;
+  _vItens[i].unidade='';
+  _vItens[i].preco=0;
+  _calcSubV(i);
+}
+function setApresV(i,v){
+  var it = _vItens[i];
+  it.apresIdx = (v==='' ? null : parseInt(v,10));
+  var prod = _listaProdutosVenda().find(function(p){ return p.id===it.prodId; });
+  var apres = (prod && it.apresIdx!==null) ? prod.apresentacoes[it.apresIdx] : null;
+  it.unidade = apres ? apres.unid : '';
+  it.preco   = apres ? (Number(apres.preco)||0) : 0; // nunca exibido ao coletor
+  _calcSubV(i);
+  var el = document.getElementById('vsub-'+it.idx); if(el) el.textContent=_fmt(it.sub);
+  _atualizarTotalV();
+}
+function setUnidV(i,v){ _vItens[i].unidade=v; }
+function setDataV(i,v){ _vItens[i].data=v; }
+function setQtdV(i,v){
+  _vItens[i].qtd=parseFloat(v)||0; _calcSubV(i);
+  var el=document.getElementById('vsub-'+_vItens[i].idx); if(el) el.textContent=_fmt(_vItens[i].sub);
+  _atualizarTotalV();
+}
+function _calcSubV(i){ _vItens[i].sub=Math.round(_vItens[i].qtd*_vItens[i].preco*100)/100; }
+
+function conclVItem(i){
+  var it=_vItens[i];
+  if(it.prodId==='_edit'){
+    var nomeEl = document.getElementById('vedit-nome-'+it.idx);
+    var nomeVal = (nomeEl ? nomeEl.value : it._editNome||'').trim();
+    if(!nomeVal){ _toast('Informe o nome do item.'); nomeEl&&nomeEl.focus(); return; }
+    it._editNome = nomeVal;
+  } else if(!it.prodId){
+    _toast('Escolha um produto.'); return;
+  } else if(it.apresIdx===null || it.apresIdx===undefined){
+    _toast('Escolha a apresentação (unidade).'); return;
+  }
+  if(it.qtd<=0){ _toast('Informe a quantidade.'); return; }
+  _calcSubV(i);
+  var dtFmt = it.data ? new Date(it.data+'T12:00').toLocaleDateString('pt-BR') : '';
+  if(it.prodId==='_edit'){
+    it._nome = it._editNome;
+  } else {
+    var p = _listaProdutosVenda().find(function(x){ return x.id===it.prodId; })||{nome:it.prodId};
+    it._nome = p.nome;
+  }
+  it._data = dtFmt; it.concluido=true;
+  _renderVItens();
+}
+function editVItem(i){ _vItens[i].concluido=false; _renderVItens(); }
+function delVItem(i){ _vItens.splice(i,1); _renderVItens(); }
+
+function _atualizarTotalV(){
+  var tot = _vItens.reduce(function(s,it){ return s+(it.concluido?it.sub:0); },0);
+  var el = document.getElementById('vt-val');
+  if(el) el.textContent = 'R$ '+_fmt(tot);
+}
+
+function enviarPedido(){
+  var conc = _vItens.filter(function(it){ return it.concluido; });
+  if(!conc.length){ _toast('Confirme ao menos um item.'); return; }
+  var n = _getNum();
+  if(!n){ _toast('Numero nao configurado.'); return; }
+  var numPed = _nextPedNum();
+  var cliente = (document.getElementById('venda-cliente')||{value:''}).value||'';
+  var dataVenda = document.getElementById('data-global').value||_dataLocalHoje();
+  var linhas = conc.map(function(it){
+    return {col1:it._data, col2:it._nome, col3:it.qtd+' '+it.unidade, col4:'R$ '+_fmt(it.preco), val:it.sub,
+            prodId:it.prodId, nome:it._nome, unidade:it.unidade, qtd:it.qtd, preco:it.preco, sub:it.sub, data:it._data};
+  });
+  var total = conc.reduce(function(s,it){ return s+it.sub; },0);
+  // GRAVA no historico
+  _salvarPedido({num:numPed, cliente:cliente, data:dataVenda, itens:linhas, total:total, ts:Date.now()});
+
+  // Gera link de importacao para o granja
+  var payload = _gerarPayloadPedido(conc, numPed, cliente, dataVenda);
+  var linkImport = payload ? _gerarLinkImportacao(payload) : null;
+
+  _gerarImagem('TALAO DE PEDIDO / '+numPed, linhas, numPed, function(blob){
+    if(!blob){ _toast('Erro ao gerar talao.'); return; }
+    var file = new File([blob],'pedido-'+numPed+'.jpg',{type:'image/jpeg'});
+    var msgTitulo = 'Pedido '+numPed+(cliente?' - '+cliente:'')+' - '+dataVenda;
+    if(linkImport) msgTitulo += '\n\n[Admin] Importar: '+linkImport;
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({title:msgTitulo, files:[file]}).catch(function(){ _fallbackDownload(blob,'pedido-'+numPed+'.jpg'); });
+    } else {
+      _fallbackDownload(blob,'pedido-'+numPed+'.jpg');
+      setTimeout(function(){ window.open('https://wa.me/'+n+'?text='+encodeURIComponent(msgTitulo),'_blank'); },1000);
+    }
+  });
+  setTimeout(function(){
+    _vItens=[]; _vIdx=0;
+    var cl=document.getElementById('venda-cliente'); if(cl) cl.value='';
+    _renderVItens(); _renderTalaoNum();
+  },2000);
+}
+
+/* ---- HISTORICO DE PEDIDOS ---- */
+var HK = 'fsj_hist_pedidos';
+var _pedAtual = null; // pedido aberto no modal
+
+function _salvarPedido(ped){
+  var hist = _carregarHist();
+  hist.unshift(ped); // mais recente primeiro
+  if(hist.length > 100) hist = hist.slice(0,100); // limite de 100 pedidos
+  try{ localStorage.setItem(HK, JSON.stringify(hist)); } catch(e){}
+}
+
+function _carregarHist(){
+  try{ return JSON.parse(localStorage.getItem(HK)||'[]'); } catch(e){ return []; }
+}
+
+function mostrarPainelVendas(qual){
+  var btnNovo = document.getElementById('btn-aba-novo');
+  var btnHist = document.getElementById('btn-aba-hist');
+  var pNovo   = document.getElementById('painel-novo');
+  var pHist   = document.getElementById('painel-hist');
+  if(qual==='hist'){
+    btnNovo.classList.remove('ativo'); btnHist.classList.add('ativo');
+    pNovo.classList.remove('vis');     pHist.classList.add('vis');
+    // Muda o botao para "← Voltar" quando veio do admin
+    if(_histPedDoAdmin){
+      btnNovo.textContent = '← Voltar';
+      btnNovo.classList.add('ativo');
+    }
+    _renderHist();
+  } else {
+    btnHist.classList.remove('ativo'); btnNovo.classList.add('ativo');
+    btnNovo.textContent = '+ Novo Pedido';
+    pHist.classList.remove('vis');     pNovo.classList.add('vis');
+    // Se veio do admin, reabre o painel admin
+    if(_histPedDoAdmin){
+      _histPedDoAdmin = false;
+      abrirAdmin();
+    }
+  }
+}
+
+var _filtroAbertoAtivo = false;
+function _toggleFiltroAberto(){
+  _filtroAbertoAtivo = !_filtroAbertoAtivo;
+  var btn = document.getElementById('hped-aberto-btn');
+  if(btn){
+    btn.style.background = _filtroAbertoAtivo ? '#1a6b2a' : '';
+    btn.style.color = _filtroAbertoAtivo ? '#fff' : '';
+    btn.style.borderColor = _filtroAbertoAtivo ? '#1a6b2a' : '';
+  }
+  _renderHist();
+}
+
+function _renderHist(){
+  var lista = document.getElementById('hist-lista');
+  if(!lista) return;
+  var hist = _carregarHist();
+
+  // Preenche anos disponíveis
+  var selAno = document.getElementById('hped-ano');
+  if(selAno){
+    var anos = {};
+    hist.forEach(function(p){ if(p.data) anos[p.data.slice(0,4)]=1; });
+    var anoAtual = new Date().getFullYear().toString();
+    if(!anos[anoAtual]) anos[anoAtual]=1;
+    var anoSel = selAno.value || anoAtual;
+    if(!selAno.options.length || selAno.dataset.built!=='1'){
+      selAno.innerHTML = Object.keys(anos).sort().reverse().map(function(a){
+        return '<option value="'+a+'"'+(a===anoSel?' selected':'')+'>'+a+'</option>';
+      }).join('');
+      selAno.dataset.built='1';
+    }
+  }
+
+  var ano   = (document.getElementById('hped-ano')||{}).value||'';
+  var mes   = (document.getElementById('hped-mes')||{}).value||'';
+  var visao = (document.getElementById('hped-visao')||{}).value||'detalhe';
+
+  // Filtra por ano/mes e status (Em aberto)
+  var filtrado = hist.filter(function(p){
+    if(!p.data) return false;
+    if(ano && p.data.slice(0,4)!==ano) return false;
+    if(mes && p.data.slice(5,7)!==mes) return false;
+    if(_filtroAbertoAtivo && p.pago) return false;
+    return true;
+  });
+
+  if(!filtrado.length){
+    lista.innerHTML = '<div class="hist-empty">'+(_filtroAbertoAtivo ? 'Nenhum pedido em aberto no periodo selecionado.' : 'Nenhum pedido no periodo selecionado.')+'</div>';
+    return;
+  }
+
+  if(visao==='total'){
+    _renderHPedTotal(lista, filtrado, ano, mes);
+  } else {
+    _renderHPedDetalhe(lista, filtrado);
+  }
+}
+
+function _renderHPedTotal(lista, pedidos, ano, mes){
+  // Totaliza por produto → soma qtd e valor.
+  // Agrupa preferencialmente pelo prodId (referência estável à lista de
+  // produtos) — assim, mesmo que o texto do nome tenha sido digitado de
+  // forma diferente em pedidos antigos, tudo que aponta pro MESMO produto
+  // cai junto, sob o nome atual da lista. Itens sem prodId válido
+  // (digitados livremente, "_edit", ou registros bem antigos) continuam
+  // agrupados pelo texto do nome, como já funcionava.
+  var totais = {}; // {chave: {nomeExibicao, qtd, unid, total}}
+  pedidos.forEach(function(p){
+    (p.itens||[]).forEach(function(it){
+      var prod = (it.prodId && it.prodId!=='_edit')
+        ? _listaProdutosVenda().find(function(x){ return x.id===it.prodId; })
+        : null;
+      var chave = prod ? ('p:'+prod.id) : ('n:'+(it.nome||it.col2||'—'));
+      var nomeExibicao = prod ? prod.nome : (it.nome||it.col2||'—');
+      if(!totais[chave]) totais[chave]={nomeExibicao:nomeExibicao, qtd:0, unid:'', total:0};
+      // qtd: campo col3 tem formato "2 Unid" ou campo qtd direto
+      var partes = (it.col3||'').split(' ');
+      var qtd = parseFloat(partes[0])||Number(it.qtd)||0;
+      var unid = partes.slice(1).join(' ')||it.unidade||it.unid||'';
+      totais[chave].qtd   += qtd;
+      if(!totais[chave].unid && unid) totais[chave].unid = unid;
+      totais[chave].total += Number(it.sub||it.val||0);
+    });
+  });
+
+  var MESES_N = ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var periodoLabel = mes ? MESES_N[parseInt(mes,10)-1]+' '+ano : 'Ano '+ano;
+  var totalGeral = pedidos.reduce(function(s,p){ return s+(Number(p.total)||0); },0);
+
+  var html = '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--mu);'
+    +'letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">'
+    +periodoLabel+' · '+pedidos.length+' pedido(s)</div>';
+
+  // Uma linha por produto — igual ao layout de coletas
+  html += '<div class="hcol-secao"><span class="hcol-secao-titulo" style="background:#7a3a00">Pedidos</span>';
+  Object.keys(totais).sort(function(a,b){ return totais[a].nomeExibicao.localeCompare(totais[b].nomeExibicao,'pt-BR'); }).forEach(function(chave){
+    var it = totais[chave];
+    var qtdFmt = Number(it.qtd).toLocaleString('pt-BR',{maximumFractionDigits:2});
+    var valFmt = 'R$ '+_fmt(it.total);
+    html += '<div class="hcol-item">'
+      +'<div><div class="hcol-item-nome">'+it.nomeExibicao+'</div>'
+      +'<div class="hcol-item-det">'+valFmt+'</div></div>'
+      +'<div style="text-align:right">'
+      +'<div class="hcol-item-qtd">'+qtdFmt+'</div>'
+      +'<div class="hcol-item-unid">'+it.unid+'</div>'
+      +'</div></div>';
+  });
+  html += '</div>';
+
+  // Total do período
+  html += '<div class="hcol-total">'
+    +'<span class="hcol-total-lbl">Total do periodo</span>'
+    +'<span class="hcol-total-val">R$ '+_fmt(totalGeral)+'</span>'
+    +'</div>';
+
+  lista.innerHTML = html;
+}
+
+function _renderHPedDetalhe(lista, pedidos){
+  lista.innerHTML = pedidos.map(function(p, i){
+    var dtFmt = p.data ? new Date(p.data+'T12:00').toLocaleDateString('pt-BR') : '';
+    var nItens = p.itens ? p.itens.length : 0;
+    var idxReal = _carregarHist().indexOf(p);
+    return '<div class="hist-item">'
+      +'<div class="hist-num">'+p.num+'</div>'
+      +'<div class="hist-info">'
+      +'<div class="hist-cli">'+(p.cliente||'(sem cliente)')+'</div>'
+      +'<div class="hist-det">'+dtFmt+' &middot; '+nItens+' item(ns)</div>'
+      +'</div>'
+      +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'
+      +'<div class="hist-tot">R$ '+_fmt(p.total)+'</div>'
+      +'<button class="hist-viz" onclick="abrirModalPedIdx('+i+',this)">Ver</button>'
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function abrirModalPedIdx(idxFiltrado, btn){
+  // Reconstrói a lista filtrada para pegar o índice correto
+  var hist = _carregarHist();
+  var ano   = (document.getElementById('hped-ano')||{}).value||'';
+  var mes   = (document.getElementById('hped-mes')||{}).value||'';
+  var filtrado = hist.filter(function(p){
+    if(!p.data) return false;
+    if(ano && p.data.slice(0,4)!==ano) return false;
+    if(mes && p.data.slice(5,7)!==mes) return false;
+    return true;
+  });
+  var p = filtrado[idxFiltrado];
+  if(!p) return;
+  _pedAtual = p;
+  document.getElementById('mp-titulo').textContent = p.num;
+  document.getElementById('mp-sub').textContent = p.cliente||'(sem cliente)';
+  var dtFmt = p.data ? new Date(p.data+'T12:00').toLocaleDateString('pt-BR') : '';
+  document.getElementById('mp-meta').innerHTML =
+    '<div class="mp-meta-item"><span class="mp-meta-lbl">Data</span><span class="mp-meta-val">'+dtFmt+'</span></div>'
+    +'<div class="mp-meta-item"><span class="mp-meta-lbl">Cliente</span><span class="mp-meta-val">'+(p.cliente||'—')+'</span></div>'
+    +'<div class="mp-meta-item"><span class="mp-meta-lbl">Itens</span><span class="mp-meta-val">'+(p.itens?p.itens.length:0)+'</span></div>';
+  document.getElementById('mp-linhas').innerHTML = (p.itens||[]).map(function(it){
+    return '<div class="mp-linha">'
+      +'<div style="flex:1">'
+      +'<div class="mp-li-prod">'+it.nome+'</div>'
+      +'<div class="mp-li-det">'+it.col1+' &middot; '+it.col3+' &times; '+it.col4+'</div>'
+      +'</div>'
+      +'<div class="mp-li-sub">R$ '+_fmt(it.sub)+'</div>'
+      +'</div>';
+  }).join('');
+  document.getElementById('mp-total').textContent = 'R$ '+_fmt(p.total);
+  document.getElementById('modal-ped').classList.add('vis');
+}
+
+function abrirModalPed(idx){
+  abrirModalPedIdx(idx, null);
+}
+
+function fecharModalPed(){
+  document.getElementById('modal-ped').classList.remove('vis');
+  _pedAtual = null;
+}
+
+/* ---- HISTORICO DE COLETAS ---- */
+var CK = 'fsj_hist_coletas';
+
+function _salvarColeta(reg){
+  var hist = _carregarHistColeta();
+  hist.unshift(reg);
+  if(hist.length > 500) hist = hist.slice(0,500);
+  try{ localStorage.setItem(CK, JSON.stringify(hist)); }catch(e){}
+  /* Envia para a fila de pendentes do administrador (coletas-pendentes.json).
+     IMPORTANTE: o Coletor NAO grava mais em backup/coletas.json — esse arquivo
+     e a base OFICIAL/aprovada mantida exclusivamente pelo Admin (_fazerBackup).
+     Deixar o Coletor escrever ali sobrescrevia a base aprovada com dados locais
+     ainda nao aprovados, quebrando a paridade entre os dois apps. */
+  _enviarColetaGitHub(reg);
+}
+
+function _carregarHistColeta(){
+  try{ return JSON.parse(localStorage.getItem(CK)||'[]'); }catch(e){ return []; }
+}
+
+/* ── Envia coleta para coletas-pendentes.json no GitHub ──────── */
+async function _enviarColetaGitHub(reg,tentativa){
+  tentativa = tentativa || 1;
+  if(!_ghToken()){
+    console.warn('Token GitHub não configurado — coleta salva apenas localmente.');
+    try{ localStorage.setItem('fsj_gh_ultimo_status','⚠️ Token não configurado — coleta ficou só neste aparelho.'); }catch(e){}
+    return;
+  }
+  try{
+    /* 1. Lê o arquivo atual (para obter o SHA necessário para o PUT) */
+    var headers = {
+      'Authorization': 'token '+_ghToken(),
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28'
+    };
+    var pendentes = [];
+    var sha = null;
+    var resp = await fetch(GH_API+'?t='+Date.now(), {headers:headers});
+    if(resp.ok){
+      var meta = await resp.json();
+      sha = meta.sha;
+      try{ pendentes = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g,''))))); }catch(e){ pendentes=[]; }
+    } else if(resp.status !== 404){
+      console.warn('GitHub leitura:', resp.status);
+    }
+
+    /* 2. Adiciona o novo registro com status pendente */
+    reg.status   = 'pendente';
+    reg.enviadoEm = new Date().toISOString();
+    pendentes.unshift(reg);
+
+    /* 3. Grava o arquivo atualizado */
+    var conteudo = btoa(unescape(encodeURIComponent(JSON.stringify(pendentes, null, 2))));
+    var body = {
+      message: 'Coleta '+reg.data+' — '+(reg.coletor||'coletor'),
+      content: conteudo
+    };
+    if(sha) body.sha = sha;
+
+    var put = await fetch(GH_API, {
+      method : 'PUT',
+      headers: Object.assign({'Content-Type':'application/json'}, headers),
+      body   : JSON.stringify(body)
+    });
+
+    if(put.ok){
+      console.log('✅ Coleta enviada ao GitHub');
+      try{ localStorage.setItem('fsj_gh_ultimo_status','✅ Última coleta enviada em '+new Date().toLocaleString('pt-BR')); }catch(e){}
+    } else if(put.status===409 && tentativa<3){
+      // Conflito de versão (outro dispositivo gravou ao mesmo tempo) — tenta de novo com o SHA mais recente
+      console.warn('GitHub gravação: conflito (409), tentando novamente...');
+      return _enviarColetaGitHub(reg, tentativa+1);
+    } else {
+      var err = await put.json().catch(function(){ return {}; });
+      console.warn('GitHub gravação:', put.status, err.message||'');
+      try{ localStorage.setItem('fsj_gh_ultimo_status','❌ Falha ao enviar (HTTP '+put.status+'). A coleta ficou salva só neste aparelho.'); }catch(e){}
+    }
+  } catch(e){
+    console.warn('_enviarColetaGitHub:', e.message);
+    try{ localStorage.setItem('fsj_gh_ultimo_status','❌ Sem conexão — a coleta ficou salva só neste aparelho.'); }catch(e2){}
+    /* Falha silenciosa na tela, mas registrada para consulta no painel — coleta já foi salva localmente */
+  }
+}
+
+var _histColetaRestrito = false;
+var _histColetaAprovadaCache = null; // ultima base aprovada do Admin buscada do GitHub
+var _histColetaSincronizado = false;  // true = dados na tela vieram confirmados da base do admin
+
+/* Busca a base de coletas JA APROVADAS pelo administrador (backup/coletas.json no
+   GitHub, escrito pelo Admin somente com registros aprovados). E essa a fonte usada
+   para os "ultimos 7 dias" no Coletor, garantindo que a lista seja identica a do
+   Admin no mesmo periodo — evita mostrar aqui uma coleta que o admin ainda nao
+   aprovou (ou rejeitou). */
+async function _buscarHistColetaAprovada(){
+  if(!_ghToken()) return null;
+  try{
+    var headers = {
+      'Authorization': 'token '+_ghToken(),
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28'
+    };
+    var resp = await fetch('https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_BCK_COLETAS+'?t='+Date.now(),
+      {headers:headers, cache:'no-store'});
+    if(!resp.ok) return null;
+    var meta = await resp.json();
+    var lista = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g,'')))));
+    return Array.isArray(lista) ? lista : null;
+  }catch(e){
+    console.warn('Busca base aprovada do admin:', e.message);
+    return null;
+  }
+}
+
+/* Botao "Historico" de cada aba (Aviario/Perda/Campo/Estoque) — mesma aparencia
+   e funcionalidade do app Admin, porem sempre restrito aos ultimos 7 dias e
+   mostrando somente a visao de registros detalhados. */
+function abrirHistColetaSetor(setor){
+  abrirHistColeta(true, setor);
+}
+
+async function abrirHistColeta(restrito, setorInicial){
+  _histColetaRestrito = !!restrito;
+
+  // Preenche anos disponiveis (usado só no modo Admin)
+  var hist = _carregarHistColeta();
+  var anos = {};
+  hist.forEach(function(r){ if(r.data) anos[r.data.slice(0,4)]=1; });
+  var anoAtual = new Date().getFullYear().toString();
+  if(!anos[anoAtual]) anos[anoAtual]=1;
+  var selAno = document.getElementById('hcol-ano');
+  selAno.innerHTML = Object.keys(anos).sort().reverse().map(function(a){
+    return '<option value="'+a+'"'+(a===anoAtual?' selected':'')+'>'+a+'</option>';
+  }).join('');
+  document.getElementById('hcol-mes').value = '';
+
+  var elAno  = document.getElementById('hcol-filtro-ano');
+  var elMes  = document.getElementById('hcol-filtro-mes');
+  var elVis  = document.getElementById('hcol-filtro-visao');
+  var sub    = document.getElementById('hcol-hd-sub');
+  if(_histColetaRestrito){
+    // Botao "Historico" das abas / "Coletas (ultimos 7 dias)": sempre 7 dias
+    // e sempre na visao de registros detalhados (sem opcao de totalizacao).
+    if(elAno) elAno.style.display = 'none';
+    if(elMes) elMes.style.display = 'none';
+    if(elVis) elVis.style.display = 'none';
+    document.getElementById('hcol-visao').value = 'detalhe';
+    if(sub) sub.textContent = 'Ultimos 7 dias';
+  } else {
+    // Painel administrativo interno: acesso completo, igual ao app Admin.
+    if(elAno) elAno.style.display = '';
+    if(elMes) elMes.style.display = '';
+    if(elVis) elVis.style.display = '';
+    document.getElementById('hcol-visao').value = 'total';
+    if(sub) sub.textContent = 'Acesso restrito — Administrador';
+  }
+
+  // Setor: se veio explicito (botao "Historico" de uma aba especifica), usa ele.
+  // Senao, usa a aba atualmente selecionada como filtro padrao.
+  var abaAtual = _abaAtual();
+  var setorPadrao = setorInicial || (SETORES[abaAtual] ? SETORES[abaAtual].label : '');
+  var selSetor = document.getElementById('hcol-setor');
+  if(selSetor){ selSetor.value = setorPadrao; selSetor.dataset.setorAba = setorPadrao; }
+  _atualizarBtnHistColetaTodos();
+
+  document.getElementById('modal-hcol').classList.add('vis');
+
+  if(_histColetaRestrito){
+    // Sempre busca a base aprovada mais recente do admin antes de exibir —
+    // garante que os registros mostrados aqui sejam sempre os mesmos que o
+    // administrador ja aprovou, e nao coletas ainda pendentes de aprovacao.
+    _histColetaAprovadaCache = null;
+    _histColetaSincronizado  = false;
+    var body = document.getElementById('hcol-body');
+    body.innerHTML = '<div class="hcol-vazia">🔄 Sincronizando com o administrador...</div>';
+    var aprovadas = await _buscarHistColetaAprovada();
+    if(aprovadas){
+      _histColetaAprovadaCache = aprovadas;
+      _histColetaSincronizado  = true;
+      if(sub) sub.textContent = 'Ultimos 7 dias · confirmado pelo administrador';
+    } else {
+      _histColetaSincronizado = false;
+      if(sub) sub.textContent = 'Ultimos 7 dias · não sincronizado';
+      _toast('⚠️ Sem conexão com o administrador — mostrando dados só deste aparelho.');
+    }
+  }
+
+  renderHistColeta();
+}
+
+function _atualizarBtnHistColetaTodos(){
+  var input = document.getElementById('hcol-setor');
+  var btn = document.getElementById('hcol-todos-btn');
+  var tSetor = document.getElementById('hcol-hd-setor');
+  if(!input || !btn) return;
+  if(input.value){
+    btn.textContent = 'Todos';
+    btn.style.background = ''; btn.style.color = '';
+  } else {
+    btn.textContent = '✓ Vendo Todos';
+    btn.style.background = '#1a6b2a'; btn.style.color = '#fff';
+  }
+  // Nome do setor ao lado do titulo do modal — ex: "Historico de Coletas - AVIARIO".
+  // So aparece quando o filtro esta restrito a uma aba especifica; some quando
+  // "Todos" esta selecionado.
+  if(tSetor){
+    var NOMES_SETOR_TITULO = {Aviario:'AVIARIO', Perda:'PERDA', Campo:'CAMPO', Estoque:'ESTOQUE'};
+    tSetor.textContent = input.value ? (' - '+(NOMES_SETOR_TITULO[input.value] || input.value.toUpperCase())) : '';
+  }
+}
+
+function _toggleHistColetaTodos(){
+  var input = document.getElementById('hcol-setor');
+  if(!input) return;
+  if(input.value){
+    input.dataset.setorAba = input.value;
+    input.value = '';
+  } else {
+    input.value = input.dataset.setorAba || '';
+  }
+  _atualizarBtnHistColetaTodos();
+  renderHistColeta();
+}
+
+function fecharHistColeta(){
+  document.getElementById('modal-hcol').classList.remove('vis');
+  if(_adminLogado) abrirAdmin();
+}
+
+function renderHistColeta(){
+  var visao = document.getElementById('hcol-visao').value;
+  var hist  = (_histColetaRestrito && _histColetaAprovadaCache !== null)
+    ? _histColetaAprovadaCache
+    : _carregarHistColeta();
+  var body  = document.getElementById('hcol-body');
+  var ano = '', mes = '';
+  var filtrado;
+
+  var setor = (document.getElementById('hcol-setor')||{value:''}).value||'';
+
+  if(_histColetaRestrito){
+    // Botao "Coletas" (sem senha) — sempre limitado aos ultimos 7 dias corridos
+    var limite = new Date();
+    limite.setDate(limite.getDate() - 6); // hoje + 6 dias atras = janela de 7 dias
+    var limMm = String(limite.getMonth()+1).padStart(2,'0');
+    var limDd = String(limite.getDate()).padStart(2,'0');
+    var limiteStr = limite.getFullYear()+'-'+limMm+'-'+limDd;
+    filtrado = hist.filter(function(r){
+      if(!r.data || r.data < limiteStr) return false;
+      if(setor && !(r.itens||[]).some(function(it){ return (it.setor||'')===setor; })) return false;
+      return true;
+    });
+  } else {
+    // Modo Admin — filtro completo por ano/mes, sem limite de dias
+    ano = document.getElementById('hcol-ano').value;
+    mes = document.getElementById('hcol-mes').value;
+    filtrado = hist.filter(function(r){
+      if(!r.data) return false;
+      if(ano && r.data.slice(0,4)!==ano) return false;
+      if(mes && r.data.slice(5,7)!==mes) return false;
+      if(setor && !(r.itens||[]).some(function(it){ return (it.setor||'')===setor; })) return false;
+      return true;
+    });
+  }
+
+  if(!filtrado.length){
+    var msgVazia;
+    if(_histColetaRestrito){
+      msgVazia = _histColetaSincronizado
+        ? 'Nenhum registro aprovado pelo administrador nos ultimos 7 dias.'
+        : 'Nenhum registro nos ultimos 7 dias (dados deste aparelho — não sincronizado).';
+    } else {
+      msgVazia = 'Nenhum registro encontrado para o periodo selecionado.';
+    }
+    body.innerHTML = '<div class="hcol-vazia">'+msgVazia+'</div>';
+    return;
+  }
+
+  // Ordena do mais recente para o mais antigo (por data e, em caso de empate, pelo horario do registro)
+  filtrado.sort(function(a,b){
+    if(a.data !== b.data) return a.data < b.data ? 1 : -1;
+    return (b.ts||0) - (a.ts||0);
+  });
+
+  if(visao==='total'){
+    _renderHistColetaTotal(body, filtrado, ano, mes);
+  } else {
+    _renderHistColetaDetalhe(body, filtrado);
+  }
+}
+
+function _renderHistColetaTotal(body, registros, ano, mes){
+  // Agrupa por setor → produto → soma qtd
+  var CORES = {
+    'Aviario':'#1c2e22','Campo':'#3b5e2a',
+    'Perda':'#7f1d1d','Estoque':'#1e3a5f'
+  };
+  var totais = {};  // {setor: {nome: {qtd, unid}}}
+  registros.forEach(function(r){
+    (r.itens||[]).forEach(function(it){
+      var s = it.setor||'Outros';
+      if(!totais[s]) totais[s] = {};
+      var k = it.nome;
+      if(!totais[s][k]) totais[s][k] = {qtd:0, unid:it.unid||''};
+      totais[s][k].qtd += Number(it.qtd)||0;
+    });
+  });
+
+  var periodoLabel = _histColetaRestrito
+    ? 'Ultimos 7 dias'
+    : (mes
+      ? ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][parseInt(mes,10)-1]+' '+ano
+      : 'Ano '+ano);
+
+  var html = '<div style="font-family:DM Mono,monospace;font-size:10px;color:var(--mu);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">'
+    +periodoLabel+' · '+registros.length+' registro(s)</div>';
+
+  Object.keys(totais).forEach(function(setor){
+    var cor = CORES[setor]||'#555';
+    html += '<div class="hcol-secao"><span class="hcol-secao-titulo" style="background:'+cor+'">'+setor+'</span>';
+    Object.keys(totais[setor]).forEach(function(nome){
+      var it = totais[setor][nome];
+      var qtdFmt = Number(it.qtd).toLocaleString('pt-BR',{maximumFractionDigits:2});
+      html += '<div class="hcol-item">'
+        +'<div><div class="hcol-item-nome">'+nome+'</div></div>'
+        +'<div style="text-align:right"><div class="hcol-item-qtd">'+qtdFmt+'</div>'
+        +'<div class="hcol-item-unid">'+it.unid+'</div></div>'
+        +'</div>';
+    });
+    html += '</div>';
+  });
+
+  body.innerHTML = html;
+}
+
+function _renderHistColetaDetalhe(body, registros){
+  var MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  var html = '';
+  registros.forEach(function(r){
+    var dt = r.data ? new Date(r.data+'T12:00') : null;
+    var dtFmt = dt
+      ? dt.getDate().toString().padStart(2,'0')+' '+MESES[dt.getMonth()]+' '+dt.getFullYear()
+      : '—';
+    html += '<div class="hcol-entrada">'
+      +'<div class="hcol-entrada-hd">'
+      +'<span class="hcol-entrada-data">'+dtFmt+'</span>'
+      +'<span class="hcol-entrada-col">'+(r.coletor||'')+'</span>'
+      +'</div>';
+    (r.itens||[]).forEach(function(it){
+      html += '<div class="hcol-entrada-item">'
+        +'<span>'+it.setor+' · '+it.nome+'</span>'
+        +'<span style="font-weight:700;color:var(--vd)">'+it.qtd+' '+it.unid+'</span>'
+        +'</div>';
+    });
+    html += '</div>';
+  });
+  body.innerHTML = html;
+}
+
+var _histPedDoAdmin = false;
+
+function abrirHistPedidos(){
+  _histPedDoAdmin = true;
+  trocarAba('vendas');
+  // Reseta filtros
+  var selAno = document.getElementById('hped-ano');
+  if(selAno) selAno.dataset.built='';
+  var selMes = document.getElementById('hped-mes');
+  if(selMes) selMes.value='';
+  var selVis = document.getElementById('hped-visao');
+  if(selVis) selVis.value='detalhe';
+  mostrarPainelVendas('hist');
+  var sv = document.getElementById('sec-vendas');
+  if(sv) sv.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// Mostra/oculta os botoes de consulta conforme status admin
+function _atualizarBtnConsulta(adminLogado){
+  var btnHist = document.getElementById('btn-aba-hist');
+  if(btnHist) btnHist.style.display = adminLogado ? '' : 'none';
+}
+var _adminLogado = false;
+
+function reemitirPedido(){
+  if(!_pedAtual) return;
+  var p = _pedAtual;
+  var n = _getNum();
+  if(!n){ _toast('Numero nao configurado.'); return; }
+  var linhas = (p.itens||[]).map(function(it){
+    return {col1:it.col1, col2:it.nome, col3:it.col3, col4:it.col4, val:it.sub};
+  });
+  _gerarImagem('TALAO DE PEDIDO / '+p.num, linhas, p.num, function(blob){
+    if(!blob){ _toast('Erro ao gerar imagem.'); return; }
+    var file = new File([blob],'pedido-'+p.num+'.jpg',{type:'image/jpeg'});
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({title:'Pedido '+p.num,files:[file]}).catch(function(){ _fallbackDownload(blob,'pedido-'+p.num+'.jpg'); });
+    } else {
+      _fallbackDownload(blob,'pedido-'+p.num+'.jpg');
+      setTimeout(function(){ window.open('https://wa.me/'+n,'_blank'); },1000);
+    }
+  });
+}
+
+/* ---- BLOQUEIO ---- */
+function toggleBlVis(){
+  var i=document.getElementById('bl-inp');
+  i.type=i.type==='text'?'password':'text';
+  document.getElementById('bl-olho').textContent=i.type==='text'?'hide':'show';
+}
+function tentarDesbloquear(){
+  var v=document.getElementById('bl-inp').value;
+  var s=localStorage.getItem(SK)||SP;
+  var er=document.getElementById('bl-erro');
+  if(v===s){
+    localStorage.removeItem(BK);
+    document.getElementById('tela-bloqueio').classList.remove('vis');
+    document.getElementById('bl-inp').value=''; er.textContent='';
+    _iniciar();
+  } else { er.textContent='Codigo invalido.'; document.getElementById('bl-inp').value=''; }
+}
+
+/* ---- ADMIN ---- */
+function _initLP(){
+  var ic=document.getElementById('topo-icon');
+  if(!ic) return;
+  var _t=null, _moved=false;
+  function _start(e){ _moved=false; ic.classList.add('press'); _t=setTimeout(function(){ if(!_moved){ic.classList.remove('press');abrirAdmin();} },1500); }
+  function _cancel(){ clearTimeout(_t); ic.classList.remove('press'); }
+  ic.addEventListener('touchstart',function(e){ e.preventDefault(); _start(e); },{passive:false});
+  ic.addEventListener('touchend',function(e){ e.preventDefault(); _cancel(); },{passive:false});
+  ic.addEventListener('touchmove',function(){ _moved=true; _cancel(); },{passive:false});
+  ic.addEventListener('mousedown',_start);
+  ic.addEventListener('mouseup',_cancel);
+  ic.addEventListener('mouseleave',_cancel);
+  ic.addEventListener('contextmenu',function(e){ e.preventDefault(); });
+  // Toque duplo
+  var _lastTap=0;
+  ic.addEventListener('touchend',function(e){
+    var now=Date.now();
+    if(now-_lastTap<300){ e.preventDefault(); clearTimeout(_t); ic.classList.remove('press'); abrirAdmin(); }
+    _lastTap=now;
+  },{passive:false});
+}
+
+function abrirAdmin(){
+  document.getElementById('painel-admin').classList.add('vis');
+  document.getElementById('ad-senha').value='';
+  document.getElementById('ad-st').textContent='';
+  if(_adminLogado){
+    // Ja autenticado — abre direto na tela de configuracoes
+    document.getElementById('ad-cfg').style.display='block';
+    _atualizarBtnDesbloquear();
+    _atualizarExibicaoToken();
+  } else {
+    document.getElementById('ad-cfg').style.display='none';
+    setTimeout(function(){ document.getElementById('ad-senha').focus(); },200);
+  }
+}
+function fecharAdmin(){
+  document.getElementById('painel-admin').classList.remove('vis');
+  document.getElementById('ad-senha').value='';
+}
+function toggleAdVis(){
+  var i=document.getElementById('ad-senha');
+  i.type=i.type==='password'?'text':'password';
+}
+function verificarAdmin(){
+  var d=document.getElementById('ad-senha').value;
+  var s=localStorage.getItem(SK)||SP;
+  var st=document.getElementById('ad-st');
+  if(d===s){
+    st.textContent='Acesso autorizado'; st.className='ad-st';
+    document.getElementById('ad-cfg').style.display='block';
+    var n=localStorage.getItem('wpp_numero')||'';
+    document.getElementById('ad-num-sp').textContent=_fmtFone(n);
+    var nm=localStorage.getItem('wpp_nome')||'';
+    document.getElementById('ad-nome-sp').textContent=nm||'Nao configurado';
+    var vAtiva=localStorage.getItem(VK)==='1';
+    var btn=document.getElementById('btn-toggle-vendas');
+    if(btn){ btn.textContent=vAtiva?'Desativar Vendas':'Ativar Vendas'; btn.style.background=vAtiva?'#5a1010':'#7a3a00'; btn.style.color=vAtiva?'#fca5a5':'#ffd49a'; }
+    // Mostra botao Consulta na aba Pedidos
+    _adminLogado = true;
+    _atualizarBtnConsulta(true);
+    _atualizarBtnDesbloquear();
+    _atualizarExibicaoToken();
+  } else {
+    st.textContent='Senha incorreta'; st.className='ad-st er';
+    document.getElementById('ad-senha').value='';
+    document.getElementById('ad-senha').focus();
+  }
+}
+function salvarConfigColetor(){
+  var v=(document.getElementById('ad-num-novo').value||'').replace(/\D/g,'');
+  var nm=(document.getElementById('ad-nome-novo').value||'').trim();
+  var s2=document.getElementById('ad-st2');
+  if(v){ if(v.length<10){ s2.textContent='Numero invalido'; s2.className='ad-st er'; return; } localStorage.setItem('wpp_numero',v); document.getElementById('ad-num-sp').textContent=_fmtFone(v); document.getElementById('ad-num-novo').value=''; }
+  if(nm){ localStorage.setItem('wpp_nome',nm); document.getElementById('ad-nome-sp').textContent=nm; document.getElementById('ad-nome-novo').value=''; }
+  s2.textContent='Configuracoes salvas'; s2.className='ad-st';
+}
+function salvarSenha(){
+  var nova=document.getElementById('ad-senha-nova').value;
+  var s2=document.getElementById('ad-st2');
+  if(!nova||nova.length<4){ s2.textContent='Senha muito curta'; s2.className='ad-st er'; return; }
+  localStorage.setItem(SK,nova);
+  document.getElementById('ad-senha-nova').value='';
+  s2.textContent='Senha alterada'; s2.className='ad-st';
+}
+function desbloquearAdmin(){
+  localStorage.removeItem(BK);
+  document.getElementById('tela-bloqueio').classList.remove('vis');
+  document.getElementById('ad-st2').textContent='Dispositivo desbloqueado';
+  document.getElementById('ad-st2').className='ad-st';
+  // Marca que este dispositivo ja esta na versao remota atual
+  var vr = localStorage.getItem(VRK);
+  if(vr) localStorage.setItem(VLK, vr);
+  _iniciar();
+}
+
+/* Exibe o botao Desbloquear Dispositivo apenas quando ha uma nova versao
+   do app ativa no servidor e este dispositivo ainda nao a confirmou */
+function _atualizarBtnDesbloquear(){
+  var btn = document.getElementById('btn-desbloquear');
+  if(!btn) return;
+  var vRemota = localStorage.getItem(VRK);
+  var vLocal  = localStorage.getItem(VLK);
+  // Mostra se: existe versao remota E ela difere da versao local confirmada
+  if(vRemota && vRemota !== vLocal){
+    btn.style.display = 'block';
+    btn.title = 'Nova versao disponivel: v' + vRemota;
+  } else {
+    btn.style.display = 'none';
+  }
+}
+function compartilharLink(){
+  var url='https://urbanopos.github.io/fazenda/coleta.html';
+  var msg='Fazenda Sao Jose - App de Coleta\n\nInstale o aplicativo:\n'+url+'\n\nApos abrir: toque em Instalar agora.\nApague esta mensagem apos instalar.';
+  if(navigator.share){ navigator.share({title:'App Coleta',text:msg,url:url}).catch(function(){ window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank'); }); }
+  else { window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank'); }
+}
+
+/* ---- TOAST ---- */
+function _toast(msg){
+  var el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('vis');
+  clearTimeout(el._t);
+  el._t=setTimeout(function(){ el.classList.remove('vis'); },2800);
+}
+</script>
+
+<datalist id="fornecedores-datalist"></datalist>
+</body></html>
