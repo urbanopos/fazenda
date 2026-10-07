@@ -533,7 +533,10 @@ var VRK = 'fsj_versao_remota';   // ultima versao recebida do status.json
 var GH_REPO  = 'urbanopos/fazenda';
 var GH_FILE  = 'coletas-pendentes.json';
 var GH_TOKEN_KEY = 'fsj_gh_token';
-var GH_API   = 'https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE;
+/* Repositório DE DADOS (coletas, pedidos, cadastros): por padrão o mesmo dos apps;
+   passa a ser outro (ex.: privado) quando o link de configuração traz "dr". */
+var GH_DATA_REPO = (function(){ try{ return localStorage.getItem('fsj_gh_data_repo') || GH_REPO; }catch(e){ return GH_REPO; } })();
+var GH_API   = 'https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_FILE;
 var GH_BCK_COLETAS = 'backup/coletas.json';
 var GH_BCK_CADASTROS = 'backup/cadastros.json';
 var GH_BCK_PEDIDOS = 'backup/pedidos.json';
@@ -551,6 +554,11 @@ function _aplicarConfigDoLink(){
     var m = hash.match(/cfg=([^&]+)/);
     if(!m) return;
     var cfg = JSON.parse(decodeURIComponent(escape(atob(m[1]))));
+    if(cfg && cfg.dr && /^[\w.-]+\/[\w.-]+$/.test(cfg.dr)){
+      localStorage.setItem('fsj_gh_data_repo', cfg.dr);
+      GH_DATA_REPO = cfg.dr;
+      GH_API = 'https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_FILE;
+    }
     if(cfg && cfg.tk){
       localStorage.setItem(GH_TOKEN_KEY, cfg.tk);
       setTimeout(function(){ _toast('✅ App habilitado! Suas coletas já serão enviadas.'); }, 800);
@@ -1141,8 +1149,8 @@ function _iniciar(){
    nada salvo no aparelho — token, catálogo e coletas pendentes continuam
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
-var _caFP = '1a115ac978f9';
-var _caBuild = '20261007062212'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
+var _caFP = '1a115fa9a380';
+var _caBuild = '20261007073932'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -1814,7 +1822,7 @@ async function _buscarPedidosGlobais(){
       'Accept': 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28'
     };
-    var resp = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_BCK_PEDIDOS+'?t='+Date.now(),
+    var resp = await fetch('https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_BCK_PEDIDOS+'?t='+Date.now(),
       {headers:headers, cache:'no-store'});
     if(!resp.ok) return null;
     var meta = await resp.json();
@@ -1929,7 +1937,7 @@ async function _buscarProdutosCadastro(){
       'Accept': 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28'
     };
-    var resp = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_BCK_CADASTROS+'?t='+Date.now(),
+    var resp = await fetch('https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_BCK_CADASTROS+'?t='+Date.now(),
       {headers:headers, cache:'no-store'});
     if(!resp.ok) return _produtosCadastroLocal();
     var meta = await resp.json();
@@ -2483,7 +2491,7 @@ async function _buscarHistColetaAprovada(){
       'Accept': 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28'
     };
-    var resp = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_BCK_COLETAS+'?t='+Date.now(),
+    var resp = await fetch('https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_BCK_COLETAS+'?t='+Date.now(),
       {headers:headers, cache:'no-store'});
     if(!resp.ok) return null;
     var meta = await resp.json();
