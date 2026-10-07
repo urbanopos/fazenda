@@ -89,14 +89,15 @@
       {
         "setor": "Perda",
         "nome": "Ovos de Capoeira",
-        "unid": "unid",
         "qtd": 17,
-        "obs": "",
-        "forn": "",
-        "tipo": ""
+        "unid": "Unid.",
+        "tipo": "",
+        "forn": "Fazenda São José",
+        "preco": 1
       }
     ],
-    "ts": 1791202306833
+    "ts": 1791202306833,
+    "_editadoEm": 1791365358351
   },
   {
     "data": "2026-10-04",
