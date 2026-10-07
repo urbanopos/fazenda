@@ -11833,7 +11833,8 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a1159c5a1f6';
+var _caFP = '1a115acdaf26';
+var _caBuild = '20261007061946'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -21124,13 +21125,193 @@ async function _cadAbrir(){
   _navPush('cad-tela');
 }
 
-/* Abre o app Publicar (publicar.html, na mesma pasta dos apps) em outra aba */
-function _cadAbrirPublicar(){
-  var url = 'publicar.html';
-  try{ url = new URL('publicar.html', location.href).href; }catch(e){}
-  var w = null;
-  try{ w = window.open(url, '_blank'); }catch(e){}
-  if(!w) location.href = url;
+/* ═════════════════════════════════════════════════════════════════
+   PUBLICAR — o mesmo que o publicar.html, embutido no próprio Admin.
+   Envia um arquivo (texto) ao repositório dos apps; se o caminho já
+   existe, guarda a versão atual em _versoes/ (até 3) antes de substituir.
+   ═════════════════════════════════════════════════════════════════ */
+var PUB_TOKEN_KEY = 'ghpub_token_generico';
+var PUB_VERSOES_MAX = 3;
+var PUB_ARQUIVOS_RAIZ = {
+  'ColetaAut-Admin.html':'ColetaAut-Admin.html', 'ColetaAut-Admin-corrigido.html':'ColetaAut-Admin.html',
+  'ColetaAut-Desk-Admin.html':'ColetaAut-Desk-Admin.html',
+  'ColetaAut-Coletor.html':'ColetaAut-Coletor.html', 'ColetaAut-Coletor-corrigido.html':'ColetaAut-Coletor.html',
+  'publicar.html':'publicar.html'
+};
+var _pubConteudo = null;
+function _pubEl(id){ return document.getElementById(id); }
+function _pubStatus(id, msg, tipo){
+  var el = _pubEl(id); if(!el) return;
+  el.textContent = msg;
+  el.style.cssText = 'margin-top:10px;padding:10px;border-radius:8px;font-size:12px;line-height:1.45;'+(msg?'':'display:none;')
+    +(tipo==='ok' ? 'background:#e6f4ea;color:#1d6b34' : tipo==='err' ? 'background:#fdecea;color:#a03030' : 'background:#eef2f8;color:#34506f');
+}
+function _pubToken(){
+  var t = ''; try{ t = localStorage.getItem(PUB_TOKEN_KEY)||''; }catch(e){}
+  return t || _ghToken() || '';
+}
+function _cadAbrirPublicar(){ _pubAbrir(); }
+function _pubAbrir(){
+  _pubConteudo = null;
+  var inp = 'width:100%;box-sizing:border-box;padding:10px;border:1.5px solid #d6d2c4;border-radius:8px;font-size:13px;font-family:monospace;margin:4px 0 10px';
+  var lbl = 'font-size:11px;color:#8a8574;text-transform:uppercase;letter-spacing:1px';
+  var btn = 'width:100%;padding:12px;border:0;border-radius:10px;font-size:14px;font-weight:700;color:#fff;margin-top:6px;cursor:pointer';
+  var html = '<div style="font-size:12px;color:#6b6b60;margin-bottom:10px">Repositório: <b>'+_escH(GH_REPO)+'</b>. Escolha o arquivo entregue pela Claude; para os apps o caminho já vem preenchido.</div>'
+    +'<div style="'+lbl+'">Arquivo</div><input type="file" id="pub-arq" onchange="_pubEscolheu(this)" style="'+inp+'">'
+    +'<div id="pub-alvo" style="font-size:12px;color:#6b6b60;margin:-4px 0 8px"></div>'
+    +'<div style="'+lbl+'">Caminho no repositório</div><input type="text" id="pub-caminho" placeholder="ex: ColetaAut-Admin.html" style="'+inp+'">'
+    +'<div style="'+lbl+'">Token do GitHub</div><input type="password" id="pub-token" value="'+_escH(_pubToken())+'" placeholder="ghp_..." style="'+inp+'">'
+    +'<button id="pub-btn" onclick="_pubPublicar()" disabled style="'+btn+';background:#1a8f4a">Publicar</button>'
+    +'<div id="pub-st" style="display:none"></div>'
+    +'<div style="border-top:1.5px dashed #d8cba6;margin:18px 0 10px"></div>'
+    +'<div style="font-weight:700;font-size:14px">📜 Ver / restaurar versões anteriores</div>'
+    +'<div style="font-size:11px;color:#8a8574;margin:2px 0 8px">Cada arquivo mantém as últimas 3 versões substituídas.</div>'
+    +'<div style="'+lbl+'">Caminho do arquivo a consultar</div><input type="text" id="pub-busca" placeholder="ex: ColetaAut-Admin.html" style="'+inp+'">'
+    +'<button onclick="_pubBuscarVersoes()" style="'+btn+';background:#3a5a8a">Buscar versões anteriores</button>'
+    +'<div id="pub-vst" style="display:none"></div><div id="pub-vlista"></div>';
+  _janelaAbrir('jan-publicar', '🚀 Publicar arquivo', 'Atualiza os apps no GitHub', html);
+}
+function _pubEscolheu(inp){
+  var f = inp.files && inp.files[0], info = _pubEl('pub-alvo'), btn = _pubEl('pub-btn');
+  _pubConteudo = null; btn.disabled = true;
+  if(!f){ info.textContent = ''; return; }
+  var cam = _pubEl('pub-caminho');
+  if(PUB_ARQUIVOS_RAIZ[f.name]){ cam.value = PUB_ARQUIVOS_RAIZ[f.name]; info.textContent = '✅ Arquivo principal reconhecido — vai publicar em: '+cam.value; }
+  else info.textContent = cam.value ? 'Vai publicar em: '+cam.value+' — confira o caminho.' : '⚠️ Arquivo novo — digite o caminho exato no repositório.';
+  var rd = new FileReader();
+  rd.onload = function(ev){ _pubConteudo = ev.target.result; btn.disabled = false; _pubStatus('pub-st','',''); };
+  rd.readAsText(f, 'UTF-8');
+}
+function _pubHeaders(t){ return {'Authorization':'token '+t, 'Accept':'application/vnd.github+json', 'X-GitHub-Api-Version':'2022-11-28'}; }
+function _pubB64(t){ return btoa(unescape(encodeURIComponent(t))); }
+function _pubUnb64(b){ return decodeURIComponent(escape(atob(b.replace(/\n/g,'')))); }
+function _pubAgora(){
+  var d = new Date(); function p(n){ return (n<10?'0':'')+n; } function p3(n){ return (n<10?'00':(n<100?'0':''))+n; }
+  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'_'+p(d.getHours())+'-'+p(d.getMinutes())+'-'+p(d.getSeconds())+'-'+p3(d.getMilliseconds());
+}
+async function _pubLer(h, cam){
+  var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+cam, {headers:h, cache:'no-store'});
+  if(r.status===404) return {existe:false};
+  if(!r.ok){ if(r.status===401) throw new Error('Token inválido ou sem permissão.'); throw new Error('Erro ao consultar "'+cam+'" (HTTP '+r.status+')'); }
+  var info = await r.json();
+  if(Array.isArray(info)) throw new Error('"'+cam+'" é uma pasta, não um arquivo.');
+  if(info.content) return {existe:true, sha:info.sha, conteudo:_pubUnb64(info.content)};
+  // arquivo grande (>1 MB): a API não devolve o conteúdo; busca pelo blob
+  var rb = await fetch('https://api.github.com/repos/'+GH_REPO+'/git/blobs/'+info.sha, {headers:h});
+  if(!rb.ok) throw new Error('Erro ao ler "'+cam+'" (HTTP '+rb.status+')');
+  var bl = await rb.json();
+  return {existe:true, sha:info.sha, conteudo:_pubUnb64(bl.content)};
+}
+async function _pubListar(h, cam){
+  var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+cam, {headers:h, cache:'no-store'});
+  if(r.status===404) return [];
+  if(!r.ok) throw new Error('Erro ao listar "'+cam+'" (HTTP '+r.status+')');
+  var info = await r.json(); return Array.isArray(info) ? info : [];
+}
+async function _pubGravar(h, cam, texto, sha, msg){
+  var body = {message:msg, content:_pubB64(texto)}; if(sha) body.sha = sha;
+  var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+cam, {method:'PUT', headers:h, body:JSON.stringify(body)});
+  if(!r.ok){ var tx = await r.text(); throw new Error('Erro ao gravar "'+cam+'" (HTTP '+r.status+'): '+tx.substring(0,200)); }
+  return r.json();
+}
+async function _pubApagar(h, cam, sha, msg){
+  var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+cam, {method:'DELETE', headers:h, body:JSON.stringify({message:msg, sha:sha})});
+  if(!r.ok){ var tx = await r.text(); throw new Error('Erro ao apagar "'+cam+'" (HTTP '+r.status+'): '+tx.substring(0,200)); }
+}
+async function _pubArquivarAnterior(h, cam, antigo){
+  var pasta = '_versoes/'+cam, m = cam.match(/\.[^.\/]+$/), ext = m ? m[0] : '';
+  await _pubGravar(h, pasta+'/'+_pubAgora()+ext, antigo, null, 'Backup automático antes de atualizar '+cam);
+  var itens = (await _pubListar(h, pasta)).filter(function(it){ return it.type==='file'; });
+  itens.sort(function(a,b){ return a.name<b.name?-1:(a.name>b.name?1:0); });
+  for(var i=0; i<itens.length-PUB_VERSOES_MAX; i++) await _pubApagar(h, pasta+'/'+itens[i].name, itens[i].sha, 'Descartando versão antiga de '+cam);
+}
+
+/* Proteção contra publicar versão mais antiga: cada app HTML leva um carimbo
+   "var _caBuild = 'AAAAMMDDHHMMSS'". Compara o arquivo novo com o publicado. */
+function _pubBuildDe(txt){ var m = String(txt||'').match(/var _caBuild = '(\d{14})'/); return m ? m[1] : ''; }
+function _pubFPDe(txt){ var m = String(txt||'').match(/var _caFP = '([a-f0-9]+)'/); return m ? m[1] : ''; }
+function _pubBuildFmt(b){ return b.slice(6,8)+'/'+b.slice(4,6)+'/'+b.slice(0,4)+' às '+b.slice(8,10)+':'+b.slice(10,12)+':'+b.slice(12,14); }
+/* Retorna '' se pode publicar sem perguntar; senão o texto do aviso */
+function _pubAvisoVersao(cam, novo, atual){
+  if(!/\.html?$/i.test(cam)) return '';
+  var bn = _pubBuildDe(novo), ba = _pubBuildDe(atual);
+  if(bn && ba){
+    if(bn < ba) return '⛔ O arquivo escolhido é MAIS ANTIGO que o publicado.\n\nEscolhido: versão de '+_pubBuildFmt(bn)+'\nPublicado (em uso): versão de '+_pubBuildFmt(ba)+'\n\nPublicar mesmo assim vai fazer os aparelhos VOLTAREM para a versão antiga e pode apagar correções recentes.';
+    if(bn === ba) return 'ℹ️ O arquivo escolhido tem a MESMA versão do publicado ('+_pubBuildFmt(bn)+').';
+    return '';
+  }
+  if(ba && !bn) return '⚠️ O arquivo escolhido não tem carimbo de versão, mas o publicado tem (versão de '+_pubBuildFmt(ba)+'). Provavelmente o escolhido é MAIS ANTIGO.';
+  var fn = _pubFPDe(novo), fa = _pubFPDe(atual);
+  if(fn && fa && fn === fa) return 'ℹ️ O arquivo escolhido parece idêntico ao publicado (mesma impressão digital); nada vai mudar.';
+  return '';
+}
+async function _pubPublicar(){
+  var tok = (_pubEl('pub-token').value||'').trim();
+  var cam = (_pubEl('pub-caminho').value||'').trim().replace(/^\/+/, '');
+  var btn = _pubEl('pub-btn');
+  if(!tok){ _pubStatus('pub-st','Informe o token do GitHub.','err'); return; }
+  if(!_pubConteudo){ _pubStatus('pub-st','Escolha um arquivo.','err'); return; }
+  if(!cam){ _pubStatus('pub-st','Preencha o caminho de destino.','err'); return; }
+  btn.disabled = true;
+  var h = _pubHeaders(tok);
+  try{
+    _pubStatus('pub-st','Verificando se "'+cam+'" já existe...','wait');
+    var atual = await _pubLer(h, cam);
+    if(atual.existe){
+      var aviso = _pubAvisoVersao(cam, _pubConteudo, atual.conteudo);
+      if(aviso && !confirm(aviso+'\n\nDeseja publicar mesmo assim?')){ _pubStatus('pub-st','Publicação cancelada: '+aviso.replace(/\n+/g,' '),'err'); btn.disabled = false; return; }
+      _pubStatus('pub-st','Guardando a versão atual como backup...','wait'); await _pubArquivarAnterior(h, cam, atual.conteudo);
+    }
+    _pubStatus('pub-st','Enviando '+cam+' para o GitHub...','wait');
+    await _pubGravar(h, cam, _pubConteudo, atual.existe ? atual.sha : null, (atual.existe?'Publicar nova versao de ':'Criar ')+cam+' - '+new Date().toLocaleString('pt-BR'));
+    try{ localStorage.setItem(PUB_TOKEN_KEY, tok); }catch(e){}
+    _pubStatus('pub-st','✅ '+cam+' publicado com sucesso!'+(atual.existe?' A versão anterior foi guardada.':' (arquivo novo)')+(/^ColetaAut-.*\.html$/.test(cam)?' Os aparelhos recebem a atualização na próxima abertura do app.':''),'ok');
+    _pubConteudo = null; _pubEl('pub-arq').value = ''; _pubEl('pub-alvo').textContent = '';
+  }catch(err){
+    _pubStatus('pub-st','⚠️ '+err.message,'err'); btn.disabled = false;
+  }
+}
+async function _pubBuscarVersoes(){
+  var tok = (_pubEl('pub-token').value||'').trim();
+  var cam = (_pubEl('pub-busca').value||'').trim().replace(/^\/+/, '');
+  var lista = _pubEl('pub-vlista'); lista.innerHTML = '';
+  if(!tok){ _pubStatus('pub-vst','Informe o token do GitHub.','err'); return; }
+  if(!cam){ _pubStatus('pub-vst','Informe o caminho do arquivo.','err'); return; }
+  try{
+    _pubStatus('pub-vst','Buscando versões de "'+cam+'"...','wait');
+    var pasta = '_versoes/'+cam;
+    var itens = (await _pubListar(_pubHeaders(tok), pasta)).filter(function(it){ return it.type==='file'; });
+    itens.sort(function(a,b){ return a.name>b.name?-1:(a.name<b.name?1:0); });
+    if(!itens.length){ _pubStatus('pub-vst','Nenhuma versão anterior guardada para "'+cam+'".','ok'); return; }
+    _pubStatus('pub-vst',itens.length+' versão(ões) — a mais recente primeiro.','ok');
+    itens.forEach(function(it){
+      var base = it.name.replace(/\.[^.]+$/, ''), p = base.match(/^(\d{4})-(\d{2})-(\d{2})_(\d{2})-(\d{2})-(\d{2})/);
+      var dl = p ? p[3]+'/'+p[2]+'/'+p[1]+' às '+p[4]+':'+p[5]+':'+p[6] : base;
+      var div = document.createElement('div');
+      div.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid #e3dfd0;border-radius:8px;padding:8px 10px;margin-top:8px;font-size:12px;background:#fff';
+      div.innerHTML = '<span>🕒 '+dl+'</span>';
+      var b = document.createElement('button'); b.className = 'ver-btn'; b.style.marginLeft = '0'; b.textContent = 'Restaurar esta versão';
+      b.onclick = function(){ _pubRestaurar(cam, pasta+'/'+it.name); };
+      div.appendChild(b); lista.appendChild(div);
+    });
+  }catch(err){ _pubStatus('pub-vst','⚠️ '+err.message,'err'); }
+}
+async function _pubRestaurar(camOrig, camBkp){
+  var tok = (_pubEl('pub-token').value||'').trim();
+  if(!tok){ _pubStatus('pub-vst','Informe o token do GitHub.','err'); return; }
+  if(!confirm('Substituir o arquivo atual de "'+camOrig+'" pela versão escolhida? (a versão atual também será guardada)')) return;
+  var h = _pubHeaders(tok);
+  try{
+    _pubStatus('pub-vst','Lendo a versão escolhida...','wait');
+    var velha = await _pubLer(h, camBkp);
+    if(!velha.existe) throw new Error('Essa versão não foi encontrada (pode ter sido removida).');
+    var atual = await _pubLer(h, camOrig);
+    if(atual.existe){ _pubStatus('pub-vst','Guardando a versão atual antes de restaurar...','wait'); await _pubArquivarAnterior(h, camOrig, atual.conteudo); }
+    _pubStatus('pub-vst','Restaurando '+camOrig+'...','wait');
+    await _pubGravar(h, camOrig, velha.conteudo, atual.existe ? atual.sha : null, 'Restaurar versao anterior de '+camOrig+' - '+new Date().toLocaleString('pt-BR'));
+    _pubStatus('pub-vst','✅ '+camOrig+' restaurado.','ok');
+    _pubBuscarVersoes();
+  }catch(err){ _pubStatus('pub-vst','⚠️ '+err.message,'err'); }
 }
 
 function _cadFechar(){
@@ -22266,7 +22447,7 @@ async function _cadInit(){
     <button class="cad-aba" onclick="_cadTrocaAba('clientes',this)">Clientes</button>
     <button class="cad-aba" onclick="_cadTrocaAba('fornecedores',this)">Fornecedores</button>
     <button class="cad-aba" onclick="_cadTrocaAba('precos',this)">Apresentação</button>
-    <button class="cad-aba" onclick="_cadAbrirPublicar()" title="Abre o app de publicação em outra aba">🚀 Publicar ↗</button>
+    <button class="cad-aba" onclick="_cadAbrirPublicar()" title="Publicar arquivos no GitHub">🚀 Publicar</button>
   </div>
   <!-- Produtos -->
   <div class="cad-painel vis" id="cad-p-produtos">
