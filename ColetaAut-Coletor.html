@@ -1141,7 +1141,8 @@ function _iniciar(){
    nada salvo no aparelho — token, catálogo e coletas pendentes continuam
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
-var _caFP = '1a100cfba07d';
+var _caFP = '1a115ac978f9';
+var _caBuild = '20261007062212'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -1225,6 +1226,15 @@ var _navFecharMap = {
 };
 
 window.addEventListener('popstate', function(){
+  // Tela de sessao encerrada aberta: o "voltar" do celular nao deve
+  // reaparecer com o app por tras — so insiste na tentativa de fechar.
+  var telaSair = document.getElementById('tela-sair-confirmar');
+  if(telaSair && document.getElementById('btn-reabrir-sessao')){
+    try{ window.close(); }catch(e){}
+    history.pushState({ navSentinel: true }, '');
+    return;
+  }
+
   var abertos = Object.keys(_navFecharMap).filter(function(id){
     var el = document.getElementById(id);
     return el && el.classList.contains('vis');
@@ -1307,15 +1317,30 @@ function sairColeta(){
         _renderListaSessao(s);
       });
       _atualizarContador();
-      _sessaoLimparLocal();
     }
-    try{ window.close(); }catch(e){}
-    // O navegador nao permite que o proprio site feche a aba/app quando ela nao
-    // foi aberta por script (restricao de seguranca do navegador, nao um bug
-    // nosso — nenhum site consegue contornar isso). Orienta o fechamento manual.
-    overlay.innerHTML = '<div style="font-size:40px;margin-bottom:16px">✅</div>'
-      +'<div style="font-size:16px;line-height:1.5;max-width:320px">Tudo certo, pode fechar.<br><br>Deslize o aplicativo para fora ou toque no botão de início do celular para fechar.</div>';
+    _sessaoLimparLocal();
+    _encerrarSessaoColeta(overlay);
   };
+}
+
+/* Encerra a sessao de verdade — o navegador nunca deixa um site fechar
+   sozinho a aba/app em que esta rodando (restricao de seguranca; nao e
+   um bug nosso, nenhum PWA do mercado consegue contornar isso). Por
+   isso, alem de tentar o fechamento, a tela vira um "bloqueio" real:
+   nada mais pode ser usado ate o coletor reabrir deliberadamente. */
+function _encerrarSessaoColeta(overlay){
+  try{ window.close(); }catch(e){}
+  // Segunda tentativa, para navegadores que só fecham depois de um
+  // pequeno atraso (alguns Android fecham aqui; a maioria nao fecha
+  // nenhuma das duas vezes — por isso a tela de bloqueio abaixo).
+  setTimeout(function(){ try{ window.close(); }catch(e){} }, 250);
+
+  overlay.innerHTML = '<div style="font-size:40px;margin-bottom:16px">🔒</div>'
+    +'<div style="font-size:18px;font-weight:700;margin-bottom:10px">Sessão encerrada</div>'
+    +'<div style="font-size:15px;line-height:1.6;margin-bottom:28px;max-width:300px;color:rgba(207,234,217,.8)">Por segurança do navegador, o app não consegue se fechar sozinho — mas a sessão já foi encerrada e não há mais nada salvo aqui.<br><br>Para sair de vez, deslize o aplicativo para fora na lista de recentes ou toque no botão de início do celular.</div>'
+    +'<button id="btn-reabrir-sessao" style="background:#1a6b2a;color:#a8e6b8;border:1px solid #2d7a3e;padding:11px 28px;border-radius:8px;font-size:14px;cursor:pointer;width:240px">🔓 Entrar novamente</button>';
+  var btnReabrir = document.getElementById('btn-reabrir-sessao');
+  if(btnReabrir) btnReabrir.onclick = function(){ location.reload(); };
 }
 
 /* ---- CARD COLETA ---- */
