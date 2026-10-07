@@ -11656,8 +11656,8 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a115ac66081';
-var _caBuild = '20261007061946'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
+var _caFP = '1a115fb58bb4';
+var _caBuild = '20261007073932'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -17593,15 +17593,53 @@ function _atualizarExibicaoToken(){
    COLETAS PENDENTES — GitHub API
    ════════════════════════════════════════════════════════════════ */
 
+/* Ponte de migração: coletores que ainda não receberam o link novo continuam
+   enviando para o repositório PÚBLICO. Enquanto houver, essas coletas pendentes
+   aparecem junto com as do repositório de dados (e saem de lá ao aprovar/rejeitar). */
+async function _pendPublicosLegados(jaTem){
+  try{
+    if(typeof GH_DATA_REPO==='undefined' || GH_DATA_REPO===GH_REPO) return [];
+    var h = {'Authorization':'token '+_ghToken(),'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+    var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE+'?t='+Date.now(), {headers:h, cache:'no-store'});
+    if(!r.ok) return [];
+    var meta = await r.json(), l = [];
+    try{ l = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g,''))))); }catch(e){}
+    var tem = {}; (jaTem||[]).forEach(function(x){ if(x) tem[x.ts] = 1; });
+    return (Array.isArray(l)?l:[]).filter(function(x){ return x && x.status==='pendente' && !tem[x.ts]; }).map(function(x){ return Object.assign({}, x, {_pub:true}); });
+  }catch(e){ return []; }
+}
+async function _pendLimparPublico(decididos){
+  try{
+    if(typeof GH_DATA_REPO==='undefined' || GH_DATA_REPO===GH_REPO) return;
+    var h = {'Authorization':'token '+_ghToken(),'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+    var url = 'https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE;
+    var r = await fetch(url+'?t='+Date.now(), {headers:h, cache:'no-store'});
+    if(!r.ok) return;
+    var meta = await r.json(), l = [];
+    try{ l = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g,''))))); }catch(e){ return; }
+    if(!Array.isArray(l)) return;
+    var rest = l.filter(function(x){ return x && x.status==='pendente' && !decididos[x.ts]; });
+    if(rest.length === l.filter(function(x){ return x && x.status==='pendente'; }).length) return; // nada decidido aqui
+    await fetch(url, {method:'PUT', headers:Object.assign({'Content-Type':'application/json'},h),
+      body:JSON.stringify({message:'Admin: atualiza coletas-pendentes.json', content:btoa(unescape(encodeURIComponent(JSON.stringify(rest,null,2)))), sha:meta.sha})});
+  }catch(e){ console.warn('limpar pendentes públicos:', e.message); }
+}
+
 async function _verificarPendentes(){
   try{
     var h = {'Authorization':'token '+_ghToken(),'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
     var resp = await fetch(GH_API+'?t='+Date.now(),{headers:h,cache:'no-store'});
+    var lista = [];
+    if(resp.status===404){
+      var leg0 = (await _pendPublicosLegados([])).length;
+      var badge0 = document.getElementById('badge-pendentes');
+      if(badge0){ badge0.textContent=leg0; badge0.style.display=leg0>0?'inline':'none'; }
+      return;
+    }
     if(!resp.ok) return;
     var meta = await resp.json();
-    var lista = [];
     try{ lista = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g,''))))); }catch(e){}
-    var count = lista.filter(function(r){ return r.status==='pendente'; }).length;
+    var count = lista.filter(function(r){ return r.status==='pendente'; }).length + (await _pendPublicosLegados(lista)).length;
     var badge = document.getElementById('badge-pendentes');
     if(badge){ badge.textContent=count; badge.style.display=count>0?'inline':'none'; }
   }catch(e){}
@@ -17626,12 +17664,14 @@ async function abrirPendentes(){
   try{
     var h = {'Authorization':'token '+_ghToken(),'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
     var resp = await fetch(GH_API+'?t='+Date.now(),{headers:h,cache:'no-store'});
-    if(resp.status===404){ body.innerHTML='<div class="mpd-vazia">✅ Nenhuma coleta pendente.</div>'; return; }
-    if(!resp.ok) throw new Error('HTTP '+resp.status);
-    var meta = await resp.json();
-    window._mpdSHA = meta.sha;
     var todos = [];
-    try{ todos = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g,''))))); }catch(e){}
+    if(resp.status!==404){
+      if(!resp.ok) throw new Error('HTTP '+resp.status);
+      var meta = await resp.json();
+      window._mpdSHA = meta.sha;
+      try{ todos = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g,''))))); }catch(e){}
+    }
+    todos = todos.concat(await _pendPublicosLegados(todos));
     window._mpdTodos = todos;
     var lista = todos.filter(function(r){ return r.status==='pendente'; });
     window._mpdLista = lista;
@@ -17678,7 +17718,7 @@ async function _aprovarColeta(idx){
   /* Importa para o histórico local */
   var hist = _carregarHistColetaRaw();
   var novo = Object.assign({},reg);
-  delete novo.status; delete novo.enviadoEm;
+  delete novo.status; delete novo.enviadoEm; delete novo._pub;
   // Garantia: coleta vinda do Coletor nunca traz saída em Aviário/Campo.
   // Se trouxer (versão antiga do app), vira lançamento de PERDA — que é o
   // único caminho de perda para o Coletor e é abatido no balanço do setor.
@@ -17739,6 +17779,7 @@ async function _salvarPendentesGitHub(todos){
       var restantes = lista.filter(function(r){ return r && r.status==='pendente' && !decididos[r.ts]; });
       try{
         await _ghGravar(GH_FILE, restantes, 'Admin: atualiza coletas-pendentes.json', atual ? atual.sha : null);
+        await _pendLimparPublico(decididos);
         return true;
       }catch(e){
         if(e.conflito) continue;
