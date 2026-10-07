@@ -7,8 +7,9 @@
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Segoe UI',system-ui,sans-serif;background:#173f6e;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-  .box{background:#f5efe0;border-radius:20px;padding:32px;max-width:460px;width:100%;box-shadow:0 24px 70px rgba(0,0,0,.45)}
+  .box{background:#f5efe0;border-radius:20px;padding:32px;max-width:520px;width:100%;box-shadow:0 24px 70px rgba(0,0,0,.45);margin:16px 0}
   h1{font-size:18px;color:#0e2d5c;margin-bottom:4px}
+  h2{font-size:14px;color:#0e2d5c;margin-top:4px}
   .sub{font-size:12px;color:#8a7a5c;margin-bottom:24px;font-family:'DM Mono',monospace}
   label{display:block;font-size:11px;color:#8a7a5c;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;margin-top:16px}
   input[type=password], input[type=text]{width:100%;padding:12px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;font-family:monospace}
@@ -16,22 +17,33 @@
   button{width:100%;padding:14px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;margin-top:20px}
   #btn-publicar{background:linear-gradient(135deg,#1a8f4a,#0e6b35);color:#fff}
   #btn-publicar:disabled{background:#ccc;cursor:not-allowed}
-  #status{margin-top:16px;padding:12px;border-radius:8px;font-size:13px;display:none}
+  #btn-buscar-versoes{background:#3a5a8a;color:#fff}
+  #status{margin-top:16px;padding:12px;border-radius:8px;font-size:13px;display:none;white-space:pre-wrap}
   #status.ok{background:#e0f4e8;color:#1a6b3a;display:block}
   #status.err{background:#fde8e8;color:#a03030;display:block}
   #status.wait{background:#e8f0f4;color:#1a4a8a;display:block}
+  #vstatus{margin-top:12px;padding:12px;border-radius:8px;font-size:13px;display:none;white-space:pre-wrap}
+  #vstatus.ok{background:#e0f4e8;color:#1a6b3a;display:block}
+  #vstatus.err{background:#fde8e8;color:#a03030;display:block}
+  #vstatus.wait{background:#e8f0f4;color:#1a4a8a;display:block}
   #alvo-info{margin-top:14px;padding:10px 12px;border-radius:8px;background:#fff3d6;border:1px solid #d4a94a;font-size:12px;color:#6b4f1a;display:none}
   .info{font-size:11px;color:#8a7a5c;margin-top:16px;line-height:1.5}
+  .sep{border-top:1.5px dashed #d8cba6;margin:28px 0 8px}
+  .vitem{background:#fff;border:1px solid #e0d6b8;border-radius:8px;padding:10px 12px;margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px}
+  .vitem button{width:auto;margin:0;padding:8px 12px;font-size:12px;background:#b8943f;color:#fff}
 </style>
 </head>
 <body>
 <div class="box">
   <h1>🚀 Publicar arquivo</h1>
-  <div class="sub">Fazenda São José · urbanopos/fazenda</div>
+  <div class="sub">Sistema de Coleta da Fazenda São José · urbanopos/fazenda</div>
 
   <label>Arquivo (o que a Claude te entregou)</label>
-  <input type="file" id="arquivo" accept=".html">
+  <input type="file" id="arquivo">
   <div id="alvo-info"></div>
+
+  <label>Pasta/caminho no repositório</label>
+  <input type="text" id="caminho" placeholder="ex: ColetaAut-Admin.html  ou  docs/02-compras/README.md">
 
   <label>Token do GitHub</label>
   <input type="password" id="token" placeholder="ghp_...">
@@ -40,21 +52,44 @@
 
   <div id="status"></div>
 
-  <div class="info">Esta ferramenta lê o nome do arquivo escolhido (ex: "ColetaAut-Desk-Admin.html") e substitui exatamente esse arquivo no repositório — não mexe em nenhum outro. O token fica salvo neste navegador para a próxima vez. Cada publicação também renova a "impressão digital" do app, então quem estiver usando o ColetaAut recebe a versão nova sozinho, sem precisar mexer no navegador.</div>
+  <div class="info">
+    Esta ferramenta publica o arquivo escolhido exatamente no caminho indicado acima — se o caminho já existir no repositório, a versão atual é <b>guardada automaticamente</b> (até 3 versões anteriores, as mais antigas são descartadas) antes de ser substituída. Se o caminho ainda não existir, o arquivo é criado novo.
+    <br><br>
+    Para os 4 arquivos principais do app (Admin, Admin Desktop, Coletor, e este próprio publicar.html), o caminho já vem preenchido automaticamente ao escolher o arquivo — não precisa digitar nada. Para arquivos novos de documentação, preencha o caminho exatamente como a Claude indicou (ex: <code>docs/02-compras/README.md</code>).
+  </div>
+
+  <div class="sep"></div>
+  <h2>📜 Ver / restaurar versões anteriores</h2>
+  <div class="sub" style="margin-bottom:12px">Protege contra dano indesejado: cada arquivo mantém as últimas 3 versões substituídas.</div>
+
+  <label>Caminho do arquivo a consultar</label>
+  <input type="text" id="caminho-busca" placeholder="ex: ColetaAut-Admin.html  ou  docs/02-compras/README.md">
+  <button id="btn-buscar-versoes" onclick="buscarVersoes()">Buscar versões anteriores</button>
+
+  <div id="vstatus"></div>
+  <div id="vlista"></div>
 </div>
 
 <script>
 var REPO = "urbanopos/fazenda";
 var TOKEN_KEY = "ghpub_token_generico";
-var ARQUIVOS_VALIDOS = ["ColetaAut-Admin-corrigido.html","ColetaAut-Admin.html","ColetaAut-Desk-Admin.html","ColetaAut-Coletor.html","ColetaAut-Coletor-corrigido.html","publicar.html"];
+var ARQUIVOS_RAIZ = {
+  "ColetaAut-Admin.html": "ColetaAut-Admin.html",
+  "ColetaAut-Admin-corrigido.html": "ColetaAut-Admin.html",
+  "ColetaAut-Desk-Admin.html": "ColetaAut-Desk-Admin.html",
+  "ColetaAut-Coletor.html": "ColetaAut-Coletor.html",
+  "ColetaAut-Coletor-corrigido.html": "ColetaAut-Coletor.html",
+  "publicar.html": "publicar.html"
+};
+var VERSOES_MAX = 3;
 var _conteudoArquivo = null;
-var _nomeArquivoAlvo = null;
+var _nomeArquivoAlvo = null; // nome do arquivo escolhido no disco (informativo)
 var _modoBotao = "publicar"; // ou "fechar", depois de publicar com sucesso
 
 window.addEventListener("load", function(){
   try{
     var salvo = localStorage.getItem(TOKEN_KEY);
-    if(salvo) document.getElementById("token").value = salvo;
+    if(salvo){ document.getElementById("token").value = salvo; }
   }catch(e){}
 });
 
@@ -67,16 +102,15 @@ function _onClickBotao(){
 }
 
 function _resetarFerramenta(){
-  var nomePublicado = _nomeArquivoAlvo;
+  var caminhoPublicado = document.getElementById("caminho").value.trim();
   _conteudoArquivo = null;
   _nomeArquivoAlvo = null;
   document.getElementById("arquivo").value = "";
+  document.getElementById("caminho").value = "";
   document.getElementById("alvo-info").style.display = "none";
   _voltarModoPublicar();
   document.getElementById("btn-publicar").disabled = true;
-  // Mantém visível a confirmação de que o arquivo anterior foi publicado
-  // com sucesso, em vez de simplesmente sumir com a mensagem.
-  setStatus("✅ " + nomePublicado + " foi publicado no GitHub com sucesso. Pronto para o próximo arquivo.", "ok");
+  setStatus("✅ " + caminhoPublicado + " foi publicado no GitHub com sucesso. Pronto para o próximo arquivo.", "ok");
 }
 
 function _voltarModoPublicar(){
@@ -90,20 +124,29 @@ document.getElementById("arquivo").addEventListener("change", function(e){
   var f = e.target.files[0];
   var info = document.getElementById("alvo-info");
   var btn = document.getElementById("btn-publicar");
+  var campoCaminho = document.getElementById("caminho");
   if(!f){ info.style.display="none"; btn.disabled=true; return; }
 
-  // Se o nome do arquivo escolhido bater com um dos arquivos conhecidos do
-  // projeto, usa esse mesmo nome como destino no repositório. Caso o nome
-  // seja outro (ex: renomeado), publica com esse mesmo nome — nunca em
-  // nome diferente do que foi escolhido, para nunca haver confusão.
   _nomeArquivoAlvo = f.name;
-  var conhecido = ARQUIVOS_VALIDOS.indexOf(f.name) > -1;
+
+  // Se o nome bate com um dos arquivos principais conhecidos, preenche o
+  // caminho automaticamente. Senão, deixa em branco pro usuário colar o
+  // caminho exato indicado pela Claude (ex: docs/02-compras/README.md).
+  if(ARQUIVOS_RAIZ[f.name]){
+    campoCaminho.value = ARQUIVOS_RAIZ[f.name];
+    info.textContent = "✅ Arquivo principal reconhecido — vai publicar em: " + campoCaminho.value;
+  } else {
+    if(!campoCaminho.value){
+      info.textContent = "⚠️ Arquivo novo — confirme ou digite o caminho exato no repositório no campo acima (a Claude informa esse caminho).";
+    } else {
+      info.textContent = "Vai publicar em: " + campoCaminho.value + " — confira se é esse mesmo o caminho.";
+    }
+  }
+  info.style.display = "block";
 
   var reader = new FileReader();
   reader.onload = function(ev){
     _conteudoArquivo = ev.target.result; // já vem como texto
-    info.textContent = (conhecido ? "✅" : "⚠️") + " Vai substituir: " + _nomeArquivoAlvo + (conhecido ? "" : " — nome fora da lista de arquivos conhecidos desta ferramenta (não significa que não existe no GitHub; só confirme se é esse mesmo o arquivo antes de publicar)");
-    info.style.display = "block";
     btn.disabled = false;
     setStatus("", ""); document.getElementById("status").style.display = "none";
   };
@@ -115,66 +158,230 @@ function setStatus(msg, tipo){
   el.textContent = msg;
   el.className = tipo;
 }
+function setVStatus(msg, tipo){
+  var el = document.getElementById("vstatus");
+  el.textContent = msg;
+  el.className = tipo;
+}
 
+function _headers(token){
+  return {
+    "Authorization": "token " + token,
+    "Accept": "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28"
+  };
+}
+function _b64(texto){
+  return btoa(unescape(encodeURIComponent(texto)));
+}
+function _unb64(b64){
+  return decodeURIComponent(escape(atob(b64.replace(/\n/g,''))));
+}
+function _agora(){
+  var d = new Date();
+  function p(n){ return (n<10?'0':'')+n; }
+  function p3(n){ return (n<10?'00':(n<100?'0':''))+n; }
+  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'_'+p(d.getHours())+'-'+p(d.getMinutes())+'-'+p(d.getSeconds())+'-'+p3(d.getMilliseconds());
+}
+function _pastaVersoes(caminho){
+  return "_versoes/" + caminho;
+}
+function _extensao(caminho){
+  var m = caminho.match(/\.[^.\/]+$/);
+  return m ? m[0] : '';
+}
+
+// Lê um arquivo do repo. Retorna {existe:true, sha, conteudo} ou {existe:false}
+async function _lerArquivo(headers, caminho){
+  var resp = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + caminho, { headers: headers });
+  if(resp.status === 404) return { existe: false };
+  if(!resp.ok){
+    if(resp.status === 401) throw new Error("Token inválido ou sem permissão.");
+    throw new Error("Erro ao consultar \"" + caminho + "\" (HTTP " + resp.status + ")");
+  }
+  var info = await resp.json();
+  if(Array.isArray(info)) throw new Error("\"" + caminho + "\" é uma pasta, não um arquivo.");
+  return { existe: true, sha: info.sha, conteudo: _unb64(info.content) };
+}
+
+// Lista o conteúdo de uma pasta. Retorna [] se a pasta não existir.
+async function _listarPasta(headers, caminho){
+  var resp = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + caminho, { headers: headers });
+  if(resp.status === 404) return [];
+  if(!resp.ok) throw new Error("Erro ao listar \"" + caminho + "\" (HTTP " + resp.status + ")");
+  var info = await resp.json();
+  return Array.isArray(info) ? info : [];
+}
+
+async function _gravarArquivo(headers, caminho, conteudoTexto, shaAtual, mensagem){
+  var body = { message: mensagem, content: _b64(conteudoTexto) };
+  if(shaAtual) body.sha = shaAtual;
+  var resp = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + caminho, {
+    method: "PUT", headers: headers, body: JSON.stringify(body)
+  });
+  if(!resp.ok){
+    var txt = await resp.text();
+    throw new Error("Erro ao gravar \"" + caminho + "\" (HTTP " + resp.status + "): " + txt.substring(0,200));
+  }
+  return resp.json();
+}
+
+async function _apagarArquivo(headers, caminho, sha, mensagem){
+  var resp = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + caminho, {
+    method: "DELETE", headers: headers,
+    body: JSON.stringify({ message: mensagem, sha: sha })
+  });
+  if(!resp.ok){
+    var txt = await resp.text();
+    throw new Error("Erro ao apagar \"" + caminho + "\" (HTTP " + resp.status + "): " + txt.substring(0,200));
+  }
+}
+
+// Guarda uma cópia de backup de "caminho" com o conteúdo atual (antigo),
+// e descarta backups além dos VERSOES_MAX mais recentes.
+async function _arquivarVersaoAnterior(headers, caminho, conteudoAntigo){
+  var pasta = _pastaVersoes(caminho);
+  var ext = _extensao(caminho);
+  var nomeBackup = pasta + "/" + _agora() + ext;
+  await _gravarArquivo(headers, nomeBackup, conteudoAntigo, null,
+    "Backup automático antes de atualizar " + caminho);
+
+  var itens = await _listarPasta(headers, pasta);
+  itens = itens.filter(function(it){ return it.type === "file"; });
+  itens.sort(function(a,b){ return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0); }); // mais antigo primeiro
+  var excesso = itens.length - VERSOES_MAX;
+  for(var i=0; i<excesso; i++){
+    await _apagarArquivo(headers, pasta + "/" + itens[i].name, itens[i].sha, "Descartando versão antiga de " + caminho);
+  }
+}
+
+
+/* Proteção contra publicar versão mais antiga: cada app HTML leva um carimbo
+   "var _caBuild = 'AAAAMMDDHHMMSS'". Compara o arquivo novo com o publicado. */
+function _chkBuildDe(txt){ var m = String(txt||'').match(/var _caBuild = '(\d{14})'/); return m ? m[1] : ''; }
+function _chkFPDe(txt){ var m = String(txt||'').match(/var _caFP = '([a-f0-9]+)'/); return m ? m[1] : ''; }
+function _chkBuildFmt(b){ return b.slice(6,8)+'/'+b.slice(4,6)+'/'+b.slice(0,4)+' às '+b.slice(8,10)+':'+b.slice(10,12)+':'+b.slice(12,14); }
+/* Retorna '' se pode publicar sem perguntar; senão o texto do aviso */
+function _chkAvisoVersao(cam, novo, atual){
+  if(!/\.html?$/i.test(cam)) return '';
+  var bn = _chkBuildDe(novo), ba = _chkBuildDe(atual);
+  if(bn && ba){
+    if(bn < ba) return '⛔ O arquivo escolhido é MAIS ANTIGO que o publicado.\n\nEscolhido: versão de '+_chkBuildFmt(bn)+'\nPublicado (em uso): versão de '+_chkBuildFmt(ba)+'\n\nPublicar mesmo assim vai fazer os aparelhos VOLTAREM para a versão antiga e pode apagar correções recentes.';
+    if(bn === ba) return 'ℹ️ O arquivo escolhido tem a MESMA versão do publicado ('+_chkBuildFmt(bn)+').';
+    return '';
+  }
+  if(ba && !bn) return '⚠️ O arquivo escolhido não tem carimbo de versão, mas o publicado tem (versão de '+_chkBuildFmt(ba)+'). Provavelmente o escolhido é MAIS ANTIGO.';
+  var fn = _chkFPDe(novo), fa = _chkFPDe(atual);
+  if(fn && fa && fn === fa) return 'ℹ️ O arquivo escolhido parece idêntico ao publicado (mesma impressão digital); nada vai mudar.';
+  return '';
+}
 async function publicar(){
   var token = document.getElementById("token").value.trim();
+  var caminho = document.getElementById("caminho").value.trim().replace(/^\/+/, '');
   if(!token){ setStatus("Cole o token do GitHub antes de publicar.", "err"); return; }
-  if(!_conteudoArquivo || !_nomeArquivoAlvo){ setStatus("Escolha um arquivo antes de publicar.", "err"); return; }
+  if(!_conteudoArquivo){ setStatus("Escolha um arquivo antes de publicar.", "err"); return; }
+  if(!caminho){ setStatus("Preencha o caminho/pasta de destino no repositório antes de publicar.", "err"); return; }
 
   var btn = document.getElementById("btn-publicar");
   btn.disabled = true;
-  setStatus("Enviando " + _nomeArquivoAlvo + " para o GitHub...", "wait");
+  var headers = _headers(token);
 
   try{
-    var headers = {
-      "Authorization": "token " + token,
-      "Accept": "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28"
-    };
+    setStatus("Verificando se \"" + caminho + "\" já existe...", "wait");
+    var atual = await _lerArquivo(headers, caminho);
 
-    var respGet = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + _nomeArquivoAlvo, { headers: headers });
-    if(!respGet.ok){
-      if(respGet.status === 401) throw new Error("Token inválido ou sem permissão.");
-      if(respGet.status === 404) throw new Error("Não existe nenhum arquivo \"" + _nomeArquivoAlvo + "\" no repositório ainda — confira o nome.");
-      throw new Error("Erro ao consultar o arquivo atual (HTTP " + respGet.status + ")");
+    if(atual.existe){
+      var aviso = _chkAvisoVersao(caminho, _conteudoArquivo, atual.conteudo);
+      if(aviso && !confirm(aviso + "\n\nDeseja publicar mesmo assim?")){
+        setStatus("Publicação cancelada: " + aviso.replace(/\n+/g, " "), "err");
+        btn.disabled = false;
+        return;
+      }
+      setStatus("Guardando a versão atual de \"" + caminho + "\" como backup...", "wait");
+      await _arquivarVersaoAnterior(headers, caminho, atual.conteudo);
     }
-    var infoAtual = await respGet.json();
-    var shaAtual = infoAtual.sha;
 
-    // Gera uma nova "impressão digital" (_caFP) e a grava no arquivo antes
-    // de publicar. O app já verifica essa impressão sozinho a cada 3 min
-    // e recarrega quando ela muda — sem isso, o valor ficava sempre igual
-    // e o app nunca percebia que havia uma versão nova no ar.
-    var novaFp = (Date.now().toString(16) + Math.random().toString(16).slice(2)).slice(0,12);
-    var conteudoParaPublicar = _conteudoArquivo.replace(/var _caFP = '[a-f0-9]+'/, "var _caFP = '" + novaFp + "'");
-
-    // Codifica o conteúdo (texto) em base64, tratando corretamente acentos/UTF-8
-    var conteudoB64 = btoa(unescape(encodeURIComponent(conteudoParaPublicar)));
-
-    var respPut = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + _nomeArquivoAlvo, {
-      method: "PUT",
-      headers: headers,
-      body: JSON.stringify({
-        message: "Publicar nova versao de " + _nomeArquivoAlvo + " - " + new Date().toLocaleString("pt-BR"),
-        content: conteudoB64,
-        sha: shaAtual
-      })
-    });
-    if(!respPut.ok){
-      var erroTxt = await respPut.text();
-      throw new Error("Erro ao publicar (HTTP " + respPut.status + "): " + erroTxt.substring(0,200));
-    }
+    setStatus("Enviando " + caminho + " para o GitHub...", "wait");
+    await _gravarArquivo(headers, caminho, _conteudoArquivo, atual.existe ? atual.sha : null,
+      (atual.existe ? "Publicar nova versao de " : "Criar ") + caminho + " - " + new Date().toLocaleString("pt-BR"));
 
     try{ localStorage.setItem(TOKEN_KEY, token); }catch(e){}
-    setStatus("✅ " + _nomeArquivoAlvo + " publicado com sucesso! Quem estiver com o app aberto recebe a atualização automática em até 3 minutos, sem precisar fazer nada.", "ok");
+    setStatus("✅ " + caminho + " publicado com sucesso!" + (atual.existe ? " A versão anterior foi guardada (até 3 versões ficam disponíveis em \"Ver versões anteriores\")." : " (arquivo novo, nada para guardar)"), "ok");
     _modoBotao = "fechar";
     btn.textContent = "Concluir (publicar outro arquivo)";
     btn.disabled = false;
-    return; // não cai no finally que reabilitaria como "Publicar"
+    return;
   }catch(err){
     setStatus("⚠️ " + err.message, "err");
   }finally{
     btn.disabled = false;
+  }
+}
+
+async function buscarVersoes(){
+  var token = document.getElementById("token").value.trim();
+  var caminho = document.getElementById("caminho-busca").value.trim().replace(/^\/+/, '');
+  var lista = document.getElementById("vlista");
+  lista.innerHTML = "";
+  if(!token){ setVStatus("Cole o token do GitHub antes de buscar.", "err"); return; }
+  if(!caminho){ setVStatus("Informe o caminho do arquivo a consultar.", "err"); return; }
+
+  var headers = _headers(token);
+  try{
+    setVStatus("Buscando versões anteriores de \"" + caminho + "\"...", "wait");
+    var pasta = _pastaVersoes(caminho);
+    var itens = await _listarPasta(headers, pasta);
+    itens = itens.filter(function(it){ return it.type === "file"; });
+    itens.sort(function(a,b){ return a.name > b.name ? -1 : (a.name < b.name ? 1 : 0); }); // mais recente primeiro
+
+    if(itens.length === 0){
+      setVStatus("Nenhuma versão anterior guardada ainda para \"" + caminho + "\".", "ok");
+      return;
+    }
+    setVStatus(itens.length + " versão(ões) anterior(es) encontrada(s) — a mais recente primeiro.", "ok");
+    itens.forEach(function(it){
+      var div = document.createElement("div");
+      div.className = "vitem";
+      var base = it.name.replace(/\.[^.]+$/, ''); // AAAA-MM-DD_HH-MM-SS-mmm
+      var partes = base.match(/^(\d{4})-(\d{2})-(\d{2})_(\d{2})-(\d{2})-(\d{2})/);
+      var dataLegivel = partes ? (partes[3]+'/'+partes[2]+'/'+partes[1]+' às '+partes[4]+':'+partes[5]+':'+partes[6]) : base;
+      div.innerHTML = '<span>🕒 ' + dataLegivel + '</span>';
+      var btnRestaurar = document.createElement("button");
+      btnRestaurar.textContent = "Restaurar esta versão";
+      btnRestaurar.onclick = function(){ restaurarVersao(caminho, pasta + "/" + it.name); };
+      div.appendChild(btnRestaurar);
+      lista.appendChild(div);
+    });
+  }catch(err){
+    setVStatus("⚠️ " + err.message, "err");
+  }
+}
+
+async function restaurarVersao(caminhoOriginal, caminhoBackup){
+  var token = document.getElementById("token").value.trim();
+  if(!token){ setVStatus("Cole o token do GitHub antes de restaurar.", "err"); return; }
+  if(!confirm("Isso vai substituir o arquivo atual de \"" + caminhoOriginal + "\" pela versão escolhida (a versão atual também será guardada, pode ser restaurada depois do mesmo jeito). Confirmar?")) return;
+
+  var headers = _headers(token);
+  try{
+    setVStatus("Lendo a versão escolhida...", "wait");
+    var versaoAntiga = await _lerArquivo(headers, caminhoBackup);
+    if(!versaoAntiga.existe) throw new Error("Essa versão de backup não foi encontrada (pode já ter sido removida).");
+
+    var atual = await _lerArquivo(headers, caminhoOriginal);
+    if(atual.existe){
+      setVStatus("Guardando a versão atual antes de restaurar...", "wait");
+      await _arquivarVersaoAnterior(headers, caminhoOriginal, atual.conteudo);
+    }
+
+    setVStatus("Restaurando " + caminhoOriginal + "...", "wait");
+    await _gravarArquivo(headers, caminhoOriginal, versaoAntiga.conteudo, atual.existe ? atual.sha : null,
+      "Restaurar versao anterior de " + caminhoOriginal + " - " + new Date().toLocaleString("pt-BR"));
+
+    setVStatus("✅ " + caminhoOriginal + " restaurado com sucesso para a versão escolhida.", "ok");
+    buscarVersoes();
+  }catch(err){
+    setVStatus("⚠️ " + err.message, "err");
   }
 }
 </script>
