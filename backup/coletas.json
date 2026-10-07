@@ -42,7 +42,7 @@
         "nome": "Crescimento",
         "unid": "sc 40kg",
         "qtd": 3,
-        "preco": 0,
+        "preco": 92.38,
         "obs": "",
         "forn": "IRCA",
         "tipo": "Saida"
@@ -72,14 +72,15 @@
         "nome": "Postura",
         "unid": "sc 40kg",
         "qtd": 3,
-        "preco": 0,
+        "preco": 88.39,
         "obs": "",
         "forn": "IRCA",
         "tipo": "Saida"
       }
     ],
     "ts": 1791223180580,
-    "mov": "MOV-0041"
+    "mov": "MOV-0041",
+    "_editadoEm": 1791363462840
   },
   {
     "data": "2026-10-05",
@@ -125,12 +126,12 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 92.38
       }
     ],
     "ts": 1791222849940,
     "mov": "MOV-0040",
-    "_editadoEm": 1791222969387
+    "_editadoEm": 1791363462840
   },
   {
     "data": "2026-10-03",
@@ -201,14 +202,15 @@
         "nome": "Ração de peixe",
         "unid": "Sc 25kg",
         "qtd": 1,
-        "preco": 0,
+        "preco": 74.71,
         "obs": "",
         "forn": "Purina",
         "tipo": "Saida"
       }
     ],
     "ts": 1790942006894,
-    "mov": "MOV-0039"
+    "mov": "MOV-0039",
+    "_editadoEm": 1791363462840
   },
   {
     "data": "2026-10-01",
@@ -262,13 +264,14 @@
         "nome": "Pinto",
         "unid": "unid",
         "qtd": 3,
-        "preco": 0,
+        "preco": 8,
         "obs": "",
         "forn": "",
         "tipo": ""
       }
     ],
-    "ts": 1790797510616
+    "ts": 1790797510616,
+    "_editadoEm": 1791363462840
   },
   {
     "data": "2026-09-30",
@@ -357,13 +360,14 @@
         "nome": "Pinto",
         "unid": "unid",
         "qtd": 24,
-        "preco": 0,
+        "preco": 8,
         "obs": "",
         "forn": "",
         "tipo": ""
       }
     ],
-    "ts": 1790622892635
+    "ts": 1790622892635,
+    "_editadoEm": 1791363462840
   },
   {
     "data": "2026-09-28",
@@ -393,7 +397,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
@@ -420,12 +424,12 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 88.39
       }
     ],
     "ts": 1790592129944,
     "mov": "MOV-0038",
-    "_editadoEm": 1790623969430
+    "_editadoEm": 1791363462840
   },
   {
     "data": "2026-09-27",
@@ -514,14 +518,15 @@
         "nome": "Crescimento",
         "unid": "sc 40kg",
         "qtd": 1,
-        "preco": 0,
+        "preco": 92.38,
         "obs": "",
         "forn": "",
         "tipo": "Saida"
       }
     ],
     "ts": 1790446922422,
-    "mov": "MOV-0035"
+    "mov": "MOV-0035",
+    "_editadoEm": 1791363462840
   },
   {
     "data": "2026-09-26",
@@ -610,14 +615,15 @@
         "nome": "Ração de peixe",
         "unid": "Sc 25kg",
         "qtd": 1,
-        "preco": 0,
+        "preco": 74.71,
         "obs": "",
         "forn": "",
         "tipo": "Saida"
       }
     ],
     "ts": 1790337843438,
-    "mov": "MOV-0033"
+    "mov": "MOV-0033",
+    "_editadoEm": 1791363462840
   },
   {
     "data": "2026-09-24",
@@ -880,7 +886,7 @@
         "nome": "Crescimento",
         "unid": "sc 40kg",
         "qtd": 3,
-        "preco": 0,
+        "preco": 92.38,
         "obs": "",
         "forn": "",
         "tipo": "Saida"
@@ -900,14 +906,15 @@
         "nome": "Postura",
         "unid": "sc 40kg",
         "qtd": 3,
-        "preco": 0,
+        "preco": 88.39,
         "obs": "",
         "forn": "",
         "tipo": "Saida"
       }
     ],
     "ts": 1789987441638,
-    "mov": "MOV-0031"
+    "mov": "MOV-0031",
+    "_editadoEm": 1791363462841
   },
   {
     "data": "2026-09-20",
@@ -952,7 +959,7 @@
         "nome": "Crescimento",
         "unid": "sc 40kg",
         "qtd": 1,
-        "preco": 0,
+        "preco": 92.38,
         "obs": "",
         "forn": "",
         "tipo": "Saida"
@@ -962,14 +969,15 @@
         "nome": "Ração de peixe",
         "unid": "Sc 25kg",
         "qtd": 1,
-        "preco": 0,
+        "preco": 74.71,
         "obs": "",
         "forn": "",
         "tipo": "Saida"
       }
     ],
     "ts": 1789839598765,
-    "mov": "MOV-0030"
+    "mov": "MOV-0030",
+    "_editadoEm": 1791363462841
   },
   {
     "data": "2026-09-19",
@@ -1171,7 +1179,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "Fazenda São José",
-        "preco": 0
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
@@ -1189,7 +1197,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 88.39
       },
       {
         "setor": "Estoque",
@@ -1202,7 +1210,7 @@
       }
     ],
     "ts": 1789382691978,
-    "_editadoEm": 1789429002163,
+    "_editadoEm": 1791363462841,
     "mov": "MOV-0029"
   },
   {
@@ -1233,10 +1241,12 @@
         "qtd": 2,
         "obs": "",
         "forn": "",
-        "tipo": ""
+        "tipo": "",
+        "preco": 25
       }
     ],
-    "ts": 1789335846258
+    "ts": 1789335846258,
+    "_editadoEm": 1791363462841
   },
   {
     "data": "2026-09-13",
@@ -1249,11 +1259,11 @@
         "unid": "Sc 25kg",
         "tipo": "Saida",
         "forn": "Purina",
-        "preco": 0
+        "preco": 74.71
       }
     ],
     "ts": 1789323252643,
-    "_editadoEm": 1789428997856,
+    "_editadoEm": 1791363462841,
     "mov": "MOV-0028"
   },
   {
@@ -1427,7 +1437,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "Fazenda São José",
-        "preco": 0
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
@@ -1445,7 +1455,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 88.39
       },
       {
         "setor": "Estoque",
@@ -1454,11 +1464,11 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "",
-        "preco": 0
+        "preco": 108.21
       }
     ],
     "ts": 1788895476507,
-    "_editadoEm": 1789428972119,
+    "_editadoEm": 1791363462842,
     "mov": "MOV-0027"
   },
   {
@@ -1504,11 +1514,11 @@
         "unid": "Sc 25kg",
         "tipo": "Saida",
         "forn": "Purina",
-        "preco": 0
+        "preco": 74.71
       }
     ],
     "ts": 1788849931047,
-    "_editadoEm": 1789428962539,
+    "_editadoEm": 1791363462842,
     "mov": "MOV-0026"
   },
   {
@@ -1547,11 +1557,11 @@
         "unid": "unid",
         "tipo": "",
         "forn": "",
-        "preco": 0
+        "preco": 8
       }
     ],
     "ts": 1788802408782,
-    "_editadoEm": 1790561452258
+    "_editadoEm": 1791363462842
   },
   {
     "data": "2026-09-06",
@@ -1597,11 +1607,11 @@
         "unid": "unid",
         "tipo": "",
         "forn": "",
-        "preco": 0
+        "preco": 8
       }
     ],
     "ts": 1788636968490,
-    "_editadoEm": 1790561435122
+    "_editadoEm": 1791363462842
   },
   {
     "data": "2026-09-05",
@@ -1664,11 +1674,11 @@
         "unid": "unid",
         "tipo": "",
         "forn": "",
-        "preco": 0
+        "preco": 8
       }
     ],
     "ts": 1788636748817,
-    "_editadoEm": 1790561466792
+    "_editadoEm": 1791363462842
   },
   {
     "data": "2026-09-04",
@@ -1791,10 +1801,12 @@
         "qtd": 1,
         "obs": "",
         "forn": "",
-        "tipo": ""
+        "tipo": "",
+        "preco": 25
       }
     ],
-    "ts": 1788210149953
+    "ts": 1788210149953,
+    "_editadoEm": 1791363462842
   },
   {
     "data": "2026-08-31",
@@ -1816,7 +1828,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 88.39
       },
       {
         "setor": "Estoque",
@@ -1825,11 +1837,11 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "Fazenda São José",
-        "preco": 0
+        "preco": 92.38
       }
     ],
     "ts": 1788186625161,
-    "_editadoEm": 1789428957535,
+    "_editadoEm": 1791363462842,
     "mov": "MOV-0025"
   },
   {
@@ -1893,10 +1905,12 @@
         "nome": "Pinto",
         "qtd": 1,
         "unid": "unid",
-        "tipo": ""
+        "tipo": "",
+        "preco": 8
       }
     ],
-    "ts": 1788071045172
+    "ts": 1788071045172,
+    "_editadoEm": 1791363462842
   },
   {
     "data": "2026-08-28",
@@ -1909,11 +1923,11 @@
         "unid": "Sc 25kg",
         "tipo": "Saida",
         "forn": "Purina",
-        "preco": 0
+        "preco": 74.71
       }
     ],
     "ts": 1787967529060,
-    "_editadoEm": 1789428949284,
+    "_editadoEm": 1791363462842,
     "mov": "MOV-0024"
   },
   {
@@ -1989,10 +2003,12 @@
         "qtd": 1,
         "obs": "",
         "forn": "",
-        "tipo": ""
+        "tipo": "",
+        "preco": 8
       }
     ],
-    "ts": 1787742047724
+    "ts": 1787742047724,
+    "_editadoEm": 1791363462842
   },
   {
     "data": "2026-08-25",
@@ -2051,7 +2067,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "Fazenda São José",
-        "preco": 0
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
@@ -2078,7 +2094,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 88.39
       },
       {
         "setor": "Estoque",
@@ -2087,11 +2103,11 @@
         "unid": "Sc 25kg",
         "tipo": "Saida",
         "forn": "Purina",
-        "preco": 0
+        "preco": 74.71
       }
     ],
     "ts": 1787567616906,
-    "_editadoEm": 1789768651536,
+    "_editadoEm": 1791363462843,
     "mov": "MOV-0023"
   },
   {
@@ -2250,10 +2266,12 @@
         "qtd": 1,
         "obs": "",
         "forn": "",
-        "tipo": ""
+        "tipo": "",
+        "preco": 8
       }
     ],
-    "ts": 1787140482894
+    "ts": 1787140482894,
+    "_editadoEm": 1791363462843
   },
   {
     "data": "2026-08-19",
@@ -2313,7 +2331,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "Fazenda São José",
-        "preco": 0
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
@@ -2331,7 +2349,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 88.39
       },
       {
         "setor": "Estoque",
@@ -2344,7 +2362,7 @@
       }
     ],
     "ts": 1786962898272,
-    "_editadoEm": 1789428938231,
+    "_editadoEm": 1791363462843,
     "mov": "MOV-0022"
   },
   {
@@ -2432,7 +2450,7 @@
         "unid": "Sc 25kg",
         "tipo": "Entrada",
         "forn": "Purina",
-        "preco": 0
+        "preco": 74.71
       },
       {
         "setor": "Estoque",
@@ -2441,7 +2459,7 @@
         "unid": "sc 40kg",
         "tipo": "Entrada",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 88.39
       },
       {
         "setor": "Estoque",
@@ -2450,7 +2468,7 @@
         "unid": "sc 40kg",
         "tipo": "Entrada",
         "forn": "Fazenda São José",
-        "preco": 0
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
@@ -2468,11 +2486,11 @@
         "unid": "Sc 40kg",
         "tipo": "Entrada",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 91.21
       }
     ],
     "ts": 1787092762795,
-    "_editadoEm": 1789428923813,
+    "_editadoEm": 1791363462844,
     "mov": "MOV-0020"
   },
   {
@@ -2500,10 +2518,12 @@
         "unid": "unid",
         "qtd": 10,
         "obs": "Pintos Eraldo Carpina",
-        "forn": ""
+        "forn": "",
+        "preco": 8
       }
     ],
-    "ts": 1786494482640
+    "ts": 1786494482640,
+    "_editadoEm": 1791363462844
   },
   {
     "data": "2026-08-11",
@@ -2530,10 +2550,12 @@
         "unid": "unid",
         "qtd": 6,
         "obs": "",
-        "forn": ""
+        "forn": "",
+        "preco": 8
       }
     ],
-    "ts": 1786393862940
+    "ts": 1786393862940,
+    "_editadoEm": 1791363462844
   },
   {
     "data": "2026-08-10",
@@ -2561,7 +2583,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "Fazenda São José",
-        "preco": 0
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
@@ -2588,11 +2610,12 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 88.39
       }
     ],
     "ts": 1786358780904,
-    "mov": "MOV-0019"
+    "mov": "MOV-0019",
+    "_editadoEm": 1791363462844
   },
   {
     "data": "2026-08-09",
@@ -2602,10 +2625,12 @@
         "setor": "Perda",
         "nome": "Pintainha",
         "qtd": 3,
-        "unid": "unid"
+        "unid": "unid",
+        "preco": 25
       }
     ],
-    "ts": 1786393701300
+    "ts": 1786393701300,
+    "_editadoEm": 1791363462844
   },
   {
     "data": "2026-08-09",
@@ -2691,7 +2716,7 @@
         "unid": "Sc 25kg",
         "tipo": "Entrada",
         "forn": "Purina",
-        "preco": 0
+        "preco": 74.71
       },
       {
         "setor": "Estoque",
@@ -2705,7 +2730,7 @@
     ],
     "ts": 1787092426716,
     "mov": "MOV-0018",
-    "_editadoEm": 1789769231681
+    "_editadoEm": 1791363462844
   },
   {
     "data": "2026-08-05",
@@ -2767,11 +2792,12 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "",
-        "preco": 0
+        "preco": 108.21
       }
     ],
     "ts": 1785843820269,
-    "mov": "MOV-0017"
+    "mov": "MOV-0017",
+    "_editadoEm": 1791363462844
   },
   {
     "data": "2026-08-03",
@@ -2783,7 +2809,8 @@
         "unid": "unid",
         "qtd": 60,
         "obs": "Isa Brown",
-        "forn": ""
+        "forn": "",
+        "preco": 25
       },
       {
         "setor": "Aviario",
@@ -2791,10 +2818,12 @@
         "unid": "unid",
         "qtd": 40,
         "obs": "Machos Isa Brown",
-        "forn": ""
+        "forn": "",
+        "preco": 8
       }
     ],
-    "ts": 1785798426734
+    "ts": 1785798426734,
+    "_editadoEm": 1791363462844
   },
   {
     "data": "2026-08-03",
@@ -2822,7 +2851,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "Fazenda São José",
-        "preco": 0
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
@@ -2849,11 +2878,12 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 88.39
       }
     ],
     "ts": 1785759358679,
-    "mov": "MOV-0016"
+    "mov": "MOV-0016",
+    "_editadoEm": 1791363462844
   },
   {
     "data": "2026-08-02",
@@ -2909,11 +2939,12 @@
         "unid": "Sc 25kg",
         "tipo": "Entrada",
         "forn": "Purina",
-        "preco": 0
+        "preco": 74.71
       }
     ],
     "ts": 1787092301594,
-    "mov": "MOV-0015"
+    "mov": "MOV-0015",
+    "_editadoEm": 1791363462844
   },
   {
     "data": "2026-07-30",
@@ -2971,7 +3002,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "Fazenda São José",
-        "preco": 0
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
@@ -2989,11 +3020,12 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 88.39
       }
     ],
     "ts": 1785249179757,
-    "mov": "MOV-0014"
+    "mov": "MOV-0014",
+    "_editadoEm": 1791363462846
   },
   {
     "data": "2026-07-27",
@@ -3081,7 +3113,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "Fazenda São José",
-        "preco": 0
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
@@ -3090,7 +3122,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 88.39
       },
       {
         "setor": "Estoque",
@@ -3117,11 +3149,12 @@
         "unid": "Sc 25kg",
         "tipo": "Saida",
         "forn": "Purina",
-        "preco": 0
+        "preco": 74.71
       }
     ],
     "ts": 1784751238222,
-    "mov": "MOV-0013"
+    "mov": "MOV-0013",
+    "_editadoEm": 1791363462846
   },
   {
     "data": "2026-07-22",
@@ -3231,7 +3264,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "Fazenda São José",
-        "preco": 0
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
@@ -3249,7 +3282,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 88.39
       },
       {
         "setor": "Estoque",
@@ -3262,7 +3295,8 @@
       }
     ],
     "ts": 1784294203660,
-    "mov": "MOV-0012"
+    "mov": "MOV-0012",
+    "_editadoEm": 1791363462846
   },
   {
     "data": "2026-07-16",
@@ -3326,10 +3360,12 @@
         "unid": "unid",
         "qtd": 200,
         "obs": "",
-        "forn": ""
+        "forn": "",
+        "preco": 8
       }
     ],
-    "ts": 1783953986428
+    "ts": 1783953986428,
+    "_editadoEm": 1791363462846
   },
   {
     "data": "2026-07-12",
@@ -3385,7 +3421,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 88.39
       },
       {
         "setor": "Estoque",
@@ -3394,7 +3430,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "Fazenda São José",
-        "preco": 0
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
@@ -3430,12 +3466,12 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "",
-        "preco": 0
+        "preco": 108.21
       }
     ],
     "ts": 1783688506163,
     "mov": "MOV-0011",
-    "_editadoEm": 1789767846440
+    "_editadoEm": 1791363462847
   },
   {
     "data": "2026-07-09",
@@ -3493,7 +3529,7 @@
         "unid": "sc 40kg",
         "tipo": "Entrada",
         "forn": "",
-        "preco": 0
+        "preco": 108.21
       },
       {
         "setor": "Estoque",
@@ -3502,7 +3538,7 @@
         "unid": "sc 40kg",
         "tipo": "Entrada",
         "forn": "Fazenda São José",
-        "preco": 0
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
@@ -3520,12 +3556,12 @@
         "unid": "sc 40kg",
         "tipo": "Entrada",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 88.39
       }
     ],
     "ts": 1787091950102,
     "mov": "MOV-0010",
-    "_editadoEm": 1789766751321
+    "_editadoEm": 1791363462847
   },
   {
     "data": "2026-07-06",
@@ -3590,7 +3626,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "Fazenda São José",
-        "preco": 0
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
@@ -3608,11 +3644,12 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 88.39
       }
     ],
     "ts": 1781090425770,
-    "mov": "MOV-0009"
+    "mov": "MOV-0009",
+    "_editadoEm": 1791363462847
   },
   {
     "data": "2026-07-02",
@@ -3653,11 +3690,12 @@
         "unid": "Sc 25kg",
         "tipo": "Saida",
         "forn": "Purina",
-        "preco": 0
+        "preco": 74.71
       }
     ],
     "ts": 1781095076513,
-    "mov": "MOV-0008"
+    "mov": "MOV-0008",
+    "_editadoEm": 1791363462847
   },
   {
     "data": "2026-07-01",
@@ -3700,7 +3738,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "Fazenda São José",
-        "preco": 0
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
@@ -3718,7 +3756,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 88.39
       },
       {
         "setor": "Estoque",
@@ -3731,7 +3769,8 @@
       }
     ],
     "ts": 1781089929186,
-    "mov": "MOV-0007"
+    "mov": "MOV-0007",
+    "_editadoEm": 1791363462847
   },
   {
     "data": "2026-06-22",
@@ -3758,10 +3797,12 @@
         "unid": "unid",
         "qtd": 2,
         "obs": "",
-        "forn": ""
+        "forn": "",
+        "preco": 8
       }
     ],
-    "ts": 1782156147049
+    "ts": 1782156147049,
+    "_editadoEm": 1791363462847
   },
   {
     "data": "2026-06-22",
@@ -3789,7 +3830,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "Fazenda São José",
-        "preco": 0
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
@@ -3807,7 +3848,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 88.39
       },
       {
         "setor": "Estoque",
@@ -3825,11 +3866,12 @@
         "unid": "Sc 25kg",
         "tipo": "Saida",
         "forn": "Purina",
-        "preco": 0
+        "preco": 74.71
       }
     ],
     "ts": 1781089417326,
-    "mov": "MOV-0006"
+    "mov": "MOV-0006",
+    "_editadoEm": 1791363462848
   },
   {
     "data": "2026-06-15",
@@ -3855,7 +3897,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 88.39
       },
       {
         "setor": "Estoque",
@@ -3873,7 +3915,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "Fazenda São José",
-        "preco": 0
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
@@ -3886,7 +3928,8 @@
       }
     ],
     "ts": 1781089303703,
-    "mov": "MOV-0005"
+    "mov": "MOV-0005",
+    "_editadoEm": 1791363462848
   },
   {
     "data": "2026-06-05",
@@ -3935,7 +3978,7 @@
         "unid": "sc 40kg",
         "tipo": "Entrada",
         "forn": "Fazenda São José",
-        "preco": 0
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
@@ -3953,7 +3996,7 @@
         "unid": "sc 40kg",
         "tipo": "Entrada",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 88.39
       },
       {
         "setor": "Estoque",
@@ -3962,11 +4005,12 @@
         "unid": "Sc 25kg",
         "tipo": "Entrada",
         "forn": "Purina",
-        "preco": 0
+        "preco": 74.71
       }
     ],
     "ts": 1787091283784,
-    "mov": "MOV-0003"
+    "mov": "MOV-0003",
+    "_editadoEm": 1791363462848
   },
   {
     "data": "2026-06-02",
@@ -3979,7 +4023,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "Fazenda São José",
-        "preco": 0
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
@@ -3997,7 +4041,7 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "IRCA",
-        "preco": 0
+        "preco": 88.39
       },
       {
         "setor": "Estoque",
@@ -4015,12 +4059,12 @@
         "unid": "sc 40kg",
         "tipo": "Saida",
         "forn": "",
-        "preco": 0
+        "preco": 108.21
       }
     ],
     "ts": 1781094500821,
     "mov": "MOV-0002",
-    "_editadoEm": 1789766554519
+    "_editadoEm": 1791363462848
   },
   {
     "data": "2026-05-01",
@@ -4042,7 +4086,7 @@
         "unid": "sc 40kg",
         "tipo": "Entrada",
         "forn": "",
-        "preco": 0
+        "preco": 88.39
       },
       {
         "setor": "Estoque",
@@ -4051,7 +4095,7 @@
         "unid": "sc 40kg",
         "tipo": "Entrada",
         "forn": "",
-        "preco": 0
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
@@ -4069,7 +4113,7 @@
         "unid": "sc 40kg",
         "tipo": "Entrada",
         "forn": "",
-        "preco": 0
+        "preco": 108.21
       },
       {
         "setor": "Estoque",
@@ -4078,7 +4122,7 @@
         "unid": "Sc 25kg",
         "tipo": "Saida",
         "forn": "",
-        "preco": 0
+        "preco": 74.71
       },
       {
         "setor": "Estoque",
@@ -4096,7 +4140,7 @@
         "unid": "Sc 25kg",
         "tipo": "Entrada",
         "forn": "",
-        "preco": 0
+        "preco": 74.71
       },
       {
         "setor": "Estoque",
@@ -4114,12 +4158,12 @@
         "unid": "Sc 40kg",
         "tipo": "Saida",
         "forn": "",
-        "preco": 0
+        "preco": 91.21
       }
     ],
     "ts": 1788215323792,
     "mov": "MOV-0001",
-    "_editadoEm": 1789870153290
+    "_editadoEm": 1791363462848
   },
   {
     "data": "2026-03-08",
