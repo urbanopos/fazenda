@@ -784,6 +784,10 @@ body:has(#sec-compras.at) #contador{display:none}
       <div class="ca-menu-ico" style="background:#e9f4ec">📊</div>
       <div><div class="ca-menu-nm">RESOP · Resultado Operacional</div><div class="ca-menu-sub">Balanço do mês: receitas, custos, despesas e investimentos</div></div>
     </button>
+    <button class="ca-menu-item" onclick="_caFecharMenu();_loteAbrir()">
+      <div class="ca-menu-ico" style="background:#fbf1dc">🐥</div>
+      <div><div class="ca-menu-nm">Lotes de aves</div><div class="ca-menu-sub">Pinto → Frango → Galinha: fases, baixa de estoque e custo por ave</div></div>
+    </button>
     <button class="ca-menu-item" onclick="_caFecharMenu();_verAbrir()">
       <div class="ca-menu-ico" style="background:#fbf4e2">🩺</div>
       <div><div class="ca-menu-nm">Verificação de dados</div><div class="ca-menu-sub">Inconsistências para revisar, uma a uma</div></div>
@@ -11652,7 +11656,7 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '1a10d3022490';
+var _caFP = '1a11591f9b29';
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -12957,6 +12961,10 @@ async function _iniciar(){
       var rresop0 = await _caOpfsLer(FSJ_RESOP);
       if(rresop0) try{ localStorage.setItem(RESOP_KEY, rresop0); }catch(e){}
     }catch(e){}
+    try{
+      var rlotes0 = await _caOpfsLer(FSJ_LOTES);
+      if(rlotes0) try{ localStorage.setItem(LOTES_KEY, rlotes0); }catch(e){}
+    }catch(e){}
     await _catalogoCarregarOPFS();
   }
 
@@ -12965,6 +12973,8 @@ async function _iniciar(){
   // vazio até o Admin abrir a tela de Cadastros manualmente, e a coleta
   // mostra "sem apresentação cadastrada" mesmo quando ela existe.
   await _cadCarregar();
+  try{ _backfillPrecosColetas(); }catch(e){}
+    try{ _loteGerarMov(); }catch(e){}
 
   Object.keys(SETORES).forEach(function(s){
     var cfg = SETORES[s];
@@ -14734,7 +14744,59 @@ function fecharModalPed(){
 /* ---- HISTORICO DE COLETAS ---- */
 var CK = 'fsj_hist_coletas';
 
+/* ── Preço das Apresentações nas coletas (o Coletor não vê preço) ─────────
+   Coletas vindas do Coletor chegam sem preço. Ao entrar nos Admins — e
+   também nas já existentes — cada item sem preço recebe o preço da
+   Apresentação cadastrada (mesmo produto + mesma unidade; preferindo a que
+   está habilitada na aba do item). SÓ o campo "preco" é preenchido: nome,
+   quantidade, unidade, tipo, fornecedor, obs e todos os outros campos do
+   registro ficam idênticos. Item que já tem preço nunca é alterado. */
+function _precoApresParaItemColeta(it){
+  var nome = String(it.nome||'').trim().toLowerCase();
+  var unid = String(it.unid||'').trim().toLowerCase();
+  if(!nome) return null;
+  var prod = (_cadDados.produtos||[]).find(function(p){ return !p._excluido && (p.nome||'').trim().toLowerCase()===nome; });
+  if(!prod) return null;
+  var vig = _apresVigentes(prod).filter(function(a){ return (a.unid||'').trim().toLowerCase()===unid && Number(a.preco)>0; });
+  if(!vig.length) return null;
+  var daAba = vig.find(function(a){ return _apresHabilitadaNaAba(prod, a, it.setor); });
+  return Number((daAba||vig[0]).preco);
+}
+function _itensComPrecoApres(itens){
+  var n = 0;
+  var out = (itens||[]).map(function(it){
+    if(!it || it.tipo==='Inventario' || Number(it.preco)>0) return it;
+    var p = _precoApresParaItemColeta(it);
+    if(p==null) return it;
+    n++;
+    return Object.assign({}, it, {preco:p});
+  });
+  return {itens:out, n:n};
+}
+/* Completa o preço das coletas já gravadas (idempotente: só mexe em item
+   sem preço que já tenha Apresentação com preço). Compras/inventário ficam
+   de fora — Compras tem o preço da própria compra. */
+function _backfillPrecosColetas(){
+  if(!_cadDados || !(_cadDados.produtos||[]).length) return 0;
+  var hist = _carregarHistColetaRaw(), total = 0;
+  hist.forEach(function(r, i){
+    if(!r || r._excluido || r.origem==='compra' || r.origem==='inventario' || r.origem==='lote') return;
+    var res = _itensComPrecoApres(r.itens);
+    if(!res.n) return;
+    hist[i] = Object.assign({}, r, {itens:res.itens, _editadoEm: Math.max(Date.now(), (r._editadoEm||0)+1)});
+    total += res.n;
+  });
+  if(total){
+    var json = JSON.stringify(hist);
+    try{ localStorage.setItem(CK, json); }catch(e){}
+    if(_caOpfs) _caOpfsSalvar(FSJ_COLETAS, json);
+    setTimeout(function(){ _sincronizarRegistrosGitHub(); }, 800);
+  }
+  return total;
+}
+
 function _salvarColeta(reg){
+  if(reg && reg.origem!=='inventario' && reg.origem!=='compra'){ try{ reg = Object.assign({}, reg, {itens:_itensComPrecoApres(reg.itens).itens}); }catch(e){} }
   var hist = _carregarHistColetaRaw();
   hist.unshift(reg);
   if(hist.length > 500) hist = hist.slice(0,500);
@@ -17627,6 +17689,8 @@ async function _aprovarColeta(idx){
     }
     return c;
   });
+  // Preço vem da Apresentação (o Coletor não vê preço) — só o campo preço muda
+  novo.itens = _itensComPrecoApres(novo.itens).itens;
   // Numera aqui, na aprovação — é o único ponto que grava no histórico
   // oficial, então evita duas coletas pendentes (de aparelhos diferentes)
   // ganharem o mesmo MOV-XXXX.
@@ -18061,6 +18125,18 @@ async function _sincronizarAgora(manual){
       houveMudanca = true;
     }
 
+    // Lotes de aves (cadastro dos lotes, baixas e configuração de fases)
+    var rlotes = await _syncArquivo(GH_BCK_LOTES, _loteCarregarRaw, _mesclarRegistros,
+      async function(merge, json){
+        try{ localStorage.setItem(LOTES_KEY, json); }catch(e){}
+        if(_caOpfs) await _caOpfsSalvar(FSJ_LOTES, json);
+      }, 'Sincronizacao automatica (lotes)');
+    if(rlotes.mudouLocal){
+      var jl = document.getElementById('jan-lotes');
+      if(jl && jl.classList.contains('vis')) _loteAtualizarTela();
+      houveMudanca = true;
+    }
+
     // Cadastros (Produtos, Clientes, Fornecedores, Preços) — mescla por id;
     // a versão editada mais recentemente de cada item vence.
     var rcad = await _syncArquivo(GH_BCK_CADASTROS,
@@ -18083,6 +18159,8 @@ async function _sincronizarAgora(manual){
       houveMudanca = true;
     }
 
+    try{ _backfillPrecosColetas(); }catch(e){}
+    try{ _loteGerarMov(); }catch(e){}
     if(houveMudanca) _toast('🔄 Dados atualizados com a versão mais recente de outro dispositivo.');
     else if(manual) _toast('✅ Tudo já estava sincronizado.');
     _syncFalhasSeguidas = 0;
@@ -18336,12 +18414,13 @@ async function executarReset(){
     try{ await _caOpfsSalvar(FSJ_CAD,     JSON.stringify({produtos:[],clientes:[],fornecedores:[],precos:[]})); }catch(e){}
     try{ await _caOpfsSalvar(FSJ_HIST,    '[]'); }catch(e){}
     try{ await _caOpfsSalvar(FSJ_RESOP,   '[]'); }catch(e){}
+    try{ await _caOpfsSalvar(FSJ_LOTES,   '[]'); }catch(e){}
     // Apaga também admin.caut se existir (coletas importadas pelo Admin)
     try{ await _caOpfsSalvar(FSJ_ADMIN,   ''); }catch(e){}
   }
   // Apagar localStorage
   [CK, HK, 'ca_cad', 'ca_chist', 'fsj_hist_coleta', 'fsj_hist_pedido',
-   'fsj_hist_coletas', 'fsj_hist_pedidos', 'fsj_pedido_num', NK, RESOP_KEY].forEach(function(k){
+   'fsj_hist_coletas', 'fsj_hist_pedidos', 'fsj_pedido_num', NK, RESOP_KEY, LOTES_KEY].forEach(function(k){
     try{ localStorage.removeItem(k); }catch(e){}
   });
   // Reinicia contadores em memória
@@ -19574,9 +19653,9 @@ function _resopDadosPeriodo(periodoSel){
   var compras = [], perdas = [], pedidosRecebidos = [], pedidosAReceber = [];
   (_cmpCarregarRaw()||[]).filter(function(r){ return !r._excluido; }).forEach(function(r){
     if((r.data||'').slice(0,7) !== periodoSel) return;
-    (r.itens||[]).forEach(function(it){
+    (r.itens||[]).forEach(function(it, ix){
       var preco = Number(it.preco)||0;
-      compras.push({tipo:'compra', ts:r.ts, setor: r.setor==='Campo'?'Campo':'Aviário', nome: it.nome, qtd: Number(it.qtd)||0, preco: preco,
+      compras.push({tipo:'compra', ts:r.ts, idx:ix, setor: r.setor==='Campo'?'Campo':'Aviário', nome: it.nome, qtd: Number(it.qtd)||0, preco: preco,
         sub: it.sub!=null ? Number(it.sub) : (Number(it.qtd)||0)*preco, incompleto: !(preco>0)});
     });
   });
@@ -19918,6 +19997,8 @@ function _resopHtmlCompleto(){
       +'<div class="resop-subtotal"><span class="resop-linha-lbl">Subtotal Despesas + Investimentos (no mês)</span><span class="resop-linha-val">'+_resopFmt(subLanc)+'</span></div>'
     +'</div>'
 
+    +_loteResopCardHtml(_resopPeriodoSel)
+
     +'<div class="resop-card"><div class="resop-card-hd"><span class="resop-card-tt" style="color:var(--vd)">Gargalos do mês</span><span class="resop-card-sub">custos por código, do maior pro menor</span></div>'
       +'<div style="display:flex;flex-direction:column;gap:10px">'+_resopGargalosHtml(porCodigo, totalCusto)+'</div>'
     +'</div>'
@@ -19941,12 +20022,453 @@ function _resopAbrir(){
   _janelaAbrir('jan-resop', '📊 RESOP · Resultado Operacional', 'Fazenda São José · plano de contas simplificado', _resopHtmlCompleto());
 }
 
+/* ═════════════════════════════════════════════════════════════════
+   LOTES DE AVES — fase (Pinto → Frango → Galinha) pelo tempo, baixa real
+   no estoque e custo por ave que evolui dia a dia.
+   • Cada lote nasce de um item de uma COMPRA (qtd, data e custo vêm dela).
+   • Na data da mudança de fase (idades configuráveis) o app GERA registros
+     reais no histórico: Saída da fase anterior + Entrada da nova fase.
+     Pinto (comprado) vive no Estoque; Frango/Galinha no Aviário (venda).
+   • Baixas do lote (morte/descarte) também geram Saída real. "Venda" só
+     atribui ao lote — o estoque já baixa pelo Pedido.
+   • Custo do lote = custo de entrada (compra) + ave-dias de cada fase ×
+     custo diário por ave configurado. O custo por ave divide pelos vivos.
+   ═════════════════════════════════════════════════════════════════ */
+var GH_BCK_LOTES = 'backup/lotes.json';
+var FSJ_LOTES = 'lotes.json';
+var LOTES_KEY = 'fsj_hist_lotes';
+var _loteDetAberto = {};
+var _loteMostrarTodos = false;
+var LOTE_CFG_PADRAO = {idade1:45, idade2:150, fase1:'Pinto', fase2:'Frango', fase3:'Galinha', custo1:0, custo2:0, custo3:0, modo:'resop'};
+
+function _loteCarregarRaw(){ try{ return JSON.parse(localStorage.getItem(LOTES_KEY)||'[]'); }catch(e){ return []; } }
+function _loteCarregar(){ return _loteCarregarRaw().filter(function(r){ return !r._excluido && !r._cfg; }); }
+async function _loteSalvar(hist){
+  var json = JSON.stringify(hist);
+  try{ localStorage.setItem(LOTES_KEY, json); }catch(e){}
+  if(_caOpfs){ try{ await _caOpfsSalvar(FSJ_LOTES, json); }catch(e){} }
+  try{ _loteGerarMov(); }catch(e){}
+  try{ var jr_ = document.getElementById('jan-resop'); if(jr_ && jr_.classList.contains('vis')) _resopAtualizarTela(); }catch(e){}
+  setTimeout(function(){ _sincronizarRegistrosGitHub(); }, 800);
+}
+function _loteCfg(){
+  var o = Object.assign({}, LOTE_CFG_PADRAO);
+  var c = _loteCarregarRaw().filter(function(r){ return r._cfg && !r._excluido; })[0];
+  if(c) Object.keys(LOTE_CFG_PADRAO).forEach(function(k){ if(c[k]!==undefined && c[k]!=='') o[k] = c[k]; });
+  ['idade1','idade2','custo1','custo2','custo3'].forEach(function(k){ o[k] = Number(o[k])||0; });
+  return o;
+}
+function _loteEsc(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function _loteMs(iso){ var p = String(iso).split('-'); return Date.UTC(+p[0], +p[1]-1, +p[2]); }
+function _loteDias(a, b){ return Math.round((_loteMs(b)-_loteMs(a))/86400000); }
+function _loteAddDias(iso, n){ return new Date(_loteMs(iso)+n*86400000).toISOString().slice(0,10); }
+function _loteDataFmt(iso){ var p = String(iso||'').split('-'); return p.length===3 ? p[2]+'/'+p[1]+'/'+p[0] : (iso||''); }
+
+async function _loteCfgSet(campo, valor){
+  var numerico = /^(idade|custo)/.test(campo);
+  var v = numerico ? Number(String(valor).replace(',','.')) : String(valor||'').trim();
+  var c = _loteCfg();
+  if(numerico && !(v>=0)){ _toast('Valor inválido.'); _loteAtualizarTela(); return; }
+  if(campo==='idade1' && !(v>=1)){ _toast('A 1ª idade deve ser de pelo menos 1 dia.'); _loteAtualizarTela(); return; }
+  if(campo==='idade1' && c.fase3 && v>=c.idade2){ _toast('A 1ª idade deve ser menor que a 2ª ('+c.idade2+').'); _loteAtualizarTela(); return; }
+  if(campo==='idade2' && !(v>c.idade1)){ _toast('A 2ª idade deve ser maior que a 1ª ('+c.idade1+').'); _loteAtualizarTela(); return; }
+  if((campo==='fase1'||campo==='fase2') && !v){ _toast('Informe o nome da fase.'); _loteAtualizarTela(); return; }
+  var hist = _loteCarregarRaw();
+  var idx = -1; hist.forEach(function(r,i){ if(r._cfg) idx = i; });
+  if(idx > -1){
+    var n = Object.assign({}, hist[idx]); n[campo] = v; delete n._excluido;
+    n._editadoEm = Math.max(Date.now(), (hist[idx]._editadoEm||0)+1);
+    hist[idx] = n;
+  } else {
+    var nv = {ts:1, _cfg:true, _editadoEm:Date.now()}; nv[campo] = v; hist.push(nv);
+  }
+  await _loteSalvar(hist);
+  _loteAtualizarTela();
+}
+
+/* Dados de entrada do lote: vêm da compra (ao vivo); se a compra sumiu, usa o guardado */
+function _loteBase(l){
+  var compra = _cmpCarregarRaw().filter(function(c){ return c.ts===l.compraTs && !c._excluido; })[0];
+  var it = null;
+  if(compra){
+    var cand = (compra.itens||[])[l.itemIdx];
+    if(cand && _sdNorm(cand.nome)===_sdNorm(l.nomePinto)) it = cand;
+    else it = (compra.itens||[]).filter(function(x){ return _sdNorm(x.nome)===_sdNorm(l.nomePinto); })[0] || null;
+  }
+  if(compra && it){
+    var sub = (it.sub!=null && it.sub!=='') ? Number(it.sub) : (Number(it.qtd)||0)*(Number(it.preco)||0);
+    return {data:_sdIsoData(compra.data), qtd:Number(it.qtd)||0, custo:sub||0, nome:it.nome, num:compra.num||'', preco:Number(it.preco)||0, compraOk:true};
+  }
+  return {data:l.data, qtd:Number(l.qtd)||0, custo:Number(l.custo)||0, nome:l.nomePinto, num:'', preco:0, compraOk:false};
+}
+function _loteVivosAntes(l, b, iso){   // vivos ao começar o dia iso (baixas com data < iso)
+  var s = 0; (l.baixas||[]).forEach(function(x){ if(x.data < iso) s += Number(x.qtd)||0; });
+  return Math.max(0, b.qtd - s);
+}
+function _loteVivosAte(l, b, iso){     // vivos ao fim do dia iso
+  var s = 0; (l.baixas||[]).forEach(function(x){ if(x.data <= iso) s += Number(x.qtd)||0; });
+  return Math.max(0, b.qtd - s);
+}
+function _loteFaseDoDia(c, k){ return k < c.idade1 ? 1 : ((!c.fase3 || k < c.idade2) ? 2 : 3); }
+
+/* Ave-dias do lote por mês e fase: {'2026-05':[0,a1,a2,a3], ...} (conta cada dia vivido, sem o dia de hoje) */
+function _loteAveDiasMes(l, hoje){
+  var b = _loteBase(l), c = _loteCfg(), out = {};
+  if(!b.data) return out;
+  var dias = Math.max(0, _loteDias(b.data, hoje)), n = Math.min(dias, 3000);
+  var baixaNoDia = {};
+  (l.baixas||[]).forEach(function(x){ var k = _loteDias(b.data, x.data); if(k<0) k = 0; baixaNoDia[k] = (baixaNoDia[k]||0) + (Number(x.qtd)||0); });
+  var vivos = b.qtd;
+  for(var k=0; k<n; k++){
+    vivos -= (baixaNoDia[k]||0); if(vivos<0) vivos = 0;
+    var m = _loteAddDias(b.data, k).slice(0,7);
+    if(!out[m]) out[m] = [0,0,0,0];
+    out[m][_loteFaseDoDia(c,k)] += vivos;
+  }
+  return out;
+}
+/* Custo operacional do mês vindo do RESOP: ração das compras do Aviário (SEM os
+   pintos que já viraram lote — esses entram como custo de entrada) + despesas DESP-* */
+function _loteEntradasSet(){ var s = {}; _loteCarregar().forEach(function(l){ s[l.compraTs+'|'+l.itemIdx] = 1; }); return s; }
+function _loteCustoOperMes(m){
+  var ent = _loteEntradasSet(), d = _resopDadosPeriodo(m);
+  var racao = d.compras.filter(function(x){ return x.setor==='Aviário' && !ent[x.ts+'|'+x.idx]; });
+  var desp = [];
+  _resopCarregar().forEach(function(l){
+    if(l.grupo!=='despesa') return;
+    var v = _resopContribuicao(l, m);
+    if(v>0) desp.push({desc:l.desc, data:l.data, valor:v});
+  });
+  var tr = racao.reduce(function(s,x){ return s+x.sub; }, 0), td = desp.reduce(function(s,x){ return s+x.valor; }, 0);
+  return {racao:racao, desp:desp, totalRacao:tr, totalDesp:td, total:tr+td};
+}
+/* Taxa mensal R$/ave-dia = custo operacional do mês ÷ ave-dias de TODOS os lotes no mês */
+function _loteTaxas(hoje){
+  var tot = {}, per = {};
+  _loteCarregar().forEach(function(l){
+    var am = _loteAveDiasMes(l, hoje); per[l.ts] = am;
+    Object.keys(am).forEach(function(m){ tot[m] = (tot[m]||0) + am[m][1] + am[m][2] + am[m][3]; });
+  });
+  var taxas = {_am:per};
+  Object.keys(tot).forEach(function(m){
+    var co = _loteCustoOperMes(m);
+    taxas[m] = {avedias:tot[m], custo:co.total, taxa: tot[m]>0 ? co.total/tot[m] : 0};
+  });
+  return taxas;
+}
+
+function _loteResumo(l, hoje, taxas){
+  var b = _loteBase(l), c = _loteCfg();
+  if(c.modo!=='manual') taxas = taxas || _loteTaxas(hoje);
+  var dias = Math.max(0, _loteDias(b.data, hoje));
+  var am = (taxas && taxas._am && taxas._am[l.ts]) || _loteAveDiasMes(l, hoje);
+  var avedias = [0,0,0,0], custoF = [0,0,0,0];
+  Object.keys(am).forEach(function(m){
+    for(var f=1; f<=3; f++){
+      avedias[f] += am[m][f];
+      var tx = c.modo==='manual' ? [0,c.custo1,c.custo2,c.custo3][f] : ((taxas[m] && taxas[m].taxa) || 0);
+      custoF[f] += am[m][f]*tx;
+    }
+  });
+  var vivosHoje = _loteVivosAte(l, b, hoje);
+  var total = b.custo + custoF[1] + custoF[2] + custoF[3];
+  var fase = _loteFaseDoDia(c, dias);
+  var prox = null;
+  if(fase===1) prox = {dias:c.idade1-dias, para:c.fase2, data:_loteAddDias(b.data, c.idade1)};
+  else if(fase===2 && c.fase3) prox = {dias:c.idade2-dias, para:c.fase3, data:_loteAddDias(b.data, c.idade2)};
+  var perdidos = 0, vendidos = 0;
+  (l.baixas||[]).forEach(function(x){ if(x.data<=hoje){ if(x.motivo==='Venda') vendidos += Number(x.qtd)||0; else perdidos += Number(x.qtd)||0; } });
+  return {b:b, c:c, dias:dias, fase:fase, prox:prox, vivos:vivosHoje, avedias:avedias, custoF:custoF, total:total,
+          porAve: vivosHoje>0 ? total/vivosHoje : null, perdidos:perdidos, vendidos:vendidos,
+          nomeFase: [null, c.fase1, c.fase2, c.fase3][fase]};
+}
+
+/* ── Movimentos reais no histórico de coletas ── */
+function _loteMovsDesejados(hoje){
+  var c = _loteCfg(), out = [];
+  _loteCarregar().forEach(function(l){
+    var b = _loteBase(l);
+    if(!b.data || !(b.qtd>0)) return;
+    var setorF = [null,'Estoque','Aviario','Aviario'];
+    var nomeF  = [null, b.nome||c.fase1, c.fase2, c.fase3];
+    var rot = 'Lote '+(l.num||'');
+    function it(f, tipo, q, obs){ return {setor:setorF[f], nome:nomeF[f], unid:'unid', qtd:q, preco:0, forn:'', tipo:tipo, obs:obs}; }
+    var d1 = _loteAddDias(b.data, c.idade1);
+    if(d1 <= hoje){
+      var q1 = _loteVivosAntes(l, b, d1);
+      if(q1 > 0) out.push({ts:l.ts+7, chave:'T1', loteTs:l.ts, data:d1, coletor:rot,
+        itens:[it(1,'Saida',q1,rot+' · fim da fase '+nomeF[1]), it(2,'Entrada',q1,rot+' · início da fase '+nomeF[2])]});
+    }
+    if(c.fase3){
+      var d2 = _loteAddDias(b.data, c.idade2);
+      if(d2 <= hoje){
+        var q2 = _loteVivosAntes(l, b, d2);
+        if(q2 > 0) out.push({ts:l.ts+8, chave:'T2', loteTs:l.ts, data:d2, coletor:rot,
+          itens:[it(2,'Saida',q2,rot+' · fim da fase '+nomeF[2]), it(3,'Entrada',q2,rot+' · início da fase '+nomeF[3])]});
+      }
+    }
+    (l.baixas||[]).forEach(function(x){
+      if(x.motivo==='Venda' || !x.data || x.data > hoje) return;
+      var q = Number(x.qtd)||0; if(!(q>0)) return;
+      var f = _loteFaseDoDia(c, Math.max(0, _loteDias(b.data, x.data)));
+      out.push({ts:l.ts+100+(Number(x.n)||0), chave:'B'+x.n, loteTs:l.ts, data:x.data, coletor:rot,
+        itens:[it(f,'Saida',q,rot+' · '+x.motivo)]});
+    });
+  });
+  return out;
+}
+function _loteProximoMov(hist){
+  var maior = 0;
+  hist.forEach(function(r){ if(r.mov){ var m = String(r.mov).match(/(\d+)/); if(m){ var n = parseInt(m[1],10); if(n>maior) maior = n; } } });
+  return 'MOV-'+String(maior+1).padStart(4,'0');
+}
+function _loteGerarMov(){
+  var hoje = _dataLocalHoje();
+  var des = _loteMovsDesejados(hoje);
+  var hist = _carregarHistColetaRaw();
+  var mudou = false, vistos = {};
+  des.forEach(function(d){
+    vistos[d.loteTs+'|'+d.chave] = 1;
+    var idx = -1;
+    hist.forEach(function(r,i){ if(r.origem==='lote' && r.loteTs===d.loteTs && r.loteChave===d.chave) idx = i; });
+    if(idx < 0){
+      var reg = {ts:d.ts, data:d.data, coletor:d.coletor, itens:d.itens, origem:'lote', loteTs:d.loteTs, loteChave:d.chave};
+      if(d.itens.some(function(x){ return x.setor==='Estoque'; })) reg.mov = _loteProximoMov(hist);
+      hist.unshift(reg); mudou = true;
+    } else {
+      var o = hist[idx];
+      if(o._excluido || o.data!==d.data || JSON.stringify(o.itens)!==JSON.stringify(d.itens)){
+        var n = Object.assign({}, o, {data:d.data, itens:d.itens, coletor:d.coletor, _editadoEm:Math.max(Date.now(), (o._editadoEm||0)+1)});
+        delete n._excluido; delete n._excluidoEm;
+        if(!n.mov && d.itens.some(function(x){ return x.setor==='Estoque'; })) n.mov = _loteProximoMov(hist);
+        hist[idx] = n; mudou = true;
+      }
+    }
+  });
+  hist.forEach(function(r){
+    if(r.origem==='lote' && !r._excluido && !vistos[r.loteTs+'|'+r.loteChave]){
+      r._excluido = true; r._excluidoEm = Date.now(); r._editadoEm = Math.max(Date.now(), (r._editadoEm||0)+1); mudou = true;
+    }
+  });
+  if(!mudou) return false;
+  var json = JSON.stringify(hist);
+  try{ localStorage.setItem(CK, json); }catch(e){}
+  if(_caOpfs) _caOpfsSalvar(FSJ_COLETAS, json);
+  if(typeof renderHistColeta==='function'){ try{ renderHistColeta(); }catch(e){} }
+  setTimeout(function(){ _sincronizarRegistrosGitHub(); }, 800);
+  return true;
+}
+
+/* ── Ações ── */
+async function _loteCriar(compraTs, idx){
+  if(_ghToken() && typeof _syncAntesDeEditar==='function'){ try{ await _syncAntesDeEditar(); }catch(e){} }
+  var compra = _cmpCarregarRaw().filter(function(c){ return c.ts===compraTs && !c._excluido; })[0];
+  var it = compra && (compra.itens||[])[idx];
+  if(!it){ _toast('Item da compra não encontrado.'); return; }
+  var hist = _loteCarregarRaw();
+  if(hist.some(function(r){ return !r._excluido && !r._cfg && r.compraTs===compraTs && r.itemIdx===idx; })){ _toast('Este item já tem lote.'); return; }
+  var maior = 0;
+  hist.forEach(function(r){ var m = String(r.num||'').match(/(\d+)/); if(m && +m[1]>maior) maior = +m[1]; });
+  var sub = (it.sub!=null && it.sub!=='') ? Number(it.sub) : (Number(it.qtd)||0)*(Number(it.preco)||0);
+  hist.unshift({ts:Date.now(), num:'L-'+String(maior+1).padStart(3,'0'), compraTs:compraTs, itemIdx:idx, nomePinto:it.nome,
+    data:_sdIsoData(compra.data), qtd:Number(it.qtd)||0, custo:sub||0, baixas:[]});
+  await _loteSalvar(hist);
+  _toast('✅ Lote criado a partir da compra '+(compra.num||'')+'.');
+  _loteAtualizarTela();
+}
+async function _loteExcluir(ts){
+  if(!confirm('Excluir este lote? Os registros de mudança de fase e baixas que ele gerou no histórico também serão removidos.')) return;
+  var hist = _loteCarregarRaw();
+  hist.forEach(function(r){ if(r.ts===ts && !r._cfg){ r._excluido = true; r._excluidoEm = Date.now(); r._editadoEm = Math.max(Date.now(), (r._editadoEm||0)+1); } });
+  await _loteSalvar(hist);
+  _loteAtualizarTela();
+}
+async function _loteAddBaixa(ts){
+  var q = Number(String((document.getElementById('lt-bq-'+ts)||{}).value||'').replace(',','.'));
+  var m = (document.getElementById('lt-bm-'+ts)||{}).value || 'Morte';
+  var d = (document.getElementById('lt-bd-'+ts)||{}).value || _dataLocalHoje();
+  var hist = _loteCarregarRaw();
+  var idx = -1; hist.forEach(function(r,i){ if(r.ts===ts && !r._cfg) idx = i; });
+  if(idx < 0) return;
+  var l = hist[idx], b = _loteBase(l);
+  if(!(q>0)){ _toast('Informe a quantidade.'); return; }
+  if(d < b.data){ _toast('A data não pode ser anterior à entrada do lote ('+_loteDataFmt(b.data)+').'); return; }
+  if(d > _dataLocalHoje()){ _toast('A data não pode ser futura.'); return; }
+  var vivos = _loteVivosAte(l, b, d);
+  if(q > vivos){ _toast('Só há '+vivos+' ave(s) viva(s) nessa data.'); return; }
+  var baixas = (l.baixas||[]).slice(), n = 0;
+  baixas.forEach(function(x){ if((Number(x.n)||0) > n) n = Number(x.n); });
+  baixas.push({n:n+1, data:d, qtd:q, motivo:m});
+  hist[idx] = Object.assign({}, l, {baixas:baixas, _editadoEm:Math.max(Date.now(), (l._editadoEm||0)+1)});
+  await _loteSalvar(hist);
+  _loteAtualizarTela();
+}
+async function _loteRemoverBaixa(ts, n){
+  if(!confirm('Remover esta baixa? O registro de Saída gerado por ela também será removido.')) return;
+  var hist = _loteCarregarRaw();
+  hist.forEach(function(r,i){
+    if(r.ts===ts && !r._cfg){
+      hist[i] = Object.assign({}, r, {baixas:(r.baixas||[]).filter(function(x){ return x.n!==n; }), _editadoEm:Math.max(Date.now(), (r._editadoEm||0)+1)});
+    }
+  });
+  await _loteSalvar(hist);
+  _loteAtualizarTela();
+}
+function _loteToggle(ts){ _loteDetAberto[ts] = !_loteDetAberto[ts]; _loteAtualizarTela(); }
+function _loteToggleTodos(){ _loteMostrarTodos = !_loteMostrarTodos; _loteAtualizarTela(); }
+function _loteIrCompra(ts){ _janelaFechar('jan-lotes'); try{ trocarAba('compras'); setTimeout(function(){ try{ _cmpEditar(ts); }catch(e){} }, 150); }catch(e){} }
+
+/* ── Tela ── */
+var _LOTE_COR = [null,'#b9770e','#2e7d4f','#6b4fa0'];
+function _loteTag(f, nome){ return '<span style="display:inline-block;background:'+_LOTE_COR[f]+'1f;color:'+_LOTE_COR[f]+';border:1px solid '+_LOTE_COR[f]+'55;border-radius:10px;padding:1px 8px;font-size:11px;font-weight:700">'+_loteEsc(nome)+'</span>'; }
+function _loteHtmlCfg(){
+  var c = _loteCfg();
+  function campo(rot, k, tipo, w, suf){
+    return '<label style="display:flex;flex-direction:column;gap:2px;font-size:11px;color:#6b6b60">'+rot
+      +'<input type="'+tipo+'" '+(tipo==='number'?'step="any" min="0" inputmode="decimal"':'')+' value="'+_loteEsc(c[k])+'" onchange="_loteCfgSet(\''+k+'\',this.value)" style="width:'+w+';padding:6px;border:1px solid #d6d2c4;border-radius:6px;font-size:13px"></label>';
+  }
+  return '<div style="background:#fbfaf4;border:1px solid #e3dfd0;border-radius:10px;padding:10px 12px;margin-bottom:12px">'
+    +'<div style="font-weight:700;font-size:13px;margin-bottom:6px">⚙️ Fases e custo diário por ave</div>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end">'
+    + campo('Fase 1 (compra)','fase1','text','90px')
+    + campo('muda p/ fase 2 aos (dias)','idade1','number','70px')
+    + campo('Fase 2 (item Aviário)','fase2','text','90px')
+    + campo('muda p/ fase 3 aos (dias)','idade2','number','70px')
+    + campo('Fase 3 (item Aviário)','fase3','text','90px')
+    +'</div>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:flex-end">'
+    +'<label style="display:flex;flex-direction:column;gap:2px;font-size:11px;color:#6b6b60">Custo diário por ave<select onchange="_loteCfgSet(\'modo\',this.value)" style="padding:6px;border:1px solid #d6d2c4;border-radius:6px;font-size:13px"><option value="resop"'+(c.modo!=='manual'?' selected':'')+'>Automático (RESOP)</option><option value="manual"'+(c.modo==='manual'?' selected':'')+'>Manual por fase</option></select></label>'
+    + (c.modo==='manual' ? campo('R$/ave/dia · '+_loteEsc(c.fase1),'custo1','number','80px') + campo('R$/ave/dia · '+_loteEsc(c.fase2),'custo2','number','80px') + (c.fase3 ? campo('R$/ave/dia · '+_loteEsc(c.fase3),'custo3','number','80px') : '') : '')
+    +'</div>'
+    +'<div style="font-size:11px;color:#8a8574;margin-top:6px;line-height:1.4">Nomes da fase 2 e 3 devem ser os itens usados no Aviário (ex.: Frango). Deixe a fase 3 em branco para ter só duas fases. No modo Automático, cada mês usa: (ração das compras do Aviário, sem os pintos dos lotes, + despesas do RESOP) ÷ aves-dia de todos os lotes naquele mês — o mesmo R$/ave-dia para todas as fases. Esse custo soma ao custo de entrada da compra para dar o custo acumulado do lote.</div>'
+    +'</div>';
+}
+function _loteHtmlLote(l, hoje, taxas){
+  var r = _loteResumo(l, hoje, taxas), b = r.b, c = r.c;
+  var h = '<div style="border:1px solid #e3dfd0;border-radius:10px;padding:10px 12px;margin-bottom:10px;background:#fff">';
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">'
+    +'<div style="font-weight:700;font-size:14px">'+_loteEsc(l.num)+' · '+_loteEsc(b.nome)+' '+_loteTag(r.fase, r.nomeFase)+'</div>'
+    +'<div style="font-size:12px;color:#6b6b60">'+r.dias+' dia(s) de vida</div></div>';
+  h += '<div style="font-size:12px;color:#6b6b60;margin-top:3px">'
+    +(b.compraOk ? '<a href="javascript:void(0)" onclick="_loteIrCompra('+l.compraTs+')" style="color:#2e7d4f">Compra '+_loteEsc(b.num)+'</a>' : '<span style="color:#a03030">compra excluída — usando dados guardados</span>')
+    +' · entrada '+_loteDataFmt(b.data)+' · '+_fmtNum(b.qtd)+' comprada(s) por R$ '+_fmt(b.custo)+'</div>';
+  h += '<div style="display:flex;flex-wrap:wrap;gap:14px;margin:8px 0">'
+    +'<div><div style="font-size:11px;color:#8a8574">Vivas hoje</div><div style="font-size:18px;font-weight:700">'+_fmtNum(r.vivos)+'</div></div>'
+    +'<div><div style="font-size:11px;color:#8a8574">Custo acumulado</div><div style="font-size:18px;font-weight:700">R$ '+_fmt(r.total)+'</div></div>'
+    +'<div><div style="font-size:11px;color:#8a8574">Custo por ave</div><div style="font-size:18px;font-weight:700;color:#2e7d4f">'+(r.porAve!==null ? 'R$ '+_fmt(r.porAve) : '—')+'</div></div>'
+    +'</div>';
+  if(r.prox) h += '<div style="font-size:12px;color:#6b6b60">Próxima mudança: <strong>'+_loteEsc(r.prox.para)+'</strong> em '+_loteDataFmt(r.prox.data)+' ('+(r.prox.dias>0 ? 'faltam '+r.prox.dias+' dia(s)' : 'hoje')+')</div>';
+  else h += '<div style="font-size:12px;color:#6b6b60">Fase final.</div>';
+  if(r.perdidos || r.vendidos) h += '<div style="font-size:12px;color:#6b6b60;margin-top:2px">Baixas: '+_fmtNum(r.perdidos)+' morte/descarte'+(r.vendidos?' · '+_fmtNum(r.vendidos)+' vendida(s)':'')+'</div>';
+  h += '<div style="margin-top:6px"><a href="javascript:void(0)" onclick="_loteToggle('+l.ts+')" style="font-size:12px;color:#2e7d4f">'+(_loteDetAberto[l.ts] ? '▾ ocultar composição e baixas' : '▸ ver composição do custo e baixas')+'</a></div>';
+  if(_loteDetAberto[l.ts]){
+    var nomes = [null,c.fase1,c.fase2,c.fase3], cus = [0,c.custo1,c.custo2,c.custo3];
+    h += '<div style="margin-top:6px;font-size:12px;border-top:1px dashed #e3dfd0;padding-top:6px">';
+    h += '<div style="display:flex;justify-content:space-between"><span>Compra (entrada)</span><span>R$ '+_fmt(b.custo)+'</span></div>';
+    [1,2,3].forEach(function(f){
+      if(f===3 && !c.fase3) return;
+      var med = r.avedias[f]>0 ? r.custoF[f]/r.avedias[f] : 0;
+      h += '<div style="display:flex;justify-content:space-between"><span>'+_loteEsc(nomes[f])+': '+_fmtNum(r.avedias[f])+' ave-dia × R$ '+_fmt(med)+(c.modo==='manual'?'':' (RESOP)')+(r.avedias[f]>0 && !(med>0)?' <span style="color:#a03030">⚠ sem custo no período</span>':'')+'</span><span>R$ '+_fmt(r.custoF[f])+'</span></div>';
+    });
+    h += '<div style="display:flex;justify-content:space-between;font-weight:700;border-top:1px solid #e3dfd0;margin-top:3px;padding-top:3px"><span>Total</span><span>R$ '+_fmt(r.total)+'</span></div>';
+    h += '<div style="margin-top:8px;font-weight:700">Baixas do lote</div>';
+    var bx = (l.baixas||[]).slice().sort(function(a,z){ return a.data<z.data?-1:a.data>z.data?1:0; });
+    if(!bx.length) h += '<div style="color:#8a8574">Nenhuma baixa registrada.</div>';
+    bx.forEach(function(x){
+      h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:2px 0"><span>'+_loteDataFmt(x.data)+' · '+_fmtNum(x.qtd)+' · '+_loteEsc(x.motivo)+(x.motivo==='Venda'?' <span style="color:#8a8574">(só atribui; o estoque baixa pelo Pedido)</span>':'')+'</span>'
+        +'<a href="javascript:void(0)" onclick="_loteRemoverBaixa('+l.ts+','+x.n+')" style="color:#a03030">remover</a></div>';
+    });
+    h += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;align-items:flex-end">'
+      +'<input id="lt-bq-'+l.ts+'" type="number" min="1" inputmode="numeric" placeholder="Qtd" style="width:64px;padding:6px;border:1px solid #d6d2c4;border-radius:6px">'
+      +'<select id="lt-bm-'+l.ts+'" style="padding:6px;border:1px solid #d6d2c4;border-radius:6px"><option>Morte</option><option>Descarte</option><option>Venda</option></select>'
+      +'<input id="lt-bd-'+l.ts+'" type="date" value="'+hoje+'" style="padding:6px;border:1px solid #d6d2c4;border-radius:6px">'
+      +'<button onclick="_loteAddBaixa('+l.ts+')" style="padding:7px 12px;border:0;border-radius:6px;background:#2e7d4f;color:#fff;font-weight:700">+ Baixa</button></div>';
+    h += '<div style="margin-top:8px"><a href="javascript:void(0)" onclick="_loteExcluir('+l.ts+')" style="color:#a03030">Excluir lote</a></div>';
+    h += '</div>';
+  }
+  return h + '</div>';
+}
+function _loteHtml(){
+  var hoje = _dataLocalHoje(), lotes = _loteCarregar(), c = _loteCfg();
+  var h = _loteHtmlCfg();
+  // Resumo de hoje por fase
+  var tot = [0,0,0,0], custoTot = 0;
+  var taxas = _loteTaxas(hoje);
+  var res = lotes.map(function(l){ var r = _loteResumo(l, hoje, taxas); tot[r.fase] += r.vivos; custoTot += r.total; return {l:l, r:r}; });
+  if(lotes.length){
+    h += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">';
+    [1,2,3].forEach(function(f){
+      if(f===3 && !c.fase3) return;
+      h += '<div style="flex:1;min-width:90px;background:#fbfaf4;border:1px solid #e3dfd0;border-radius:10px;padding:8px 10px"><div style="font-size:11px;color:#8a8574">'+_loteEsc([null,c.fase1,c.fase2,c.fase3][f])+'</div><div style="font-size:20px;font-weight:700;color:'+_LOTE_COR[f]+'">'+_fmtNum(tot[f])+'</div></div>';
+    });
+    h += '<div style="flex:1;min-width:110px;background:#fbfaf4;border:1px solid #e3dfd0;border-radius:10px;padding:8px 10px"><div style="font-size:11px;color:#8a8574">Custo acumulado</div><div style="font-size:16px;font-weight:700">R$ '+_fmt(custoTot)+'</div></div></div>';
+  }
+  res.sort(function(a,z){ return a.r.b.data < z.r.b.data ? 1 : -1; });
+  if(!res.length) h += '<div style="color:#8a8574;font-size:13px;margin-bottom:12px">Nenhum lote ainda. Crie um a partir de uma compra de pintos abaixo.</div>';
+  res.forEach(function(x){ h += _loteHtmlLote(x.l, hoje, taxas); });
+  // Compras sem lote
+  var usados = {};
+  lotes.forEach(function(l){ usados[l.compraTs+'|'+l.itemIdx] = 1; });
+  var cand = [];
+  _cmpCarregarRaw().forEach(function(cp){
+    if(cp._excluido) return;
+    (cp.itens||[]).forEach(function(it, i){
+      if(usados[cp.ts+'|'+i]) return;
+      var pinto = /pint/.test(_sdNorm(it.nome));
+      if(!pinto && !(_loteMostrarTodos && cp.setor==='Aviario')) return;
+      cand.push({cp:cp, it:it, i:i});
+    });
+  });
+  cand.sort(function(a,z){ return a.cp.data < z.cp.data ? 1 : -1; });
+  h += '<div style="font-weight:700;font-size:13px;margin:14px 0 6px">🐣 Compras sem lote</div>';
+  if(!cand.length) h += '<div style="color:#8a8574;font-size:12px">Nenhuma compra de pintos sem lote.</div>';
+  cand.forEach(function(x){
+    var sub = (x.it.sub!=null && x.it.sub!=='') ? Number(x.it.sub) : (Number(x.it.qtd)||0)*(Number(x.it.preco)||0);
+    h += '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid #e3dfd0;border-radius:8px;padding:7px 10px;margin-bottom:6px;background:#fff;font-size:12px">'
+      +'<span>Compra '+_loteEsc(x.cp.num||'')+' · '+_loteDataFmt(_sdIsoData(x.cp.data))+'<br><strong>'+_loteEsc(x.it.nome)+'</strong> · '+_fmtNum(x.it.qtd)+' '+_loteEsc(x.it.unid||'')+' · R$ '+_fmt(sub)+'</span>'
+      +'<button onclick="_loteCriar('+x.cp.ts+','+x.i+')" style="padding:7px 12px;border:0;border-radius:6px;background:#2e7d4f;color:#fff;font-weight:700;white-space:nowrap">Criar lote</button></div>';
+  });
+  h += '<div style="margin-top:4px"><a href="javascript:void(0)" onclick="_loteToggleTodos()" style="font-size:12px;color:#2e7d4f">'+(_loteMostrarTodos ? '▾ mostrar só itens "pinto"' : '▸ mostrar também outros itens de compras do Aviário')+'</a></div>';
+  h += '<div style="font-size:11px;color:#8a8574;margin-top:10px;line-height:1.45">As mudanças de fase viram registros reais no Histórico (origem "Lote"): Saída do Pinto no Estoque e Entrada do Frango no Aviário, e assim por diante. Registre mortes aqui, no lote (não em Perda), para não baixar duas vezes.</div>';
+  return h;
+}
+/* Card do RESOP: custo por ave-dia dos lotes (informativo — não altera o resultado) */
+function _loteResopCardHtml(periodo){
+  var lotes = _loteCarregar(), hoje = _dataLocalHoje();
+  var h = '<div class="resop-card"><div class="resop-card-hd"><span class="resop-card-tt" style="color:#8a5a12">Custo por ave <span class="resop-grupo-pill" style="background:#fbf1dc;color:#8a5a12;margin-left:4px">lotes</span></span><span class="resop-card-sub">informativo · não altera o resultado</span></div>';
+  if(!lotes.length) return h+'<div class="resop-nota">Nenhum lote criado. Em Lotes de aves, crie lotes a partir das compras de pintos para ver o custo por ave-dia.</div></div>';
+  var taxas = _loteTaxas(hoje), t = taxas[periodo], co = _loteCustoOperMes(periodo), ad = t ? t.avedias : 0;
+  var c = _loteCfg();
+  h += '<div class="resop-nota">'+(c.modo==='manual'
+      ? 'Os lotes estão no modo <b>manual</b> (R$/ave/dia por fase digitado). Abaixo, para comparação, o que o RESOP indica neste mês.'
+      : 'Ração do Aviário + despesas do mês, <b>sem</b> as compras de pintos dos lotes (que já entram como custo de entrada), divididos pelas aves-dia dos lotes. Este valor alimenta o custo acumulado de cada lote.')+'</div>';
+  h += _resopLinhaToggle('lt-racao', 'Ração Aviário<small>compras do mês, sem pintos de lote</small>', _resopFmt(co.totalRacao), _resopDetalheItensHtml(co.racao));
+  h += _resopLinhaToggle('lt-desp', 'Despesas<small>lançamentos de Despesa do mês</small>', _resopFmt(co.totalDesp), _resopDetalheLancHtml(co.desp));
+  h += '<div class="resop-sep"></div>';
+  h += '<div class="resop-subtotal"><span class="resop-linha-lbl">Aves-dia dos lotes no mês</span><span class="resop-linha-val">'+_fmtNum(ad)+'</span></div>';
+  h += '<div class="resop-subtotal"><span class="resop-linha-lbl">Custo por ave-dia</span><span class="resop-linha-val">'+(ad>0 ? _resopFmt(t.taxa) : '—')+'</span></div>';
+  if(!ad) h += '<div class="resop-nota">Nenhum lote tinha aves vivas neste mês.</div>';
+  var linhas = lotes.map(function(l){ return {l:l, r:_loteResumo(l, hoje, taxas)}; });
+  h += '<div class="resop-sep"></div><div class="resop-nota" style="margin-bottom:2px"><b>Lotes hoje</b> (custo acumulado desde a compra)</div>';
+  linhas.forEach(function(x){
+    h += '<div class="resop-det-item" style="display:flex"><span class="nome">'+_escH(x.l.num)+' · '+_escH(x.r.b.nome)+' · '+_escH(x.r.nomeFase)+'<small>'+_fmtNum(x.r.vivos)+' viva(s) · '+x.r.dias+' dia(s)</small></span><span class="val">'+(x.r.porAve!==null ? _resopFmt(x.r.porAve)+'/ave' : '—')+'</span></div>';
+  });
+  h += '<div style="margin-top:8px"><button class="resop-btn-add" onclick="_loteAbrir()">Abrir Lotes de aves</button></div>';
+  return h+'</div>';
+}
+
+function _loteAtualizarTela(){ var b = document.getElementById('jan-lotes-body'); if(b) b.innerHTML = _loteHtml(); }
+function _loteAbrir(){
+  try{ _loteGerarMov(); }catch(e){}
+  _janelaAbrir('jan-lotes', '🐥 Lotes de aves', 'Fases, baixa de estoque e custo por ave', _loteHtml());
+}
+
 /* ═══ 1) REPOSITÓRIO DE DADOS PRIVADO ═══
    Os apps continuam publicados no repositório público (GitHub Pages), mas
    coletas, pedidos, compras e cadastros podem ficar num repositório
    PRIVADO. O endereço fica salvo no aparelho e vai junto no link de
    configuração enviado aos coletores e ao outro Admin. */
-var _DADOS_ARQS = [GH_BCK_COLETAS, GH_BCK_PEDIDOS, GH_BCK_CADASTROS, 'backup/compras.json', GH_BCK_RESOP, GH_FILE];
+var _DADOS_ARQS = [GH_BCK_COLETAS, GH_BCK_PEDIDOS, GH_BCK_CADASTROS, 'backup/compras.json', GH_BCK_RESOP, GH_BCK_LOTES, GH_FILE];
 function _dadosRepoAbrir(){
   var atual = GH_DATA_REPO;
   _janelaAbrir('jan-dados', '🔒 Onde ficam os dados', 'Repositório do GitHub usado para sincronizar',
