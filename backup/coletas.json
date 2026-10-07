@@ -456,58 +456,45 @@
       {
         "setor": "Estoque",
         "nome": "Crescimento",
-        "unid": "sc 40kg",
         "qtd": 10,
-        "preco": 92.38,
-        "forn": "IRCA",
+        "unid": "sc 40kg",
         "tipo": "Entrada",
-        "obs": "Compra CMP-0001"
+        "forn": "IRCA",
+        "preco": 92.38
       },
       {
         "setor": "Estoque",
         "nome": "Engorda",
-        "unid": "sc 40kg",
         "qtd": 15,
-        "preco": 89.94,
-        "forn": "IRCA",
+        "unid": "sc 40kg",
         "tipo": "Entrada",
-        "obs": "Compra CMP-0001"
+        "forn": "IRCA",
+        "preco": 89.94
       },
       {
         "setor": "Estoque",
         "nome": "Ração de peixe",
-        "unid": "Sc 25kg",
         "qtd": 15,
-        "preco": 74.71,
-        "forn": "IRCA",
+        "unid": "Sc 25kg",
         "tipo": "Entrada",
-        "obs": "Compra CMP-0001"
+        "forn": "IRCA",
+        "preco": 74.71
       },
       {
         "setor": "Estoque",
         "nome": "Inicial",
-        "unid": "sc 40kg",
         "qtd": 3,
-        "preco": 108.21,
-        "forn": "IRCA",
+        "unid": "sc 40kg",
         "tipo": "Entrada",
-        "obs": "Compra CMP-0001"
-      },
-      {
-        "setor": "Estoque",
-        "nome": "Ração de Gado",
-        "unid": "Sc 40kg",
-        "qtd": 10,
-        "preco": 91.21,
         "forn": "IRCA",
-        "tipo": "Entrada",
-        "obs": "Compra CMP-0001"
+        "preco": 108.21
       }
     ],
     "origem": "compra",
     "compraTs": 1790553086168,
     "compraNum": "CMP-0001",
-    "mov": "MOV-0036"
+    "mov": "MOV-0036",
+    "_editadoEm": 1791364151887
   },
   {
     "data": "2026-09-26",
