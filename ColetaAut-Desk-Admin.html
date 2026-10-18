@@ -14160,7 +14160,8 @@ function setUnidV(i,v){
   // Se essa unidade tiver preço cadastrado para o produto, atualiza o preço também
   var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===_vItens[i].prodId; });
   if(prod && prod.apresentacoes){
-    var ap = prod.apresentacoes.find(function(a){ return a.unid===v; });
+    var ap = _apresVigentes(prod).find(function(a){ return a.unid===v && _apresHabilitadaNaAba(prod, a, 'Vendas'); })
+          || prod.apresentacoes.find(function(a){ return !a._excluido && a.unid===v; });
     if(ap){ _vItens[i].preco = ap.preco||0; _calcSubV(i); }
   }
 }
@@ -16574,8 +16575,10 @@ async function _abrirEditColeta(ri){
   _editColetaCtx = {ts:tsAlvo, editadoEm:r._editadoEm||0, ri:ri};
 
   var itensHtml = '';
+  _editColetaOrig = (r.itens||[]).map(function(it){ return JSON.parse(JSON.stringify(it)); });
   (r.itens||[]).forEach(function(it, ii){
-    itensHtml += _linhaEditItemColeta(ri, ii, it.setor||'', it.nome||'', it.qtd||0, it.unid||'', it.tipo||'', it.forn||'', it.preco||0);
+    itensHtml += _linhaEditItemColeta(ri, ii, it.setor||'', it.nome||'', it.qtd||0, it.unid||'', it.tipo||'', it.forn||'', it.preco||0)
+      .replace('<div class="hcol-item-edit-wrap"', '<div data-oi="'+ii+'" class="hcol-item-edit-wrap"');
   });
 
   var movBadge = r.mov
@@ -16608,6 +16611,7 @@ async function _abrirEditColeta(ri){
   _navPush('modal-edit-coleta');
 }
 
+var _editColetaOrig = []; // itens como estavam gravados (data-oi da linha)
 function _setorKeyFromLabel(label){
   var keys = Object.keys(SETORES);
   for(var i=0;i<keys.length;i++){
@@ -16675,8 +16679,21 @@ function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtua
   var blocoApresUnid, linhaForn;
   if(apres.length){
     var idxMatch = -1;
+    var sU = _slugApres(unidAtual), sF = _slugApres(fornAtual);
     for(var i=0;i<apres.length;i++){
-      if((apres[i].unid||'').toLowerCase() === (unidAtual||'').toLowerCase()){ idxMatch = i; break; }
+      if(_slugApres(apres[i].unid) === sU && _slugApres(apres[i].fornecedor) === sF){ idxMatch = i; break; }
+    }
+    if(idxMatch === -1 && sU){
+      for(var i2=0;i2<apres.length;i2++){
+        if(_slugApres(apres[i2].unid) === sU && (!sF || !_slugApres(apres[i2].fornecedor))){ idxMatch = i2; break; }
+      }
+      // Registro sem fornecedor e o Cadastro tem a mesma unidade de 2+
+      // fornecedores: não adivinha — fica "📌 Gravado" até o Admin escolher
+      if(idxMatch > -1 && !sF){
+        var fornsU = {};
+        apres.forEach(function(x){ if(_slugApres(x.unid) === sU && _slugApres(x.fornecedor)) fornsU[_slugApres(x.fornecedor)] = 1; });
+        if(Object.keys(fornsU).length > 1) idxMatch = -1;
+      }
     }
     // Registro já lançado cuja unidade não existe mais (ou não está mais
     // autorizada) no cadastro: a opção inicial é EXATAMENTE o que foi
@@ -16692,7 +16709,7 @@ function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtua
     // Registro já lançado: mantém o preço/fornecedor GRAVADOS nele (valores da
     // época), mesmo que a apresentação vigente hoje tenha outro preço — só
     // muda se o usuário escolher outra apresentação na lista.
-    var mesmoUnid = !usaGravado && unidAtual && (apres[idxMatch].unid||'').toLowerCase() === String(unidAtual).toLowerCase();
+    var mesmoUnid = !usaGravado && unidAtual && _slugApres(apres[idxMatch].unid) === _slugApres(unidAtual);
     var precoUsado = (mesmoUnid && precoAtual) ? precoAtual : (apres[idxMatch].preco||0);
     var fornUsado  = (mesmoUnid && fornAtual) ? fornAtual : (apres[idxMatch].fornecedor||'');
     var notaPreco = (mesmoUnid && precoAtual && Number(precoAtual) !== Number(apres[idxMatch].preco||0))
@@ -16700,7 +16717,7 @@ function _linhaEditItemColeta(ri, ii, setor, nomeAtual, qtd, unidAtual, tipoAtua
       : '';
     blocoApresUnid =
       '<select class="hcol-edit-inp" style="flex:1 1 100%;width:100%" id="hcol-ei-apres-'+ri+'-'+ii+'" onchange="_onApresEditColetaChange('+ri+','+ii+')">'+optsApres+'</select>'
-      +'<input type="hidden" id="hcol-ei-unid-'+ri+'-'+ii+'" value="'+_esc(usaGravado ? unidAtual : (apres[idxMatch].unid||''))+'">'
+      +'<input type="hidden" id="hcol-ei-unid-'+ri+'-'+ii+'" value="'+_esc((usaGravado || mesmoUnid) ? unidAtual : (apres[idxMatch].unid||''))+'">'
       +'<input type="hidden" id="hcol-ei-preco-'+ri+'-'+ii+'" value="'+(usaGravado ? (precoAtual||0) : precoUsado)+'">';
     linhaForn = '<input type="hidden" value="'+_esc(usaGravado ? (fornAtual||'') : fornUsado)+'" id="hcol-ei-forn-'+ri+'-'+ii+'">'+notaPreco;
   } else {
@@ -16783,6 +16800,7 @@ function _onMudarNomeEditColeta(ri, ii){
   var novoHtml = _linhaEditItemColeta(ri, ii, setorEl.value, nomeEl.value, qtd, '', tipo, '', 0);
   var temp = document.createElement('div');
   temp.innerHTML = novoHtml;
+  if(rowWrap.hasAttribute('data-oi')) temp.firstElementChild.setAttribute('data-oi', rowWrap.getAttribute('data-oi'));
   rowWrap.parentElement.replaceChild(temp.firstElementChild, rowWrap);
 }
 
@@ -16806,6 +16824,7 @@ function _onMudarSetorEditColeta(ri, ii){
     forn, precoEl ? parseFloat(precoEl.value)||0 : 0);
   var temp = document.createElement('div');
   temp.innerHTML = novoHtml;
+  if(rowWrap.hasAttribute('data-oi')) temp.firstElementChild.setAttribute('data-oi', rowWrap.getAttribute('data-oi'));
   rowWrap.parentElement.replaceChild(temp.firstElementChild, rowWrap);
 }
 
@@ -16881,7 +16900,9 @@ async function _salvarEditColeta(ri){
       var preco = precoEl ? parseFloat(precoEl.value)||0 : 0;
       if(!nome) return;
       if(qtd <= 0) semQtd.push(nome);
-      novosItens.push({setor:setor, nome:nome, qtd:qtd, unid:unid, tipo:tipo, forn:forn, preco:preco});
+      var oiCol = bloco.getAttribute('data-oi');
+      var origCol = (oiCol !== null && _editColetaOrig[+oiCol]) ? _editColetaOrig[+oiCol] : {};
+      novosItens.push(Object.assign({}, origCol, {setor:setor, nome:nome, qtd:qtd, unid:unid, tipo:tipo, forn:forn, preco:preco}));
     });
   }
   if(!novosItens.length){ _toast('Inclua ao menos um item (para apagar o registro use 🗑 Excluir).'); return; }
@@ -17293,14 +17314,13 @@ async function _abrirEditPedido(){
   _pedEditBase = {ts:_pedAtual.ts, editadoEm:_pedAtual._editadoEm||0};
   var p = _pedAtual;
 
-  var itensHtml = (p.itens||[]).map(function(it,ii){
-    var qtd = it.qtd || (parseFloat((it.col3||'').split(' ')[0])||0);
-    var unid = it.unidade || ((it.col3||'').split(' ').slice(1).join(' '))||'';
-    var preco = it.preco || 0;
-    var nome = it.nome||it.col2||'';
+  // Produto e apresentação de cada item são buscados no Cadastro (pelo
+  // vínculo prodId/apresId); o item gravado fica guardado para manter os
+  // campos que não aparecem no formulário.
+  _pedEditOrig = (p.itens||[]).map(function(it){ return JSON.parse(JSON.stringify(it)); });
+  var itensHtml = _pedEditOrig.map(function(it,ii){
     var dataIso = _brParaIso(it.data||it.col1||'') || p.data || '';
-    var sub = Math.round(qtd*preco*100)/100;
-    return _mpItemEditCardHtml(ii, nome, unid, qtd, preco, dataIso, sub);
+    return _mpItemEditCardHtml(ii, Object.assign({}, it, {_dataIso:dataIso}), ii);
   }).join('');
 
   ef.innerHTML =
@@ -17355,194 +17375,319 @@ function _isoParaDataQuit(iso, dataQuitOriginal){
   return dataFmt+', '+horario;
 }
 
-/* Monta o campo de "Item": um <select> com os produtos do cadastro (para
-   escolher direto, já populando unidade/preço automaticamente) + opção
-   "Outro..." para textos livres — necessário para itens antigos que não
-   correspondam a nenhum produto cadastrado atualmente. */
-function _nomeSelectHtml(ii, nomeAtual){
-  var nomes = [], vistos = {};
-  (_cadDados.produtos||[]).forEach(function(p){
-    if(p._excluido) return;
-    if(!(p.apresentacoes||[]).some(function(a){ return _apresHabilitadaNaAba(p, a, 'Vendas'); })) return;
-    var n = (p.nome||'').trim();
-    if(n && !vistos[n.toLowerCase()]){ vistos[n.toLowerCase()]=true; nomes.push(n); }
-  });
-  nomes.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
-  var nomeTrim = (nomeAtual||'').trim();
-  var bateComCadastro = nomes.some(function(n){ return n.toLowerCase()===nomeTrim.toLowerCase(); });
-  // "Outro" fica selecionado sempre que o nome atual não corresponder a
-  // nenhum produto do cadastro — inclusive quando o item é novo e ainda
-  // não tem nome nenhum (evita cair, por padrão, num produto aleatório
-  // só porque ele é o primeiro da lista em ordem alfabética).
-  var usarOutro = !bateComCadastro;
-  var opts = nomes.map(function(n){
-    return '<option value="'+_esc(n)+'"'+(n.toLowerCase()===nomeTrim.toLowerCase()?' selected':'')+'>'+_esc(n)+'</option>';
+/* ═══ EDIÇÃO DE PEDIDO — produto e apresentação vêm SEMPRE do Cadastro ═══
+   Cada item fica amarrado ao produto (prodId) e à apresentação (apresId)
+   do Cadastro → Produtos, como num pedido novo. Antes, a edição escolhia o
+   item só pelo NOME e, ao salvar, apagava o vínculo (prodId) — o pedido
+   editado ficava "solto" do cadastro (fora da totalização por produto).
+   Registro antigo cujo produto/apresentação não existe mais (ou não está
+   autorizado em Vendas) aparece como "📌 Gravado": nada muda nele a menos
+   que o Admin escolha, ele mesmo, outro produto/apresentação. */
+var _pedEditOrig = []; // itens como estavam gravados (índice = data-oi do cartão)
+
+function _pedEditApres(prod){
+  if(!prod || prod._excluido) return [];
+  return _apresVigentes(prod).filter(function(a){ return _apresHabilitadaNaAba(prod, a, 'Vendas'); })
+    .sort(function(a,b){ return (a.unid||'').localeCompare(b.unid||'','pt-BR') || (a.fornecedor||'').localeCompare(b.fornecedor||'','pt-BR'); });
+}
+function _pedEditProdutos(){
+  return (_cadDados.produtos||[]).filter(function(p){ return !p._excluido && _pedEditApres(p).length > 0; })
+    .sort(function(a,b){ return (a.nome||'').localeCompare(b.nome||'','pt-BR'); });
+}
+function _pedEditProdPorId(id){
+  return _pedEditProdutos().find(function(p){ return p.id===id; }) || null;
+}
+/* Produto do cadastro que corresponde ao item gravado: pelo vínculo (prodId)
+   ou, se o vínculo se perdeu, pelo MESMO nome. Nunca troca por outro nome. */
+function _pedEditResolverProd(it){
+  var lista = _pedEditProdutos();
+  if(it.prodId && it.prodId!=='_edit'){
+    var p = lista.find(function(x){ return x.id===it.prodId; });
+    if(p) return p;
+  }
+  var n = _sdNorm(it.nome||it.col2||'');
+  return n ? (lista.find(function(x){ return _sdNorm(x.nome)===n; }) || null) : null;
+}
+/* Apresentação vigente do produto que corresponde à gravada (id, ou a mesma
+   unidade escrita de outro jeito: "Unid" = "Unid." = "unid"). */
+function _pedEditResolverApres(prod, unid, apresId){
+  var aps = _pedEditApres(prod);
+  if(apresId){ var a = aps.find(function(x){ return x.id===apresId; }); if(a) return a; }
+  var s = _slugApres(unid);
+  return s ? (aps.find(function(x){ return _slugApres(x.unid)===s; }) || null) : null;
+}
+/* Sugestão para item cujo produto saiu do cadastro (excluído/unificado) */
+function _pedEditSugestao(it){
+  var orig = it.prodId ? (_cadDados.produtos||[]).find(function(p){ return p.id===it.prodId; }) : null;
+  var c = _pedProdCanonico(orig, it.nome||it.col2||'');
+  return (c && !c._excluido && _pedEditApres(c).length) ? c : null;
+}
+function _pedEditUnidGravada(it){
+  return it.unidade || String(it.col3||'').split(' ').slice(1).join(' ') || '';
+}
+function _pedEditRotApres(a){
+  return (a.unid||'—')+(a.fornecedor?' — '+a.fornecedor:'')+(a.preco?' — R$ '+_fmt(a.preco):'');
+}
+
+/* <select> de apresentação. "gravado" = {unid, preco} do registro quando a
+   unidade gravada não corresponde a nenhuma apresentação vigente. */
+function _pedEditApresSelHtml(prod, apSel, gravado, livre){
+  var aps = _pedEditApres(prod);
+  if(livre || (!aps.length && !gravado)){
+    // Produto digitado à mão ("Outro") — unidade livre
+    return '<select class="mp-edit-inp mpe-f-apres" style="flex:1;min-width:0;display:none" onchange="_pedEditApresChange(this)"><option value="__outra__" selected></option></select>'
+      +'<input class="mp-edit-inp mpe-f-unid" style="flex:1;min-width:0" placeholder="Unidade" value="'+_esc(gravado ? gravado.unid : '')+'">';
+  }
+  var opts = '';
+  if(gravado) opts += '<option value="__reg__" selected data-unid="'+_esc(gravado.unid)+'" data-preco="'+(Number(gravado.preco)||0)+'">📌 Gravado: '+_esc(gravado.unid||'—')+'</option>';
+  opts += aps.map(function(a){
+    return '<option value="'+_esc(a.id)+'" data-unid="'+_esc(a.unid||'')+'"'+(!gravado && apSel && a.id===apSel.id ? ' selected' : '')+'>'+_esc(_pedEditRotApres(a))+'</option>';
   }).join('');
-  opts += '<option value="__outro__"'+(usarOutro?' selected':'')+'>+ Outro (digitar)...</option>';
-  return '<select class="mp-edit-inp" style="flex:1.4;min-width:0;'+(usarOutro?'display:none':'')+'" id="mpe-nome-'+ii+'" data-prev-nome="'+_esc(nomeTrim)+'" onchange="_onNomeSelChange('+ii+')">'+opts+'</select>'
-    +'<input class="mp-edit-inp" style="flex:1.4;min-width:0;'+(usarOutro?'':'display:none')+'" id="mpe-nome-texto-'+ii+'" placeholder="Nome do item" value="'+(usarOutro?_esc(nomeTrim):'')+'" oninput="_atualizarUnidEditPed('+ii+')">';
+  opts += '<option value="__outra__">+ Outra (digitar)...</option>';
+  return '<select class="mp-edit-inp mpe-f-apres" style="flex:1;min-width:0" onchange="_pedEditApresChange(this)">'+opts+'</select>'
+    +'<input class="mp-edit-inp mpe-f-unid" style="flex:1;min-width:0;display:none" placeholder="Unidade">';
 }
 
-/* Ao trocar o produto escolhido: se for "Outro", troca pra campo de texto
-   livre; senão, refaz a lista de unidades e já sugere o preço cadastrado
-   dessa apresentação (o admin ainda pode ajustar manualmente). */
-function _onNomeSelChange(ii){
-  var sel = document.getElementById('mpe-nome-'+ii);
-  var txt = document.getElementById('mpe-nome-texto-'+ii);
-  if(!sel) return;
-  if(sel.value === '__outro__'){
-    sel.style.display = 'none';
-    if(txt){ txt.style.display=''; txt.value=''; txt.focus(); }
-    _atualizarUnidEditPed(ii);
-    return;
+/* Aviso do item gravado que não bate com o Cadastro (com sugestão) */
+function _pedEditNotaHtml(it, prod, unid, ap){
+  var nome = it.nome||it.col2||'';
+  if(!prod){
+    var sug = _pedEditSugestao(it);
+    return '⚠️ "'+_esc(nome)+'" não está no Cadastro com apresentação autorizada em Vendas (produto excluído, unificado ou digitado à mão). '
+      +'O item fica como foi gravado; para corrigir, escolha o produto na lista'
+      +(sug ? ' — sugestão: <a href="javascript:void(0)" data-sug="'+_esc(sug.id)+'" onclick="_pedEditUsarSugestao(this)" style="color:#7a3a00;font-weight:700;text-decoration:underline">'+_esc(sug.nome)+'</a>' : '')+'.';
   }
-  _atualizarUnidEditPed(ii);
-  // Na edição, o preço NÃO é sobrescrito automaticamente ao trocar o nome
-  // do item — fica a critério do administrador ajustá-lo manualmente,
-  // caso necessário (ex.: ao unificar itens de mesmo tipo com nomes
-  // antigos divergentes, sem alterar o valor já registrado no pedido).
-  // Guarda a troca (nome antigo → nome novo) para, ao salvar, oferecer
-  // corrigir o mesmo item em outros pedidos — só o nome, nada mais.
-  var _nomeAnteriorPed = sel.getAttribute('data-prev-nome')||'';
-  var _nomeNovoPed = sel.value;
-  if(_nomeAnteriorPed && _nomeNovoPed && _nomeAnteriorPed.toLowerCase()!==_nomeNovoPed.toLowerCase()){
-    _pendentesRenomePed.push({de:_nomeAnteriorPed, para:_nomeNovoPed});
-    sel.setAttribute('data-prev-nome', _nomeNovoPed);
+  if(unid && !ap){
+    return '⚠️ A apresentação gravada ("'+_esc(unid)+'") não está vigente/autorizada em Vendas para '+_esc(prod.nome)+'. Fica como foi gravada; para corrigir, escolha uma apresentação da lista.';
   }
+  return '';
 }
 
-/* Le o nome do item "ii" — do select se um produto do cadastro estiver
-   escolhido, ou do campo de texto livre se "Outro" estiver selecionado. */
-function _lerNomeEditPed(ii){
-  var sel = document.getElementById('mpe-nome-'+ii);
-  var txt = document.getElementById('mpe-nome-texto-'+ii);
-  if(sel && sel.value === '__outro__') return (txt?txt.value:'').trim();
-  return sel ? sel.value.trim() : '';
-}
-/* Lista as unidades/apresentacoes ja conhecidas para um nome de produto,
-   olhando o cadastro unico de Produtos → apresentacoes (cada produto pode
-   ter mais de uma: "Bandeja c/30 ovos", "Unid.", etc). Usado para popular
-   a lista de selecao de unidade na edicao de pedido. */
-function _unidadesParaProdutoNome(nome){
-  nome = (nome||'').trim().toLowerCase();
-  if(!nome) return [];
-  var unids = [], vistos = {};
-  (_cadDados.produtos||[]).forEach(function(p){
-    if(p._excluido) return;
-    if((p.nome||'').trim().toLowerCase()!==nome) return;
-    (p.apresentacoes||[]).forEach(function(a){
-      if(!_apresHabilitadaNaAba(p, a, 'Vendas')) return;
-      var u = (a.unid||'').trim();
-      if(u && !vistos[u.toLowerCase()]){ vistos[u.toLowerCase()]=true; unids.push(u); }
-    });
-  });
-  return unids.sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
-}
+/* Monta o cartão de edição de um item. oi = índice do item gravado (-1 = novo) */
+function _mpItemEditCardHtml(ii, it, oi){
+  it = it || {};
+  var novo = !(oi >= 0);
+  var nome = it.nome||it.col2||'';
+  var unid = _pedEditUnidGravada(it);
+  var qtd = (it.qtd!=null && it.qtd!=='') ? it.qtd : (parseFloat(String(it.col3||'').split(' ')[0])||'');
+  var preco = (it.preco!=null && it.preco!=='') ? it.preco : '';
+  var desc = Number(it.desconto)||0;
+  var prod = novo ? null : _pedEditResolverProd(it);
+  var ap = prod ? _pedEditResolverApres(prod, unid, it.apresId) : null;
 
-/* Preço já cadastrado para um produto+unidade específicos, usado para
-   preencher automaticamente o preço ao trocar a unidade na edição. */
-function _precoParaProdutoUnidade(nome, unid){
-  nome = (nome||'').trim().toLowerCase();
-  unid = (unid||'').trim().toLowerCase();
-  var prod = (_cadDados.produtos||[]).find(function(p){ return !p._excluido && (p.nome||'').trim().toLowerCase()===nome; });
-  if(!prod) return null;
-  var apres = _apresVigentes(prod).find(function(a){ return (a.unid||'').trim().toLowerCase()===unid && _apresHabilitadaNaAba(prod, a, 'Vendas'); });
-  return apres ? apres.preco : null;
-}
-
-/* Monta o <select> de unidade para a linha "ii", com as apresentacoes
-   conhecidas para o nome atual do item + a unidade ja salva (mesmo que nao
-   esteja mais no cadastro) + opcao "Outra..." para digitar livremente. */
-function _unidSelectHtml(ii, nome, unidAtual){
-  var opts = _unidadesParaProdutoNome(nome);
-  if(unidAtual && !opts.some(function(u){ return u.toLowerCase()===unidAtual.toLowerCase(); })){
-    opts.unshift(unidAtual);
-  }
-  if(!opts.length) opts.push('unid');
-  var html = opts.map(function(u){
-    return '<option value="'+u.replace(/"/g,'&quot;')+'"'+(u===unidAtual?' selected':'')+'>'+u.replace(/</g,'&lt;')+'</option>';
+  var prods = _pedEditProdutos();
+  var opts = novo ? '<option value="" selected>— Escolha o produto —</option>'
+                  : (!prod ? '<option value="__reg__" selected>📌 Gravado: '+_esc(nome||'—')+'</option>' : '');
+  opts += prods.map(function(p){
+    return '<option value="'+_esc(p.id)+'"'+(prod && p.id===prod.id ? ' selected' : '')+'>'+_esc(p.nome)+'</option>';
   }).join('');
-  html += '<option value="__outra__">+ Outra...</option>';
-  return '<select class="mp-edit-inp" style="width:96px;flex:none" id="mpe-unid-'+ii+'" onchange="_onUnidSelChange('+ii+')">'+html+'</select>';
-}
+  opts += '<option value="__outro__">+ Outro (digitar)...</option>';
 
-/* Quando o nome do item muda, refaz a lista de unidades disponiveis
-   (produtos diferentes podem ter apresentacoes diferentes). */
-function _atualizarUnidEditPed(ii){
-  var nomeAtual = _lerNomeEditPed(ii);
-  var unidEl = document.getElementById('mpe-unid-'+ii);
-  if(!unidEl) return;
-  var unidAtual = unidEl.value;
-  var tmp = document.createElement('div');
-  tmp.innerHTML = _unidSelectHtml(ii, nomeAtual, unidAtual);
-  unidEl.parentNode.replaceChild(tmp.firstChild, unidEl);
-}
+  var nota = novo ? '' : _pedEditNotaHtml(it, prod, unid, ap);
+  var apresHtml = novo
+    ? '<select class="mp-edit-inp mpe-f-apres" style="flex:1;min-width:0" disabled><option value="">— escolha o produto primeiro —</option></select><input class="mp-edit-inp mpe-f-unid" style="flex:1;min-width:0;display:none" placeholder="Unidade">'
+    : _pedEditApresSelHtml(prod, ap, (prod && ap) ? null : {unid:unid, preco:preco}, false);
 
-/* "+ Outra..." troca o <select> por um campo de texto livre com o MESMO id,
-   entao o restante do codigo (leitura ao salvar) nao precisa saber qual dos
-   dois esta ativo. */
-function _onUnidSelChange(ii){
-  var sel = document.getElementById('mpe-unid-'+ii);
-  if(sel && sel.tagName==='SELECT' && sel.value==='__outra__'){
-    var inp = document.createElement('input');
-    inp.type='text'; inp.className='mp-edit-inp'; inp.id='mpe-unid-'+ii;
-    inp.placeholder='Unidade'; inp.style.cssText='width:96px;flex:none';
-    sel.parentNode.replaceChild(inp, sel);
-    inp.focus();
-  }
-}
-
-/* Monta o "cartao" de edicao de um item: Data | Item + Unidade | Qtd + Preco
-   unit. + Subtotal (calculado, somente leitura) — mais o botao de remover. */
-function _mpItemEditCardHtml(ii, nome, unid, qtd, preco, dataIso, sub){
-  return '<div class="mp-item-edit-card" id="mpe-card-'+ii+'">'
+  return '<div class="mp-item-edit-card" id="mpe-card-'+ii+'" data-oi="'+(novo?-1:oi)+'">'
     +'<div class="mp-item-edit-hd"><span>Item '+(ii+1)+'</span>'
-    +'<button class="hcol-del-item" onclick="_delItemEditPed('+ii+')" title="Remover item">\u00d7</button></div>'
+    +'<button class="hcol-del-item" onclick="_delItemEditPed(this)" title="Remover item">×</button></div>'
     +'<div class="mp-item-edit-row">'
     +'<span class="mp-item-edit-dlbl">Data</span>'
-    +'<input class="mp-edit-inp" type="date" style="flex:none;width:150px" value="'+(dataIso||'')+'" id="mpe-data-'+ii+'">'
+    +'<input class="mp-edit-inp mpe-f-data" type="date" style="flex:none;width:150px" value="'+(it._dataIso||'')+'">'
     +'</div>'
-    +'<div class="mp-item-edit-row">'
-    +_nomeSelectHtml(ii, nome)
-    +_unidSelectHtml(ii, nome, unid)
+    +'<div class="mp-item-edit-row" style="flex-wrap:wrap">'
+    +'<span class="mp-item-edit-dlbl">Produto</span>'
+    +'<select class="mp-edit-inp mpe-f-prod" style="flex:1;min-width:0" data-prev-nome="'+_esc(nome)+'" data-prev-val="'+(novo?'':(prod?_esc(prod.id):'__reg__'))+'" onchange="_pedEditProdChange(this)">'+opts+'</select>'
+    +'<input class="mp-edit-inp mpe-f-nome" style="flex:1 1 100%;min-width:0;display:none" placeholder="Nome do item">'
     +'</div>'
-    +'<div class="mp-item-edit-row">'
-    +'<input class="mp-edit-inp" style="width:60px;flex:none" type="number" min="0" step="0.5" placeholder="Qtd" value="'+qtd+'" id="mpe-qtd-'+ii+'" oninput="_recalcSubEditPed('+ii+')">'
-    +'<input class="mp-edit-inp" style="width:76px;flex:none" type="number" min="0" step="0.01" placeholder="Preco un." value="'+preco+'" id="mpe-preco-'+ii+'" oninput="_recalcSubEditPed('+ii+')">'
-    +'<span class="mp-item-edit-sub" id="mpe-sub-'+ii+'">R$ '+_fmt(sub)+'</span>'
+    +'<div class="mp-item-edit-row" style="flex-wrap:wrap">'
+    +'<span class="mp-item-edit-dlbl">Apresent.</span>'
+    +apresHtml
+    +'</div>'
+    +'<div class="mpe-f-nota" style="font-size:11px;color:#a03030;line-height:1.35;'+(nota?'margin:2px 0 4px':'display:none')+'">'+nota+'</div>'
+    +'<div class="mp-item-edit-row" style="align-items:flex-end">'
+    +'<label style="flex:1;min-width:0"><span class="mp-item-edit-dlbl" style="display:block;margin-bottom:2px">Qtd</span>'
+    +'<input class="mp-edit-inp mpe-f-qtd" style="width:100%;box-sizing:border-box" type="number" min="0" step="0.5" inputmode="decimal" placeholder="0" value="'+qtd+'" oninput="_recalcSubEditPed(this)"></label>'
+    +'<label style="flex:1.2;min-width:0"><span class="mp-item-edit-dlbl" style="display:block;margin-bottom:2px">Preço un.</span>'
+    +'<input class="mp-edit-inp mpe-f-preco" style="width:100%;box-sizing:border-box" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00" value="'+preco+'" oninput="_recalcSubEditPed(this)"></label>'
+    +'<label style="flex:1;min-width:0"><span class="mp-item-edit-dlbl" style="display:block;margin-bottom:2px">Desc. R$</span>'
+    +'<input class="mp-edit-inp mpe-f-desc" style="width:100%;box-sizing:border-box" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00" value="'+(desc||'')+'" oninput="_recalcSubEditPed(this)"></label>'
+    +'</div>'
+    +'<div class="mp-item-edit-row" style="justify-content:flex-end;padding-top:2px"><span class="mp-item-edit-dlbl" style="margin-right:auto">Subtotal</span>'
+    +'<span class="mp-item-edit-sub mpe-f-sub" style="flex:none">R$ '+_fmt(_pedEditSub(qtd, preco, desc))+'</span>'
     +'</div>'
     +'</div>';
 }
 
-function _recalcSubEditPed(ii){
-  var qtd   = parseFloat((document.getElementById('mpe-qtd-'+ii)||{value:0}).value)||0;
-  var preco = parseFloat((document.getElementById('mpe-preco-'+ii)||{value:0}).value)||0;
-  var el = document.getElementById('mpe-sub-'+ii);
-  if(el) el.textContent = 'R$ '+_fmt(Math.round(qtd*preco*100)/100);
+function _pedEditSub(qtd, preco, desc){
+  var bruto = (parseFloat(qtd)||0)*(parseFloat(preco)||0);
+  return Math.max(0, Math.round((bruto - Math.min(parseFloat(desc)||0, bruto))*100)/100);
+}
+function _pedEditCard(el){ return el && el.closest ? el.closest('.mp-item-edit-card') : null; }
+function _pedEditEl(card, cls){ return card ? card.querySelector('.'+cls) : null; }
+
+function _recalcSubEditPed(el){
+  var card = (typeof el === 'number') ? document.querySelectorAll('#mpe-itens .mp-item-edit-card')[el] : _pedEditCard(el);
+  if(!card) return;
+  var sub = _pedEditSub((_pedEditEl(card,'mpe-f-qtd')||{}).value, (_pedEditEl(card,'mpe-f-preco')||{}).value, (_pedEditEl(card,'mpe-f-desc')||{}).value);
+  var s = _pedEditEl(card,'mpe-f-sub'); if(s) s.textContent = 'R$ '+_fmt(sub);
 }
 
-function _delItemEditPed(ii){
+function _pedEditUnidAtual(card){
+  var s = _pedEditEl(card,'mpe-f-apres'), i = _pedEditEl(card,'mpe-f-unid');
+  if(!s || s.disabled) return '';
+  if(s.value==='__outra__' || s.style.display==='none') return i ? i.value : '';
+  var o = s.options[s.selectedIndex];
+  return o ? (o.getAttribute('data-unid')||'') : '';
+}
+/* Troca o bloco de apresentação do cartão */
+function _pedEditTrocarApres(card, html){
+  var sel = _pedEditEl(card,'mpe-f-apres'), inp = _pedEditEl(card,'mpe-f-unid');
+  var tmp = document.createElement('div'); tmp.innerHTML = html;
+  var row = sel.parentNode;
+  row.insertBefore(tmp.children[0], sel); row.insertBefore(tmp.children[0], sel);
+  row.removeChild(sel); if(inp) row.removeChild(inp);
+}
+function _pedEditNota(card, html){
+  var n = _pedEditEl(card,'mpe-f-nota'); if(!n) return;
+  n.innerHTML = html||''; n.style.display = html ? '' : 'none'; n.style.margin = html ? '2px 0 4px' : '';
+}
+function _pedEditSetPreco(card, v){
+  var p = _pedEditEl(card,'mpe-f-preco'); if(p) p.value = v; _recalcSubEditPed(p);
+}
+
+/* Produto escolhido → apresentações e preço vêm do Cadastro */
+function _pedEditProdChange(sel){
+  var card = _pedEditCard(sel); if(!card) return;
+  var oi = parseInt(card.getAttribute('data-oi'),10);
+  var orig = oi >= 0 ? (_pedEditOrig[oi]||{}) : null;
+  var txt = _pedEditEl(card,'mpe-f-nome');
+  var unidAntes = _pedEditUnidAtual(card);
+  var eraGravado = sel.getAttribute('data-prev-val') === '__reg__';
+  sel.setAttribute('data-prev-val', sel.value);
+  if(txt) txt.style.display = 'none';
+  _pedEditNota(card, '');
+
+  if(sel.value === '__outro__'){
+    if(txt){ txt.style.display = ''; txt.value = ''; txt.focus(); }
+    _pedEditTrocarApres(card, _pedEditApresSelHtml(null, null, {unid:unidAntes, preco:0}, true));
+    return;
+  }
+  if(sel.value === '__reg__' && orig){
+    // Volta exatamente ao que estava gravado
+    _pedEditTrocarApres(card, _pedEditApresSelHtml(null, null, {unid:_pedEditUnidGravada(orig), preco:orig.preco}, false));
+    _pedEditSetPreco(card, orig.preco!=null ? orig.preco : '');
+    _pedEditNota(card, _pedEditNotaHtml(orig, null, _pedEditUnidGravada(orig), null));
+    sel.setAttribute('data-prev-nome', orig.nome||orig.col2||'');
+    return;
+  }
+  var prod = _pedEditProdPorId(sel.value);
+  if(!prod){
+    _pedEditTrocarApres(card, '<select class="mp-edit-inp mpe-f-apres" style="flex:1;min-width:0" disabled><option value="">— escolha o produto primeiro —</option></select><input class="mp-edit-inp mpe-f-unid" style="flex:1;min-width:0;display:none" placeholder="Unidade">');
+    return;
+  }
+  var aps = _pedEditApres(prod);
+  var antes = sel.getAttribute('data-prev-nome')||'';
+  var mesma = _pedEditResolverApres(prod, unidAntes, null);
+  // Nome antigo com o tipo embutido ("Galinha Viva" → Galinha): procura a
+  // apresentação com essa palavra ("Unid. Viva"), em vez da 1ª da lista
+  var resto = _sdNorm(antes).replace(_sdNorm(prod.nome), ' ').trim().split(/\s+/).filter(function(w){ return w.length > 2; });
+  var porNome = (!mesma && resto.length) ? aps.find(function(a){
+    var su = _slugApres(a.unid); return resto.every(function(w){ return su.indexOf(_slugApres(w).slice(0,5)) > -1; });
+  }) : null;
+  var ap = mesma || porNome || aps[0];
+  _pedEditTrocarApres(card, _pedEditApresSelHtml(prod, ap, null, false));
+  // Correção de item antigo ("📌 Gravado") ou mesma apresentação de antes:
+  // o preço da venda fica como foi gravado. Troca de produto/apresentação
+  // num item já do cadastro: preço vigente do Cadastro.
+  if(!eraGravado && !mesma && ap && Number(ap.preco)) _pedEditSetPreco(card, ap.preco);
+  // Troca de nome → ao salvar, oferece corrigir o mesmo item em outros pedidos
+  if(antes && _sdNorm(antes) !== _sdNorm(prod.nome)){
+    _pendentesRenomePed.push({de:antes, para:prod.nome, paraId:prod.id});
+  }
+  sel.setAttribute('data-prev-nome', prod.nome);
+}
+
+/* Apresentação escolhida → unidade e preço do Cadastro */
+function _pedEditApresChange(sel){
+  var card = _pedEditCard(sel); if(!card) return;
+  var inp = _pedEditEl(card,'mpe-f-unid');
+  if(sel.value === '__outra__'){
+    if(inp){ inp.style.display = ''; inp.value = ''; inp.focus(); }
+    return;
+  }
+  if(inp) inp.style.display = 'none';
+  if(sel.value === '__reg__'){
+    _pedEditSetPreco(card, sel.options[sel.selectedIndex].getAttribute('data-preco')||'');
+    return;
+  }
+  var prod = _pedEditProdPorId((_pedEditEl(card,'mpe-f-prod')||{}).value);
+  var a = _pedEditApres(prod).find(function(x){ return x.id===sel.value; });
+  if(a && Number(a.preco)) _pedEditSetPreco(card, a.preco);
+}
+
+function _pedEditUsarSugestao(link){
+  var card = _pedEditCard(link); if(!card) return;
+  var sel = _pedEditEl(card,'mpe-f-prod'); if(!sel) return;
+  sel.value = link.getAttribute('data-sug');
+  _pedEditProdChange(sel);
+}
+
+/* Lê um cartão → item do pedido (mantém os demais campos do item gravado) */
+function _pedEditLerItem(card, dataPadrao){
+  var oi = parseInt(card.getAttribute('data-oi'),10);
+  var orig = oi >= 0 ? (_pedEditOrig[oi]||{}) : {};
+  var selP = _pedEditEl(card,'mpe-f-prod'), selA = _pedEditEl(card,'mpe-f-apres'), inpU = _pedEditEl(card,'mpe-f-unid');
+  var vP = selP ? selP.value : '';
+  var nome, prodId, unid, apresId;
+  if(vP === '__reg__'){ nome = orig.nome||orig.col2||''; prodId = orig.prodId; }
+  else if(vP === '__outro__'){ nome = ((_pedEditEl(card,'mpe-f-nome')||{}).value||'').trim(); prodId = '_edit'; }
+  else {
+    var prod = _pedEditProdPorId(vP);
+    if(!prod) return null; // cartão novo sem produto escolhido
+    nome = prod.nome; prodId = prod.id;
+  }
+  var vA = selA ? selA.value : '';
+  if(!selA || selA.disabled || vA === '__outra__' || selA.style.display === 'none'){ unid = ((inpU||{}).value||'').trim(); apresId = null; }
+  else if(vA === '__reg__'){ unid = selA.options[selA.selectedIndex].getAttribute('data-unid')||''; apresId = orig.apresId; }
+  else {
+    var pr2 = _pedEditProdPorId(vP);
+    var a = _pedEditApres(pr2).find(function(x){ return x.id===vA; });
+    unid = a ? (a.unid||'') : ''; apresId = a ? a.id : null;
+    // Mesma apresentação escrita de outro jeito ("unid" × "Unid."): mantém
+    // o texto gravado — só o vínculo (apresId) é acrescentado
+    var uOrig = _pedEditUnidGravada(orig);
+    if(a && uOrig && _slugApres(uOrig) === _slugApres(a.unid)) unid = uOrig;
+  }
+  if(!nome) return null;
+  var qtd   = parseFloat((_pedEditEl(card,'mpe-f-qtd')||{}).value)||0;
+  var preco = parseFloat((_pedEditEl(card,'mpe-f-preco')||{}).value)||0;
+  var desc  = parseFloat((_pedEditEl(card,'mpe-f-desc')||{}).value)||0;
+  // Cada item mantém sua PRÓPRIA data (pedido de fechamento mensal, com
+  // itens de datas diferentes) — cai na data do pedido só se ficar vazio.
+  var dataIso = (_pedEditEl(card,'mpe-f-data')||{}).value || dataPadrao;
+  var dataFmt = dataIso ? new Date(dataIso+'T12:00').toLocaleDateString('pt-BR') : '';
+  var sub = _pedEditSub(qtd, preco, desc);
+  var it = Object.assign({}, orig, {
+    nome:nome, col2:nome, col1:dataFmt, data:dataFmt,
+    col3:qtd+' '+unid, col4:'R$ '+_fmt(preco)+' x '+qtd+(desc?' (desc. R$ '+_fmt(desc)+')':''),
+    col5:'R$ '+_fmt(sub), qtd:qtd, unidade:unid, preco:preco, desconto:desc, sub:sub
+  });
+  if('val' in it) it.val = sub;
+  if(prodId) it.prodId = prodId; else delete it.prodId;
+  if(apresId) it.apresId = apresId; else delete it.apresId;
+  return it;
+}
+
+function _delItemEditPed(el){
   var wrap = document.getElementById('mpe-itens');
   if(!wrap) return;
-  var cards = wrap.querySelectorAll('.mp-item-edit-card');
-  if(cards[ii]) cards[ii].remove();
-  // Renumera ids, onclick/oninput e o rotulo "Item N" de todos os cartoes restantes
-  wrap.querySelectorAll('.mp-item-edit-card').forEach(function(card, ni){
-    card.id = 'mpe-card-'+ni;
-    var lbl = card.querySelector('.mp-item-edit-hd span');
+  var card = (typeof el === 'number') ? wrap.querySelectorAll('.mp-item-edit-card')[el] : _pedEditCard(el);
+  if(card) card.remove();
+  wrap.querySelectorAll('.mp-item-edit-card').forEach(function(c, ni){
+    c.id = 'mpe-card-'+ni;
+    var lbl = c.querySelector('.mp-item-edit-hd span');
     if(lbl) lbl.textContent = 'Item '+(ni+1);
-    card.querySelectorAll('[id]').forEach(function(el){
-      el.id = el.id.replace(/-\d+$/, '-'+ni);
-    });
-    card.querySelectorAll('[onclick]').forEach(function(el){
-      el.setAttribute('onclick', el.getAttribute('onclick').replace(/\(\d+\)/, '('+ni+')'));
-    });
-    card.querySelectorAll('[oninput]').forEach(function(el){
-      el.setAttribute('oninput', el.getAttribute('oninput').replace(/\(\d+\)/, '('+ni+')'));
-    });
-    card.querySelectorAll('[onchange]').forEach(function(el){
-      el.setAttribute('onchange', el.getAttribute('onchange').replace(/\(\d+\)/, '('+ni+')'));
-    });
   });
 }
 
@@ -17550,11 +17695,11 @@ function _addItemEditPed(){
   var wrap = document.getElementById('mpe-itens');
   if(!wrap) return;
   var ii = wrap.querySelectorAll('.mp-item-edit-card').length;
-  // Nova linha comeca com a data do pedido como padrao (editavel em seguida)
+  // Nova linha começa com a data do pedido como padrão (editável em seguida)
   var dataPedido = (document.getElementById('mpe-data')||{value:''}).value || '';
-  var card = document.createElement('div');
-  card.innerHTML = _mpItemEditCardHtml(ii, '', '', '', '', dataPedido, 0);
-  wrap.appendChild(card.firstChild);
+  var tmp = document.createElement('div');
+  tmp.innerHTML = _mpItemEditCardHtml(ii, {_dataIso:dataPedido}, -1);
+  wrap.appendChild(tmp.firstChild);
 }
 
 async function _salvarEditPedido(){
@@ -17564,26 +17709,13 @@ async function _salvarEditPedido(){
   var wrap = document.getElementById('mpe-itens');
   var novosItens = [];
   if(wrap){
+    var semProduto = [];
     wrap.querySelectorAll('.mp-item-edit-card').forEach(function(card,ii){
-      var nome  = _lerNomeEditPed(ii);
-      var qtd   = parseFloat((document.getElementById('mpe-qtd-'+ii)||{value:0}).value)||0;
-      var unid  = (document.getElementById('mpe-unid-'+ii)||{value:''}).value.trim();
-      var preco = parseFloat((document.getElementById('mpe-preco-'+ii)||{value:0}).value)||0;
-      // Cada item mantem sua PROPRIA data (permite um pedido de fechamento
-      // mensal, com itens de datas diferentes) — cai na data do pedido so
-      // se o campo do item ficar vazio.
-      var dataItemIso = (document.getElementById('mpe-data-'+ii)||{value:''}).value || novaData;
-      var dataItemFmt = dataItemIso ? new Date(dataItemIso+'T12:00').toLocaleDateString('pt-BR') : '';
-      var sub   = Math.round(qtd*preco*100)/100;
-      if(nome) novosItens.push({
-        nome:nome, col2:nome,
-        col1: dataItemFmt,
-        col3:qtd+' '+unid, col4:'R$ '+_fmt(preco)+' x '+qtd,
-        col5:'R$ '+_fmt(sub),
-        qtd:qtd, unidade:unid, preco:preco, sub:sub,
-        data: dataItemFmt
-      });
+      var it = _pedEditLerItem(card, novaData);
+      if(it) novosItens.push(it);
+      else if(parseFloat((_pedEditEl(card,'mpe-f-qtd')||{}).value)) semProduto.push(ii+1);
     });
+    if(semProduto.length){ _toast('Escolha o produto do item '+semProduto.join(', ')+' (ou remova-o).'); return; }
   }
   var novoTotal = novosItens.reduce(function(s,it){ return s+it.sub; },0);
   var novaDataPagamentoIso = (document.getElementById('mpe-data-pagamento')||{value:''}).value;
@@ -17668,7 +17800,7 @@ async function _oferecerCorrigirPedidos(renomes, tsAtual){
   renomes.forEach(function(r){
     if(!r.de || !r.para) return;
     if(r.de.trim().toLowerCase()===r.para.trim().toLowerCase()) return;
-    mapa[r.de.trim().toLowerCase()] = {de:r.de, para:r.para};
+    mapa[r.de.trim().toLowerCase()] = {de:r.de, para:r.para, paraId:r.paraId||''};
   });
   var chaves = Object.keys(mapa);
   if(!chaves.length) return;
@@ -17682,12 +17814,12 @@ async function _oferecerCorrigirPedidos(renomes, tsAtual){
   if(!afetados.length) return;
   var resumo = chaves.map(function(k){ return '"'+mapa[k].de+'" → "'+mapa[k].para+'"'; }).join('\n');
   var totalItens = afetados.reduce(function(s,a){ return s+a.qtd; },0);
-  if(!confirm('Encontramos o mesmo item com nome antigo em outros '+afetados.length+' pedido(s) ('+totalItens+' lançamento(s)):\n\n'+resumo+'\n\nCorrigir automaticamente o NOME desses itens nesses outros pedidos também?\n\n(Quantidade, unidade, preço e total de cada pedido NÃO são alterados — só o nome, para fins de visualização e relatórios.)')) return;
+  if(!confirm('Encontramos o mesmo item com nome antigo em outros '+afetados.length+' pedido(s) ('+totalItens+' lançamento(s)):\n\n'+resumo+'\n\nCorrigir automaticamente o NOME desses itens nesses outros pedidos também?\n\n(Quantidade, unidade, preço e total de cada pedido NÃO são alterados — só o nome e o vínculo ao produto do Cadastro.)')) return;
   afetados.forEach(function(a){
     var reg = hist[a.idx];
     reg.itens = (reg.itens||[]).map(function(it){
       var m = mapa[(it.nome||'').trim().toLowerCase()];
-      return m ? Object.assign({}, it, {nome:m.para, col2:m.para}) : it;
+      return m ? Object.assign({}, it, m.paraId ? {nome:m.para, col2:m.para, prodId:m.paraId} : {nome:m.para, col2:m.para}) : it;
     });
     reg._editadoEm = Math.max(Date.now(), (reg._editadoEm||0)+1);
   });
@@ -19456,6 +19588,18 @@ function _cmpEditar(ts){
   _cmpItens = (r.itens||[]).map(function(it){ return {prodId:it.prodId, apresId:it.apresId||'', nome:it.nome, unid:it.unid, qtd:it.qtd, preco:it.preco, desconto:it.desconto||0}; });
   document.getElementById('cmp-setor').value = r.setor||'';
   _cmpRenderFornecedores(r.fornecedor||'');
+  // Liga cada item à apresentação do Cadastro (mesma unidade e fornecedor),
+  // sem mudar preço/quantidade gravados
+  _cmpItens.forEach(function(it){
+    if(!it.prodId) return;
+    var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===it.prodId; });
+    var aps = _cmpApres(prod);
+    if(aps.some(function(a){ return a.id===it.apresId; })) return;
+    var sU = _slugApres(it.unid), sF = _slugApres(r.fornecedor);
+    var a = aps.find(function(x){ return _slugApres(x.unid)===sU && _slugApres(x.fornecedor)===sF; })
+         || aps.find(function(x){ return _slugApres(x.unid)===sU; });
+    if(a) it.apresId = a.id;
+  });
   document.getElementById('cmp-resp').value = r.responsavel||'';
   document.getElementById('cmp-obs').value = r.obs||'';
   var dc = document.getElementById('cmp-data'); if(dc) dc.value = r.data || _dataLocalHoje();
