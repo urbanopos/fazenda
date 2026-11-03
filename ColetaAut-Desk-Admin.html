@@ -11837,8 +11837,8 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '7ba6345d00ad';
-var _caBuild = '20261103170000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
+var _caFP = '1dccc3870bb2';
+var _caBuild = '20261103180000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -11881,6 +11881,8 @@ function _aplicarConfigDoLink(){
     if(!m) return;
     var cfg = JSON.parse(decodeURIComponent(escape(atob(m[1]))));
     if(cfg && cfg.dr && /^[\w.-]+\/[\w.-]+$/.test(cfg.dr)){
+      // Trocou de repositório: na 1ª sincronização a versão de lá prevalece
+      if(cfg.dr !== GH_DATA_REPO) localStorage.setItem('fsj_repo_remoto_vence', '1');
       localStorage.setItem('fsj_gh_data_repo', cfg.dr);
       GH_DATA_REPO = cfg.dr;
       GH_API = 'https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_FILE;
@@ -13957,6 +13959,39 @@ function _recalcularPedNumPeloHistorico(){
   }
 }
 
+
+/* ── Configurações que mudam o FUNCIONAMENTO do app (módulo de Pedidos e
+   número de WhatsApp de destino) são as mesmas em todos os aparelhos:
+   ficam em backup/config.json e sincronizam junto com os registros. O nome
+   do responsável continua por aparelho (identifica quem está usando). ── */
+var GH_BCK_CONFIG = 'backup/config.json';
+var CFG_ED_KEY = 'fsj_cfg_compart_ed';
+function _cfgCompartLocal(){
+  return { vendasAtiva: localStorage.getItem(VK)==='1',
+           wppNumero: (localStorage.getItem('wpp_numero')||''),
+           _editadoEm: parseInt(localStorage.getItem(CFG_ED_KEY)||'0',10)||0 };
+}
+function _cfgCompartMarcarEdicao(){
+  try{ localStorage.setItem(CFG_ED_KEY, String(Date.now())); }catch(e){}
+  _sincronizarRegistrosGitHub();
+}
+function _cfgCompartMesclar(local, remoto){
+  if(!remoto || typeof remoto !== 'object') return local;
+  if(_repoRemotoVence()) return remoto;
+  // Só o lado local vence se foi alterado DEPOIS; no empate vale o publicado.
+  return ((local._editadoEm||0) > (remoto._editadoEm||0)) ? local : remoto;
+}
+async function _cfgCompartAplicar(c){
+  try{
+    localStorage.setItem(VK, c.vendasAtiva ? '1' : '0');
+    if(c.wppNumero) localStorage.setItem('wpp_numero', c.wppNumero); else localStorage.removeItem('wpp_numero');
+    localStorage.setItem(CFG_ED_KEY, String(c._editadoEm||0));
+  }catch(e){}
+  try{ _aplicarVendas(!!c.vendasAtiva); }catch(e){}
+  var sp = document.getElementById('ad-num-sp');
+  if(sp && c.wppNumero) sp.textContent = _fmtFone(c.wppNumero);
+}
+
 function _initVendas(){
   var ativa = localStorage.getItem(VK)==='1';
   _aplicarVendas(ativa);
@@ -14042,6 +14077,7 @@ function toggleVendas(){
   var nova = !atual;
   localStorage.setItem(VK, nova?'1':'0');
   _aplicarVendas(nova);
+  _cfgCompartMarcarEdicao();
   var s2 = document.getElementById('ad-st2');
   s2.textContent = nova ? 'Vendas ativadas' : 'Vendas desativadas';
   s2.className = 'ad-st';
@@ -18117,6 +18153,77 @@ function _bkpH(extra){
   }, extra||{});
 }
 
+
+/* ── Onde ficam os dados: decidido em UM lugar só, para TODOS os aparelhos ──
+   O arquivo dados-repo.json, no repositório dos aplicativos, diz qual
+   repositório guarda os dados. Cada app confere esse arquivo antes de
+   sincronizar e se ajusta sozinho. Antes, a escolha ficava só no aparelho
+   que fez a troca — e os outros continuavam sincronizando no repositório
+   antigo, sem erro e sem aviso, cada um vendo dados diferentes. */
+var GH_PONTEIRO = 'dados-repo.json';
+var REPO_REMOTO_VENCE_KEY = 'fsj_repo_remoto_vence';
+var _repoVerificadoEm = 0;
+function _dadosRepoAplicar(repo){
+  GH_DATA_REPO = repo;
+  try{ if(repo===GH_REPO) localStorage.removeItem('fsj_gh_data_repo'); else localStorage.setItem('fsj_gh_data_repo', repo); }catch(e){}
+  GH_API = 'https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_FILE;
+}
+async function _dadosRepoLerPonteiro(){
+  var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_PONTEIRO+'?t='+Date.now(), {headers:_bkpH(), cache:'no-store'});
+  if(r.status === 404) return {repo:null, sha:null};
+  if(!r.ok) throw new Error('GitHub respondeu '+r.status+' ao ler '+GH_PONTEIRO);
+  var m = await r.json(), p = null;
+  try{ p = JSON.parse(decodeURIComponent(escape(atob((m.content||'').replace(/\n/g,''))))); }catch(e){}
+  var repo = (p && p.repo && /^[\w.-]+\/[\w.-]+$/.test(p.repo)) ? p.repo : null;
+  return {repo:repo, sha:m.sha||null};
+}
+async function _dadosRepoPublicarPonteiro(repo, sha){
+  if(sha === undefined){ var atual = await _dadosRepoLerPonteiro(); sha = atual.sha; }
+  var conteudo = {repo: repo, definidoEm: new Date().toLocaleString('pt-BR'), por: 'desktop'};
+  var body = {message: 'Dados da fazenda agora em '+repo, content: btoa(unescape(encodeURIComponent(JSON.stringify(conteudo, null, 2))))};
+  if(sha) body.sha = sha;
+  var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_PONTEIRO, {method:'PUT', headers:_bkpH({'Content-Type':'application/json'}), body:JSON.stringify(body)});
+  if(!r.ok) throw new Error('não consegui gravar '+GH_PONTEIRO+' (HTTP '+r.status+')');
+}
+/* Confere (no máximo a cada 5 min) se este aparelho está usando o mesmo
+   repositório de dados que os demais. Se o ponteiro aponta para outro,
+   troca sozinho — e, na primeira sincronização depois da troca, a versão
+   do repositório novo prevalece; só o que existe APENAS neste aparelho é
+   somado. Se não houver ponteiro e este aparelho usa um repositório
+   próprio, publica o ponteiro para os outros o seguirem. */
+async function _dadosRepoGarantir(forcar){
+  if(!forcar && Date.now()-_repoVerificadoEm < 5*60*1000) return;
+  var p = await _dadosRepoLerPonteiro();
+  if(!p.repo){
+    if(GH_DATA_REPO !== GH_REPO) await _dadosRepoPublicarPonteiro(GH_DATA_REPO, p.sha);
+  } else if(p.repo !== GH_DATA_REPO){
+    var t = await fetch('https://api.github.com/repos/'+p.repo+'?t='+Date.now(), {headers:_bkpH(), cache:'no-store'});
+    if(!t.ok) throw new Error('Os dados da fazenda ficam em '+p.repo+', mas o token deste aparelho não tem acesso a ele (HTTP '+t.status+'). Atualize o token.');
+    _dadosRepoAplicar(p.repo);
+    try{ localStorage.setItem(REPO_REMOTO_VENCE_KEY, '1'); }catch(e){}
+    _toast('🔄 Este aparelho foi ajustado sozinho para usar os dados em '+p.repo+'.');
+  }
+  _repoVerificadoEm = Date.now();
+}
+function _repoRemotoVence(){ try{ return localStorage.getItem(REPO_REMOTO_VENCE_KEY)==='1'; }catch(e){ return false; } }
+/* Do lado local, mantém só o que NÃO existe no remoto (por ts, ou por id
+   nos cadastros) — usado na primeira sincronização após trocar de
+   repositório, para que a versão já publicada lá prevaleça. */
+function _soRegistrosLocaisNovos(local, remoto){
+  if(Array.isArray(local)){
+    var tem = {};
+    (Array.isArray(remoto)?remoto:[]).forEach(function(r){ tem[String(r.ts||JSON.stringify(r))] = 1; });
+    return local.filter(function(r){ return !tem[String(r.ts||JSON.stringify(r))]; });
+  }
+  var res = {};
+  ['produtos','clientes','fornecedores','precos'].forEach(function(cat){
+    var tem = {};
+    (((remoto||{})[cat])||[]).forEach(function(x){ tem[String(x.id||JSON.stringify(x))] = 1; });
+    res[cat] = (((local||{})[cat])||[]).filter(function(x){ return !tem[String(x.id||JSON.stringify(x))]; });
+  });
+  return res;
+}
+
 async function _ghLerSHA(caminho){
   try{
     var r = await fetch('https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+caminho+'?t='+Date.now(),
@@ -18369,6 +18476,7 @@ async function _syncArquivo(caminho, lerLocal, mesclar, gravarLocal, msg){
     var remoto = await _ghLerComSha(caminho);
     var local = lerLocal();
     var temRemoto = !!(remoto && remoto.dados != null);
+    if(temRemoto && _repoRemotoVence() && caminho !== GH_BCK_CONFIG) local = _soRegistrosLocaisNovos(local, remoto.dados);
     var merge = temRemoto ? mesclar(local, remoto.dados) : local;
     var jm = JSON.stringify(merge);
     if(jm !== JSON.stringify(local)){
@@ -18424,6 +18532,7 @@ async function _syncAntesDeEditar(){
 async function _sincronizarAgora(manual){
   if(manual) _toast('🔃 Sincronizando com o GitHub...');
   try{
+    await _dadosRepoGarantir(manual);
     var houveMudanca = false;
 
     // Usa as versões CRUAS (incluindo tombstones de itens excluídos) — se
@@ -18510,6 +18619,11 @@ async function _sincronizarAgora(manual){
       houveMudanca = true;
     }
 
+    // Configurações compartilhadas (módulo de Pedidos, WhatsApp de destino)
+    var rcfg = await _syncArquivo(GH_BCK_CONFIG, _cfgCompartLocal, _cfgCompartMesclar,
+      async function(merge){ await _cfgCompartAplicar(merge); }, 'Sincronizacao automatica (config)');
+    if(rcfg.mudouLocal) houveMudanca = true;
+
     try{ _backfillPrecosColetas(); }catch(e){}
     try{ _loteGerarMov(); }catch(e){}
     if(houveMudanca) _toast('🔄 Dados atualizados com a versão mais recente de outro dispositivo.');
@@ -18517,6 +18631,7 @@ async function _sincronizarAgora(manual){
     _syncFalhasSeguidas = 0;
     _ultimoSyncOk = Date.now();
     _ultimoSyncErro = null;
+    try{ localStorage.removeItem(REPO_REMOTO_VENCE_KEY); }catch(e){}
     return true;
   }catch(e){
     console.warn('_sincronizarRegistrosGitHub:', e.message);
@@ -18847,7 +18962,7 @@ function salvarConfigColetor(){
   var v=(document.getElementById('ad-num-novo').value||'').replace(/\D/g,'');
   var nm=(document.getElementById('ad-nome-novo').value||'').trim();
   var s2=document.getElementById('ad-st2');
-  if(v){ if(v.length<10){ s2.textContent='Numero invalido'; s2.className='ad-st er'; return; } localStorage.setItem('wpp_numero',v); document.getElementById('ad-num-sp').textContent=_fmtFone(v); document.getElementById('ad-num-novo').value=''; }
+  if(v){ if(v.length<10){ s2.textContent='Numero invalido'; s2.className='ad-st er'; return; } localStorage.setItem('wpp_numero',v); document.getElementById('ad-num-sp').textContent=_fmtFone(v); document.getElementById('ad-num-novo').value=''; _cfgCompartMarcarEdicao(); }
   if(nm){ localStorage.setItem('wpp_nome',nm); document.getElementById('ad-nome-sp').textContent=nm; document.getElementById('ad-nome-novo').value=''; }
   s2.textContent='Configuracoes salvas'; s2.className='ad-st';
 }
@@ -20904,7 +21019,7 @@ function _loteAbrir(){
    coletas, pedidos, compras e cadastros podem ficar num repositório
    PRIVADO. O endereço fica salvo no aparelho e vai junto no link de
    configuração enviado aos coletores e ao outro Admin. */
-var _DADOS_ARQS = [GH_BCK_COLETAS, GH_BCK_PEDIDOS, GH_BCK_CADASTROS, 'backup/compras.json', GH_BCK_RESOP, GH_BCK_LOTES, GH_FILE];
+var _DADOS_ARQS = [GH_BCK_COLETAS, GH_BCK_PEDIDOS, GH_BCK_CADASTROS, 'backup/compras.json', GH_BCK_RESOP, GH_BCK_LOTES, GH_BCK_CONFIG, GH_FILE];
 /* Exporta TODOS os registros guardados neste aparelho (coletas, pedidos,
    compras, RESOP, lotes e cadastros — inclusive os excluídos) num arquivo
    JSON, para auditoria/comparação entre aparelhos. Não inclui o token. */
@@ -20920,6 +21035,8 @@ async function _exportarAuditoria(){
       tokenConfigurado: !!_ghToken(),
       ultimoBackup: bkp,
       ultimoSyncErro: (typeof _ultimoSyncErro!=='undefined' ? _ultimoSyncErro : null),
+      repoDados: GH_DATA_REPO,
+      config: _cfgCompartLocal(),
       coletas:  _carregarHistColetaRaw(),
       pedidos:  _carregarHistRaw(),
       compras:  _cmpCarregarRaw(),
@@ -20989,9 +21106,9 @@ async function _dadosRepoMigrar(){
         copiados++;
       } finally { GH_DATA_REPO = antigo; }
     }
-    GH_DATA_REPO = novo;
-    try{ localStorage.setItem('fsj_gh_data_repo', novo); }catch(e){}
-    GH_API = 'https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_FILE;
+    _dadosRepoAplicar(novo);
+    try{ await _dadosRepoPublicarPonteiro(novo); }catch(e){ st.textContent = '⚠️ Dados copiados, mas: '+e.message+'. Os outros aparelhos ainda não sabem do novo endereço.'; return; }
+    _repoVerificadoEm = Date.now();
     st.innerHTML = '✅ '+copiados+' arquivo(s) copiados. Este aparelho agora sincroniza com <strong>'+_escH(novo)+'</strong>.<br>Reenvie o link de configuração ao outro Admin e aos coletores.';
     _toast('✅ Dados agora em '+novo);
     _sincronizarRegistrosGitHub(false);
@@ -20999,9 +21116,9 @@ async function _dadosRepoMigrar(){
 }
 function _dadosRepoVoltar(){
   if(!confirm('Voltar a sincronizar com '+GH_REPO+' (público)?')) return;
-  try{ localStorage.removeItem('fsj_gh_data_repo'); }catch(e){}
-  GH_DATA_REPO = GH_REPO;
-  GH_API = 'https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_FILE;
+  _dadosRepoAplicar(GH_REPO);
+  _dadosRepoPublicarPonteiro(GH_REPO).then(function(){ _repoVerificadoEm = Date.now(); })
+    .catch(function(e){ _toast('⚠️ '+e.message+' — os outros aparelhos ainda não sabem da volta.'); });
   _janelaFechar('jan-dados'); _toast('Voltou a usar '+GH_REPO);
 }
 
