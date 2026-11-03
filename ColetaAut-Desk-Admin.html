@@ -982,6 +982,10 @@ body:has(#sec-compras.at) #contador{display:none}
       <div class="ca-menu-ico" style="background:#fbf4e2">🩺</div>
       <div><div class="ca-menu-nm">Verificação de dados</div><div class="ca-menu-sub">Inconsistências para revisar, uma a uma</div></div>
     </button>
+    <button class="ca-menu-item" onclick="_caFecharMenu();_exportarAuditoria()">
+      <div class="ca-menu-ico" style="background:#eef3e2">📋</div>
+      <div><div class="ca-menu-nm">Exportar registros (auditoria)</div><div class="ca-menu-sub">Arquivo com todos os registros deste aparelho</div></div>
+    </button>
     <button class="ca-menu-item" onclick="_caFecharMenu();_dadosRepoAbrir()">
       <div class="ca-menu-ico" style="background:#e8eef8">🔒</div>
       <div><div class="ca-menu-nm">Onde ficam os dados</div><div class="ca-menu-sub">Repositório do GitHub (público ou privado)</div></div>
@@ -11833,8 +11837,8 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '8d41f0b6c3e2';
-var _caBuild = '20261018030000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
+var _caFP = '7ba6345d00ad';
+var _caBuild = '20261103170000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -20901,6 +20905,46 @@ function _loteAbrir(){
    PRIVADO. O endereço fica salvo no aparelho e vai junto no link de
    configuração enviado aos coletores e ao outro Admin. */
 var _DADOS_ARQS = [GH_BCK_COLETAS, GH_BCK_PEDIDOS, GH_BCK_CADASTROS, 'backup/compras.json', GH_BCK_RESOP, GH_BCK_LOTES, GH_FILE];
+/* Exporta TODOS os registros guardados neste aparelho (coletas, pedidos,
+   compras, RESOP, lotes e cadastros — inclusive os excluídos) num arquivo
+   JSON, para auditoria/comparação entre aparelhos. Não inclui o token. */
+async function _exportarAuditoria(){
+  try{
+    var bkp = ''; try{ bkp = localStorage.getItem(BKP_TS_KEY)||''; }catch(e){}
+    var dados = {
+      app: 'ColetaAut-auditoria',
+      origem: 'desktop',
+      geradoEm: new Date().toLocaleString('pt-BR'),
+      geradoTs: Date.now(),
+      build: (typeof _caBuild!=='undefined' ? _caBuild : ''),
+      tokenConfigurado: !!_ghToken(),
+      ultimoBackup: bkp,
+      ultimoSyncErro: (typeof _ultimoSyncErro!=='undefined' ? _ultimoSyncErro : null),
+      coletas:  _carregarHistColetaRaw(),
+      pedidos:  _carregarHistRaw(),
+      compras:  _cmpCarregarRaw(),
+      resop:    _resopCarregarRaw(),
+      lotes:    _loteCarregarRaw(),
+      cadastros: JSON.parse(JSON.stringify(_cadDados||{}))
+    };
+    var nome = 'auditoria-desktop-'+_dataLocalHoje()+'.json';
+    var blob = new Blob([JSON.stringify(dados)], {type:'application/json'});
+    var arq = null;
+    try{ arq = new File([blob], nome, {type:'application/json'}); }catch(e){}
+    if(arq && navigator.canShare && navigator.canShare({files:[arq]})){
+      try{ await navigator.share({files:[arq], title:'Auditoria ColetaAut'}); _toast('✅ Arquivo de auditoria gerado'); return; }
+      catch(e){ if(e && e.name==='AbortError') return; }
+    }
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = nome;
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(a.href); }, 600);
+    _toast('✅ Arquivo salvo em Downloads: '+nome);
+  }catch(e){
+    _toast('⚠️ Erro ao exportar: '+e.message);
+  }
+}
+
 function _dadosRepoAbrir(){
   var atual = GH_DATA_REPO;
   _janelaAbrir('jan-dados', '🔒 Onde ficam os dados', 'Repositório do GitHub usado para sincronizar',
