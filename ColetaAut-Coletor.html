@@ -581,6 +581,28 @@ var GH_BCK_PEDIDOS = 'backup/pedidos.json';
 var GH_CATALOGO_PUB = 'https://urbanopos.github.io/fazenda/catalogo.json'; // leitura publica, sem token
 function _ghToken(){ return localStorage.getItem(GH_TOKEN_KEY)||''; }
 
+/* Segue o ponteiro dados-repo.json (repositório dos aplicativos), que diz a
+   TODOS os aparelhos onde ficam os dados — assim, se o Admin trocar o
+   repositório de dados, este Coletor se ajusta sozinho, sem novo link. */
+async function _dadosRepoSeguirPonteiro(){
+  try{
+    var h = {'Accept':'application/vnd.github+json'};
+    if(_ghToken()) h['Authorization'] = 'token '+_ghToken();
+    var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/dados-repo.json?t='+Date.now(), {headers:h, cache:'no-store'});
+    if(!r.ok) return;
+    var m = await r.json(), p = JSON.parse(decodeURIComponent(escape(atob((m.content||'').replace(/\n/g,'')))));
+    if(!p || !p.repo || !/^[\w.-]+\/[\w.-]+$/.test(p.repo) || p.repo === GH_DATA_REPO) return;
+    if(!_ghToken()) return;
+    var t = await fetch('https://api.github.com/repos/'+p.repo+'?t='+Date.now(), {headers:h, cache:'no-store'});
+    if(!t.ok) return; // sem acesso: continua no atual (o Admin ainda lê as coletas enviadas ao repositório público)
+    GH_DATA_REPO = p.repo;
+    try{ if(p.repo===GH_REPO) localStorage.removeItem('fsj_gh_data_repo'); else localStorage.setItem('fsj_gh_data_repo', p.repo); }catch(e){}
+    GH_API = 'https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_FILE;
+  }catch(e){ console.warn('ponteiro de dados:', e.message); }
+}
+setTimeout(_dadosRepoSeguirPonteiro, 1500);
+setInterval(_dadosRepoSeguirPonteiro, 10*60*1000);
+
 /* ── Configuração remota via link (#cfg=...) ───────────────────────────
    Permite habilitar o envio de coletas sem precisar abrir o painel
    admin no celular do operador: o administrador gera um link com o
@@ -1357,8 +1379,8 @@ function _iniciar(){
    nada salvo no aparelho — token, catálogo e coletas pendentes continuam
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
-var _caFP = '3b7e91c4d2a6';
-var _caBuild = '20261018030000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
+var _caFP = '7789ac366400';
+var _caBuild = '20261103180000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
