@@ -9,9 +9,11 @@
 <meta name="apple-mobile-web-app-title" content="Fazenda SJ">
 <meta name="theme-color" content="#1c2e22">
 <title>Fazenda Sao Jose - Coleta</title>
-<link rel="apple-touch-icon" href="https://urbanopos.github.io/fazenda/icon-192.png">
-<link rel="icon" type="image/png" href="https://urbanopos.github.io/fazenda/icon-192.png">
-<link rel="manifest" href="https://urbanopos.github.io/fazenda/manifest.json">
+<link rel="apple-touch-icon" href="https://urbanopos.github.io/fazenda/icon-coletor-192.png">
+<link rel="icon" type="image/png" href="https://urbanopos.github.io/fazenda/icon-coletor-192.png">
+<!-- Manifesto embutido (o antigo manifest.json foi apagado do GitHub em 12/06 e
+     sem ele o Android não oferece "Instalar app") -->
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogIkZhemVuZGEgU8OjbyBKb3PDqSDigJQgQ29sZXRhIiwgInNob3J0X25hbWUiOiAiQ29sZXRhIiwgImRlc2NyaXB0aW9uIjogIkNvbGV0YUF1dCBDb2xldG9yIC0gRmF6ZW5kYSBTw6NvIEpvc8OpIiwgImlkIjogImh0dHBzOi8vdXJiYW5vcG9zLmdpdGh1Yi5pby9mYXplbmRhL0NvbGV0YUF1dC1Db2xldG9yLmh0bWwiLCAic3RhcnRfdXJsIjogImh0dHBzOi8vdXJiYW5vcG9zLmdpdGh1Yi5pby9mYXplbmRhL0NvbGV0YUF1dC1Db2xldG9yLmh0bWwiLCAic2NvcGUiOiAiL2ZhemVuZGEvIiwgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMxYzJlMjIiLCAidGhlbWVfY29sb3IiOiAiIzFjMmUyMiIsICJvcmllbnRhdGlvbiI6ICJwb3J0cmFpdCIsICJpY29ucyI6IFt7InNyYyI6ICJodHRwczovL3VyYmFub3Bvcy5naXRodWIuaW8vZmF6ZW5kYS9pY29uLWNvbGV0b3ItMTkyLnBuZyIsICJzaXplcyI6ICIxOTJ4MTkyIiwgInR5cGUiOiAiaW1hZ2UvcG5nIiwgInB1cnBvc2UiOiAiYW55In0sIHsic3JjIjogImh0dHBzOi8vdXJiYW5vcG9zLmdpdGh1Yi5pby9mYXplbmRhL2ljb24tY29sZXRvci01MTIucG5nIiwgInNpemVzIjogIjUxMng1MTIiLCAidHlwZSI6ICJpbWFnZS9wbmciLCAicHVycG9zZSI6ICJhbnkifSwgeyJzcmMiOiAiaHR0cHM6Ly91cmJhbm9wb3MuZ2l0aHViLmlvL2ZhemVuZGEvaWNvbi1jb2xldG9yLTUxMi5wbmciLCAic2l6ZXMiOiAiNTEyeDUxMiIsICJ0eXBlIjogImltYWdlL3BuZyIsICJwdXJwb3NlIjogIm1hc2thYmxlIn1dfQ==">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600;700;800&display=swap');
 :root{--vd:#1c2e22;--vm:#2d4a38;--vc:#4a8c6f;--ac:#b8943f;--cr:#f5f0e8;--ce:#e8dfc8;--br:#fff;--tx:#1a1a1a;--mu:#6b655b;--r:8px;--pnl:#e9f4ec;--pnlb:#cfe3d3;--vdrgb:28,46,34}
@@ -608,10 +610,39 @@ setInterval(_dadosRepoSeguirPonteiro, 10*60*1000);
    admin no celular do operador: o administrador gera um link com o
    token embutido e envia por WhatsApp; ao abrir o link uma única vez,
    o app se configura sozinho. ──────────────────────────────────────── */
+/* Aberto dentro de um app (WhatsApp, Instagram, Facebook) no Android?
+   Passa sozinho para o Chrome, levando a configuração junto — assim o
+   acesso fica gravado no Chrome e o coletor já pode instalar o ícone,
+   sem precisar fazer nada à mão. Se o Chrome não abrir (não instalado),
+   o Android volta para este mesmo link e a configuração é aplicada aqui. */
+function _abrirNoChromeSeEmbutido(){
+  try{
+    var ua = navigator.userAgent || '';
+    if(!/Android/i.test(ua)) return false;
+    if(!/; wv\)|FBAN|FBAV|Instagram|WhatsApp/i.test(ua)) return false;
+    if(sessionStorage.getItem('fsj_redir_chrome')) return false; // já tentou: evita repetir
+    sessionStorage.setItem('fsj_redir_chrome', '1');
+    var m = (location.hash||'').match(/cfg=([^&]+)/) || (location.search||'').match(/[?&]cfg=([^&]+)/);
+    var alvo = location.host + location.pathname + (m ? '?cfg=' + m[1] : '');
+    location.href = 'intent://' + alvo + '#Intent;scheme=https;package=com.android.chrome;'
+      + 'S.browser_fallback_url=' + encodeURIComponent(location.href) + ';end';
+    // Alguns apps ignoram o pedido de abrir o Chrome. Se depois de 2,5 s a
+    // página ainda estiver na tela, configura aqui mesmo e orienta o coletor.
+    setTimeout(function(){
+      if(document.visibilityState !== 'visible') return; // o Chrome abriu
+      _aplicarConfigDoLink();
+      _toast('Para instalar o ícone: menu ⋮ → Abrir no Chrome');
+    }, 2500);
+    return true;
+  }catch(e){ return false; }
+}
+
 function _aplicarConfigDoLink(){
   try{
-    var hash = location.hash || '';
-    var m = hash.match(/cfg=([^&]+)/);
+    if(_abrirNoChromeSeEmbutido()) return;
+    // A configuração pode vir no fim do link (#cfg=, link enviado pelo
+    // Admin) ou como ?cfg= (quando foi repassada para o Chrome).
+    var m = (location.hash||'').match(/cfg=([^&]+)/) || (location.search||'').match(/[?&]cfg=([^&]+)/);
     if(!m) return;
     var cfg = JSON.parse(decodeURIComponent(escape(atob(m[1]))));
     if(cfg && cfg.dr && /^[\w.-]+\/[\w.-]+$/.test(cfg.dr)){
@@ -624,7 +655,7 @@ function _aplicarConfigDoLink(){
       setTimeout(function(){ _toast('✅ App habilitado! Suas coletas já serão enviadas.'); }, 800);
     }
     // Remove o token da URL/histórico do navegador assim que aplicado
-    history.replaceState(null, '', location.pathname + location.search);
+    history.replaceState(null, '', location.pathname);
   }catch(e){ console.warn('config do link:', e.message); }
 }
 
@@ -953,6 +984,15 @@ var PROD_VENDA = [
 
 /* ---- INSTALL ---- */
 /* ---- INSTALL ---- */
+/* Service Worker: o Android só oferece "Instalar app" com um registrado */
+(function(){
+  if(!('serviceWorker' in navigator)) return;
+  if(location.hostname !== 'urbanopos.github.io') return;
+  navigator.serviceWorker.register('/fazenda/ca-sw.js', {scope:'/fazenda/'})
+    .catch(function(e){ console.log('SW:', e.message); });
+})();
+/* Navegador embutido de app (WhatsApp, Instagram, Facebook): não instala */
+var _navEmbutido = /; wv\)|FBAN|FBAV|Instagram|WhatsApp/i.test(navigator.userAgent);
 var _ip = null;
 var _ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
 var _sa = window.matchMedia('(display-mode:standalone)').matches
@@ -966,14 +1006,15 @@ if(!_sa){
     _ip = e;
     document.getElementById('btn-inst').classList.add('vis');
   });
-  if(_ios) document.getElementById('btn-inst').classList.add('vis');
+  if(_ios || _navEmbutido) document.getElementById('btn-inst').classList.add('vis');
 }
 
 function dispensarInst(){ /* sem banner */ }
 function abrirInst(){
   if(_ip){ _ip.prompt(); _ip.userChoice.then(function(r){ if(r.outcome==='accepted'){ _ip=null; document.getElementById('btn-inst').classList.remove('vis'); _toast('App instalado!'); } }); }
   else if(_ios) document.getElementById('guia-ios').classList.add('vis');
-  else _toast('Menu do navegador - Adicionar a tela inicial');
+  else if(_navEmbutido) _toast('Abra este link no Chrome (menu ⋮ → Abrir no Chrome) para instalar');
+  else _toast('No Chrome: menu ⋮ → Adicionar à tela inicial');
 }
 function fecharGuiaIos(){ document.getElementById('guia-ios').classList.remove('vis'); }
 
@@ -1379,8 +1420,8 @@ function _iniciar(){
    nada salvo no aparelho — token, catálogo e coletas pendentes continuam
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
-var _caFP = '7789ac366400';
-var _caBuild = '20261103180000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
+var _caFP = '7d4ca1769df3';
+var _caBuild = '20261108205000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
