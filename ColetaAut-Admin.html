@@ -11660,8 +11660,8 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = 'bc9f68629919';
-var _caBuild = '20261108213000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
+var _caFP = '09404cdf23fe';
+var _caBuild = '20261108213500'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -21441,25 +21441,12 @@ async function _usuariosAbrir(){
     function ord(a,b){ var x=(a.nome||'').trim(), y=(b.nome||'').trim(); if(!x!==!y) return x ? -1 : 1; return x.localeCompare(y,'pt-BR'); }
     var adm = lista.filter(function(u){ return u.perfil==='Administrador'; }).sort(ord);
     var col = lista.filter(function(u){ return u.perfil==='Coletor'; }).sort(ord);
-    // Coletores que já enviaram coletas mas ainda não abriram a versão com registro
-    var conhecidos = {}; lista.forEach(function(u){ if(u.nome) conhecidos[u.nome.trim().toLowerCase()] = 1; });
-    var vistos = {};
-    _carregarHistColetaRaw().forEach(function(c){
-      var n = (c.coletor||'').trim(); if(!n || c.origem==='inventario' || conhecidos[n.toLowerCase()]) return;
-      var t = c.ts||0; if(!vistos[n] || vistos[n] < t) vistos[n] = t;
-    });
-    var pend = Object.keys(vistos).sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
     var tit = 'font-size:11px;color:#8a8574;text-transform:uppercase;letter-spacing:1px;margin:14px 0 2px;font-weight:700';
     var h = '<div style="'+tit+';margin-top:0">Administradores ('+adm.length+')</div>'
       + (adm.length ? adm.map(linha).join('') : '<div style="padding:8px 0">Nenhum registrado ainda.</div>')
       + '<div style="'+tit+'">Coletores ('+col.length+')</div>'
       + (col.length ? col.map(linha).join('') : '<div style="padding:8px 0">Nenhum registrado ainda.</div>');
-    if(pend.length){
-      h += '<div style="'+tit+'">Vistos nas coletas, ainda sem registro ('+pend.length+')</div>'
-        + '<div style="font-size:11px;color:#8a8574;margin-bottom:4px">Entram na lista acima quando abrirem o app atualizado.</div>'
-        + pend.map(function(n){ return '<div style="padding:8px 0;border-bottom:1px solid #ece6d6"><b>'+_escH(n)+'</b>'
-            +'<div style="font-size:12px;color:#6b6b60">última coleta em '+dt(vistos[n])+'</div></div>'; }).join('');
-    }
+    h += '<div style="font-size:11px;color:#8a8574;margin-top:10px">Entra na lista todo aparelho com acesso configurado que abriu o app atualizado ou recebeu o link de acesso.</div>';
     h += '<button onclick="_usuariosAbrir()" style="width:100%;padding:11px;border:0;border-radius:10px;font-size:13px;font-weight:700;color:#fff;background:#3a5a8a;margin-top:14px;cursor:pointer">🔄 Atualizar lista</button>';
     corpo.innerHTML = h;
   }catch(e){
