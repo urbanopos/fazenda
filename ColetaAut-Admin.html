@@ -11660,8 +11660,8 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = 'e055f6ce0a45';
-var _caBuild = '20261103180000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
+var _caFP = 'bc9f68629919';
+var _caBuild = '20261108213000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -18459,6 +18459,7 @@ async function _sincronizarAgora(manual){
     _ultimoSyncOk = Date.now();
     _ultimoSyncErro = null;
     try{ localStorage.removeItem(REPO_REMOTO_VENCE_KEY); }catch(e){}
+    _usuarioRegistrar(false);
     return true;
   }catch(e){
     console.warn('_sincronizarRegistrosGitHub:', e.message);
@@ -18790,7 +18791,7 @@ function salvarConfigColetor(){
   var nm=(document.getElementById('ad-nome-novo').value||'').trim();
   var s2=document.getElementById('ad-st2');
   if(v){ if(v.length<10){ s2.textContent='Numero invalido'; s2.className='ad-st er'; return; } localStorage.setItem('wpp_numero',v); document.getElementById('ad-num-sp').textContent=_fmtFone(v); document.getElementById('ad-num-novo').value=''; _cfgCompartMarcarEdicao(); }
-  if(nm){ localStorage.setItem('wpp_nome',nm); document.getElementById('ad-nome-sp').textContent=nm; document.getElementById('ad-nome-novo').value=''; }
+  if(nm){ localStorage.setItem('wpp_nome',nm); document.getElementById('ad-nome-sp').textContent=nm; document.getElementById('ad-nome-novo').value=''; _usuarioRegistrar(true); }
   s2.textContent='Configuracoes salvas'; s2.className='ad-st';
 }
 function salvarSenha(){
@@ -20887,7 +20888,7 @@ function _loteAbrir(){
    coletas, pedidos, compras e cadastros podem ficar num repositório
    PRIVADO. O endereço fica salvo no aparelho e vai junto no link de
    configuração enviado aos coletores e ao outro Admin. */
-var _DADOS_ARQS = [GH_BCK_COLETAS, GH_BCK_PEDIDOS, GH_BCK_CADASTROS, 'backup/compras.json', GH_BCK_RESOP, GH_BCK_LOTES, GH_BCK_CONFIG, GH_FILE];
+var _DADOS_ARQS = [GH_BCK_COLETAS, GH_BCK_PEDIDOS, GH_BCK_CADASTROS, 'backup/compras.json', GH_BCK_RESOP, GH_BCK_LOTES, GH_BCK_CONFIG, 'backup/usuarios.json', GH_FILE];
 /* Exporta TODOS os registros guardados neste aparelho (coletas, pedidos,
    compras, RESOP, lotes e cadastros — inclusive os excluídos) num arquivo
    JSON, para auditoria/comparação entre aparelhos. Não inclui o token. */
@@ -21363,6 +21364,107 @@ function _pubStatus(id, msg, tipo){
 function _pubToken(){
   var t = ''; try{ t = localStorage.getItem(PUB_TOKEN_KEY)||''; }catch(e){}
   return t || _ghToken() || '';
+}
+
+/* ── Registro de usuários habilitados ────────────────────────────────────
+   Cada app com acesso configurado (token) se registra sozinho em
+   backup/usuarios.json, no repositório único de dados: nome, perfil, app e
+   último acesso. É o que alimenta "👥 Usuários" em Cadastros do Admin.
+   Atualiza ao abrir (no máximo a cada 6 h) e sempre que o nome muda. ── */
+var USR_ARQ = 'backup/usuarios.json';
+function _dispositivoId(){
+  var id = ''; try{ id = localStorage.getItem('fsj_dispositivo_id')||''; }catch(e){}
+  if(!id){ id = 'd'+Date.now().toString(36)+Math.random().toString(36).slice(2,8); try{ localStorage.setItem('fsj_dispositivo_id', id); }catch(e){} }
+  return id;
+}
+function _usrH(extra){
+  var h = {'Accept':'application/vnd.github+json','Authorization':'token '+_ghToken()};
+  if(extra) for(var k in extra) h[k] = extra[k];
+  return h;
+}
+async function _usuarioRegistrar(forcar){
+  try{
+    if(!_ghToken()) return;
+    var nome = (localStorage.getItem('wpp_nome')||'').trim();
+    var chave = nome+'|'+GH_DATA_REPO;
+    var ult = {}; try{ ult = JSON.parse(localStorage.getItem('fsj_usr_reg')||'{}'); }catch(e){}
+    if(!forcar && ult.chave===chave && Date.now()-(ult.em||0) < 6*3600*1000) return;
+    var url = 'https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+USR_ARQ;
+    for(var tent=0; tent<3; tent++){
+      var r = await fetch(url+'?t='+Date.now(), {headers:_usrH(), cache:'no-store'});
+      var lista = [], sha = null;
+      if(r.ok){
+        var m = await r.json(); sha = m.sha;
+        try{ lista = JSON.parse(decodeURIComponent(escape(atob((m.content||'').replace(/\n/g,''))))); }catch(e){}
+        if(!Array.isArray(lista)) lista = [];
+      } else if(r.status !== 404) return;
+      var id = _dispositivoId();
+      var reg = {id:id, nome:nome, perfil:'Administrador', app:'Admin celular', ultimoAcesso:Date.now(),
+                 build:(typeof _caBuild!=='undefined'?_caBuild:'')};
+      var i = -1; lista.forEach(function(x,j){ if(x && x.id===id) i = j; });
+      if(i >= 0){ if(!lista[i].desde) reg.desde = lista[i].desde || Date.now(); lista[i] = Object.assign({}, lista[i], reg); }
+      else { reg.desde = Date.now(); lista.push(reg); }
+      var body = {message:'Usuário: '+(nome||id)+' (Admin celular)', content:btoa(unescape(encodeURIComponent(JSON.stringify(lista, null, 2))))};
+      if(sha) body.sha = sha;
+      var p = await fetch(url, {method:'PUT', headers:_usrH({'Content-Type':'application/json'}), body:JSON.stringify(body)});
+      if(p.ok){ try{ localStorage.setItem('fsj_usr_reg', JSON.stringify({chave:chave, em:Date.now()})); }catch(e){} return; }
+      if(p.status !== 409 && p.status !== 422) return;   // conflito: outro aparelho gravou junto — tenta de novo
+      await new Promise(function(ok){ setTimeout(ok, 800 + Math.random()*1200); });
+    }
+  }catch(e){ console.warn('registro de usuário:', e.message); }
+}
+
+/* ── 👥 Usuários: lista quem está habilitado nos apps (Admins e Coletores) ── */
+async function _usuariosAbrir(){
+  _janelaAbrir('jan-usuarios', '👥 Usuários habilitados', 'Administradores e coletores com acesso configurado',
+    '<div id="usr-corpo" style="font-size:13px;color:#6b6b60">Carregando...</div>');
+  var corpo = document.getElementById('usr-corpo');
+  if(!_ghToken()){ corpo.innerHTML = '⚠️ Configure o token do GitHub neste aparelho para ver a lista.'; return; }
+  try{
+    try{ await _dadosRepoGarantir(); }catch(e){}
+    await _usuarioRegistrar(false);
+    var r = await fetch('https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+USR_ARQ+'?t='+Date.now(), {headers:_usrH(), cache:'no-store'});
+    var lista = [];
+    if(r.ok){ var m = await r.json(); try{ lista = JSON.parse(decodeURIComponent(escape(atob((m.content||'').replace(/\n/g,''))))); }catch(e){} }
+    else if(r.status !== 404) throw new Error('GitHub respondeu '+r.status);
+    if(!Array.isArray(lista)) lista = [];
+    var meuId = _dispositivoId();
+    function dt(t){ return t ? new Date(t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—'; }
+    function linha(u){
+      var nm = (u.nome||'').trim();
+      return '<div style="padding:10px 0;border-bottom:1px solid #ece6d6">'
+        +'<div style="font-weight:700;font-size:14px;color:#1c2e22">'+(nm ? _escH(nm) : '<i style="color:#a03030">sem nome configurado</i>')
+        +(u.id===meuId ? ' <span style="font-size:10px;background:#e6f4ea;color:#1d6b34;padding:2px 6px;border-radius:6px">este aparelho</span>' : '')+'</div>'
+        +'<div style="font-size:12px;color:#6b6b60;margin-top:2px">'+_escH(u.app||'')+' · último acesso '+dt(u.ultimoAcesso)
+        +(u.desde ? ' · habilitado desde '+dt(u.desde).slice(0,10) : '')+'</div></div>';
+    }
+    function ord(a,b){ var x=(a.nome||'').trim(), y=(b.nome||'').trim(); if(!x!==!y) return x ? -1 : 1; return x.localeCompare(y,'pt-BR'); }
+    var adm = lista.filter(function(u){ return u.perfil==='Administrador'; }).sort(ord);
+    var col = lista.filter(function(u){ return u.perfil==='Coletor'; }).sort(ord);
+    // Coletores que já enviaram coletas mas ainda não abriram a versão com registro
+    var conhecidos = {}; lista.forEach(function(u){ if(u.nome) conhecidos[u.nome.trim().toLowerCase()] = 1; });
+    var vistos = {};
+    _carregarHistColetaRaw().forEach(function(c){
+      var n = (c.coletor||'').trim(); if(!n || c.origem==='inventario' || conhecidos[n.toLowerCase()]) return;
+      var t = c.ts||0; if(!vistos[n] || vistos[n] < t) vistos[n] = t;
+    });
+    var pend = Object.keys(vistos).sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
+    var tit = 'font-size:11px;color:#8a8574;text-transform:uppercase;letter-spacing:1px;margin:14px 0 2px;font-weight:700';
+    var h = '<div style="'+tit+';margin-top:0">Administradores ('+adm.length+')</div>'
+      + (adm.length ? adm.map(linha).join('') : '<div style="padding:8px 0">Nenhum registrado ainda.</div>')
+      + '<div style="'+tit+'">Coletores ('+col.length+')</div>'
+      + (col.length ? col.map(linha).join('') : '<div style="padding:8px 0">Nenhum registrado ainda.</div>');
+    if(pend.length){
+      h += '<div style="'+tit+'">Vistos nas coletas, ainda sem registro ('+pend.length+')</div>'
+        + '<div style="font-size:11px;color:#8a8574;margin-bottom:4px">Entram na lista acima quando abrirem o app atualizado.</div>'
+        + pend.map(function(n){ return '<div style="padding:8px 0;border-bottom:1px solid #ece6d6"><b>'+_escH(n)+'</b>'
+            +'<div style="font-size:12px;color:#6b6b60">última coleta em '+dt(vistos[n])+'</div></div>'; }).join('');
+    }
+    h += '<button onclick="_usuariosAbrir()" style="width:100%;padding:11px;border:0;border-radius:10px;font-size:13px;font-weight:700;color:#fff;background:#3a5a8a;margin-top:14px;cursor:pointer">🔄 Atualizar lista</button>';
+    corpo.innerHTML = h;
+  }catch(e){
+    corpo.innerHTML = '⚠️ Não foi possível carregar a lista: '+_escH(e.message);
+  }
 }
 function _cadAbrirPublicar(){ _pubAbrir(); }
 function _pubAbrir(){
@@ -22672,6 +22774,7 @@ async function _cadInit(){
     <button class="cad-aba" onclick="_cadTrocaAba('fornecedores',this)">Fornecedores</button>
     <button class="cad-aba" onclick="_cadTrocaAba('precos',this)">Apresentação</button>
     <button class="cad-aba" onclick="_cadAbrirPublicar()" title="Publicar arquivos no GitHub">🚀 Publicar</button>
+    <button class="cad-aba" onclick="_usuariosAbrir()" title="Usuários habilitados nos apps">👥 Usuários</button>
   </div>
   <!-- Produtos -->
 <div class="cad-painel vis" id="cad-p-produtos">
