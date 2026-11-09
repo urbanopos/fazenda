@@ -602,7 +602,55 @@ async function _dadosRepoSeguirPonteiro(){
     GH_API = 'https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+GH_FILE;
   }catch(e){ console.warn('ponteiro de dados:', e.message); }
 }
-setTimeout(_dadosRepoSeguirPonteiro, 1500);
+
+/* ── Registro de usuários habilitados ────────────────────────────────────
+   Cada app com acesso configurado (token) se registra sozinho em
+   backup/usuarios.json, no repositório único de dados: nome, perfil, app e
+   último acesso. É o que alimenta "👥 Usuários" em Cadastros do Admin.
+   Atualiza ao abrir (no máximo a cada 6 h) e sempre que o nome muda. ── */
+var USR_ARQ = 'backup/usuarios.json';
+function _dispositivoId(){
+  var id = ''; try{ id = localStorage.getItem('fsj_dispositivo_id')||''; }catch(e){}
+  if(!id){ id = 'd'+Date.now().toString(36)+Math.random().toString(36).slice(2,8); try{ localStorage.setItem('fsj_dispositivo_id', id); }catch(e){} }
+  return id;
+}
+function _usrH(extra){
+  var h = {'Accept':'application/vnd.github+json','Authorization':'token '+_ghToken()};
+  if(extra) for(var k in extra) h[k] = extra[k];
+  return h;
+}
+async function _usuarioRegistrar(forcar){
+  try{
+    if(!_ghToken()) return;
+    var nome = (localStorage.getItem('wpp_nome')||'').trim();
+    var chave = nome+'|'+GH_DATA_REPO;
+    var ult = {}; try{ ult = JSON.parse(localStorage.getItem('fsj_usr_reg')||'{}'); }catch(e){}
+    if(!forcar && ult.chave===chave && Date.now()-(ult.em||0) < 6*3600*1000) return;
+    var url = 'https://api.github.com/repos/'+GH_DATA_REPO+'/contents/'+USR_ARQ;
+    for(var tent=0; tent<3; tent++){
+      var r = await fetch(url+'?t='+Date.now(), {headers:_usrH(), cache:'no-store'});
+      var lista = [], sha = null;
+      if(r.ok){
+        var m = await r.json(); sha = m.sha;
+        try{ lista = JSON.parse(decodeURIComponent(escape(atob((m.content||'').replace(/\n/g,''))))); }catch(e){}
+        if(!Array.isArray(lista)) lista = [];
+      } else if(r.status !== 404) return;
+      var id = _dispositivoId();
+      var reg = {id:id, nome:nome, perfil:'Coletor', app:'Coletor', ultimoAcesso:Date.now(),
+                 build:(typeof _caBuild!=='undefined'?_caBuild:'')};
+      var i = -1; lista.forEach(function(x,j){ if(x && x.id===id) i = j; });
+      if(i >= 0){ if(!lista[i].desde) reg.desde = lista[i].desde || Date.now(); lista[i] = Object.assign({}, lista[i], reg); }
+      else { reg.desde = Date.now(); lista.push(reg); }
+      var body = {message:'Usuário: '+(nome||id)+' (Coletor)', content:btoa(unescape(encodeURIComponent(JSON.stringify(lista, null, 2))))};
+      if(sha) body.sha = sha;
+      var p = await fetch(url, {method:'PUT', headers:_usrH({'Content-Type':'application/json'}), body:JSON.stringify(body)});
+      if(p.ok){ try{ localStorage.setItem('fsj_usr_reg', JSON.stringify({chave:chave, em:Date.now()})); }catch(e){} return; }
+      if(p.status !== 409 && p.status !== 422) return;   // conflito: outro aparelho gravou junto — tenta de novo
+      await new Promise(function(ok){ setTimeout(ok, 800 + Math.random()*1200); });
+    }
+  }catch(e){ console.warn('registro de usuário:', e.message); }
+}
+setTimeout(function(){ _dadosRepoSeguirPonteiro().then(function(){ _usuarioRegistrar(false); }); }, 1500);
 setInterval(_dadosRepoSeguirPonteiro, 10*60*1000);
 
 /* ── Configuração remota via link (#cfg=...) ───────────────────────────
@@ -653,6 +701,7 @@ function _aplicarConfigDoLink(){
     if(cfg && cfg.tk){
       localStorage.setItem(GH_TOKEN_KEY, cfg.tk);
       setTimeout(function(){ _toast('✅ App habilitado! Suas coletas já serão enviadas.'); }, 800);
+      setTimeout(function(){ _usuarioRegistrar(true); }, 3000);
     }
     // Remove o token da URL/histórico do navegador assim que aplicado
     history.replaceState(null, '', location.pathname);
@@ -1420,8 +1469,8 @@ function _iniciar(){
    nada salvo no aparelho — token, catálogo e coletas pendentes continuam
    intactos, já que ficam em localStorage, vinculado ao site, não ao
    conteúdo do arquivo). */
-var _caFP = '7d4ca1769df3';
-var _caBuild = '20261108205000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
+var _caFP = '499c1f0eab67';
+var _caBuild = '20261108213000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -3270,7 +3319,7 @@ function salvarConfigColetor(){
   var nm=(document.getElementById('ad-nome-novo').value||'').trim();
   var s2=document.getElementById('ad-st2');
   if(v){ if(v.length<10){ s2.textContent='Numero invalido'; s2.className='ad-st er'; return; } localStorage.setItem('wpp_numero',v); document.getElementById('ad-num-sp').textContent=_fmtFone(v); document.getElementById('ad-num-novo').value=''; }
-  if(nm){ localStorage.setItem('wpp_nome',nm); document.getElementById('ad-nome-sp').textContent=nm; document.getElementById('ad-nome-novo').value=''; }
+  if(nm){ localStorage.setItem('wpp_nome',nm); document.getElementById('ad-nome-sp').textContent=nm; document.getElementById('ad-nome-novo').value=''; _usuarioRegistrar(true); }
   s2.textContent='Configuracoes salvas'; s2.className='ad-st';
 }
 function salvarSenha(){
