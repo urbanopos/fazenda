@@ -1066,6 +1066,10 @@ body:has(#sec-compras.at) #contador{display:none}
         <div class="hcol-lbl">Total do período</div>
         <div class="hcol-sel" id="hcol-total" style="font-weight:700;color:#1560b0;white-space:nowrap;cursor:default"></div>
       </div>
+      <div id="hcol-receita-wrap" style="display:none">
+        <div class="hcol-lbl">Vendas do período</div>
+        <div class="hcol-sel" id="hcol-receita" style="font-weight:700;color:#1a7a3e;white-space:nowrap;cursor:default"></div>
+      </div>
       <div>
         <div class="hcol-lbl">&nbsp;</div>
         <button class="hcol-sel" id="hcol-btn-relatorio" onclick="_gerarRelatorioPDFFiltroAtual()" style="cursor:pointer;background:#1a6b2a;color:#fff;border-color:#1a6b2a">📄 Relatório</button>
@@ -1081,9 +1085,13 @@ body:has(#sec-compras.at) #contador{display:none}
     <div class="hcol-hd" style="background:#7a3a00">
       <div><div class="hcol-hd-t">Histórico de Pedidos</div><div class="hcol-hd-s">Acesso restrito — Administrador</div></div>
       <div style="display:flex;align-items:center;gap:16px">
-        <div style="text-align:right">
-          <div class="hcol-lbl" style="color:rgba(255,255,255,.6)">Valor</div>
-          <div id="hped-total" style="font-family:'DM Mono',monospace;font-size:20px;font-weight:800;color:#fff">R$ 0,00</div>
+        <div style="text-align:right" title="Vendas: pedidos emitidos no período (pagos e em aberto)">
+          <div class="hcol-lbl" style="color:rgba(255,255,255,.7)">Vendas</div>
+          <div id="hped-total" style="font-family:'DM Mono',monospace;font-size:14px;font-weight:800;color:#fff;white-space:nowrap">R$ 0,00</div>
+        </div>
+        <div style="text-align:right;padding-left:10px;border-left:1px solid rgba(255,255,255,.3)" title="Receita: pedidos quitados no período, pela data da quitação (igual ao RESOP)">
+          <div class="hcol-lbl" style="color:rgba(255,255,255,.7)">Receita</div>
+          <div id="hped-receita" style="font-family:'DM Mono',monospace;font-size:14px;font-weight:800;color:#c8f5d4;white-space:nowrap">R$ 0,00</div>
         </div>
         <button class="hcol-x" onclick="fecharHistPedidos()">✕</button>
       </div>
@@ -11685,8 +11693,8 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '6e1ea3d246dc';
-var _caBuild = '20261110080000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
+var _caFP = '07df3b63835e';
+var _caBuild = '20261110082000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -14329,7 +14337,22 @@ function _renderHist(){
   // Atualiza campo Valor com somatório dos pedidos filtrados
   var totalFiltrado = filtrado.reduce(function(s,p){ return s+(p.total||0); },0);
   var elTotal = document.getElementById('hped-total');
-  if(elTotal) elTotal.textContent = 'R$ '+_fmt(totalFiltrado);
+  if(elTotal) elTotal.textContent = 'R$ '+Number(totalFiltrado||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  // Receita: pedidos QUITADOS no período, pela data da quitação (regra do
+  // RESOP). Respeita Ano, Mês e Cliente; com "Em aberto" ativo, é zero.
+  var receitaPer = 0;
+  if(!_filtroAbertoAtivo){
+    hist.forEach(function(p){
+      if(p._excluido || !p.pago) return;
+      var per = _resopPeriodoDeDataQuit(p);
+      if(ano && per.slice(0,4)!==ano) return;
+      if(mes && per.slice(5,7)!==mes) return;
+      if(cli && _pedChaveCliente(p) !== cli) return;
+      receitaPer += _resopValorPedido(p);
+    });
+  }
+  var elRec = document.getElementById('hped-receita');
+  if(elRec) elRec.textContent = 'R$ '+Number(receitaPer||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 
   if(!filtrado.length){
     lista.innerHTML = '<div class="hist-empty">'+(_filtroAbertoAtivo ? 'Nenhum pedido em aberto no período selecionado.' : 'Nenhum pedido no período selecionado.')+'</div>';
@@ -16340,7 +16363,9 @@ function _hcolSubtotalHtml(r, itens){
 function _hcolAtualizarTotal(registros, setor, item){
   var wrap = document.getElementById('hcol-total-wrap'), el = document.getElementById('hcol-total');
   if(!wrap || !el) return;
-  if(setor !== 'Estoque'){ wrap.style.display = 'none'; return; }
+  var rw = document.getElementById('hcol-receita-wrap');
+  if(setor !== 'Estoque'){ wrap.style.display = 'none'; if(rw) rw.style.display = 'none'; return; }
+  _hcolAtualizarReceita();
   var ent = 0, sai = 0, outros = 0;
   (registros||[]).forEach(function(r){
     (r.itens||[]).forEach(function(it){
@@ -16357,6 +16382,24 @@ function _hcolAtualizarTotal(registros, setor, item){
     el.innerHTML = 'R$ '+_hcolR(sai||ent);
   }
   wrap.style.display = '';
+}
+
+/* Vendas do período (aba Estoque): IDÊNTICO ao filtro da aba Pedidos —
+   pedidos pela DATA DE EMISSÃO, pagos e em aberto, no Ano/Mês escolhidos.
+   (Receita = pedidos quitados pelo mês da quitação fica no RESOP.) */
+function _hcolAtualizarReceita(){
+  var rw = document.getElementById('hcol-receita-wrap'), el = document.getElementById('hcol-receita');
+  if(!rw || !el) return;
+  var ano = (document.getElementById('hcol-ano')||{value:''}).value, mes = (document.getElementById('hcol-mes')||{value:''}).value;
+  var tot = 0, n = 0;
+  (_carregarHist()||[]).forEach(function(p){
+    if(!p.data) return;
+    if(ano && p.data.slice(0,4)!==ano) return;
+    if(mes && p.data.slice(5,7)!==mes) return;
+    tot += (p.total||0); n++;
+  });
+  el.innerHTML = 'R$ '+_hcolR(tot)+' <span style="font-weight:400;font-size:11px;color:var(--mu)">· '+n+' pedido(s)</span>';
+  rw.style.display = '';
 }
 
 function _renderHistColetaDetalhe(body, registros, setorFiltro, itemFiltro){
