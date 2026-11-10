@@ -1067,7 +1067,7 @@ body:has(#sec-compras.at) #contador{display:none}
         <div class="hcol-sel" id="hcol-total" style="font-weight:700;color:#1560b0;white-space:nowrap;cursor:default"></div>
       </div>
       <div id="hcol-receita-wrap" style="display:none">
-        <div class="hcol-lbl">Vendas do período</div>
+        <div class="hcol-lbl">Receita do período</div>
         <div class="hcol-sel" id="hcol-receita" style="font-weight:700;color:#1a7a3e;white-space:nowrap;cursor:default"></div>
       </div>
       <div>
@@ -11693,8 +11693,8 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '07df3b63835e';
-var _caBuild = '20261110082000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
+var _caFP = '0e5206ae2c5d';
+var _caBuild = '20261110083000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -16384,21 +16384,22 @@ function _hcolAtualizarTotal(registros, setor, item){
   wrap.style.display = '';
 }
 
-/* Vendas do período (aba Estoque): IDÊNTICO ao filtro da aba Pedidos —
-   pedidos pela DATA DE EMISSÃO, pagos e em aberto, no Ano/Mês escolhidos.
-   (Receita = pedidos quitados pelo mês da quitação fica no RESOP.) */
+/* Receita do período (aba Estoque): pedidos EFETIVAMENTE PAGOS no
+   período, pela data da quitação — a mesma conta do campo "Receita" do
+   cabeçalho do Histórico de Pedidos (e do RESOP), no mesmo Ano/Mês. */
 function _hcolAtualizarReceita(){
   var rw = document.getElementById('hcol-receita-wrap'), el = document.getElementById('hcol-receita');
   if(!rw || !el) return;
   var ano = (document.getElementById('hcol-ano')||{value:''}).value, mes = (document.getElementById('hcol-mes')||{value:''}).value;
-  var tot = 0, n = 0;
+  var rec = 0, n = 0;
   (_carregarHist()||[]).forEach(function(p){
-    if(!p.data) return;
-    if(ano && p.data.slice(0,4)!==ano) return;
-    if(mes && p.data.slice(5,7)!==mes) return;
-    tot += (p.total||0); n++;
+    if(p._excluido || !p.pago) return;
+    var per = _resopPeriodoDeDataQuit(p);
+    if(ano && per.slice(0,4)!==ano) return;
+    if(mes && per.slice(5,7)!==mes) return;
+    rec += _resopValorPedido(p); n++;
   });
-  el.innerHTML = 'R$ '+_hcolR(tot)+' <span style="font-weight:400;font-size:11px;color:var(--mu)">· '+n+' pedido(s)</span>';
+  el.innerHTML = 'R$ '+_hcolR(rec)+' <span style="font-weight:400;font-size:11px;color:var(--mu)">· '+n+' pedido(s) pago(s)</span>';
   rw.style.display = '';
 }
 
