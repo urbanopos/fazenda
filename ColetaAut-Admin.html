@@ -257,7 +257,7 @@ body:has(#sec-vendas.at) #contador{
 .hcol-entrada-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .hcol-entrada-data{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:var(--vd)}
 .hcol-entrada-col{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu)}
-.hcol-entrada-btns{display:flex;gap:6px;align-items:center;margin-top:8px;padding-top:6px;border-top:1px solid #f0ece3}.hcol-btn-edit{background:rgba(28,78,34,.1);border:1.5px solid var(--vc);color:var(--vc);border-radius:6px;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;padding:5px 12px;cursor:pointer}.hcol-btn-dl{background:rgba(184,148,63,.15);border:1px solid rgba(184,148,63,.4);color:var(--ac);border-radius:6px;font-size:14px;padding:4px 10px;cursor:pointer;line-height:1}.hcol-btn-del{background:rgba(160,48,48,.12);border:1px solid rgba(160,48,48,.4);color:#a03030;border-radius:6px;font-size:14px;padding:4px 10px;cursor:pointer;line-height:1}.hcol-entrada-item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f0ece3;font-family:'DM Mono',monospace;font-size:12px}
+.hcol-entrada-btns{display:flex;gap:6px;align-items:center;margin-top:8px;padding-top:6px;border-top:1px solid #f0ece3}.hcol-entrada-btns>button{flex-shrink:0}.hcol-btn-edit{background:rgba(28,78,34,.1);border:1.5px solid var(--vc);color:var(--vc);border-radius:6px;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;padding:5px 12px;cursor:pointer}.hcol-btn-dl{background:rgba(184,148,63,.15);border:1px solid rgba(184,148,63,.4);color:var(--ac);border-radius:6px;font-size:14px;padding:4px 10px;cursor:pointer;line-height:1}.hcol-btn-del{background:rgba(160,48,48,.12);border:1px solid rgba(160,48,48,.4);color:#a03030;border-radius:6px;font-size:14px;padding:4px 10px;cursor:pointer;line-height:1}.hcol-entrada-item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f0ece3;font-family:'DM Mono',monospace;font-size:12px}
 .hcol-entrada-item:last-child{border:none}
 .hcol-vazia{text-align:center;font-family:'DM Mono',monospace;font-size:12px;color:var(--mu);padding:30px 0}
 .hcol-entrada{position:relative}
@@ -1040,6 +1040,10 @@ body:has(#sec-compras.at) #contador{display:none}
         <select class="hcol-sel" id="hcol-item-sel" onchange="renderHistColeta()" title="Filtrar a visualização e o PDF por um item/produto">
           <option value="">Todos</option>
         </select>
+      </div>
+      <div id="hcol-total-wrap" style="display:none">
+        <div class="hcol-lbl">Total do período</div>
+        <div class="hcol-sel" id="hcol-total" style="font-weight:700;color:#1e3a5f;white-space:nowrap;cursor:default"></div>
       </div>
       <div>
         <div class="hcol-lbl">&nbsp;</div>
@@ -11660,8 +11664,8 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '09404cdf23fe';
-var _caBuild = '20261108213500'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
+var _caFP = 'd25589f005a0';
+var _caBuild = '20261110053000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -16106,6 +16110,7 @@ function renderHistColeta(){
     return true;
   });
 
+  _hcolAtualizarTotal(filtrado, setor, item);
   if(!filtrado.length){
     body.innerHTML = '<div class="hcol-vazia">Nenhum registro encontrado para o período selecionado.</div>';
     return;
@@ -16283,6 +16288,55 @@ function _toggleDetalheItem(btn, idx){
   }
 }
 
+/* Valor (R$) de um item de coleta: quantidade × preço unitário.
+   Inventário (contagem física) não tem valor próprio — conta pelo ajuste. */
+function _hcolR(v){ return Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2, maximumFractionDigits:2}); }
+function _hcolValorItem(it){
+  if(!it || it.tipo==='Inventario') return 0;
+  var q = Number(String(it.qtd==null?'':it.qtd).replace(',','.'))||0;
+  var p = Number(it.preco)||0;
+  return q*p;
+}
+/* Linha do subtotal de um MOV (Estoque), na mesma linha dos botões,
+   alinhada à direita, embaixo dos preços individuais. */
+function _hcolSubtotalHtml(r, itens){
+  var tot = 0, semPreco = 0;
+  itens.forEach(function(it){
+    if(it.tipo==='Inventario') return;
+    if(Number(it.preco)>0) tot += _hcolValorItem(it); else semPreco++;
+  });
+  if(!tot && !semPreco) return '';
+  return '<span class="hcol-subtotal" style="margin-left:auto;text-align:right;font-family:DM Mono,monospace;color:#1e3a5f;white-space:nowrap;line-height:1.25">'
+    +'<span style="display:block;font-size:10px;letter-spacing:.5px;color:var(--mu)">SUBTOTAL'+(r.mov?' '+r.mov:'')+'</span>'
+    +'<b style="display:block;font-size:14px">R$ '+_hcolR(tot)+'</b>'
+    +(semPreco?'<span style="display:block;font-size:10px;color:#a03030">'+semPreco+' item(ns) sem preço</span>':'')
+    +'</span>';
+}
+/* Total do período (cabeçalho) — soma os mesmos itens que aparecem na tela
+   (ano, mês e filtro aplicados). Só na aba Estoque. Se o período tiver
+   entradas e saídas, mostra as duas separadas (somar as duas não faz sentido). */
+function _hcolAtualizarTotal(registros, setor, item){
+  var wrap = document.getElementById('hcol-total-wrap'), el = document.getElementById('hcol-total');
+  if(!wrap || !el) return;
+  if(setor !== 'Estoque'){ wrap.style.display = 'none'; return; }
+  var ent = 0, sai = 0, outros = 0;
+  (registros||[]).forEach(function(r){
+    (r.itens||[]).forEach(function(it){
+      if((it.setor||'')!=='Estoque') return;
+      if(item && it.nome!==item) return;
+      var v = _hcolValorItem(it);
+      if(it.tipo==='Saida') sai += v; else if(it.tipo==='Entrada') ent += v; else outros += v;
+    });
+  });
+  ent += outros;
+  if(ent && sai){
+    el.innerHTML = '<span style="color:#c0392b">Saídas R$ '+_hcolR(sai)+'</span> &nbsp;·&nbsp; <span style="color:#1e5fbf">Entradas R$ '+_hcolR(ent)+'</span>';
+  } else {
+    el.innerHTML = 'R$ '+_hcolR(sai||ent);
+  }
+  wrap.style.display = '';
+}
+
 function _renderHistColetaDetalhe(body, registros, setorFiltro, itemFiltro){
   var MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   // Cores por setor
@@ -16347,6 +16401,7 @@ function _renderHistColetaDetalhe(body, registros, setorFiltro, itemFiltro){
       });
       // Linha de botões — ações valem para o registro inteiro; mostra só
       // no último bloco (o único, no caso comum de tipo único) para não duplicar.
+      var subHtml = (gi === ordemTipos.length-1 && setorFiltro==='Estoque' && r.origem!=='inventario') ? _hcolSubtotalHtml(r, itensVisiveis) : '';
       if(gi === ordemTipos.length-1){
         if(r._virtual){
           // Saída automática (Perda/Pedido) — não é um registro próprio: corrige-se no lançamento de origem
@@ -16361,6 +16416,7 @@ function _renderHistColetaDetalhe(body, registros, setorFiltro, itemFiltro){
           html += '<button class="hcol-btn-edit" onclick="_abrirEditColeta('+ri+')">✎ Editar</button>';
           html += '<button class="hcol-btn-dl" onclick="_reenviarColeta('+ri+')" title="Reenviar">📤</button>';
           html += '<button class="hcol-btn-del" onclick="_excluirColeta('+ri+')" title="Excluir">🗑</button>';
+          html += subHtml;
           html += '</div>';
         }
       }
