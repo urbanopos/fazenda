@@ -1266,6 +1266,10 @@ body:has(#sec-compras.at) #contador{display:none}
         <div class="hcol-lbl">Receita do período</div>
         <div class="hcol-sel" id="hcol-receita" style="font-weight:700;color:#1a7a3e;white-space:nowrap;cursor:default"></div>
       </div>
+      <div id="hcol-result-wrap" style="display:none">
+        <div class="hcol-lbl" id="hcol-result-lbl">Resultado do período</div>
+        <div class="hcol-sel" id="hcol-result" style="font-weight:700;white-space:nowrap;cursor:default"></div>
+      </div>
       <div>
         <div class="hcol-lbl">&nbsp;</div>
         <button class="hcol-sel" id="hcol-btn-relatorio" onclick="_gerarRelatorioPDFFiltroAtual()" style="cursor:pointer;background:#1a6b2a;color:#fff;border-color:#1a6b2a">📄 Relatório</button>
@@ -11878,8 +11882,8 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = '52dc4a4299ef';
-var _caBuild = '20261110083000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
+var _caFP = '5afd137dbde3';
+var _caBuild = '20261110084000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -16537,12 +16541,12 @@ function _hcolSubtotalHtml(r, itens){
 /* Total do período (cabeçalho) — soma os mesmos itens que aparecem na tela
    (ano, mês e filtro aplicados). Só na aba Estoque. Se o período tiver
    entradas e saídas, mostra as duas separadas (somar as duas não faz sentido). */
+var _hcolSaidasPer = 0;
 function _hcolAtualizarTotal(registros, setor, item){
   var wrap = document.getElementById('hcol-total-wrap'), el = document.getElementById('hcol-total');
   if(!wrap || !el) return;
-  var rw = document.getElementById('hcol-receita-wrap');
-  if(setor !== 'Estoque'){ wrap.style.display = 'none'; if(rw) rw.style.display = 'none'; return; }
-  _hcolAtualizarReceita();
+  var rw = document.getElementById('hcol-receita-wrap'), rs = document.getElementById('hcol-result-wrap');
+  if(setor !== 'Estoque'){ wrap.style.display = 'none'; if(rw) rw.style.display = 'none'; if(rs) rs.style.display = 'none'; return; }
   var ent = 0, sai = 0, outros = 0;
   (registros||[]).forEach(function(r){
     (r.itens||[]).forEach(function(it){
@@ -16553,12 +16557,14 @@ function _hcolAtualizarTotal(registros, setor, item){
     });
   });
   ent += outros;
+  _hcolSaidasPer = sai;
   if(ent && sai){
     el.innerHTML = '<span style="color:#c0392b">Saídas R$ '+_hcolR(sai)+'</span> &nbsp;·&nbsp; <span style="color:#1e5fbf">Entradas R$ '+_hcolR(ent)+'</span>';
   } else {
     el.innerHTML = 'R$ '+_hcolR(sai||ent);
   }
   wrap.style.display = '';
+  _hcolAtualizarReceita();
 }
 
 /* Receita do período (aba Estoque): pedidos EFETIVAMENTE PAGOS no
@@ -16578,6 +16584,17 @@ function _hcolAtualizarReceita(){
   });
   el.innerHTML = 'R$ '+_hcolR(rec)+' <span style="font-weight:400;font-size:11px;color:var(--mu)">· '+n+' pedido(s) pago(s)</span>';
   rw.style.display = '';
+  // Resultado = Receita − Saídas do Estoque, no mesmo período. No mês
+  // corrente, vale para os dias já vencidos (até hoje).
+  var rs = document.getElementById('hcol-result-wrap'), re_ = document.getElementById('hcol-result'), rl = document.getElementById('hcol-result-lbl');
+  if(rs && re_){
+    var res = rec - (_hcolSaidasPer||0);
+    var hoje = _dataLocalHoje(), corrente = (!ano || ano===hoje.slice(0,4)) && mes && mes===hoje.slice(5,7);
+    if(rl) rl.textContent = corrente ? 'Resultado até '+hoje.slice(8,10)+'/'+hoje.slice(5,7) : 'Resultado do período';
+    re_.innerHTML = '<span style="color:'+(res>=0?'#1a7a3e':'#c0392b')+'">'+(res<0?'− ':'')+'R$ '+_hcolR(Math.abs(res))+'</span>'
+      +' <span style="font-weight:400;font-size:11px;color:var(--mu)">· Receita − Saídas</span>';
+    rs.style.display = '';
+  }
 }
 
 function _renderHistColetaDetalhe(body, registros, setorFiltro, itemFiltro){
