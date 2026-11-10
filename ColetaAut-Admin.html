@@ -11685,8 +11685,8 @@ function _caInjetarMenuBtn(){
     .catch(function(e){ console.log('SW:', e.message); });
 })();
 
-var _caFP = 'f852781f7a23';
-var _caBuild = '20261110063000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
+var _caFP = '6e1ea3d246dc';
+var _caBuild = '20261110080000'; /* carimbo de versão (AAAAMMDDHHMMSS) — usado pelo Publicar para barrar arquivo mais antigo */
 function _caVerificarAtualizacao(manual){
   var url = location.href.split('?')[0];
   if(url.indexOf('://') === -1 || url.startsWith('file:')) {
@@ -12207,10 +12207,11 @@ function _apresEhVigente(prod, a){ return _apresVigentes(prod).indexOf(a) > -1; 
 function _apresHabilitadaNaAba(prod, a, label){
   if(!a || a._excluido) return false;
   if(prod && !_apresEhVigente(prod, a)) return false; // versão substituída nunca aparece
-  // Só aparece nas abas EXPLICITAMENTE autorizadas pelo Admin. Apresentação
-  // sem nenhuma aba marcada não aparece em lugar nenhum (coleta nem Pedidos)
-  // até ser autorizada em Cadastros → Apresentação.
-  if(!Array.isArray(a.abas)) return false;
+  // Regra: o produto está SEMPRE no setor definido na sua criação; nos
+  // demais setores, só se a aba estiver marcada em Cadastros → Apresentação.
+  // Apresentação que nunca teve abas configuradas vale no setor do produto.
+  // Lista explícita (inclusive vazia, = desmarcada de propósito) é respeitada.
+  if(!Array.isArray(a.abas)) return !!(prod && prod.setor && _normAba(prod.setor) === _normAba(label));
   return a.abas.some(function(x){ return _normAba(x) === _normAba(label); });
 }
 /* O item (pelo nome) pode ser coletado nesta aba? (usado para BLOQUEAR
@@ -14359,7 +14360,7 @@ function _renderHPedTotal(lista, pedidos, ano, mes){
         : null, it.nome||it.col2||''); // unificados/excluídos somam no produto que ficou
       // mesma linha para apresentações sem quantidade (unid, viva, abatida...);
       // embalagens com quantidade (bandeja c/30, caixa c/12) ficam em linha própria
-      var unidTxt = it.unidade || it.unid || String(it.col3||'').split(' ').slice(1).join(' ');
+      var unidTxt = _unidRelatorio(it); // apresentação padronizada (enquadramento)
       var unidChave = (!String(unidTxt).trim() || _sdFator('unid', unidTxt) === 1) ? 'unid' : _sdBaseUnid(unidTxt)+'|'+(_sdFator('unid', unidTxt)||'');
       var chave = prod ? ('p:'+prod.id+'|'+unidChave) : ('n:'+(it.nome||it.col2||'—')+'|'+unidChave);
       var nomeExibicao = prod ? prod.nome : (it.nome||it.col2||'—');
@@ -14977,7 +14978,7 @@ function _gerarPDFEspelhoTela(){
         if(!totais[s]) totais[s] = {};
         var k = it.nome;
         if(it.tipo==='Inventario') return; // contagem: entra no balanço pelo ajuste
-        if(!totais[s][k]) totais[s][k] = {entrada:0, saida:0, temTipo:false, unid:it.unid||''};
+        if(!totais[s][k]) totais[s][k] = {entrada:0, saida:0, temTipo:false, unid:_unidRelatorio(it)};
         var qtdNum = Number(it.qtd)||0;
         if(it.tipo === 'Saida'){ totais[s][k].saida += qtdNum; totais[s][k].temTipo = true; }
         else if(it.tipo === 'Entrada'){ totais[s][k].entrada += qtdNum; totais[s][k].temTipo = true; }
@@ -15163,7 +15164,7 @@ function _gerarRelatorioPedidosPDF(){
         : null, it.nome||it.col2||''); // unificados/excluídos somam no produto que ficou
       // mesma linha para apresentações sem quantidade (unid, viva, abatida...);
       // embalagens com quantidade (bandeja c/30, caixa c/12) ficam em linha própria
-      var unidTxt = it.unidade || it.unid || String(it.col3||'').split(' ').slice(1).join(' ');
+      var unidTxt = _unidRelatorio(it); // apresentação padronizada (enquadramento)
       var unidChave = (!String(unidTxt).trim() || _sdFator('unid', unidTxt) === 1) ? 'unid' : _sdBaseUnid(unidTxt)+'|'+(_sdFator('unid', unidTxt)||'');
       var chave = prod ? ('p:'+prod.id+'|'+unidChave) : ('n:'+(it.nome||it.col2||'—')+'|'+unidChave);
         var nomeExibicao = prod ? prod.nome : (it.nome||it.col2||'—');
@@ -15627,7 +15628,7 @@ function _gerarRelatorioEstoqueMensal(){
         obs: it.obs||'',
         chave: chaveItem(it.nome),
         nome: (it.nome||'').trim(),
-        unid: normalizarUnidade(it.unid),
+        unid: normalizarUnidade(_unidRelatorio(it)),
         qtd: parseFloat(it.qtd)||0,
         tipo: it.tipo
       });
@@ -15956,10 +15957,10 @@ function _gerarRelatorioPDF(setorLabel, anoFiltro, mesFiltro){
       doc.text(String(it.unid||'').slice(0,mostrarTipo?12:13), colX.unid, y);
       doc.text(String(it.obs||'').slice(0,mostrarTipo?12:18), colX.obs, y);
       y += 5;
-      var chave = (it.setor||'-')+'|'+(it.nome||'-')+'|'+(it.unid||'');
+      var chave = (it.setor||'-')+'|'+(it.nome||'-')+'|'+_unidRelatorio(it);
       totaisPorItem[chave] = (totaisPorItem[chave]||0) + (parseFloat(it.qtd)||0);
       if(mostrarTipo){
-        var chaveBal = (it.nome||'-')+'|'+(it.unid||'');
+        var chaveBal = (it.nome||'-')+'|'+_unidRelatorio(it);
         if(!balancoEstoque[chaveBal]) balancoEstoque[chaveBal] = {entrada:0, saida:0};
         if(it.tipo==='Saida') balancoEstoque[chaveBal].saida += (parseFloat(it.qtd)||0);
         else balancoEstoque[chaveBal].entrada += (parseFloat(it.qtd)||0);
@@ -16175,7 +16176,7 @@ function _renderHistColetaTotal(body, registros, ano, mes, setorFiltro, itemFilt
       if(!totais[s]) totais[s] = {};
       var k = it.nome;
       if(it.tipo==='Inventario') return; // contagem: entra no balanço pelo ajuste
-      if(!totais[s][k]) totais[s][k] = {entrada:0, saida:0, temTipo:false, unid:it.unid||'', registros:[]};
+      if(!totais[s][k]) totais[s][k] = {entrada:0, saida:0, temTipo:false, unid:_unidRelatorio(it), registros:[]};
       var qtdNum = Number(it.qtd)||0;
       if(it.tipo === 'Saida'){
         totais[s][k].saida += qtdNum;
@@ -17437,6 +17438,17 @@ function _mpItemEditCardHtml(ii, it, oi){
     return '<option value="'+_esc(p.id)+'"'+(prod && p.id===prod.id ? ' selected' : '')+'>'+_esc(p.nome)+'</option>';
   }).join('');
   opts += '<option value="__outro__">+ Outro (digitar)...</option>';
+  // Produtos do catálogo ainda NÃO autorizados em Pedidos: aparecem
+  // desativados, com a orientação — para não parecer que o catálogo
+  // não foi consultado.
+  var _idsOk = {}; prods.forEach(function(p){ _idsOk[p.id] = 1; });
+  var _semVendas = (_cadDados.produtos||[]).filter(function(p){ return !p._excluido && !_idsOk[p.id] && (p.nome||'').trim(); })
+    .sort(function(a,b){ return (a.nome||'').localeCompare(b.nome||'','pt-BR'); });
+  if(_semVendas.length){
+    opts += '<optgroup label="Não autorizados em Pedidos — autorize em Cadastros → Apresentação">'
+      + _semVendas.map(function(p){ return '<option disabled>'+_esc(p.nome)+'</option>'; }).join('')
+      + '</optgroup>';
+  }
 
   var nota = novo ? '' : _pedEditNotaHtml(it, prod, unid, ap);
   var apresHtml = novo
@@ -19567,8 +19579,9 @@ function _cmpDataFmt(iso){
 function _cmpTotais(lista){
   var tot = {};
   lista.forEach(function(r){ (r.itens||[]).forEach(function(it){
-    var k = (it.nome||'')+'|'+(it.unid||'');
-    if(!tot[k]) tot[k] = {nome:it.nome, unid:it.unid, qtd:0, total:0, eventos:[]};
+    var _uR = _unidRelatorio(it);
+    var k = (it.nome||'')+'|'+_uR;
+    if(!tot[k]) tot[k] = {nome:it.nome, unid:_uR, qtd:0, total:0, eventos:[]};
     tot[k].qtd += Number(it.qtd)||0; tot[k].total += Number(it.sub)||0;
     tot[k].eventos.push({dataIso:r.data, num:r.num, fornecedor:r.fornecedor, setor:r.setor, responsavel:r.responsavel, qtd:it.qtd, unid:it.unid, preco:it.preco, sub:it.sub});
   }); });
@@ -21426,6 +21439,7 @@ async function _cadAbrir(){
   _cadMontarCorpo();
   _cadPagina = {};
   _cadRenderAba(_cadAbaAtual);
+  try{ _enqAtualizarBotao(); }catch(e){}
   _navPush('cad-tela');
 }
 
@@ -21541,6 +21555,113 @@ async function _usuariosAbrir(){
   }catch(e){
     corpo.innerHTML = '⚠️ Não foi possível carregar a lista: '+_escH(e.message);
   }
+}
+
+/* ═══ ENQUADRAMENTO DE REGISTROS ANTIGOS ═══════════════════════════════
+   Documentos emitidos (pedidos, coletas, compras) NUNCA são alterados.
+   Para relatórios, contabilização e identificação, cada item gravado é
+   "enquadrado" na apresentação padronizada que ele representa:
+   1) pelo vínculo gravado (apresId); 2) pelo nome igual ao atual; 3) por um
+   nome antigo que o Admin enquadrou (fica em _unidAnteriores da
+   apresentação, no cadastro — sincroniza entre os aparelhos).
+   O sistema aponta, em Cadastros → 🧭 Enquadrar, o que ainda não tem
+   correspondência. Sem enquadramento, o relatório usa o texto gravado. */
+function _unidGravada(it){
+  return String(it.unidade || it.unid || String(it.col3||'').split(' ').slice(1).join(' ') || '').trim();
+}
+function _prodDoRegistro(it){
+  var porId = (it.prodId && it.prodId!=='_edit') ? (_cadDados.produtos||[]).find(function(x){ return x.id===it.prodId; }) : null;
+  return _pedProdCanonico(porId, it.nome||it.col2||'');
+}
+function _apresDoRegistro(it){
+  var prod = _prodDoRegistro(it); if(!prod || prod._excluido) return null;
+  var vig = _apresVigentes(prod);
+  if(it.apresId){
+    var a = (prod.apresentacoes||[]).find(function(x){ return x.id===it.apresId; });
+    if(a && vig.indexOf(a)>-1) return a;
+    if(a){ var sa = _slugApres(a.unid); var v = vig.find(function(x){ return _slugApres(x.unid)===sa || (x._unidAnteriores||[]).some(function(o){ return _slugApres(o)===sa; }); }); if(v) return v; }
+  }
+  var u = _slugApres(_unidGravada(it)); if(!u) return null;
+  return vig.find(function(x){ return _slugApres(x.unid)===u; })
+      || vig.find(function(x){ return (x._unidAnteriores||[]).some(function(o){ return _slugApres(o)===u; }); })
+      || null;
+}
+/* Unidade/apresentação usada nos RELATÓRIOS (a padronizada, se houver) */
+function _unidRelatorio(it){
+  var a = _apresDoRegistro(it);
+  return a ? a.unid : _unidGravada(it);
+}
+/* Itens gravados que o sistema aponta para enquadrar */
+function _enqPendentes(){
+  var grupos = {};
+  function add(it, origem, data, ref){
+    var u = _unidGravada(it); if(!u) return;
+    var prod = _prodDoRegistro(it); if(!prod || prod._excluido) return;
+    if(_apresDoRegistro(it)) return;
+    var su = _slugApres(u);
+    if((prod._unidMantidas||[]).some(function(x){ return _slugApres(x)===su; })) return;
+    var k = prod.id+'|'+su;
+    var g = grupos[k] = grupos[k] || {prod:prod, unid:u, n:0, origens:{}, de:'', ate:'', refs:[]};
+    g.n++; g.origens[origem] = (g.origens[origem]||0)+1;
+    if(data){ if(!g.de || data<g.de) g.de = data; if(!g.ate || data>g.ate) g.ate = data; }
+    if(ref && g.refs.length<4 && g.refs.indexOf(ref)===-1) g.refs.push(ref);
+  }
+  try{ _carregarHistColeta().forEach(function(r){ (r.itens||[]).forEach(function(it){ if(r.origem!=='inventario') add(it,'coletas',r.data,r.mov||''); }); }); }catch(e){}
+  try{ _carregarHist().forEach(function(p){ (p.itens||[]).forEach(function(it){ add(it,'pedidos',p.data,p.num||''); }); }); }catch(e){}
+  try{ _cmpCarregar().forEach(function(c){ (c.itens||[]).forEach(function(it){ add(it,'compras',c.data,c.num||''); }); }); }catch(e){}
+  return Object.keys(grupos).map(function(k){ return grupos[k]; })
+    .sort(function(a,b){ return (a.prod.nome||'').localeCompare(b.prod.nome||'','pt-BR') || a.unid.localeCompare(b.unid,'pt-BR'); });
+}
+function _enqAtualizarBotao(){
+  var b = document.getElementById('cad-btn-enq'); if(!b) return;
+  var n = 0; try{ n = _enqPendentes().length; }catch(e){}
+  b.innerHTML = '🧭 Enquadrar'+(n ? ' <span style="background:#c0392b;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px">'+n+'</span>' : '');
+}
+function _enqAbrir(){
+  var lista = _enqPendentes();
+  _enqLista = lista;
+  var dt = function(d){ return d ? d.split('-').reverse().join('/') : ''; };
+  var h = '<div style="font-size:12px;color:#6b6b60;line-height:1.5;margin-bottom:10px">Registros antigos cuja apresentação não corresponde ao cadastro atual. '
+    +'<b>Os documentos não são alterados</b> — o enquadramento vale só para relatórios, contabilização e identificação.</div>';
+  if(!lista.length){
+    h += '<div style="padding:14px;border-radius:8px;background:#e6f4ea;color:#1d6b34;font-size:13px">✅ Todos os registros estão enquadrados no modelo atual.</div>';
+  } else {
+    h += lista.map(function(g, i){
+      var orig = Object.keys(g.origens).map(function(o){ return g.origens[o]+' '+o; }).join(' · ');
+      var opts = '<option value="">— escolha a apresentação —</option>'
+        + _apresVigentes(g.prod).map(function(a){ return '<option value="'+_escH(a.id)+'">'+_escH(a.unid)+(a.fornecedor?' — '+_escH(a.fornecedor):'')+'</option>'; }).join('')
+        + '<option value="__manter__">Manter como está (não apontar mais)</option>';
+      return '<div style="border:2px solid #8f7a52;border-radius:10px;margin-bottom:10px;overflow:hidden;background:#fffdf8">'
+        +'<div style="padding:5px 10px;background:#efe6d2;border-bottom:1.5px solid #8f7a52;font-family:DM Mono,monospace;font-size:11px;font-weight:700;color:#5c4a28">'+_escH(g.prod.nome)+'</div>'
+        +'<div style="padding:8px 10px;font-size:13px">Gravado como: <b>'+_escH(g.unid)+'</b>'
+        +'<div style="font-size:11px;color:#6b6b60;margin:2px 0 6px">'+g.n+' registro(s): '+orig+(g.de?' · '+dt(g.de)+(g.ate&&g.ate!==g.de?' a '+dt(g.ate):''):'')+(g.refs.filter(Boolean).length?' · ex.: '+_escH(g.refs.filter(Boolean).join(', ')):'')+'</div>'
+        +'<select id="enq-sel-'+i+'" style="width:100%;box-sizing:border-box;padding:8px;border:1.5px solid #d6d2c4;border-radius:8px;font-size:13px">'+opts+'</select></div></div>';
+    }).join('')
+    + '<button onclick="_enqSalvar()" style="width:100%;padding:12px;border:0;border-radius:10px;font-size:14px;font-weight:700;color:#fff;background:#1a8f4a;margin-top:4px;cursor:pointer">Salvar enquadramentos</button>';
+  }
+  _janelaAbrir('jan-enq', '🧭 Enquadrar registros antigos', lista.length ? lista.length+' apresentação(ões) a enquadrar' : 'Tudo enquadrado', '<div id="enq-corpo">'+h+'</div>');
+}
+var _enqLista = [];
+async function _enqSalvar(){
+  var feitos = 0;
+  _enqLista.forEach(function(g, i){
+    var sel = document.getElementById('enq-sel-'+i); if(!sel || !sel.value) return;
+    if(sel.value === '__manter__'){
+      g.prod._unidMantidas = g.prod._unidMantidas || [];
+      if(g.prod._unidMantidas.indexOf(g.unid)===-1) g.prod._unidMantidas.push(g.unid);
+      feitos++; return;
+    }
+    var a = (g.prod.apresentacoes||[]).find(function(x){ return x.id===sel.value; }); if(!a) return;
+    a._unidAnteriores = a._unidAnteriores || [];
+    if(!a._unidAnteriores.some(function(o){ return _slugApres(o)===_slugApres(g.unid); })) a._unidAnteriores.push(g.unid);
+    a._editadoEm = Date.now();
+    feitos++;
+  });
+  if(!feitos){ _toast('Escolha ao menos um enquadramento.'); return; }
+  await _cadSalvar();
+  _enqAtualizarBotao();
+  _toast('✅ '+feitos+' enquadramento(s) salvo(s). Os documentos não foram alterados.');
+  _enqAbrir();
 }
 function _cadAbrirPublicar(){ _pubAbrir(); }
 function _pubAbrir(){
@@ -22062,6 +22183,67 @@ async function _cadRemoverPreco(prodId, apresIdx){
   _toast('✅ Removido');
 }
 
+
+/* ── Setores do produto (caixas no cadastro do produto) ──────────────────
+   O produto aparece nos setores marcados aqui; o setor principal (campo
+   "Setor") fica sempre marcado. A seção Apresentação continua servindo
+   para o ajuste fino de cada apresentação. */
+var CAD_ABAS_PROD = [['Aviario','Aviário'],['Perda','Perda'],['Campo','Campo'],['Estoque','Estoque'],['Vendas','Vendas (Pedidos)'],['Compras','Compras']];
+var _cadProdAbasIni = [];
+/* Setores aos quais o produto pertence: os gravados no produto ou, em
+   produto antigo, os deduzidos das apresentações + o setor principal. */
+function _cadSetoresDoProduto(prod){
+  if(!prod) return [];
+  var out = [];
+  if(Array.isArray(prod.setores)) out = prod.setores.map(_cadAbaDoSetor).filter(Boolean);
+  else CAD_ABAS_PROD.forEach(function(x){ if((prod.apresentacoes||[]).some(function(a){ return _apresHabilitadaNaAba(prod, a, x[0]); })) out.push(x[0]); });
+  var pr = _cadAbaDoSetor(prod.setor);
+  if(pr && out.indexOf(pr)===-1) out.push(pr);
+  return out;
+}
+function _cadAbaDoSetor(setor){
+  var s = _normAba(setor);
+  var m = CAD_ABAS_PROD.find(function(x){ return _normAba(x[0])===s || _normAba(x[1])===s; });
+  return m ? m[0] : '';
+}
+function _cadProdAbasHtml(d){
+  var marcadas = [];
+  if(d && Array.isArray(d.setores)){
+    marcadas = d.setores.map(_cadAbaDoSetor).filter(Boolean);
+  } else if(d && d.id){
+    CAD_ABAS_PROD.forEach(function(x){
+      if((d.apresentacoes||[]).some(function(a){ return _apresHabilitadaNaAba(d, a, x[0]); })) marcadas.push(x[0]);
+    });
+  }
+  var principal = _cadAbaDoSetor(d && d.setor);
+  if(principal && marcadas.indexOf(principal)===-1) marcadas.push(principal);
+  _cadProdAbasIni = marcadas.slice();
+  return '<div><label class="cad-inp-lbl">Setores do produto</label>'
+    +'<div id="cf-setores-prod" style="display:flex;flex-wrap:wrap;gap:8px 16px;margin:4px 0 2px">'
+    +CAD_ABAS_PROD.map(function(x){
+      var ok = marcadas.indexOf(x[0])>-1;
+      return '<label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">'
+        +'<input type="checkbox" class="cf-prod-aba" value="'+x[0]+'"'+(ok?' checked':'')+' onchange="_cadProdSetorAtualizar()" style="width:18px;height:18px">'
+        +_escH(x[1])+'</label>';
+    }).join('')
+    +'</div><div style="font-size:11px;color:var(--mu);margin-bottom:4px">Marque os setores em que o produto é usado. Como ele se apresenta em cada setor: Cadastros → Apresentação.</div></div>';
+}
+/* O setor do produto acompanha as caixas: mantém o atual se ainda estiver
+   marcado; senão, passa a ser a 1ª caixa marcada. */
+function _cadProdSetorAtualizar(){
+  var inp = document.getElementById('cf-setor'); if(!inp) return;
+  var marc = Array.prototype.slice.call(document.querySelectorAll('.cf-prod-aba:checked')).map(function(c){ return c.value; });
+  if(marc.indexOf(_cadAbaDoSetor(inp.value)) === -1) inp.value = marc[0] || '';
+}
+/* (legado) */
+function _cadSetorPrincipalSync(){
+  var principal = _cadAbaDoSetor((document.getElementById('cf-setor')||{value:''}).value);
+  document.querySelectorAll('.cf-prod-aba').forEach(function(c){
+    var lbl = c.parentNode, sp = lbl.querySelector('span');
+    if(c.value===principal){ c.checked = true; c.disabled = true; if(!sp) lbl.insertAdjacentHTML('beforeend',' <span style="font-size:10px;color:var(--mu)">(principal)</span>'); }
+    else { c.disabled = false; if(sp) sp.remove(); }
+  });
+}
 function _cadMostrarForm(aba, dados){
   var container = document.getElementById('cad-form-'+aba);
   if(!container) return;
@@ -22070,15 +22252,14 @@ function _cadMostrarForm(aba, dados){
   if(aba==='produtos'){
     _formApresentacoes = (d.apresentacoes && d.apresentacoes.length)
       ? _apresGarantirIds([{apresentacoes:JSON.parse(JSON.stringify(d.apresentacoes))}])[0].apresentacoes
-      : [{id:_gerarIdApres(), unid:d.unid||'', preco:0, fornecedor:''}];
+      : [{id:_gerarIdApres(), unid:d.unid||'', preco:0, fornecedor:'', _nova:true}];
     campos =
-      '<div><label class="cad-inp-lbl">Setor</label>'
-      +'<input class="cad-inp" id="cf-setor" placeholder="ex: Aviário" value="'+_escH(d.setor||'')+'" list="cad-setores-list"></div>'
-      +'<datalist id="cad-setores-list">'
-      +[...new Set((_cadDados.produtos||[]).filter(function(p){ return !p._excluido; }).map(function(p){return p.setor;}).filter(Boolean))].sort(function(a,b){ return a.localeCompare(b,'pt-BR'); }).map(function(s){return'<option value="'+_escH(s)+'">';}).join('')
-      +'</datalist>'
+      // Sem campo "Setor": os setores são as caixas abaixo. O setor do
+      // produto (usado em listas e relatórios) é a 1ª caixa marcada.
+      '<input type="hidden" id="cf-setor" value="'+_escH(d.setor||'')+'">'
       +'<div><label class="cad-inp-lbl">Nome do produto</label>'
       +'<input class="cad-inp" id="cf-nome" placeholder="ex: Ovos de Capoeira" value="'+_escH(d.nome||'')+'"></div>'
+      +_cadProdAbasHtml(d)
       +'<div><label class="cad-inp-lbl">Apresentações (unidade + preço) — um produto pode ter mais de uma</label>'
       +'<div id="cad-apresentacoes-lista"></div>'
       +'<button type="button" class="cad-form-cancel" style="margin-top:6px" onclick="_cadAdicionarApresentacao()">+ Adicionar apresentação</button>'
@@ -22163,7 +22344,7 @@ function _cadRenderApresentacoes(){
   }).join('');
 }
 function _cadAdicionarApresentacao(){
-  _formApresentacoes.push({id:_gerarIdApres(), unid:'', preco:0, fornecedor:'', _criadoEm:Date.now()});
+  _formApresentacoes.push({id:_gerarIdApres(), unid:'', preco:0, fornecedor:'', _criadoEm:Date.now(), _nova:true});
   _cadRenderApresentacoes();
 }
 function _cadRemoverApresentacao(i){
@@ -22375,6 +22556,54 @@ async function _cadVincularOrfao(i){
    formulário de Preços — mostra as apresentações já existentes desse
    produto (pra editar o preço de uma delas) e a opção de adicionar uma
    nova (Unidade, Bandeja, Caixa, Kg, Sacos etc). */
+
+/* ── Apresentação em campos: Forma · Embalagem · Qtd · Unidade ──────────
+   O nome da apresentação (o texto que circula em pedidos, coletas, estoque
+   e compras) é montado a partir dos campos — ex.: "Ralado · Saco c/1 Kg".
+   A quantidade no nome ("c/30", "c/1 Kg") é a que o estoque usa para
+   converter a embalagem em unidades. As listas sugerem valores e aceitam
+   novos (um valor novo usado num cadastro passa a aparecer na lista). */
+var AP_LISTAS = {
+  forma: ['Inteiro','Ralado','Polpa','Fatiado','Descascado','In natura','Vivo','Abatido','Tratado','Congelado'],
+  emb:   ['Saco','Bandeja','Caixa','Garrafa','Cacho','Pote','Fardo','Granel'],
+  um:    ['Unid.','Kg','g','Litro','ml','Arroba','Cento','Dúzia']
+};
+function _apQtdTxt(q){ var n = Number(String(q==null?'':q).replace(',','.')); return n ? String(n).replace('.',',') : ''; }
+function _apresNomeComposto(forma, emb, qtd, um){
+  forma = String(forma||'').trim(); emb = String(emb||'').trim(); um = String(um||'').trim();
+  var q = _apQtdTxt(qtd), resto = '';
+  if(emb && q) resto = emb+' c/'+q+(um?' '+um:'');
+  else if(emb) resto = emb+(um?' '+um:'');
+  else if(q && um) resto = q+' '+um;
+  else resto = um;
+  return [forma, resto].filter(Boolean).join(' · ');
+}
+function _apListaHtml(id, chave){
+  var vals = AP_LISTAS[chave].slice();
+  (_cadDados.produtos||[]).forEach(function(p){ (p.apresentacoes||[]).forEach(function(a){
+    var v = String(a[chave==='emb'?'emb':chave==='um'?'um':'forma']||'').trim();
+    if(v && !vals.some(function(x){ return _normAba(x)===_normAba(v); })) vals.push(v);
+  }); });
+  return '<datalist id="'+id+'">'+vals.map(function(v){ return '<option value="'+_escH(v)+'">'; }).join('')+'</datalist>';
+}
+function _cadApNomeAtualizar(){
+  var g = function(id){ return (document.getElementById(id)||{value:''}).value; };
+  var nome = _apresNomeComposto(g('cf-ap-forma'), g('cf-ap-emb'), g('cf-ap-qtd'), g('cf-ap-um'));
+  var out = document.getElementById('cf-ap-nome'); if(out) out.textContent = nome || '—';
+  var hid = document.getElementById('cf-unid-nova'); if(hid) hid.value = nome;
+}
+function _cadApPreencher(a){
+  var set = function(id, v){ var e = document.getElementById(id); if(e) e.value = (v==null?'':v); };
+  set('cf-ap-forma', a && a.forma); set('cf-ap-emb', a && a.emb); set('cf-ap-qtd', a && a.qtdEmb); set('cf-ap-um', a && a.um);
+  var ant = document.getElementById('cf-ap-antigo');
+  if(ant){
+    var temCampos = a && (a.forma || a.emb || a.qtdEmb || a.um);
+    ant.style.display = (a && a.unid && !temCampos) ? 'block' : 'none';
+    ant.innerHTML = (a && a.unid) ? 'Nome atual: <b>'+_escH(a.unid)+'</b> — preencha os campos acima para padronizar (opcional).' : '';
+  }
+  _cadApNomeAtualizar();
+  if(a && a.unid && !(a.forma || a.emb || a.qtdEmb || a.um)){ var out = document.getElementById('cf-ap-nome'); if(out) out.textContent = a.unid; }
+}
 function _cadPrecoMontarApresentacoes(dPre){
   var sel = document.getElementById('cf-prod-select');
   var wrap = document.getElementById('cf-apres-wrap');
@@ -22392,24 +22621,35 @@ function _cadPrecoMontarApresentacoes(dPre){
         var a = p.a, i = p.i;
         return '<option value="'+i+'"'+(dPre && dPre._apresIdx===i?' selected':'')+'>'+_escH(a.unid)+(a.preco?' — R$ '+Number(a.preco).toFixed(2).replace('.',','):'')+'</option>';
       }).join('');
-  var ABAS_APRES = ['Aviario','Perda','Campo','Estoque','Vendas','Compras'];
-  var abasCheckboxes = ABAS_APRES.map(function(ab){
+  // Só os setores do produto (definidos no cadastro do produto): aqui se
+  // marca em quais deles ESTA apresentação é usada.
+  var _setP = _cadSetoresDoProduto(prod);
+  var ABAS_APRES = CAD_ABAS_PROD.filter(function(x){ return !_setP.length || _setP.indexOf(x[0])>-1; });
+  var abasCheckboxes = ABAS_APRES.map(function(x){
     return '<label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">'
-      +'<input type="checkbox" class="cf-aba-chk" value="'+ab+'" style="width:16px;height:16px">'+ab+'</label>';
+      +'<input type="checkbox" class="cf-aba-chk" value="'+x[0]+'" style="width:16px;height:16px">'+_escH(x[1])+'</label>';
   }).join('');
   wrap.innerHTML =
     '<div><label class="cad-inp-lbl">Apresentação</label>'
     +'<select class="cad-inp" id="cf-apres-select" onchange="_cadPrecoApresChange()">'+apresOpts+'</select></div>'
-    +'<div style="display:flex;gap:8px;margin-top:8px">'
-    +'<div style="flex:1" id="cf-unid-nova-wrap"><label class="cad-inp-lbl">Unidade (ex: Bandeja, Caixa, Kg, Sacos...)</label>'
-    +'<input class="cad-inp" id="cf-unid-nova" placeholder="Unidade, Bandeja, Kg..."></div>'
-    +'<div style="flex:1"><label class="cad-inp-lbl">Preço (R$)</label>'
-    +'<input class="cad-inp" id="cf-preco" type="number" min="0" step="0.01" placeholder="0,00"></div>'
+    +_apListaHtml('dl-ap-forma','forma')+_apListaHtml('dl-ap-emb','emb')+_apListaHtml('dl-ap-um','um')
+    +'<div id="cf-unid-nova-wrap" style="display:none"><input type="hidden" id="cf-unid-nova"></div>'
+    +'<div style="margin-top:8px"><label class="cad-inp-lbl">Forma (apresentação)</label>'
+    +'<input class="cad-inp" style="width:100%;box-sizing:border-box;min-width:0" id="cf-ap-forma" list="dl-ap-forma" placeholder="ex: Inteiro, Ralado, Polpa..." oninput="_cadApNomeAtualizar()"></div>'
+    +'<div style="display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr) minmax(0,1fr);gap:8px;margin-top:8px">'
+    +'<div style="min-width:0"><label class="cad-inp-lbl">Embalagem</label><input class="cad-inp" style="width:100%;box-sizing:border-box;min-width:0" id="cf-ap-emb" list="dl-ap-emb" placeholder="Saco, Bandeja..." oninput="_cadApNomeAtualizar()"></div>'
+    +'<div style="min-width:0"><label class="cad-inp-lbl">Qtd</label><input class="cad-inp" style="width:100%;box-sizing:border-box;min-width:0" id="cf-ap-qtd" type="text" inputmode="decimal" placeholder="—" oninput="_cadApNomeAtualizar()"></div>'
+    +'<div style="min-width:0"><label class="cad-inp-lbl">Unidade</label><input class="cad-inp" style="width:100%;box-sizing:border-box;min-width:0" id="cf-ap-um" list="dl-ap-um" placeholder="Unid., Kg..." oninput="_cadApNomeAtualizar()"></div>'
     +'</div>'
+    +'<div style="margin-top:8px;padding:8px 10px;border-radius:8px;background:#e9f4ec;font-size:12px;color:#1d6b34">Nome da apresentação: <b id="cf-ap-nome" style="font-size:14px">—</b></div>'
+    +'<div id="cf-ap-antigo" style="display:none;margin-top:4px;font-size:11px;color:var(--mu)"></div>'
+    +'<div style="margin-top:8px"><label class="cad-inp-lbl">Preço (R$)</label>'
+    +'<input class="cad-inp" style="width:100%;box-sizing:border-box;min-width:0" id="cf-preco" type="number" min="0" step="0.01" placeholder="0,00"></div>'
     +'<div style="margin-top:8px"><label class="cad-inp-lbl">Fornecedor (opcional)</label>'
     +'<input class="cad-inp" id="cf-fornecedor" placeholder="Nome do fornecedor..." list="fornecedores-datalist"></div>'
-    +'<div style="margin-top:10px"><label class="cad-inp-lbl">Aparece nas abas</label>'
-    +'<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">'+abasCheckboxes+'</div></div>';
+    +'<div style="margin-top:10px"><label class="cad-inp-lbl">Usada nos setores</label>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">'+abasCheckboxes+'</div>'
+    +'<div style="font-size:11px;color:var(--mu);margin-top:4px">Só aparecem os setores do produto. Para incluir outro setor, edite o produto em Cadastros → Produtos.</div></div>';
   // Se estiver editando um item de preco existente, ja seleciona a apresentacao certa
   if(dPre && typeof dPre._apresIdx === 'number'){
     document.getElementById('cf-apres-select').value = String(dPre._apresIdx);
@@ -22434,16 +22674,15 @@ function _cadPrecoApresChange(){
   var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===selProd.value; });
   var chks = document.querySelectorAll('.cf-aba-chk');
   if(selApres.value === '_nova'){
-    if(unidNovaWrap) unidNovaWrap.style.display = 'block';
-    document.getElementById('cf-unid-nova').value = '';
+    _cadApPreencher(null);
     precoInp.value = '';
     if(fornInp) fornInp.value = '';
-    // Nenhuma aba vem marcada: o Admin autoriza, uma a uma, onde a
-    // apresentação pode aparecer (pode deixar nenhuma = só no cadastro).
-    chks.forEach(function(c){ c.checked = false; });
+    // Apresentação nova já vem marcada no setor do produto; os demais
+    // setores o Admin marca (ou não) nas caixas.
+    chks.forEach(function(c){ c.checked = !!(prod && prod.setor && _normAba(c.value) === _normAba(prod.setor)); });
   } else {
     var apres = prod && prod.apresentacoes && prod.apresentacoes[parseInt(selApres.value,10)];
-    if(unidNovaWrap) unidNovaWrap.style.display = 'none';
+    _cadApPreencher(apres);
     precoInp.value = apres ? (apres.preco||'') : '';
     if(fornInp) fornInp.value = apres ? (apres.fornecedor||'') : '';
     // Se a apresentação já tem abas salvas, marca só essas; se nunca teve
@@ -22470,8 +22709,33 @@ async function _cadSalvarItem(aba){
     // Preserva a configuração de "abas" de cada apresentação — esse campo
     // é exclusivo da tela de Apresentação; salvar um produto por aqui
     // (ex: só corrigindo o nome) nunca deve apagar essa configuração.
+    // Apresentação NOVA já nasce autorizada na aba do "Setor" do produto
+    // (ex.: setor Vendas → aparece nos Pedidos). Antes nascia sem nenhuma
+    // aba e o produto novo não aparecia em lugar nenhum (nem para editar
+    // pedidos) até alguém autorizá-lo em Cadastros → Apresentação.
+    var _setorProd = (document.getElementById('cf-setor')||{value:''}).value.trim();
+    var _abaDoSetor = _cadAbaDoSetor(_setorProd);
+    // Setores marcados nas caixas do produto (o principal sempre incluído)
+    var _abasMarc = Array.prototype.slice.call(document.querySelectorAll('.cf-prod-aba:checked')).map(function(c){ return c.value; });
+    var _temCaixas = document.querySelectorAll('.cf-prod-aba').length > 0;
+    if(_temCaixas && !_abasMarc.length){ _toast('\u26a0\ufe0f Marque ao menos um setor do produto'); return; }
+    if(_temCaixas && _abasMarc.indexOf(_abaDoSetor)===-1){ _setorProd = _abasMarc[0]; _abaDoSetor = _abasMarc[0]; }
+    var _abasAdd = _abasMarc.filter(function(x){ return _cadProdAbasIni.indexOf(x)===-1; });
+    var _abasRem = _cadProdAbasIni.filter(function(x){ return _abasMarc.indexOf(x)===-1; });
+    var _prodForm = {setor:_setorProd, apresentacoes:(_formApresentacoes||[])};
     var apresentacoesValidas = (_formApresentacoes||[]).filter(function(a){ return (a.unid||'').trim() || a._excluido; })
       .map(function(a){
+        if(a._nova && !Array.isArray(a.abas)){
+          // apresentação nova: nasce nos setores marcados
+          if(_temCaixas) a.abas = _abasMarc.slice(); else if(_abaDoSetor) a.abas = [_abaDoSetor];
+        } else if(_temCaixas && !a._excluido && (_abasAdd.length || _abasRem.length) && _apresEhVigente(_prodForm, a)){
+          // já existente: aplica só o que mudou nas caixas, preservando o ajuste fino
+          var atual = Array.isArray(a.abas) ? a.abas.slice() : (_abaDoSetor ? [_abaDoSetor] : []);
+          _abasAdd.forEach(function(x){ if(!atual.some(function(y){ return _normAba(y)===_normAba(x); })) atual.push(x); });
+          atual = atual.filter(function(y){ return !_abasRem.some(function(x){ return _normAba(x)===_normAba(y); }); });
+          a.abas = atual;
+          a._editadoEm = Date.now();
+        }
         var obj = {id:a.id||_gerarIdApres(), unid:(a.unid||'').trim(), preco:parseFloat(a.preco)||0};
         if((a.fornecedor||'').trim()) obj.fornecedor = a.fornecedor.trim();
         if(Array.isArray(a.abas)) obj.abas = a.abas;
@@ -22482,10 +22746,11 @@ async function _cadSalvarItem(aba){
       });
     item = {
       id:   'p'+Date.now(),
-      setor:(document.getElementById('cf-setor')||{value:''}).value.trim(),
+      setor:(_temCaixas ? _setorProd : (document.getElementById('cf-setor')||{value:''}).value.trim()),
       nome: nome,
       apresentacoes: apresentacoesValidas
     };
+    if(_temCaixas) item.setores = _abasMarc.slice(); // setores aos quais o produto pertence
     if(!item.nome){ _toast('\u26a0\ufe0f Informe o nome do produto'); return; }
     if(!apresentacoesValidas.some(function(a){ return !a._excluido; })){ _toast('\u26a0\ufe0f Informe ao menos uma unidade'); return; }
   } else if(aba==='clientes'){
@@ -22525,6 +22790,26 @@ async function _cadSalvarItem(aba){
       // Editando o preço/abas de uma apresentação já existente do produto
       var idxA = parseInt(selApres.value,10);
       if(prod.apresentacoes[idxA]){
+        // Campos estruturados (opcional numa apresentação antiga): se
+        // preenchidos, padronizam o nome; o nome anterior fica guardado.
+        var _apE = prod.apresentacoes[idxA];
+        var _g = function(id){ return (document.getElementById(id)||{value:''}).value.trim(); };
+        var _fF=_g('cf-ap-forma'), _fE=_g('cf-ap-emb'), _fQ=_g('cf-ap-qtd'), _fU=_g('cf-ap-um');
+        if(_fF || _fE || _fQ || _fU){
+          var _nm = _apresNomeComposto(_fF,_fE,_fQ,_fU);
+          _apE.forma=_fF; _apE.emb=_fE; _apE.qtdEmb=_fQ?Number(_fQ.replace(',','.')):''; _apE.um=_fU;
+          if(_nm && _nm !== _apE.unid){
+            // Versões antigas (ocultas) do mesmo nome são aposentadas junto —
+            // senão, com o nome novo, voltariam a aparecer como duplicata.
+            var _slugAnt = _slugApres(_apE.unid);
+            prod.apresentacoes.forEach(function(o){
+              if(o !== _apE && !o._excluido && _slugApres(o.unid) === _slugAnt && !_apresEhVigente(prod, o)){
+                o._excluido = true; o._excluidoEm = Date.now();
+              }
+            });
+            (_apE._unidAnteriores = _apE._unidAnteriores||[]).push(_apE.unid); _apE.unid = _nm;
+          }
+        }
         prod.apresentacoes[idxA].preco = precoVal;
         prod.apresentacoes[idxA]._editadoEm = Date.now();
         if(fornVal) prod.apresentacoes[idxA].fornecedor = fornVal;
@@ -22535,8 +22820,11 @@ async function _cadSalvarItem(aba){
     } else {
       // Nova apresentação (Unidade, Bandeja, Caixa, Kg, Sacos...)
       var unidNova = (document.getElementById('cf-unid-nova')||{value:''}).value.trim();
-      if(!unidNova){ _toast('\u26a0\ufe0f Informe a unidade/apresentação'); return; }
+      if(!unidNova){ _toast('\u26a0\ufe0f Preencha a forma, a embalagem ou a unidade da apresentação'); return; }
       var novaApres = {id:_gerarIdApres(), unid:unidNova, preco:precoVal, _criadoEm:Date.now()};
+      (function(g){ var F=g('cf-ap-forma'),E=g('cf-ap-emb'),Q=g('cf-ap-qtd'),U=g('cf-ap-um');
+        if(F) novaApres.forma=F; if(E) novaApres.emb=E; if(Q) novaApres.qtdEmb=Number(Q.replace(',','.')); if(U) novaApres.um=U;
+      })(function(id){ return (document.getElementById(id)||{value:''}).value.trim(); });
       if(fornVal) novaApres.fornecedor = fornVal;
       if(abasEscolhidas) novaApres.abas = abasEscolhidas;
       prod.apresentacoes.push(novaApres);
@@ -22851,6 +23139,7 @@ async function _cadInit(){
     <button class="cad-aba" onclick="_cadTrocaAba('precos',this)">Apresentação</button>
     <button class="cad-aba" onclick="_cadAbrirPublicar()" title="Publicar arquivos no GitHub">🚀 Publicar</button>
     <button class="cad-aba" onclick="_usuariosAbrir()" title="Usuários habilitados nos apps">👥 Usuários</button>
+    <button class="cad-aba" id="cad-btn-enq" onclick="_enqAbrir()" title="Registros antigos a enquadrar no modelo atual">🧭 Enquadrar</button>
   </div>
   <!-- Produtos -->
 <div class="cad-painel vis" id="cad-p-produtos">
