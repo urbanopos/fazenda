@@ -2657,7 +2657,12 @@ function _renderHPedTotal(lista, pedidos, ano, mes){
       var prod = (it.prodId && it.prodId!=='_edit')
         ? _listaProdutosVenda().find(function(x){ return x.id===it.prodId; })
         : null;
-      var chave = prod ? ('p:'+prod.id) : ('n:'+(it.nome||it.col2||'—'));
+      // Agrupa por produto + apresentação normalizada (preço não entra na chave).
+      // Inclui a unidade na chave para que "Bandeja c/30" e "Unidade" do mesmo
+      // produto fiquem em linhas separadas — e não somem quantidades incompatíveis.
+      var unidTxt = (it.unidade||it.unid||String(it.col3||'').split(' ').slice(1).join(' ')||'').trim();
+      var unidChave = _sdNorm(unidTxt) || 'unid';
+      var chave = prod ? ('p:'+prod.id+'|'+unidChave) : ('n:'+_sdNorm(it.nome||it.col2||'—')+'|'+unidChave);
       var nomeExibicao = prod ? prod.nome : (it.nome||it.col2||'—');
       if(!totais[chave]) totais[chave]={nomeExibicao:nomeExibicao, qtd:0, unid:'', total:0};
       // qtd: campo col3 tem formato "2 Unid" ou campo qtd direto
