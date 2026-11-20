@@ -21599,7 +21599,8 @@ function _balEstCalcularMes(anoMes){
     var it = itens[k];
     var estoqueFinal;
     if(it.temContagem){
-      estoqueFinal = Math.round((it.contagem.contado + it.entradasDepois - it.saidasDepois)*1000)/1000;
+      // Contagem física é a verdade — Est.Final = valor contado (movim. após a contagem ficam só no histórico)
+      estoqueFinal = Math.round(it.contagem.contado * 1000) / 1000;
     } else {
       estoqueFinal = Math.round((it.estoqueAnterior + it.entradasAntes - it.saidasAntes)*1000)/1000;
     }
@@ -21683,7 +21684,7 @@ function _balEstRowHtml(it, compacto){
       : '';
     contagemCell = '<span style="color:#1560b0;font-weight:700;font-family:DM Mono,monospace">📋 '+_pdfQtd(it.contagem.contado)+(f?' '+f.embLabel:'')+'</span>'
       +(f&&f.qtdEmb>1?'<br><span style="font-size:10px;color:var(--mu);font-family:DM Mono,monospace">= '+_pdfQtd(Math.round(it.contagem.contado*f.qtdEmb*1000)/1000)+' '+f.umLabel+'</span>':'')
-      +'<br><span style="font-size:10px;color:#8a5a12;font-family:DM Mono,monospace">'+divStr+divTot+' dif.</span>';
+      +'<br><span style="font-size:10px;color:#8a5a12;font-family:DM Mono,monospace">(calc. '+divStr+divTot+')</span>';
   } else {
     contagemCell = '<span style="color:var(--mu);font-size:11px">—</span>';
   }
@@ -21695,7 +21696,7 @@ function _balEstRowHtml(it, compacto){
     +'<td style="text-align:right;padding:'+p+' 8px;vertical-align:top">'+_balEstFmt(it.entradas,f,'#1a6b2a','+')+'</td>'
     +'<td style="text-align:right;padding:'+p+' 8px;vertical-align:top">'+_balEstFmt(it.saidas,f,'#c0392b','-')+'</td>'
     +'<td style="text-align:right;padding:'+p+' 8px;vertical-align:top">'+contagemCell+'</td>'
-    +'<td style="text-align:right;padding:'+p+' 0;vertical-align:top;'+(it.estoqueFinal<0?'color:#c0392b':'')+'">'+_balEstFmt(it.estoqueFinal,f,it.estoqueFinal<0?'#c0392b':null,'')+'</td>'
+    +'<td style="text-align:right;padding:'+p+' 0;vertical-align:top;font-weight:700;'+(it.estoqueFinal<0?'color:#c0392b':'')+'">'+_balEstFmt(it.estoqueFinal,f,it.estoqueFinal<0?'#c0392b':null,'')+'</td>'
     +'</tr>';
 }
 function _balEstCabecalhoHtml(){
