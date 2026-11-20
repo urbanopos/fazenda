@@ -14385,11 +14385,12 @@ function _renderHPedTotal(lista, pedidos, ano, mes){
       var prod = _pedProdCanonico((it.prodId && it.prodId!=='_edit')
         ? (_cadDados.produtos||[]).find(function(x){ return x.id===it.prodId; })
         : null, it.nome||it.col2||''); // unificados/excluídos somam no produto que ficou
-      // mesma linha para apresentações sem quantidade (unid, viva, abatida...);
-      // embalagens com quantidade (bandeja c/30, caixa c/12) ficam em linha própria
+      // Agrupa por produto + apresentação normalizada (sem distinção de maiúsculas/
+      // acentos/espaços). Preço NÃO entra na chave — varia com o tempo e não deve
+      // separar linhas do mesmo produto/apresentação.
       var unidTxt = _unidRelatorio(it); // apresentação padronizada (enquadramento)
-      var unidChave = (!String(unidTxt).trim() || _sdFator('unid', unidTxt) === 1) ? 'unid' : _sdBaseUnid(unidTxt)+'|'+(_sdFator('unid', unidTxt)||'');
-      var chave = prod ? ('p:'+prod.id+'|'+unidChave) : ('n:'+(it.nome||it.col2||'—')+'|'+unidChave);
+      var unidChave = _sdNorm(unidTxt) || 'unid'; // normalizado: lowercase, sem acentos, trim
+      var chave = prod ? ('p:'+prod.id+'|'+unidChave) : ('n:'+_sdNorm(it.nome||it.col2||'—')+'|'+unidChave);
       var nomeExibicao = prod ? prod.nome : (it.nome||it.col2||'—');
       if(!totais[chave]) totais[chave]={nomeExibicao:nomeExibicao, qtd:0, unid:'', total:0, eventos:[]};
       // qtd: campo col3 tem formato "2 Unid" ou campo qtd direto
@@ -15189,11 +15190,10 @@ function _gerarRelatorioPedidosPDF(){
         var prod = _pedProdCanonico((it.prodId && it.prodId!=='_edit')
         ? (_cadDados.produtos||[]).find(function(x){ return x.id===it.prodId; })
         : null, it.nome||it.col2||''); // unificados/excluídos somam no produto que ficou
-      // mesma linha para apresentações sem quantidade (unid, viva, abatida...);
-      // embalagens com quantidade (bandeja c/30, caixa c/12) ficam em linha própria
+      // Agrupa por produto + apresentação normalizada (preço não entra na chave)
       var unidTxt = _unidRelatorio(it); // apresentação padronizada (enquadramento)
-      var unidChave = (!String(unidTxt).trim() || _sdFator('unid', unidTxt) === 1) ? 'unid' : _sdBaseUnid(unidTxt)+'|'+(_sdFator('unid', unidTxt)||'');
-      var chave = prod ? ('p:'+prod.id+'|'+unidChave) : ('n:'+(it.nome||it.col2||'—')+'|'+unidChave);
+      var unidChave = _sdNorm(unidTxt) || 'unid';
+      var chave = prod ? ('p:'+prod.id+'|'+unidChave) : ('n:'+_sdNorm(it.nome||it.col2||'—')+'|'+unidChave);
         var nomeExibicao = prod ? prod.nome : (it.nome||it.col2||'—');
         if(!totais[chave]) totais[chave]={nomeExibicao:nomeExibicao, qtd:0, unid:'', total:0};
         var partes = (it.col3||'').split(' ');
