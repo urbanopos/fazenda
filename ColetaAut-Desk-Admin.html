@@ -1219,7 +1219,7 @@ body:has(#sec-compras.at) #contador{display:none}
   <div class="secao at" id="sec-aviario"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="sec-t" style="color:#8f6800">Aviário</div><div style="display:flex;gap:6px"><button onclick="abrirHistColetaSetor('Aviario')" style="padding:5px 12px;width:96px;background:rgba(143,104,0,.1);border:1.5px solid #8f6800;border-radius:6px;color:#8f6800;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📋 Histórico</button><button onclick="_gerarRelatorioProducaoMensal()" style="padding:5px 12px;width:96px;background:rgba(143,104,0,.1);border:1.5px solid #8f6800;border-radius:6px;color:#8f6800;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📄 Relatório</button></div></div><div class="sec-d">Produção e movimentação</div><div class="pgrid" id="grid-aviario"><div class="pc" id="card-aviario_ovo"><div class="ph"><div onclick="toggleCard(&#39;aviario_ovo&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Ovos de Capoeira</span><span class="pb" id="badge-aviario_ovo">+ Registrar</span></div></div><div class="res-con" id="res-aviario_ovo"></div><div class="pbd" id="body-aviario_ovo"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_ovo&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_ovo" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_ovo&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-aviario_ovo" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_ovo&#39;,&#39;unid&#39;,&#39;Ovos de Capoeira&#39;)">Concluir</button></div></div></div><div class="pc" id="card-aviario_esterco"><div class="ph"><div onclick="toggleCard(&#39;aviario_esterco&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Esterco</span><span class="pb" id="badge-aviario_esterco">+ Registrar</span></div></div><div class="res-con" id="res-aviario_esterco"></div><div class="pbd" id="body-aviario_esterco"><div class="cg"><span class="cl">Quantidade (sacos)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_esterco&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_esterco" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_esterco&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-aviario_esterco" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_esterco&#39;,&#39;sacos&#39;,&#39;Esterco&#39;)">Concluir</button></div></div></div><div class="pc" id="card-aviario_galinha"><div class="ph"><div onclick="toggleCard(&#39;aviario_galinha&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Galinha</span><span class="pb" id="badge-aviario_galinha">+ Registrar</span></div></div><div class="res-con" id="res-aviario_galinha"></div><div class="pbd" id="body-aviario_galinha"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_galinha&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_galinha" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_galinha&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-aviario_galinha" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_galinha&#39;,&#39;unid&#39;,&#39;Galinha&#39;)">Concluir</button></div></div></div><div class="pc" id="card-aviario_frango"><div class="ph"><div onclick="toggleCard(&#39;aviario_frango&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Frango</span><span class="pb" id="badge-aviario_frango">+ Registrar</span></div></div><div class="res-con" id="res-aviario_frango"></div><div class="pbd" id="body-aviario_frango"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_frango&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_frango" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_frango&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-aviario_frango" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_frango&#39;,&#39;unid&#39;,&#39;Frango&#39;)">Concluir</button></div></div></div><div class="pc" id="card-aviario_pinto"><div class="ph"><div onclick="toggleCard(&#39;aviario_pinto&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pinto</span><span class="pb" id="badge-aviario_pinto">+ Registrar</span></div></div><div class="res-con" id="res-aviario_pinto"></div><div class="pbd" id="body-aviario_pinto"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_pinto&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_pinto" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_pinto&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-aviario_pinto" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_pinto&#39;,&#39;unid&#39;,&#39;Pinto&#39;)">Concluir</button></div></div></div><div class="pc" id="card-aviario_pintainha"><div class="ph"><div onclick="toggleCard(&#39;aviario_pintainha&#39;,&#39;&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pintainha</span><span class="pb" id="badge-aviario_pintainha">+ Registrar</span></div></div><div class="res-con" id="res-aviario_pintainha"></div><div class="pbd" id="body-aviario_pintainha"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;aviario_pintainha&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-aviario_pintainha" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;aviario_pintainha&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-aviario_pintainha" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;aviario_pintainha&#39;,&#39;unid&#39;,&#39;Pintainha&#39;)">Concluir</button></div></div></div></div></div>
   <div class="secao" id="sec-perda"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="sec-t" style="color:#7f1d1d">Perda / Baixa</div><div style="display:flex;gap:6px"><button onclick="abrirHistColetaSetor('Perda')" style="padding:5px 12px;width:96px;background:rgba(127,29,29,.1);border:1.5px solid #7f1d1d;border-radius:6px;color:#7f1d1d;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📋 Histórico</button><button onclick="_gerarRelatorioProducaoMensal()" style="padding:5px 12px;width:96px;background:rgba(127,29,29,.1);border:1.5px solid #7f1d1d;border-radius:6px;color:#7f1d1d;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📄 Relatório</button></div></div><div class="sec-d">Mortalidade ou descarte</div><div class="pgrid" id="grid-perda"><div class="pc pc-p" id="card-perda_ovo"><div class="ph"><div onclick="toggleCard(&#39;perda_ovo&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Ovos de Capoeira</span><span class="pb" id="badge-perda_ovo">+ Registrar</span></div></div><div class="res-con" id="res-perda_ovo"></div><div class="pbd" id="body-perda_ovo"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_ovo&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_ovo" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_ovo&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-perda_ovo" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_ovo&#39;,&#39;unid&#39;,&#39;Ovos de Capoeira&#39;)">Concluir</button></div></div></div><div class="pc pc-p" id="card-perda_esterco"><div class="ph"><div onclick="toggleCard(&#39;perda_esterco&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Esterco</span><span class="pb" id="badge-perda_esterco">+ Registrar</span></div></div><div class="res-con" id="res-perda_esterco"></div><div class="pbd" id="body-perda_esterco"><div class="cg"><span class="cl">Quantidade (sacos)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_esterco&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_esterco" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_esterco&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-perda_esterco" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_esterco&#39;,&#39;sacos&#39;,&#39;Esterco&#39;)">Concluir</button></div></div></div><div class="pc pc-p" id="card-perda_galinha"><div class="ph"><div onclick="toggleCard(&#39;perda_galinha&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Galinha</span><span class="pb" id="badge-perda_galinha">+ Registrar</span></div></div><div class="res-con" id="res-perda_galinha"></div><div class="pbd" id="body-perda_galinha"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_galinha&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_galinha" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_galinha&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-perda_galinha" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_galinha&#39;,&#39;unid&#39;,&#39;Galinha&#39;)">Concluir</button></div></div></div><div class="pc pc-p" id="card-perda_frango"><div class="ph"><div onclick="toggleCard(&#39;perda_frango&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Frango</span><span class="pb" id="badge-perda_frango">+ Registrar</span></div></div><div class="res-con" id="res-perda_frango"></div><div class="pbd" id="body-perda_frango"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_frango&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_frango" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_frango&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-perda_frango" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_frango&#39;,&#39;unid&#39;,&#39;Frango&#39;)">Concluir</button></div></div></div><div class="pc pc-p" id="card-perda_pinto"><div class="ph"><div onclick="toggleCard(&#39;perda_pinto&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pinto</span><span class="pb" id="badge-perda_pinto">+ Registrar</span></div></div><div class="res-con" id="res-perda_pinto"></div><div class="pbd" id="body-perda_pinto"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_pinto&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_pinto" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_pinto&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-perda_pinto" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_pinto&#39;,&#39;unid&#39;,&#39;Pinto&#39;)">Concluir</button></div></div></div><div class="pc pc-p" id="card-perda_pintainha"><div class="ph"><div onclick="toggleCard(&#39;perda_pintainha&#39;,&#39;pc-p&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pintainha</span><span class="pb" id="badge-perda_pintainha">+ Registrar</span></div></div><div class="res-con" id="res-perda_pintainha"></div><div class="pbd" id="body-perda_pintainha"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;perda_pintainha&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-perda_pintainha" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;perda_pintainha&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-perda_pintainha" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;perda_pintainha&#39;,&#39;unid&#39;,&#39;Pintainha&#39;)">Concluir</button></div></div></div></div></div>
   <div class="secao" id="sec-campo"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="sec-t" style="color:#3b5e2a">Campo</div><div style="display:flex;gap:6px"><button onclick="abrirHistColetaSetor('Campo')" style="padding:5px 12px;width:96px;background:rgba(59,94,42,.1);border:1.5px solid #3b5e2a;border-radius:6px;color:#3b5e2a;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📋 Histórico</button><button onclick="_gerarRelatorioProducaoMensal()" style="padding:5px 12px;width:96px;background:rgba(59,94,42,.1);border:1.5px solid #3b5e2a;border-radius:6px;color:#3b5e2a;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📄 Relatório</button></div></div><div class="sec-d">Colheita e produção rural</div><div class="pgrid" id="grid-campo"><div class="pc pc-c" id="card-campo_coco"><div class="ph"><div onclick="toggleCard(&#39;campo_coco&#39;,&#39;pc-c&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Coco Seco</span><span class="pb" id="badge-campo_coco">+ Registrar</span></div></div><div class="res-con" id="res-campo_coco"></div><div class="pbd" id="body-campo_coco"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;campo_coco&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-campo_coco" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;campo_coco&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-campo_coco" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;campo_coco&#39;,&#39;unid&#39;,&#39;Coco Seco&#39;)">Concluir</button></div></div></div><div class="pc pc-c" id="card-campo_manga"><div class="ph"><div onclick="toggleCard(&#39;campo_manga&#39;,&#39;pc-c&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Manga</span><span class="pb" id="badge-campo_manga">+ Registrar</span></div></div><div class="res-con" id="res-campo_manga"></div><div class="pbd" id="body-campo_manga"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;campo_manga&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-campo_manga" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;campo_manga&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-campo_manga" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;campo_manga&#39;,&#39;unid&#39;,&#39;Manga&#39;)">Concluir</button></div></div></div><div class="pc pc-c" id="card-campo_abacate"><div class="ph"><div onclick="toggleCard(&#39;campo_abacate&#39;,&#39;pc-c&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Abacate</span><span class="pb" id="badge-campo_abacate">+ Registrar</span></div></div><div class="res-con" id="res-campo_abacate"></div><div class="pbd" id="body-campo_abacate"><div class="cg"><span class="cl">Quantidade (unid)</span><div class="step"><button class="sb" onclick="stepQ(&#39;campo_abacate&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-campo_abacate" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;campo_abacate&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-campo_abacate" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;campo_abacate&#39;,&#39;unid&#39;,&#39;Abacate&#39;)">Concluir</button></div></div></div><div class="pc pc-c" id="card-campo_banana"><div class="ph"><div onclick="toggleCard(&#39;campo_banana&#39;,&#39;pc-c&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Banana</span><span class="pb" id="badge-campo_banana">+ Registrar</span></div></div><div class="res-con" id="res-campo_banana"></div><div class="pbd" id="body-campo_banana"><div class="cg"><span class="cl">Quantidade (cac.)</span><div class="step"><button class="sb" onclick="stepQ(&#39;campo_banana&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-campo_banana" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;campo_banana&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-campo_banana" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;campo_banana&#39;,&#39;cac.&#39;,&#39;Banana&#39;)">Concluir</button></div></div></div><div class="pc pc-c" id="card-campo_pitomba"><div class="ph"><div onclick="toggleCard(&#39;campo_pitomba&#39;,&#39;pc-c&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pitomba</span><span class="pb" id="badge-campo_pitomba">+ Registrar</span></div></div><div class="res-con" id="res-campo_pitomba"></div><div class="pbd" id="body-campo_pitomba"><div class="cg"><span class="cl">Quantidade (kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;campo_pitomba&#39;,0.5,-1)">-</button><input class="si" type="number" id="qtd-campo_pitomba" inputmode="decimal" min="0" step="0.5" value="0"><button class="sb" onclick="stepQ(&#39;campo_pitomba&#39;,0.5,1)">+</button></div></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-campo_pitomba" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;campo_pitomba&#39;,&#39;kg&#39;,&#39;Pitomba&#39;)">Concluir</button></div></div></div></div></div>
-  <div class="secao" id="sec-estoque"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="sec-t" style="color:#1560b0">Estoque</div><div style="display:flex;gap:6px"><button onclick="abrirHistColetaSetor('Estoque')" style="padding:5px 12px;width:96px;background:rgba(30,58,95,.1);border:1.5px solid #1560b0;border-radius:6px;color:#1560b0;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📋 Histórico</button><button onclick="_gerarRelatorioEstoqueMensal()" style="padding:5px 12px;width:96px;background:rgba(30,58,95,.1);border:1.5px solid #1560b0;border-radius:6px;color:#1560b0;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📄 Relatório</button></div></div><div class="sec-d">Entrada de insumos e racoes</div><div class="pgrid" id="grid-estoque"><div class="pc pc-e" id="card-estoque_ipos"><div class="ph"><div onclick="toggleCard(&#39;estoque_ipos&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Postura</span><span class="pb" id="badge-estoque_ipos">+ Registrar</span></div></div><div class="res-con" id="res-estoque_ipos"></div><div class="pbd" id="body-estoque_ipos"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_ipos&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_ipos" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_ipos&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_ipos" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-estoque_ipos" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_ipos&#39;,&#39;sc 40kg&#39;,&#39;Postura&#39;)">Concluir</button></div></div></div><div class="pc pc-e" id="card-estoque_iini"><div class="ph"><div onclick="toggleCard(&#39;estoque_iini&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Inicial</span><span class="pb" id="badge-estoque_iini">+ Registrar</span></div></div><div class="res-con" id="res-estoque_iini"></div><div class="pbd" id="body-estoque_iini"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_iini&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_iini" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_iini&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_iini" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-estoque_iini" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_iini&#39;,&#39;sc 40kg&#39;,&#39;Inicial&#39;)">Concluir</button></div></div></div><div class="pc pc-e" id="card-estoque_ipre"><div class="ph"><div onclick="toggleCard(&#39;estoque_ipre&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pre-Inicial</span><span class="pb" id="badge-estoque_ipre">+ Registrar</span></div></div><div class="res-con" id="res-estoque_ipre"></div><div class="pbd" id="body-estoque_ipre"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_ipre&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_ipre" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_ipre&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_ipre" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-estoque_ipre" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_ipre&#39;,&#39;sc 40kg&#39;,&#39;Pre-Inicial&#39;)">Concluir</button></div></div></div><div class="pc pc-e" id="card-estoque_icre"><div class="ph"><div onclick="toggleCard(&#39;estoque_icre&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Crescimento</span><span class="pb" id="badge-estoque_icre">+ Registrar</span></div></div><div class="res-con" id="res-estoque_icre"></div><div class="pbd" id="body-estoque_icre"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_icre&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_icre" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_icre&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_icre" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-estoque_icre" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_icre&#39;,&#39;sc 40kg&#39;,&#39;Crescimento&#39;)">Concluir</button></div></div></div><div class="pc pc-e" id="card-estoque_ieng"><div class="ph"><div onclick="toggleCard(&#39;estoque_ieng&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Engorda</span><span class="pb" id="badge-estoque_ieng">+ Registrar</span></div></div><div class="res-con" id="res-estoque_ieng"></div><div class="pbd" id="body-estoque_ieng"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_ieng&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_ieng" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_ieng&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_ieng" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-estoque_ieng" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_ieng&#39;,&#39;sc 40kg&#39;,&#39;Engorda&#39;)">Concluir</button></div></div></div><div class="pc pc-e" id="card-estoque_milho"><div class="ph"><div onclick="toggleCard(&#39;estoque_milho&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Milho</span><span class="pb" id="badge-estoque_milho">+ Registrar</span></div></div><div class="res-con" id="res-estoque_milho"></div><div class="pbd" id="body-estoque_milho"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_milho&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_milho" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_milho&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_milho" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-estoque_milho" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_milho&#39;,&#39;sc 40kg&#39;,&#39;Milho&#39;)">Concluir</button></div></div></div><div class="pc pc-e" id="card-estoque_farelo"><div class="ph"><div onclick="toggleCard(&#39;estoque_farelo&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Farelo de Trigo</span><span class="pb" id="badge-estoque_farelo">+ Registrar</span></div></div><div class="res-con" id="res-estoque_farelo"></div><div class="pbd" id="body-estoque_farelo"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_farelo&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_farelo" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_farelo&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_farelo" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-estoque_farelo" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_farelo&#39;,&#39;sc 40kg&#39;,&#39;Farelo de Trigo&#39;)">Concluir</button></div></div></div></div></div>
+  <div class="secao" id="sec-estoque"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="sec-t" style="color:#1560b0">Estoque</div><div style="display:flex;gap:6px"><button onclick="abrirHistColetaSetor('Estoque')" style="padding:5px 12px;width:96px;background:rgba(30,58,95,.1);border:1.5px solid #1560b0;border-radius:6px;color:#1560b0;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📋 Histórico</button><button onclick="_balEstAbrirConsulta()" style="padding:5px 12px;width:96px;background:rgba(30,58,95,.1);border:1.5px solid #1560b0;border-radius:6px;color:#1560b0;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📊 Balanço</button><button onclick="_invAbrirEstoque()" style="padding:5px 12px;width:96px;background:rgba(30,58,95,.1);border:1.5px solid #1560b0;border-radius:6px;color:#1560b0;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📦 Inventário</button><button onclick="_balEstAbrirFechar()" style="padding:5px 12px;width:96px;background:rgba(30,58,95,.1);border:1.5px solid #1560b0;border-radius:6px;color:#1560b0;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer">📅 Fechar Mês</button></div></div><div class="sec-d">Entrada de insumos e racoes</div><div class="pgrid" id="grid-estoque"><div class="pc pc-e" id="card-estoque_ipos"><div class="ph"><div onclick="toggleCard(&#39;estoque_ipos&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Postura</span><span class="pb" id="badge-estoque_ipos">+ Registrar</span></div></div><div class="res-con" id="res-estoque_ipos"></div><div class="pbd" id="body-estoque_ipos"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_ipos&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_ipos" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_ipos&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_ipos" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-estoque_ipos" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_ipos&#39;,&#39;sc 40kg&#39;,&#39;Postura&#39;)">Concluir</button></div></div></div><div class="pc pc-e" id="card-estoque_iini"><div class="ph"><div onclick="toggleCard(&#39;estoque_iini&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Inicial</span><span class="pb" id="badge-estoque_iini">+ Registrar</span></div></div><div class="res-con" id="res-estoque_iini"></div><div class="pbd" id="body-estoque_iini"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_iini&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_iini" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_iini&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_iini" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-estoque_iini" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_iini&#39;,&#39;sc 40kg&#39;,&#39;Inicial&#39;)">Concluir</button></div></div></div><div class="pc pc-e" id="card-estoque_ipre"><div class="ph"><div onclick="toggleCard(&#39;estoque_ipre&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Pre-Inicial</span><span class="pb" id="badge-estoque_ipre">+ Registrar</span></div></div><div class="res-con" id="res-estoque_ipre"></div><div class="pbd" id="body-estoque_ipre"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_ipre&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_ipre" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_ipre&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_ipre" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-estoque_ipre" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_ipre&#39;,&#39;sc 40kg&#39;,&#39;Pre-Inicial&#39;)">Concluir</button></div></div></div><div class="pc pc-e" id="card-estoque_icre"><div class="ph"><div onclick="toggleCard(&#39;estoque_icre&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Crescimento</span><span class="pb" id="badge-estoque_icre">+ Registrar</span></div></div><div class="res-con" id="res-estoque_icre"></div><div class="pbd" id="body-estoque_icre"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_icre&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_icre" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_icre&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_icre" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-estoque_icre" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_icre&#39;,&#39;sc 40kg&#39;,&#39;Crescimento&#39;)">Concluir</button></div></div></div><div class="pc pc-e" id="card-estoque_ieng"><div class="ph"><div onclick="toggleCard(&#39;estoque_ieng&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Engorda</span><span class="pb" id="badge-estoque_ieng">+ Registrar</span></div></div><div class="res-con" id="res-estoque_ieng"></div><div class="pbd" id="body-estoque_ieng"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_ieng&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_ieng" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_ieng&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_ieng" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-estoque_ieng" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_ieng&#39;,&#39;sc 40kg&#39;,&#39;Engorda&#39;)">Concluir</button></div></div></div><div class="pc pc-e" id="card-estoque_milho"><div class="ph"><div onclick="toggleCard(&#39;estoque_milho&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Milho</span><span class="pb" id="badge-estoque_milho">+ Registrar</span></div></div><div class="res-con" id="res-estoque_milho"></div><div class="pbd" id="body-estoque_milho"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_milho&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_milho" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_milho&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_milho" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-estoque_milho" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_milho&#39;,&#39;sc 40kg&#39;,&#39;Milho&#39;)">Concluir</button></div></div></div><div class="pc pc-e" id="card-estoque_farelo"><div class="ph"><div onclick="toggleCard(&#39;estoque_farelo&#39;,&#39;pc-e&#39;)" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0"><span class="pe">Farelo de Trigo</span><span class="pb" id="badge-estoque_farelo">+ Registrar</span></div></div><div class="res-con" id="res-estoque_farelo"></div><div class="pbd" id="body-estoque_farelo"><div class="cg"><span class="cl">Quantidade (sc 40kg)</span><div class="step"><button class="sb" onclick="stepQ(&#39;estoque_farelo&#39;,1,-1)">-</button><input class="si" type="number" id="qtd-estoque_farelo" inputmode="decimal" min="0" step="1" value="0"><button class="sb" onclick="stepQ(&#39;estoque_farelo&#39;,1,1)">+</button></div></div><div class="cg"><span class="cl">Fornecedor</span><input type="text" id="for-estoque_farelo" placeholder="Nome do fornecedor..." list="fornecedores-datalist" style="font-size:15px"></div><div class="cg"><span class="cl">Observação (opcional)</span><textarea id="obs-estoque_farelo" placeholder="Ex: lote A, qualidade boa..."></textarea></div><div class="card-acoes"><button class="btn-con" onclick="concluirCard(&#39;estoque_farelo&#39;,&#39;sc 40kg&#39;,&#39;Farelo de Trigo&#39;)">Concluir</button></div></div></div></div></div>
 <!-- MODAL HISTORICO DE COLETAS (admin only) -->
 <div id="modal-hcol" onclick="fecharHistColeta()">
   <div class="hcol-box" onclick="event.stopPropagation()">
@@ -13195,6 +13195,10 @@ async function _iniciar(){
       var rlotes0 = await _caOpfsLer(FSJ_LOTES);
       if(rlotes0) try{ localStorage.setItem(LOTES_KEY, rlotes0); }catch(e){}
     }catch(e){}
+    try{
+      var rbalest = await _caOpfsLer(FSJ_BAL_EST);
+      if(rbalest) try{ localStorage.setItem(CK_BAL_EST, rbalest); }catch(e){}
+    }catch(e){}
     await _catalogoCarregarOPFS();
   }
 
@@ -14222,7 +14226,7 @@ function _renderVItens(){
 
 function setProdV(i,v){
   _vItens[i].prodId=v; _vItens[i].unidade=''; _vItens[i].preco=0;
-  // Preenche automaticamente unidade e preço a partir do cadastro unificado de produtos
+  // Preenche automaticamente a unidade a partir do cadastro; preço é informado no registro
   if(v && v!=='_edit'){
     var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===v; });
     var apresVendas = (prod && prod.apresentacoes)
@@ -14230,26 +14234,14 @@ function setProdV(i,v){
       : [];
     if(apresVendas.length){
       _vItens[i].unidade = apresVendas[0].unid;
-      _vItens[i].preco = apresVendas[0].preco||0;
     } else if(prod && prod.unid){
-      // Compatibilidade com cadastro antigo (ainda nao migrado para apresentações)
       _vItens[i].unidade = prod.unid;
-      var nomeProd = prod.nome;
-      var pr = nomeProd ? (_cadDados.precos||[]).find(function(x){ return x.prodNome===nomeProd; }) : null;
-      if(pr && pr.preco) _vItens[i].preco = pr.preco;
     }
     _calcSubV(i);
   }
 }
 function setUnidV(i,v){
   _vItens[i].unidade=v;
-  // Se essa unidade tiver preço cadastrado para o produto, atualiza o preço também
-  var prod = (_cadDados.produtos||[]).find(function(p){ return p.id===_vItens[i].prodId; });
-  if(prod && prod.apresentacoes){
-    var ap = _apresVigentes(prod).find(function(a){ return a.unid===v && _apresHabilitadaNaAba(prod, a, 'Vendas'); })
-          || prod.apresentacoes.find(function(a){ return !a._excluido && a.unid===v; });
-    if(ap){ _vItens[i].preco = ap.preco||0; _calcSubV(i); }
-  }
 }
 function setDataV(i,v){ _vItens[i].data=v; }
 function setQtdV(i,v){
@@ -21350,6 +21342,482 @@ function _invSalvar(){
   _toast('✅ Inventário salvo — o balanço já considera a contagem.');
 }
 
+/* ═══ 3) INVENTÁRIO DO ESTOQUE (balanço resolutivo) ═══ */
+function _invSaldosEstoque(){
+  // Calcula saldo atual por item no setor Estoque:
+  // entradas = compras (origem:'compra') + entradas manuais (tipo:'Entrada')
+  // saídas   = coletas com tipo:'Saida' e setor:'Estoque'
+  // inventários anteriores NÃO contam no saldo calculado (tipo:'Inventario' excluído)
+  var hist = _carregarHistColetaRaw();
+  var bal = {};
+  hist.forEach(function(r){
+    if(r._excluido) return;
+    (r.itens||[]).forEach(function(it){
+      if((it.setor||'')!=='Estoque') return;
+      if(it.tipo==='Inventario') return; // ajustes de inventário não entram no saldo calculado
+      var k = _sdNorm(it.nome||'');
+      if(!k) return;
+      if(!bal[k]) bal[k] = {nome:it.nome, unid:it.unid||'', saldo:0};
+      bal[k].unid = it.unid || bal[k].unid;
+      bal[k].nome = it.nome || bal[k].nome;
+      bal[k].saldo += (it.tipo==='Saida' ? -1 : 1)*(Number(it.qtd)||0);
+    });
+  });
+  return Object.keys(bal).map(function(k){ bal[k].saldo = Math.round(bal[k].saldo*1000)/1000; return bal[k]; })
+    .sort(function(a,b){ return a.nome.localeCompare(b.nome,'pt-BR',{sensitivity:'base',numeric:true}); });
+}
+function _invAbrirEstoque(){
+  var itens = _invSaldosEstoque();
+  window._invEstoqueItens = itens;
+  if(!itens.length){
+    _toast('Nenhum item encontrado no Estoque.'); return;
+  }
+  _janelaAbrir('jan-inv-estoque', '📦 Inventário — Estoque', 'Balanço resolutivo: informe a contagem física e o app lança o ajuste compensatório.',
+    '<div style="font-size:12px;line-height:1.5;margin-bottom:10px">Informe a quantidade <strong>contada fisicamente</strong> de cada item. '
+    +'O sistema calcula a diferença (contado − saldo calculado) e lança automaticamente o registro de ajuste com a data informada. '
+    +'Deixe em branco o que não foi contado.</div>'
+    +'<div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:10px"><div><div class="hcol-lbl">Data do inventário</div>'
+    +'<input type="date" id="inv-est-data" class="hcol-sel" value="'+_dataLocalHoje()+'"></div></div>'
+    +'<div style="display:grid;grid-template-columns:1fr auto auto;gap:6px 10px;align-items:center;font-size:13px">'
+    +'<div class="hcol-lbl">Item</div><div class="hcol-lbl" style="text-align:right">Saldo calculado</div><div class="hcol-lbl">Contado</div>'
+    + itens.map(function(it, i){
+        return '<div style="font-weight:700">'+_escH(it.nome)+' <span style="font-weight:400;color:var(--mu);font-size:11px">'+_escH(it.unid)+'</span></div>'
+          +'<div style="text-align:right;font-family:DM Mono,monospace;'+(it.saldo<0?'color:#c0392b;font-weight:700':'')+'">'+_pdfQtd(it.saldo)+'</div>'
+          +'<input type="number" min="0" step="any" inputmode="decimal" id="inv-est-q-'+i+'" class="hcol-sel" style="width:90px" placeholder="—">';
+      }).join('')
+    +'</div>'
+    +'<button onclick="_invSalvarEstoque()" style="width:100%;margin-top:14px;padding:12px;border:none;border-radius:var(--r);background:#1560b0;color:#fff;font-weight:700;cursor:pointer">Salvar inventário do Estoque</button>');
+}
+function _invSalvarEstoque(){
+  var data = (document.getElementById('inv-est-data')||{}).value;
+  if(!data){ _toast('Informe a data do inventário.'); return; }
+  var itens = [];
+  (window._invEstoqueItens||[]).forEach(function(it, i){
+    var v = (document.getElementById('inv-est-q-'+i)||{}).value;
+    if(v===''||v==null) return;
+    var q = parseFloat(v); if(isNaN(q)||q<0) return;
+    var delta = Math.round((q - it.saldo)*1000)/1000;
+    if(delta===0) return; // sem diferença: não lança nada
+    var tipo = delta>0 ? 'Entrada' : 'Saida';
+    itens.push({setor:'Estoque', nome:it.nome, qtd:Math.abs(delta), unid:it.unid,
+                tipo:tipo, obs:'Inventário (contado '+q+', calculado '+it.saldo+')'});
+  });
+  if(!itens.length){ _toast('Nenhuma diferença encontrada entre o contado e o calculado.'); return; }
+  var resumo = itens.map(function(it){
+    return '• '+it.nome+': '+(it.tipo==='Entrada'?'+':'-')+Math.abs(it.qtd)+' '+it.unid
+      +' ('+it.obs+')';
+  }).join('\n');
+  if(!confirm('Salvar ajuste de inventário do Estoque em '+data.split('-').reverse().join('/')+'?\n\n'+resumo
+    +'\n\nUm registro de ajuste será lançado para compensar as diferenças.')) return;
+  _salvarColeta({data:data, coletor:(localStorage.getItem('wpp_nome')||'Administrador').trim()||'Administrador',
+                 itens:itens, ts:Date.now(), origem:'inventario'});
+  _janelaFechar('jan-inv-estoque');
+  _toast('✅ Inventário do Estoque salvo — o balanço já considera o ajuste.');
+}
+
+/* ═══ BALANÇO MENSAL DO ESTOQUE ═══════════════════════════════════════════
+   Cada mês fechado fica gravado como snapshot imutável:
+     {anoMes:'2024-11', fechadoEm:ts, responsavel:'...', itens:[
+       {nome, unid, estoqueAnterior, entradas, saidas, estoqueFinal}
+     ]}
+   O balanço do mês M parte do estoqueFinal do mês M-1 (ou 0 se inexistente)
+   mais todas as movimentações de M (excluindo registros tipo:'Inventario').
+   Ajustes de inventário NÃO entram no fluxo de Entradas/Saídas — eles
+   apenas corrigem o ponto de partida, e a diferença entre o calculado e o
+   contado fica visível na coluna "Ajuste" do relatório.
+   ======================================================================= */
+function _balEstCarregar(){
+  try{ return JSON.parse(localStorage.getItem(CK_BAL_EST)||'[]'); }catch(e){ return []; }
+}
+function _balEstSalvar(lista){
+  var json = JSON.stringify(lista);
+  try{ localStorage.setItem(CK_BAL_EST, json); }catch(e){}
+  if(_caOpfs) _caOpfsSalvar(FSJ_BAL_EST, json);
+}
+
+/* Calcula o balanço do mês anoMes='YYYY-MM' a partir dos dados atuais.
+   ─────────────────────────────────────────────────────────────────────────
+   REGRA DA CONTAGEM FÍSICA:
+   Se no mês há um registro de inventário (origem:'inventario') para um item,
+   a contagem física SUBSTITUI o saldo calculado a partir daquela data.
+   O que veio antes da contagem (entradas/saídas) é acumulado normalmente;
+   na data da contagem o saldo é zerado para o valor contado; depois disso
+   entradas e saídas voltam a ser acumuladas sobre o valor contado.
+   A divergência (contado − calculado até aquela data) fica registrada como
+   "Ajuste" apenas para fins de rastreabilidade — NÃO altera a coluna
+   Entradas nem Saídas, que continuam mostrando as movimentações reais.
+   ─────────────────────────────────────────────────────────────────────────
+   Retorna array {nome,unid,estoqueAnterior,entradas,saidas,
+                  contagem:{data,contado,calculadoNaData}|null,
+                  entradasAposContagem,saidasAposContagem,estoqueFinal}
+*/
+/* Impressão do balanço — abre janela isolada com CSS limpo */
+function _balEstImprimir(titulo, conteudoHtml){
+  var w = window.open('','_blank','width=900,height=700');
+  if(!w){ _toast('Permita popups para imprimir.'); return; }
+  var nomes=['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var hoje = new Date().toLocaleDateString('pt-BR');
+  w.document.write('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8">'
+    +'<title>'+titulo+'</title>'
+    +'<style>'
+    +'*{box-sizing:border-box;margin:0;padding:0}'
+    +'body{font-family:Arial,sans-serif;font-size:11px;color:#111;background:#fff;padding:18px 24px}'
+    +'h2{font-size:14px;margin-bottom:2px}'
+    +'.sub{font-size:10px;color:#555;margin-bottom:12px}'
+    +'table{width:100%;border-collapse:collapse;margin-top:4px}'
+    +'th{text-align:right;padding:4px 6px;border-bottom:2px solid #333;font-size:10px;white-space:nowrap}'
+    +'th:first-child{text-align:left}'
+    +'td{padding:4px 6px;border-bottom:1px solid #ccc;vertical-align:top}'
+    +'td:first-child{font-weight:700}'
+    +'td:not(:first-child){text-align:right;font-family:monospace;white-space:nowrap}'
+    +'.nota{font-size:9px;color:#1560b0;background:#e8f0fe;border-radius:3px;padding:4px 6px;margin-bottom:6px}'
+    +'.rod{font-size:9px;color:#555;margin-top:10px;border-top:1px solid #ccc;padding-top:6px}'
+    +'@media print{'
+    +'  body{padding:8px}'
+    +'  button{display:none}'
+    +'}'
+    +'</style></head><body>'
+    +'<h2>'+titulo+'</h2>'
+    +'<div class="sub">Impresso em '+hoje+' · Fazenda São José</div>'
+    +conteudoHtml
+    +'<div class="rod">Balanço gerado pelo sistema ColetaAut. Balanços fechados são imutáveis.</div>'
+    +'<br><button onclick="window.print();window.close()" style="padding:6px 18px;background:#1560b0;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px">🖨️ Imprimir</button>'
+    +'<script>window.onload=function(){window.print();}<\/script>'
+    +'</body></html>');
+  w.document.close();
+}
+
+/* Busca o fator de embalagem de um item no cadastro de produtos.
+   Retorna {qtdEmb, umLabel, embLabel} ou null se não encontrado.
+   ex: Farelo de Soja / "Saco c/40 Kg" → {qtdEmb:40, umLabel:'Kg', embLabel:'sc'} */
+function _balEstBuscarFator(nome, unid){
+  var prods = (_cadDados||{}).produtos||[];
+  var pNorm = _sdNorm(nome||'');
+  var prod = prods.find(function(p){ return _sdNorm(p.nome||'')===pNorm; });
+  if(!prod) return null;
+  var apres = (prod.apresentacoes||[]).find(function(a){ return (a.unid||'')===(unid||''); });
+  if(!apres || !apres.qtdEmb) return null;
+  // Abreviação da embalagem: Saco→sc, Galão→gl, Bandeja→bd, Caixa→cx, etc.
+  var embMap = {saco:'sc',galao:'gl',galão:'gl',bandeja:'bd',caixa:'cx',frasco:'fr',
+                lata:'lt',balde:'bl',pacote:'pc',unidade:'un',kit:'kt',rolo:'rl'};
+  var embKey = _sdNorm((apres.emb||''));
+  var embAbrev = embMap[embKey] || (apres.emb||'').slice(0,2).toLowerCase();
+  return {qtdEmb: Number(apres.qtdEmb)||1, umLabel: apres.um||'', embLabel: embAbrev};
+}
+
+function _balEstCalcularMes(anoMes){
+  var meses = _balEstCarregar();
+
+  // Estoque anterior = estoqueFinal do mês imediatamente anterior fechado
+  var estAnt = {}; // k → {nome,unid,qtd}
+  var anteriores = meses.filter(function(m){ return m.anoMes < anoMes; })
+    .sort(function(a,b){ return a.anoMes < b.anoMes ? 1 : -1; });
+  if(anteriores.length){
+    (anteriores[0].itens||[]).forEach(function(it){
+      var k = _sdNorm(it.nome||'');
+      if(k) estAnt[k] = {nome:it.nome, unid:it.unid||'', qtd:Number(it.estoqueFinal)||0};
+    });
+  }
+
+  // Coletar todos os registros do mês do Estoque, ordenados por data
+  var hist = _carregarHistColeta();
+  var regs = [];
+  hist.forEach(function(r){
+    if(!r.data || r.data.slice(0,7) !== anoMes) return;
+    if(!(r.itens||[]).some(function(it){ return (it.setor||'')==='Estoque'; })) return;
+    regs.push(r);
+  });
+  // Ordena por data (string ISO) depois por ts para desempate
+  regs.sort(function(a,b){
+    if(a.data < b.data) return -1; if(a.data > b.data) return 1;
+    return (a.ts||0)-(b.ts||0);
+  });
+
+  // Para cada item, processa cronologicamente:
+  //   acumula entradas/saídas até a contagem → contagem redefine o saldo →
+  //   continua acumulando após a contagem
+  var itens = {}; // k → estado do item
+  function getItem(k, nome, unid){
+    if(!itens[k]){
+      var ant = estAnt[k]||{nome:nome,unid:unid||'',qtd:0};
+      itens[k] = {
+        nome: ant.nome, unid: ant.unid,
+        estoqueAnterior: ant.qtd,
+        entradasAntes: 0, saidasAntes: 0,   // antes da contagem (ou no mês todo se sem contagem)
+        contagem: null,                      // {data, contado, calculadoNaData, divergencia}
+        entradasDepois: 0, saidasDepois: 0,  // após a contagem
+        temContagem: false
+      };
+    }
+    return itens[k];
+  }
+
+  regs.forEach(function(r){
+    var isInv = r.origem === 'inventario';
+    (r.itens||[]).forEach(function(it){
+      if((it.setor||'')!=='Estoque') return;
+      var k = _sdNorm(it.nome||''); if(!k) return;
+      var item = getItem(k, it.nome, it.unid);
+      item.nome = it.nome || item.nome;
+      item.unid = it.unid || item.unid;
+      var q = Number(it.qtd)||0;
+
+      if(isInv){
+        // A contagem física redefine o saldo como verdade.
+        // Recalculamos o saldo calculado até este momento para registrar a divergência.
+        var calcAteAgora = item.estoqueAnterior + item.entradasAntes - item.saidasAntes;
+        // O delta gravado pelo _invSalvarEstoque é (contado - calculado):
+        //   tipo:'Entrada' quando delta>0, tipo:'Saida' quando delta<0
+        var deltaGravado = it.tipo === 'Saida' ? -q : q;
+        var contado = Math.round((calcAteAgora + deltaGravado)*1000)/1000;
+        item.contagem = {
+          data: r.data,
+          contado: contado,
+          calculadoNaData: Math.round(calcAteAgora*1000)/1000,
+          divergencia: Math.round(deltaGravado*1000)/1000
+        };
+        item.temContagem = true;
+        // Zera acumuladores "depois" — a contagem é o novo ponto de partida
+        item.entradasDepois = 0;
+        item.saidasDepois = 0;
+      } else if(item.temContagem){
+        if(it.tipo==='Saida') item.saidasDepois += q;
+        else item.entradasDepois += q;
+      } else {
+        if(it.tipo==='Saida') item.saidasAntes += q;
+        else item.entradasAntes += q;
+      }
+    });
+  });
+
+  // Incluir itens que têm estoque anterior mas sem movimento no mês
+  Object.keys(estAnt).forEach(function(k){
+    if(!itens[k]) getItem(k, estAnt[k].nome, estAnt[k].unid);
+  });
+
+  return Object.keys(itens).map(function(k){
+    var it = itens[k];
+    var estoqueFinal;
+    if(it.temContagem){
+      estoqueFinal = Math.round((it.contagem.contado + it.entradasDepois - it.saidasDepois)*1000)/1000;
+    } else {
+      estoqueFinal = Math.round((it.estoqueAnterior + it.entradasAntes - it.saidasAntes)*1000)/1000;
+    }
+    var fator = _balEstBuscarFator(it.nome, it.unid); // {qtdEmb,umLabel,embLabel} ou null
+    return {
+      nome: it.nome, unid: it.unid,
+      fator: fator,
+      estoqueAnterior: Math.round(it.estoqueAnterior*1000)/1000,
+      entradas: Math.round((it.entradasAntes + it.entradasDepois)*1000)/1000,
+      saidas:   Math.round((it.saidasAntes   + it.saidasDepois  )*1000)/1000,
+      contagem: it.contagem,   // null se não houve contagem no mês
+      estoqueFinal: estoqueFinal
+    };
+  }).sort(function(a,b){ return a.nome.localeCompare(b.nome,'pt-BR',{sensitivity:'base',numeric:true}); });
+}
+
+/* Abre a tela de fechamento de mês */
+function _balEstAbrirFechar(){
+  // Meses disponíveis: todos os YYYY-MM que têm movimentação no Estoque,
+  // mais o mês atual, excluindo os que já foram fechados.
+  var hist = _carregarHistColeta();
+  var fechados = _balEstCarregar().map(function(m){ return m.anoMes; });
+  var comMov = {};
+  hist.forEach(function(r){
+    if(r.data && (r.itens||[]).some(function(it){ return (it.setor||'')==='Estoque'; })){
+      comMov[r.data.slice(0,7)] = true;
+    }
+  });
+  comMov[_dataLocalHoje().slice(0,7)] = true; // mês corrente sempre disponível
+  var mesesDisp = Object.keys(comMov).filter(function(m){ return fechados.indexOf(m)<0; })
+    .sort().reverse();
+
+  if(!mesesDisp.length){
+    _toast('Todos os meses com movimentação já foram fechados.'); return;
+  }
+
+  var opts = mesesDisp.map(function(m){
+    var p = m.split('-');
+    var nomes = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                 'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    return '<option value="'+m+'">'+nomes[Number(p[1])]+'/'+p[0]+'</option>';
+  }).join('');
+
+  _janelaAbrir('jan-bal-est-fechar','📅 Fechar mês — Balanço do Estoque','Gera e salva o balanço do mês selecionado. Uma vez fechado, o balanço não é alterado por movimentações futuras.',
+    '<div style="font-size:12px;line-height:1.5;margin-bottom:12px">Escolha o mês a fechar. O sistema calculará:<br>'
+    +'• Estoque anterior (saldo final do mês anterior fechado)<br>'
+    +'• Total de entradas e saídas do mês<br>'
+    +'• Ajustes de inventário do mês (se houver)<br>'
+    +'• Estoque final = anterior + entradas − saídas + ajustes</div>'
+    +'<div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:14px">'
+    +'<div><div class="hcol-lbl">Mês a fechar</div>'
+    +'<select id="bal-est-mes" class="hcol-sel" style="min-width:160px">'+opts+'</select></div></div>'
+    +'<div id="bal-est-preview" style="font-size:12px;color:var(--mu)">Selecione o mês para visualizar o resumo.</div>'
+    +'<button onclick="_balEstPreview()" style="margin-top:10px;padding:8px 16px;border:1.5px solid #1560b0;border-radius:var(--r);background:transparent;color:#1560b0;font-weight:700;cursor:pointer">Visualizar resumo</button>'
+    +'<button onclick="_balEstFecharMes()" style="width:100%;margin-top:10px;padding:12px;border:none;border-radius:var(--r);background:#1560b0;color:#fff;font-weight:700;cursor:pointer">✅ Fechar e salvar balanço</button>');
+}
+
+function _balEstFmt(qtd, fator, cor, prefixo){
+  /* Renderiza célula dupla: "X emb" na linha principal e "= Y um" abaixo se fator disponível */
+  var mono = 'font-family:DM Mono,monospace;font-variant-numeric:tabular-nums;';
+  var sinal = prefixo||'';
+  if(fator && fator.qtdEmb>1){
+    var total = Math.round(qtd * fator.qtdEmb * 1000)/1000;
+    var totalFmt = _pdfQtd(total)+' '+fator.umLabel;
+    return '<span style="display:block;'+mono+(cor?'color:'+cor+';':'')+'font-weight:700">'+sinal+_pdfQtd(qtd)+' '+fator.embLabel+'</span>'
+      +'<span style="display:block;'+mono+'font-size:10px;color:var(--mu);border-top:1px dashed var(--bd);padding-top:1px;margin-top:1px">'
+      +(prefixo==='+'?'= ':'= ')+totalFmt+'</span>';
+  }
+  return '<span style="'+mono+(cor?'color:'+cor+';':'')+'">'+(sinal||'')+_pdfQtd(qtd)+(fator?' '+fator.embLabel:'')+'</span>';
+}
+
+function _balEstRowHtml(it, compacto){
+  var p = compacto ? '3px' : '5px';
+  var f = it.fator||null;
+  var contagemCell = '';
+  if(it.contagem){
+    var divSinal = it.contagem.divergencia>=0?'+':'';
+    var divStr = divSinal+_pdfQtd(it.contagem.divergencia)+(f?' '+f.embLabel:'');
+    var divTot = f && f.qtdEmb>1
+      ? ' ('+(divSinal+_pdfQtd(Math.round(it.contagem.divergencia*f.qtdEmb*1000)/1000))+' '+f.umLabel+')'
+      : '';
+    contagemCell = '<span style="color:#1560b0;font-weight:700;font-family:DM Mono,monospace">📋 '+_pdfQtd(it.contagem.contado)+(f?' '+f.embLabel:'')+'</span>'
+      +(f&&f.qtdEmb>1?'<br><span style="font-size:10px;color:var(--mu);font-family:DM Mono,monospace">= '+_pdfQtd(Math.round(it.contagem.contado*f.qtdEmb*1000)/1000)+' '+f.umLabel+'</span>':'')
+      +'<br><span style="font-size:10px;color:#8a5a12;font-family:DM Mono,monospace">'+divStr+divTot+' dif.</span>';
+  } else {
+    contagemCell = '<span style="color:var(--mu);font-size:11px">—</span>';
+  }
+  var nomeCell = '<td style="padding:'+p+' 8px '+p+' 0;font-weight:700">'+_escH(it.nome)
+    +'<br><span style="font-weight:400;color:var(--mu);font-size:10px">'+_escH(it.unid)+'</span></td>';
+  return '<tr style="border-bottom:1px solid var(--bd)">'
+    +nomeCell
+    +'<td style="text-align:right;padding:'+p+' 8px;vertical-align:top">'+_balEstFmt(it.estoqueAnterior,f,null,'')+'</td>'
+    +'<td style="text-align:right;padding:'+p+' 8px;vertical-align:top">'+_balEstFmt(it.entradas,f,'#1a6b2a','+')+'</td>'
+    +'<td style="text-align:right;padding:'+p+' 8px;vertical-align:top">'+_balEstFmt(it.saidas,f,'#c0392b','-')+'</td>'
+    +'<td style="text-align:right;padding:'+p+' 8px;vertical-align:top">'+contagemCell+'</td>'
+    +'<td style="text-align:right;padding:'+p+' 0;vertical-align:top;'+(it.estoqueFinal<0?'color:#c0392b':'')+'">'+_balEstFmt(it.estoqueFinal,f,it.estoqueFinal<0?'#c0392b':null,'')+'</td>'
+    +'</tr>';
+}
+function _balEstCabecalhoHtml(){
+  return '<tr style="border-bottom:2px solid var(--bd)">'
+    +'<th style="text-align:left;padding:4px 8px 4px 0">Item / Apresentação</th>'
+    +'<th style="text-align:right;padding:4px 8px">Est.Anterior</th>'
+    +'<th style="text-align:right;padding:4px 8px">Entradas</th>'
+    +'<th style="text-align:right;padding:4px 8px">Saídas</th>'
+    +'<th style="text-align:right;padding:4px 8px">Contagem física</th>'
+    +'<th style="text-align:right;padding:4px 0">Est.Final</th>'
+    +'</tr>';
+}
+function _balEstPreview(){
+  var mes = (document.getElementById('bal-est-mes')||{}).value;
+  if(!mes) return;
+  var itens = _balEstCalcularMes(mes);
+  var div = document.getElementById('bal-est-preview');
+  if(!div) return;
+  var temContagem = itens.some(function(it){ return it.contagem; });
+  var nota = temContagem
+    ? '<div style="font-size:11px;background:#e8f0fe;border-radius:4px;padding:6px 8px;margin-bottom:6px;color:#1560b0">📋 Contagem física registrada no mês — o saldo final parte do valor contado. Divergência registrada apenas para rastreabilidade.</div>'
+    : '';
+  if(!itens.length){ div.innerHTML='<em>Nenhum item movimentado neste mês.</em>'; return; }
+  var nomes=['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var p=mes.split('-'); var nomeMesStr=nomes[Number(p[1])]+'/'+p[0];
+  var tabelaHtml='<table style="width:100%;border-collapse:collapse;font-size:12px;min-width:420px"><thead>'
+    +_balEstCabecalhoHtml()+'</thead><tbody>'
+    +itens.map(function(it){ return _balEstRowHtml(it,true); }).join('')
+    +'</tbody></table>';
+  window._balEstImprimirDados = {
+    titulo: 'Pré-visualização do Balanço — '+nomeMesStr,
+    html: (temContagem?'<div class="nota">📋 Contagem física registrada — saldo final parte do valor contado.</div>':'')
+      +tabelaHtml
+  };
+  div.innerHTML = nota
+    +'<div style="overflow-x:auto">'+tabelaHtml+'</div>'
+    +'<button onclick="_balEstImprimir(window._balEstImprimirDados.titulo,window._balEstImprimirDados.html)" '
+      +'style="margin-top:8px;padding:6px 14px;background:#f5f5f5;border:1.5px solid #bbb;border-radius:var(--r);font-size:11px;font-weight:700;cursor:pointer">🖨️ Imprimir</button>';
+}
+
+function _balEstFecharMes(){
+  var mes = (document.getElementById('bal-est-mes')||{}).value;
+  if(!mes){ _toast('Escolha o mês.'); return; }
+  var itens = _balEstCalcularMes(mes);
+  if(!itens.length){ _toast('Nenhum item encontrado para este mês.'); return; }
+  var p = mes.split('-');
+  var nomes=['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var nomeMes = nomes[Number(p[1])]+'/'+p[0];
+  if(!confirm('Fechar balanço de '+nomeMes+'?\n\nEste balanço ficará salvo permanentemente e não será alterado por movimentações futuras.')) return;
+  var meses = _balEstCarregar();
+  if(meses.find(function(m){ return m.anoMes===mes; })){ _toast('Este mês já foi fechado.'); return; }
+  meses.push({anoMes:mes, fechadoEm:Date.now(),
+    responsavel:(localStorage.getItem('wpp_nome')||'Administrador').trim()||'Administrador',
+    itens:itens});
+  meses.sort(function(a,b){ return a.anoMes < b.anoMes ? -1 : 1; });
+  _balEstSalvar(meses);
+  _janelaFechar('jan-bal-est-fechar');
+  _toast('✅ Balanço de '+nomeMes+' fechado e salvo.');
+}
+
+/* Abre a tela de consulta dos balanços mensais fechados */
+function _balEstAbrirConsulta(){
+  var meses = _balEstCarregar();
+  if(!meses.length){
+    _toast('Nenhum balanço mensal fechado ainda. Use "Fechar mês" para gerar o primeiro.'); return;
+  }
+  var nomes=['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  function nomeMes(anoMes){ var p=anoMes.split('-'); return nomes[Number(p[1])]+'/'+p[0]; }
+
+  var tabs = meses.slice().reverse().map(function(m, i){
+    return '<button onclick="_balEstMostrarMes('+i+')" id="tab-bal-'+i+'" '
+      +'style="padding:5px 10px;border:1.5px solid #1560b0;border-radius:5px;background:'+(i===0?'#1560b0':'transparent')+';color:'+(i===0?'#fff':'#1560b0')+';font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap">'+nomeMes(m.anoMes)+'</button>';
+  }).join('');
+
+  _janelaAbrir('jan-bal-est-cons','📊 Balanço Mensal — Estoque','Histórico de balanços mensais fechados. Imutáveis — não são afetados por movimentações posteriores.',
+    '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">'+tabs+'</div>'
+    +'<div id="bal-est-cons-body"></div>');
+
+  window._balEstMeses = meses.slice().reverse();
+  _balEstMostrarMes(0);
+}
+
+function _balEstMostrarMes(idx){
+  window._balEstMeses = window._balEstMeses || _balEstCarregar().slice().reverse();
+  var m = window._balEstMeses[idx];
+  if(!m) return;
+  // Atualiza estilo das abas
+  window._balEstMeses.forEach(function(_,i){
+    var btn = document.getElementById('tab-bal-'+i);
+    if(!btn) return;
+    btn.style.background = i===idx?'#1560b0':'transparent';
+    btn.style.color = i===idx?'#fff':'#1560b0';
+  });
+  var div = document.getElementById('bal-est-cons-body');
+  if(!div) return;
+  var nomes=['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var p = m.anoMes.split('-');
+  var nomeMes = nomes[Number(p[1])]+'/'+p[0];
+  var fechadoFmt = new Date(m.fechadoEm).toLocaleDateString('pt-BR');
+  var temContagem = (m.itens||[]).some(function(it){ return it.contagem; });
+  var notaContagem = temContagem
+    ? '<div style="font-size:11px;background:#e8f0fe;border-radius:4px;padding:6px 8px;margin-bottom:6px;color:#1560b0">📋 Mês com contagem física — saldo final parte do valor contado. Divergência registrada na coluna "Contagem física".</div>'
+    : '';
+  var rows = (m.itens||[]).map(function(it){ return _balEstRowHtml(it,false); }).join('');
+  var tabelaHtml = '<table style="width:100%;border-collapse:collapse;font-size:12px;min-width:460px">'
+    +'<thead>'+_balEstCabecalhoHtml()+'</thead>'
+    +'<tbody>'+rows+'</tbody>'
+    +'</table>';
+  window._balEstImprimirDados = {
+    titulo: 'Balanço do Estoque — '+nomeMes,
+    html: '<p style="font-size:10px;color:#555;margin-bottom:8px">Fechado em '+fechadoFmt+' por '+_escH(m.responsavel||'—')+'</p>'
+      +(temContagem?'<div class="nota">📋 Mês com contagem física — saldo final parte do valor contado. Divergência registrada na coluna "Contagem física".</div>':'')
+      +tabelaHtml
+  };
+  div.innerHTML = '<div style="font-size:11px;color:var(--mu);margin-bottom:8px">Fechado em '+fechadoFmt+' por '+_escH(m.responsavel||'—')+'</div>'
+    +notaContagem
+    +'<div style="overflow-x:auto">'+tabelaHtml+'</div>'
+    +'<div style="font-size:11px;color:var(--mu);margin-top:8px">Contagem física: valor real medido naquela data. O estoque final parte do valor contado; a divergência (calculado × contado) fica registrada apenas para rastreabilidade. Balanços fechados não são alterados por movimentações futuras.</div>'
+    +'<button onclick="_balEstImprimir(window._balEstImprimirDados.titulo,window._balEstImprimirDados.html)" '
+      +'style="margin-top:10px;padding:7px 16px;background:#f5f5f5;border:1.5px solid #bbb;border-radius:var(--r);font-size:12px;font-weight:700;cursor:pointer">🖨️ Imprimir balanço</button>';
+}
+
 /* ═══ 4) Totalização de pedidos: itens de produtos unificados/excluídos
    somam no produto que ficou ("Galinha Viva" → "Galinha"). Só exibição. ═══ */
 function _pedProdCanonico(prod, nome){
@@ -21505,6 +21973,8 @@ function _toast(msg){
 var FSJ_CAD    = 'cadastros.json';
 var FSJ_COLETAS = 'coletas.json';
 var FSJ_PEDIDOS = 'pedidos.json';
+var FSJ_BAL_EST = 'bal_estoque.json';
+var CK_BAL_EST  = 'fsj_bal_estoque';
 
 // Estrutura padrão dos cadastros
 var _cadDados = {
@@ -22263,7 +22733,7 @@ function _cadRenderAba(aba){
       return c!==0 ? c : (x.fornecedor||'').localeCompare(y.fornecedor||'','pt-BR',{sensitivity:'base'});
     });
     if(!linhas.length){
-      _cadPaginar('precos', [], ''); lista.innerHTML = '<div class="cad-vazia">Nenhuma apresentação com preço cadastrada ainda.<br>Toque em + para adicionar (buscando o produto na tabela única).</div>';
+      _cadPaginar('precos', [], ''); lista.innerHTML = '<div class="cad-vazia">Nenhuma apresentação cadastrada ainda.<br>Toque em + para adicionar (buscando o produto na tabela única).</div>';
       return;
     }
     var semAut = linhas.filter(function(l){ return !l.abas.length; }).length;
@@ -22271,7 +22741,7 @@ function _cadRenderAba(aba){
       ? '<div style="grid-column:1/-1;background:#fbf4e2;border:1px solid #ecdcae;color:#8a6d1f;border-radius:8px;padding:8px 12px;font-size:12px;margin-bottom:8px">ℹ️ <strong>'+semAut+'</strong> apresentação(ões) sem nenhuma aba marcada — ficam só no cadastro e não aparecem nas listas das abas.</div>'
       : '';
     _cadPaginar('precos', linhas.map(function(l){
-      var det = l.unid+(l.preco?' · R$ '+Number(l.preco).toFixed(2).replace('.',','):' · sem preço definido')+(l.fornecedor?' · '+l.fornecedor:'');
+      var det = l.unid+(l.fornecedor?' · '+l.fornecedor:'');
       var linhaAbas = l.abas.length
         ? '<div class="cad-item-det" style="color:#1a6b2a">Abas autorizadas: '+_escH(l.abas.join(', '))+'</div>'
         : '<div class="cad-item-det" style="color:#8a6d1f">Nenhuma aba — fica só no cadastro, não aparece nas listas das abas.</div>';
@@ -22309,7 +22779,7 @@ function _cadRenderAba(aba){
       var resumoApres = (it.apresentacoes||[]).filter(function(a){ return !a._excluido; })
         .sort(function(x,y){ return (x.unid||'').localeCompare(y.unid||'','pt-BR'); })
         .map(function(a){
-        return a.unid+(a.preco?' (R$ '+Number(a.preco).toFixed(2).replace('.',',')+')':'')+(a.fornecedor?' — '+a.fornecedor:'');
+        return a.unid+(a.fornecedor?' — '+a.fornecedor:'');
       }).join(' · ');
       det = (it.setor||'')+(resumoApres?' · '+resumoApres:(it.unid?' · '+it.unid:''));
     }
@@ -22538,7 +23008,6 @@ function _cadRenderApresentacoes(){
     if(a.id && (a.unid||'').trim() && vigForm.indexOf(a) === -1) return ''; // versão antiga: oculta
     return '<div class="cad-apres-card" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;align-items:center">'
       +'<input class="cad-inp" style="flex:1;min-width:110px" placeholder="unid, kg, sc 40kg..." value="'+_escH(a.unid||'')+'" oninput="_formApresentacoes['+i+'].unid=this.value">'
-      +'<input class="cad-inp" style="width:110px" type="number" min="0" step="0.01" placeholder="Preço R$" value="'+(a.preco||'')+'" oninput="_formApresentacoes['+i+'].preco=parseFloat(this.value)||0">'
       +'<input class="cad-inp" style="flex:1;min-width:130px" placeholder="Fornecedor (opcional)" list="fornecedores-datalist" value="'+_escH(a.fornecedor||'')+'" oninput="_formApresentacoes['+i+'].fornecedor=this.value">'
       +(visiveis>1 ? '<button type="button" onclick="_cadRemoverApresentacao('+i+')" style="background:none;border:none;color:#c0392b;font-size:18px;cursor:pointer;padding:0 4px">×</button>' : '<span style="width:26px"></span>')
       +'</div>';
@@ -22805,7 +23274,7 @@ function _cadPrecoMontarApresentacoes(dPre){
       .sort(function(x,y){ return (x.a.unid||'').localeCompare(y.a.unid||'','pt-BR'); })
       .map(function(p){
         var a = p.a, i = p.i;
-        return '<option value="'+i+'"'+(dPre && dPre._apresIdx===i?' selected':'')+'>'+_escH(a.unid)+(a.preco?' — R$ '+Number(a.preco).toFixed(2).replace('.',','):'')+'</option>';
+        return '<option value="'+i+'"'+(dPre && dPre._apresIdx===i?' selected':'')+'>'+_escH(a.unid)+(a.fornecedor?' — '+_escH(a.fornecedor):'')+'</option>';
       }).join('');
   // Só os setores do produto (definidos no cadastro do produto): aqui se
   // marca em quais deles ESTA apresentação é usada.
